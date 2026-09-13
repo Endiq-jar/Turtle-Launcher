@@ -2,8 +2,6 @@ package net.kdt.pojavlaunch.customcontrols.mouse;
 
 import android.os.Handler;
 
-import net.kdt.pojavlaunch.LwjglGlfwKeycode;
-
 import org.lwjgl.glfw.CallbackBridge;
 
 public class RightClickGesture extends ValidatorGesture{
@@ -50,7 +48,10 @@ public class RightClickGesture extends ValidatorGesture{
         if(!mGestureValid || isSwitching) return;
         boolean fingerStill = LeftClickGesture.isFingerStill(mGestureStartX, mGestureStartY, mGestureEndX, mGestureEndY, LeftClickGesture.FINGER_STILL_THRESHOLD);
         if(!fingerStill) return;
-        CallbackBridge.sendMouseButton(LwjglGlfwKeycode.GLFW_MOUSE_BUTTON_RIGHT, true);
-        CallbackBridge.sendMouseButton(LwjglGlfwKeycode.GLFW_MOUSE_BUTTON_RIGHT, false);
+        // TurtleLauncher (Zalith Launcher 2 gestureTapMouseAction port): which mouse button
+        // the quick-tap gesture sends is user-configurable; upstream hardcodes RIGHT.
+        int button = GestureButtons.tapButton();
+        CallbackBridge.sendMouseButton(button, true);
+        CallbackBridge.sendMouseButton(button, false);
     }
 }

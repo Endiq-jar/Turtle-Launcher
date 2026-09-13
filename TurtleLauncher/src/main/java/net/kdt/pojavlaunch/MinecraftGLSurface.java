@@ -376,6 +376,19 @@ public class MinecraftGLSurface extends View implements GrabListener {
         if(eventKeycode == KeyEvent.KEYCODE_UNKNOWN) return true;
         if(eventKeycode == KeyEvent.KEYCODE_VOLUME_DOWN) return false;
         if(eventKeycode == KeyEvent.KEYCODE_VOLUME_UP) return false;
+
+        // TurtleLauncher (Zalith Launcher 2 physicalKeyImeCode port): a user-bound
+        // hardware-keyboard key toggles the on-screen keyboard, for chat/sign/book entry
+        // when typing on the physical keyboard is awkward (or the game swallows the keys).
+        // Checked before the key reaches the game so the binding works even for keys the
+        // game would otherwise consume. -1 = unbound = zero cost here.
+        int imeKeyCode = AllSettings.getPhysicalKeyImeCode().getValue();
+        if (imeKeyCode != -1 && eventKeycode == imeKeyCode
+                && event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+            touchCharInput.switchKeyboardState();
+            return true;
+        }
+
         if(event.getRepeatCount() != 0) return true;
         int action = event.getAction();
         if(action == KeyEvent.ACTION_MULTIPLE) return true;

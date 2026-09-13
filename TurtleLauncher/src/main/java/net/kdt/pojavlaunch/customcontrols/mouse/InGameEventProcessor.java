@@ -35,8 +35,13 @@ public class InGameEventProcessor implements TouchEventProcessor {
             case MotionEvent.ACTION_MOVE:
                 mTracker.trackEvent(motionEvent);
                 float[] motionVector = mTracker.getMotionVector();
-                float deltaX = (float) (motionVector[0] * mSensitivity);
-                float deltaY = (float) (motionVector[1] * mSensitivity);
+                // TurtleLauncher (Zalith Launcher 2 mouseCaptureSensitivity port): the
+                // in-game look multiplier, adjustable 25..300% in Settings -> Mouse &
+                // Keyboard. Read per event (same pattern as Touchpad reading mouseSpeed)
+                // so the grab path and this touch path stay in sync with the setting.
+                float captureSensitivity = AllSettings.getMouseCaptureSensitivity().getValue() / 100f;
+                float deltaX = (float) (motionVector[0] * mSensitivity * captureSensitivity);
+                float deltaY = (float) (motionVector[1] * mSensitivity * captureSensitivity);
                 mLeftClickGesture.setMotion(deltaX, deltaY);
                 mRightClickGesture.setMotion(deltaX, deltaY);
                 CallbackBridge.mouseX += deltaX;

@@ -1,5 +1,6 @@
 package com.endiq.turtlelauncher.feature.terracotta;
 
+import androidx.annotation.Keep;
 import androidx.annotation.StringRes;
 
 import com.endiq.turtlelauncher.R;
@@ -24,10 +25,12 @@ import java.util.Locale;
  * doesn't have. Field names and state semantics are unchanged from the original -
  * only the deserialization mechanism differs.
  */
+@Keep
 public abstract class TerracottaState {
     protected TerracottaState() {
     }
 
+    @Keep
     public static abstract class Ready extends TerracottaState {
         @SerializedName("index")
         final int index;
@@ -71,6 +74,7 @@ public abstract class TerracottaState {
         }
     }
 
+    @Keep
     public static final class Waiting extends Ready {
         Waiting(int index, String state) { super(index, state); }
 
@@ -81,6 +85,7 @@ public abstract class TerracottaState {
         }
     }
 
+    @Keep
     public static final class HostScanning extends Ready {
         HostScanning(int index, String state) { super(index, state); }
 
@@ -91,6 +96,7 @@ public abstract class TerracottaState {
         }
     }
 
+    @Keep
     public static final class HostStarting extends Ready {
         HostStarting(int index, String state) { super(index, state); }
 
@@ -101,6 +107,7 @@ public abstract class TerracottaState {
         }
     }
 
+    @Keep
     public static final class HostOK extends Ready {
         @SerializedName("room")
         private final String code;
@@ -131,6 +138,7 @@ public abstract class TerracottaState {
         }
     }
 
+    @Keep
     public static final class GuestConnecting extends Ready {
         GuestConnecting(int index, String state) { super(index, state); }
 
@@ -141,8 +149,10 @@ public abstract class TerracottaState {
         }
     }
 
+    @Keep
     public static final class GuestStarting extends Ready {
-        public enum Difficulty {
+        @Keep
+    public enum Difficulty {
             UNKNOWN(0),
             EASIEST(R.string.terracotta_difficulty_easiest),
             SIMPLE(R.string.terracotta_difficulty_simple),
@@ -174,6 +184,7 @@ public abstract class TerracottaState {
         }
     }
 
+    @Keep
     public static final class GuestOK extends Ready {
         @SerializedName("url")
         private final String url;
@@ -204,8 +215,10 @@ public abstract class TerracottaState {
         }
     }
 
+    @Keep
     public static final class ExceptionState extends Ready {
-        public enum Type {
+        @Keep
+    public enum Type {
             PING_HOST_FAIL, PING_HOST_RST, GUEST_ET_CRASH, HOST_ET_CRASH,
             PING_SERVER_RST, SCAFFOLDING_INVALID_RESPONSE
         }
@@ -231,6 +244,7 @@ public abstract class TerracottaState {
     }
 
     /** Minimal profile info Terracotta reports for connected players - room/host metadata. */
+    @Keep
     public static final class TerracottaProfile {
         @SerializedName("name")
         private final String name;

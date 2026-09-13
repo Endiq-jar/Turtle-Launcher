@@ -48,6 +48,7 @@ class SettingsFragment : FragmentWithAnim(R.layout.fragment_settings) {
             Triple(binding.javaSettingsRow, binding.performanceSectionContainer, R.string.settings_row_java_title),
             Triple(binding.hudSettingsRow, binding.performanceSectionContainer, R.string.settings_row_hud_title),
             Triple(binding.controlsSettingsRow, binding.performanceSectionContainer, R.string.settings_row_controls_title),
+            Triple(binding.mouseKeyboardSettingsRow, binding.performanceSectionContainer, R.string.settings_row_mouse_keyboard_title),
             Triple(binding.optimizationSettingsRow, binding.performanceSectionContainer, R.string.settings_row_optimization_title),
             Triple(binding.phoneSettingsRow, binding.performanceSectionContainer, R.string.settings_row_phone_title),
             Triple(binding.accessibilitySettingsRow, binding.performanceSectionContainer, R.string.settings_row_accessibility_title),
@@ -100,6 +101,9 @@ class SettingsFragment : FragmentWithAnim(R.layout.fragment_settings) {
         }
         binding.controlsSettingsRow.setOnClickListener {
             ZHTools.swapFragmentWithAnim(this, ControlSettingsFragment::class.java, ControlSettingsFragment.TAG, null)
+        }
+        binding.mouseKeyboardSettingsRow.setOnClickListener {
+            ZHTools.swapFragmentWithAnim(this, MouseKeyboardSettingsFragment::class.java, MouseKeyboardSettingsFragment.TAG, null)
         }
         binding.optimizationSettingsRow.setOnClickListener {
             ZHTools.swapFragmentWithAnim(this, OptimizationSettingsFragment::class.java, OptimizationSettingsFragment.TAG, null)

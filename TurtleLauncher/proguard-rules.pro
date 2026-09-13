@@ -57,3 +57,11 @@
 -keep interface net.burningtnt.terracotta.TerracottaAndroidAPI$VpnServiceRequest {
     *;
 }
+
+# Gson: TerracottaState.TerracottaProfile (and every other Gson model in the app) is
+# instantiated reflectively and its @SerializedName fields are read/written by name.
+# Zalith Launcher 2 protects the same classes with @Keep; this is the matching global
+# rule so the minified "proguard" build types can't strip or rename serialized fields.
+-keepclassmembers,allowobfuscation class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
