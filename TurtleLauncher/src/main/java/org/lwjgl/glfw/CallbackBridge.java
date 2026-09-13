@@ -170,14 +170,21 @@ public class CallbackBridge {
     public static void setModifiers(int keyCode, boolean isDown){
         switch (keyCode){
             case LwjglGlfwKeycode.GLFW_KEY_LEFT_SHIFT:
+            // TurtleLauncher FIX: real GLFW sets MOD_SHIFT/MOD_CONTROL/MOD_ALT for EITHER
+            // side's key, but only the left ones were tracked here - so a control button
+            // (or physical key) mapped to Right Shift/Ctrl/Alt never raised the modifier
+            // bits and the game saw the press as the bare key. Handle both sides.
+            case LwjglGlfwKeycode.GLFW_KEY_RIGHT_SHIFT:
                 CallbackBridge.holdingShift = isDown;
                 return;
 
             case LwjglGlfwKeycode.GLFW_KEY_LEFT_CONTROL:
+            case LwjglGlfwKeycode.GLFW_KEY_RIGHT_CONTROL:
                 CallbackBridge.holdingCtrl = isDown;
                 return;
 
             case LwjglGlfwKeycode.GLFW_KEY_LEFT_ALT:
+            case LwjglGlfwKeycode.GLFW_KEY_RIGHT_ALT:
                 CallbackBridge.holdingAlt = isDown;
                 return;
 

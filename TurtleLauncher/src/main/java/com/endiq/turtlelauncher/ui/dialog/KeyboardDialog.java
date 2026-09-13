@@ -88,6 +88,16 @@ public class KeyboardDialog extends FullScreenDialog implements View.OnClickList
             specialButtons.add(getKey(getString(R.string.keycode_special_scrollup)));
             specialButtons.add(getKey(getString(R.string.keycode_special_scrolldown)));
             specialButtons.add(getKey(getString(R.string.keycode_special_menu)));
+            // TurtleLauncher FIX: ControlData.getSpecialButtons() (and therefore the
+            // editor's keycode spinner, whose positions these button tags are used as)
+            // also contains the "cancel" and "exit" specials after "menu". Without them
+            // here every tag was 2 lower than the spinner position it selects, so every
+            // key picked through this dialog bound a different key two slots off -
+            // e.g. Right Shift bound Right Alt, Left Shift bound Left Alt. The list is
+            // tagged in reverse (countdown below), matching the reversed special array
+            // in ControlData.buildSpecialButtonArray(): exit=0 ... keyboard=10.
+            specialButtons.add(getKey(getString(R.string.keycode_special_cancel)));
+            specialButtons.add(getKey(getString(R.string.keycode_special_exit)));
         }
 
         List<View> buttons = new ArrayList<>(List.of(
