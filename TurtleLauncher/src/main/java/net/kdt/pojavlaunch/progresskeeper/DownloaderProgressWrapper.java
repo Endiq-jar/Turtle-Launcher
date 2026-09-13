@@ -2,8 +2,8 @@ package net.kdt.pojavlaunch.progresskeeper;
 
 import static net.kdt.pojavlaunch.Tools.BYTE_TO_MB;
 
-import com.endiq.zalithlauncher.utils.ZHTools;
-import com.endiq.zalithlauncher.utils.file.FileTools;
+import com.endiq.turtlelauncher.utils.ZHTools;
+import com.endiq.turtlelauncher.utils.file.FileTools;
 
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.tasks.SpeedCalculator;

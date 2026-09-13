@@ -7,12 +7,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.kdt.mcgui.ProgressLayout;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.feature.accounts.AccountType;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.task.Task;
-import com.endiq.zalithlauncher.task.TaskExecutors;
-import com.endiq.zalithlauncher.utils.path.UrlManager;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.feature.accounts.AccountType;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.task.Task;
+import com.endiq.turtlelauncher.task.TaskExecutors;
+import com.endiq.turtlelauncher.utils.path.UrlManager;
 
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.authenticator.listener.DoneListener;

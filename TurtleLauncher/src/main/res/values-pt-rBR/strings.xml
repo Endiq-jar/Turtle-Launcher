@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Zalith Launcher -->
+    <!-- Turtle Launcher -->
     <string name="generic_open">Abrir</string>
     <string name="generic_close">Fechar</string>
     <string name="generic_return">Voltar</string>
@@ -645,7 +645,7 @@
     <string name="splash_screen_apply">Concordar e instalar</string>
     <!-- About -->
     <string name="about_tab">Sobre %s</string>
-    <string name="about_dec1">%s é um launcher de Minecraft baseado no PojavLauncher que permite executar Minecraft: Java Edition em dispositivos Android.</string>
+    <string name="about_dec1">%s é um launcher de Minecraft baseado no TurtleLauncher que permite executar Minecraft: Java Edition em dispositivos Android.</string>
     <string name="about_dec2">%s foca em otimizar a experiência do usuário, redesenhando a interface do aplicativo e adicionando mais funcionalidades práticas, com o objetivo de reduzir as barreiras para jogar e permitir que mais pessoas aproveitem facilmente a diversão do Minecraft.</string>
     <string name="about_dec3">%s utiliza a licença de código aberto GPL 3.0, que é "viral". Qualquer código que use, modifique ou derive de bibliotecas ou softwares GPL deve adotar também a licença GPL para código aberto. Se você pretende distribuir este software, por favor, cumpra as disposições relevantes da licença GPL 3.0.</string>
     <string name="about_contributors">Contribuidores e Agradecimentos:</string>
@@ -655,7 +655,7 @@
     <string name="about_sponsors_amount">Tempo e Valor Total</string>
     <string name="about_button_support_development">Patrocinar o Desenvolvimento</string>
     <string name="about_MovTery_desc">Desenvolvedor principal do TurtleLauncher (Endiq)</string>
-    <string name="about_PojavLauncher_desc">Equipe de desenvolvimento do PojavLauncher, que desenvolveu e tornou o PojavLauncher de código aberto</string>
+    <string name="about_TurtleLauncher_desc">Equipe de desenvolvimento do TurtleLauncher, que desenvolveu e tornou o TurtleLauncher de código aberto</string>
     <string name="about_mcmod_desc">O lançador utiliza Mods da MC百科 e traduções de pacotes de integração</string>
     <string name="about_VeraFirefly_desc">Forneceu suporte técnico em renderização para o lançador</string>
     <string name="about_LingMuQiuZhu_desc">Forneceu suporte técnico para o lançador</string>

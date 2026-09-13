@@ -14,8 +14,8 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.core.math.MathUtils;
 
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.setting.AllSettings;
 
 import net.kdt.pojavlaunch.GrabListener;
 import net.kdt.pojavlaunch.Tools;

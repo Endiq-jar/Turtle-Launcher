@@ -4,12 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.kdt.mcgui.ProgressLayout;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.feature.customprofilepath.ProfilePathHome;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.task.Task;
-import com.endiq.zalithlauncher.utils.path.PathManager;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.feature.customprofilepath.ProfilePathHome;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.task.Task;
+import com.endiq.turtlelauncher.utils.path.PathManager;
 
 import net.kdt.pojavlaunch.JAssetInfo;
 import net.kdt.pojavlaunch.JAssets;

@@ -38,7 +38,7 @@
                 android:layout_height="@dimen/_1sdp"
                 android:background="@color/game_panel_overlay"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimTextView
+            <com.endiq.turtlelauncher.ui.view.AnimTextView
                 android:id="@+id/add_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
                 android:paddingHorizontal="@dimen/_8sdp"
                 app:ripple_for_text="true"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimTextView
+            <com.endiq.turtlelauncher.ui.view.AnimTextView
                 android:id="@+id/add_drawer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
                 android:paddingHorizontal="@dimen/_8sdp"
                 app:ripple_for_text="true"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimTextView
+            <com.endiq.turtlelauncher.ui.view.AnimTextView
                 android:id="@+id/add_joystick"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -87,7 +87,7 @@
                 android:layout_height="@dimen/_1sdp"
                 android:background="@color/game_panel_overlay"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimTextView
+            <com.endiq.turtlelauncher.ui.view.AnimTextView
                 android:id="@+id/load"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
                 android:paddingHorizontal="@dimen/_8sdp"
                 app:ripple_for_text="true"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimTextView
+            <com.endiq.turtlelauncher.ui.view.AnimTextView
                 android:id="@+id/save"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -111,7 +111,7 @@
                 android:paddingHorizontal="@dimen/_8sdp"
                 app:ripple_for_text="true"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimTextView
+            <com.endiq.turtlelauncher.ui.view.AnimTextView
                 android:id="@+id/save_and_exit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -123,7 +123,7 @@
                 android:paddingHorizontal="@dimen/_8sdp"
                 app:ripple_for_text="true"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimTextView
+            <com.endiq.turtlelauncher.ui.view.AnimTextView
                 android:id="@+id/save_and_export"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -148,7 +148,7 @@
                 android:layout_height="@dimen/_1sdp"
                 android:background="@color/game_panel_overlay"/>
 
-            <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+            <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/snapping_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -174,7 +174,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true" />
-            </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+            </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
             <LinearLayout
                 android:id="@+id/snapping_distance_layout"
@@ -243,7 +243,7 @@
 
             </LinearLayout>
 
-            <com.endiq.zalithlauncher.ui.view.AnimTextView
+            <com.endiq.turtlelauncher.ui.view.AnimTextView
                 android:id="@+id/select_default"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -255,7 +255,7 @@
                 android:paddingHorizontal="@dimen/_8sdp"
                 app:ripple_for_text="true"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimTextView
+            <com.endiq.turtlelauncher.ui.view.AnimTextView
                 android:id="@+id/exit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,6 +1,6 @@
 package net.kdt.pojavlaunch;
 
-import static com.endiq.zalithlauncher.launch.LaunchGame.preLaunch;
+import static com.endiq.turtlelauncher.launch.LaunchGame.preLaunch;
 import static net.kdt.pojavlaunch.Tools.currentDisplayMetrics;
 import android.Manifest;
 import android.app.NotificationManager;
@@ -26,64 +26,64 @@ import androidx.palette.graphics.Palette;
 import com.kdt.mcgui.ProgressLayout;
 import com.endiq.anim.AnimPlayer;
 import com.endiq.anim.animations.Animations;
-import com.endiq.zalithlauncher.InfoDistributor;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.context.ContextExecutor;
-import com.endiq.zalithlauncher.databinding.ActivityLauncherBinding;
-import com.endiq.zalithlauncher.event.single.LaunchGameEvent;
-import com.endiq.zalithlauncher.event.single.MainBackgroundChangeEvent;
-import com.endiq.zalithlauncher.event.single.PageOpacityChangeEvent;
-import com.endiq.zalithlauncher.event.single.SwapToLoginEvent;
-import com.endiq.zalithlauncher.event.sticky.MinecraftVersionValueEvent;
-import com.endiq.zalithlauncher.event.value.AddFragmentEvent;
-import com.endiq.zalithlauncher.event.value.DownloadProgressKeyEvent;
-import com.endiq.zalithlauncher.event.value.InstallGameEvent;
-import com.endiq.zalithlauncher.event.value.InstallLocalModpackEvent;
-import com.endiq.zalithlauncher.event.value.LocalLoginEvent;
-import com.endiq.zalithlauncher.event.value.MicrosoftLoginEvent;
-import com.endiq.zalithlauncher.event.value.OtherLoginEvent;
-import com.endiq.zalithlauncher.feature.accounts.AccountType;
-import com.endiq.zalithlauncher.feature.accounts.AccountsManager;
-import com.endiq.zalithlauncher.feature.accounts.LocalAccountUtils;
-import com.endiq.zalithlauncher.feature.background.BackgroundManager;
-import com.endiq.zalithlauncher.feature.background.BackgroundType;
-import com.endiq.zalithlauncher.feature.download.item.ModLoaderWrapper;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.feature.mod.modpack.install.InstallExtra;
-import com.endiq.zalithlauncher.feature.mod.modpack.install.InstallLocalModPack;
-import com.endiq.zalithlauncher.feature.mod.modpack.install.ModPackInfo;
-import com.endiq.zalithlauncher.feature.mod.modpack.install.ModPackUtils;
-import com.endiq.zalithlauncher.feature.notice.CheckNewNotice;
-import com.endiq.zalithlauncher.feature.notice.NoticeInfo;
-import com.endiq.zalithlauncher.feature.update.UpdateUtils;
-import com.endiq.zalithlauncher.feature.version.Version;
-import com.endiq.zalithlauncher.feature.version.VersionsManager;
-import com.endiq.zalithlauncher.feature.version.install.GameInstaller;
-import com.endiq.zalithlauncher.feature.version.install.InstallTask;
-import com.endiq.zalithlauncher.plugins.renderer.RendererPlugin;
-import com.endiq.zalithlauncher.plugins.renderer.RendererPluginManager;
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.task.Task;
-import com.endiq.zalithlauncher.task.TaskExecutors;
-import com.endiq.zalithlauncher.ui.activity.BaseActivity;
-import com.endiq.zalithlauncher.ui.activity.ErrorActivity;
-import com.endiq.zalithlauncher.ui.dialog.EditTextDialog;
-import com.endiq.zalithlauncher.ui.dialog.TipDialog;
-import com.endiq.zalithlauncher.ui.fragment.AccountFragment;
-import com.endiq.zalithlauncher.ui.fragment.BaseFragment;
-import com.endiq.zalithlauncher.ui.fragment.DownloadFragment;
-import com.endiq.zalithlauncher.ui.fragment.DownloadModFragment;
-import com.endiq.zalithlauncher.ui.fragment.settings.SettingsFragment;
-import com.endiq.zalithlauncher.ui.subassembly.settingsbutton.ButtonType;
-import com.endiq.zalithlauncher.ui.subassembly.settingsbutton.SettingsButtonWrapper;
-import com.endiq.zalithlauncher.ui.subassembly.view.DraggableViewWrapper;
-import com.endiq.zalithlauncher.utils.StoragePermissionsUtils;
-import com.endiq.zalithlauncher.utils.ZHTools;
-import com.endiq.zalithlauncher.utils.anim.ViewAnimUtils;
-import com.endiq.zalithlauncher.utils.file.FileTools;
-import com.endiq.zalithlauncher.utils.image.ImageUtils;
-import com.endiq.zalithlauncher.utils.stringutils.ShiftDirection;
-import com.endiq.zalithlauncher.utils.stringutils.StringUtils;
+import com.endiq.turtlelauncher.InfoDistributor;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.context.ContextExecutor;
+import com.endiq.turtlelauncher.databinding.ActivityLauncherBinding;
+import com.endiq.turtlelauncher.event.single.LaunchGameEvent;
+import com.endiq.turtlelauncher.event.single.MainBackgroundChangeEvent;
+import com.endiq.turtlelauncher.event.single.PageOpacityChangeEvent;
+import com.endiq.turtlelauncher.event.single.SwapToLoginEvent;
+import com.endiq.turtlelauncher.event.sticky.MinecraftVersionValueEvent;
+import com.endiq.turtlelauncher.event.value.AddFragmentEvent;
+import com.endiq.turtlelauncher.event.value.DownloadProgressKeyEvent;
+import com.endiq.turtlelauncher.event.value.InstallGameEvent;
+import com.endiq.turtlelauncher.event.value.InstallLocalModpackEvent;
+import com.endiq.turtlelauncher.event.value.LocalLoginEvent;
+import com.endiq.turtlelauncher.event.value.MicrosoftLoginEvent;
+import com.endiq.turtlelauncher.event.value.OtherLoginEvent;
+import com.endiq.turtlelauncher.feature.accounts.AccountType;
+import com.endiq.turtlelauncher.feature.accounts.AccountsManager;
+import com.endiq.turtlelauncher.feature.accounts.LocalAccountUtils;
+import com.endiq.turtlelauncher.feature.background.BackgroundManager;
+import com.endiq.turtlelauncher.feature.background.BackgroundType;
+import com.endiq.turtlelauncher.feature.download.item.ModLoaderWrapper;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.feature.mod.modpack.install.InstallExtra;
+import com.endiq.turtlelauncher.feature.mod.modpack.install.InstallLocalModPack;
+import com.endiq.turtlelauncher.feature.mod.modpack.install.ModPackInfo;
+import com.endiq.turtlelauncher.feature.mod.modpack.install.ModPackUtils;
+import com.endiq.turtlelauncher.feature.notice.CheckNewNotice;
+import com.endiq.turtlelauncher.feature.notice.NoticeInfo;
+import com.endiq.turtlelauncher.feature.update.UpdateUtils;
+import com.endiq.turtlelauncher.feature.version.Version;
+import com.endiq.turtlelauncher.feature.version.VersionsManager;
+import com.endiq.turtlelauncher.feature.version.install.GameInstaller;
+import com.endiq.turtlelauncher.feature.version.install.InstallTask;
+import com.endiq.turtlelauncher.plugins.renderer.RendererPlugin;
+import com.endiq.turtlelauncher.plugins.renderer.RendererPluginManager;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.task.Task;
+import com.endiq.turtlelauncher.task.TaskExecutors;
+import com.endiq.turtlelauncher.ui.activity.BaseActivity;
+import com.endiq.turtlelauncher.ui.activity.ErrorActivity;
+import com.endiq.turtlelauncher.ui.dialog.EditTextDialog;
+import com.endiq.turtlelauncher.ui.dialog.TipDialog;
+import com.endiq.turtlelauncher.ui.fragment.AccountFragment;
+import com.endiq.turtlelauncher.ui.fragment.BaseFragment;
+import com.endiq.turtlelauncher.ui.fragment.DownloadFragment;
+import com.endiq.turtlelauncher.ui.fragment.DownloadModFragment;
+import com.endiq.turtlelauncher.ui.fragment.settings.SettingsFragment;
+import com.endiq.turtlelauncher.ui.subassembly.settingsbutton.ButtonType;
+import com.endiq.turtlelauncher.ui.subassembly.settingsbutton.SettingsButtonWrapper;
+import com.endiq.turtlelauncher.ui.subassembly.view.DraggableViewWrapper;
+import com.endiq.turtlelauncher.utils.StoragePermissionsUtils;
+import com.endiq.turtlelauncher.utils.ZHTools;
+import com.endiq.turtlelauncher.utils.anim.ViewAnimUtils;
+import com.endiq.turtlelauncher.utils.file.FileTools;
+import com.endiq.turtlelauncher.utils.image.ImageUtils;
+import com.endiq.turtlelauncher.utils.stringutils.ShiftDirection;
+import com.endiq.turtlelauncher.utils.stringutils.StringUtils;
 import net.kdt.pojavlaunch.authenticator.microsoft.MicrosoftBackgroundLogin;
 import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension;
 import net.kdt.pojavlaunch.fragments.MainMenuFragment;
@@ -449,11 +449,11 @@ public class LauncherActivity extends BaseActivity {
                 if (storageFragment != null) {
                     ViewAnimUtils.setViewAnim(binding.storageButton, Animations.Pulse);
                     Bundle bundle = new Bundle();
-                    bundle.putString(com.endiq.zalithlauncher.ui.fragment.FilesFragment.BUNDLE_LIST_PATH,
-                        com.endiq.zalithlauncher.utils.path.PathManager.DIR_GAME_HOME);
+                    bundle.putString(com.endiq.turtlelauncher.ui.fragment.FilesFragment.BUNDLE_LIST_PATH,
+                        com.endiq.turtlelauncher.utils.path.PathManager.DIR_GAME_HOME);
                     ZHTools.swapFragmentWithAnim(storageFragment,
-                        com.endiq.zalithlauncher.ui.fragment.FilesFragment.class,
-                        com.endiq.zalithlauncher.ui.fragment.FilesFragment.TAG, bundle);
+                        com.endiq.turtlelauncher.ui.fragment.FilesFragment.class,
+                        com.endiq.turtlelauncher.ui.fragment.FilesFragment.TAG, bundle);
                 }
             });
         }
@@ -533,14 +533,14 @@ public class LauncherActivity extends BaseActivity {
         // has to be invalidated here - the user may have just come back from Settings where
         // they changed it, and we'd otherwise keep using the stale answer for the whole
         // process lifetime.
-        com.endiq.zalithlauncher.utils.anim.TurtleTransitions.onResume();
-        com.endiq.zalithlauncher.task.TaskExecutors.setGameSessionActive(false);
-        com.endiq.zalithlauncher.feature.turtle.BackgroundServiceManager.onGameSessionEnd();
+        com.endiq.turtlelauncher.utils.anim.TurtleTransitions.onResume();
+        com.endiq.turtlelauncher.task.TaskExecutors.setGameSessionActive(false);
+        com.endiq.turtlelauncher.feature.turtle.BackgroundServiceManager.onGameSessionEnd();
         setPageOpacity(AllSettings.getPageOpacity().getValue());
         VersionsManager.INSTANCE.refresh("LauncherActivity:onResume", false);
-        com.endiq.zalithlauncher.feature.turtle.AssetPrefetcher.prefetch(this);
-        com.endiq.zalithlauncher.feature.turtle.LauncherWarmStart.warmStart(this);
-        com.endiq.zalithlauncher.feature.maintenance.AutoCleanup.runIfDue();
+        com.endiq.turtlelauncher.feature.turtle.AssetPrefetcher.prefetch(this);
+        com.endiq.turtlelauncher.feature.turtle.LauncherWarmStart.warmStart(this);
+        com.endiq.turtlelauncher.feature.maintenance.AutoCleanup.runIfDue();
 
         //TurtleLauncher: onCreate's check only ever fires once at cold start. This activity
         //stays alive in the background for the whole length of a Minecraft session (MainActivity
@@ -565,8 +565,8 @@ public class LauncherActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == com.endiq.zalithlauncher.feature.terracotta.TerracottaVpnService.VPN_PERMISSION_REQUEST_CODE) {
-            com.endiq.zalithlauncher.feature.terracotta.Terracotta.onVpnPermissionResult(this, resultCode == RESULT_OK);
+        if (requestCode == com.endiq.turtlelauncher.feature.terracotta.TerracottaVpnService.VPN_PERMISSION_REQUEST_CODE) {
+            com.endiq.turtlelauncher.feature.terracotta.Terracotta.onVpnPermissionResult(this, resultCode == RESULT_OK);
         }
     }
 
@@ -772,7 +772,7 @@ public class LauncherActivity extends BaseActivity {
         String shownVersion = AllSettings.getWhatsNewShownVersion().getValue();
         if (!CURRENT_VERSION.equals(shownVersion)) {
             AllSettings.getWhatsNewShownVersion().put(CURRENT_VERSION).save();
-            new com.endiq.zalithlauncher.ui.dialog.WhatsNewDialog(this).show();
+            new com.endiq.turtlelauncher.ui.dialog.WhatsNewDialog(this).show();
         }
     }
 }

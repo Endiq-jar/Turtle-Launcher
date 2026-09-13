@@ -5,7 +5,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
-import com.endiq.zalithlauncher.setting.AllStaticSettings;
+import com.endiq.turtlelauncher.setting.AllStaticSettings;
 
 import net.kdt.pojavlaunch.MinecraftGLSurface;
 import net.kdt.pojavlaunch.Tools;

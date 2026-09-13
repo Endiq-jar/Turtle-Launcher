@@ -23,7 +23,7 @@
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.endiq.zalithlauncher.ui.view.AnimTextView
+        <com.endiq.turtlelauncher.ui.view.AnimTextView
             android:id="@+id/app_title_text"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -139,7 +139,7 @@
             </LinearLayout>
         </ScrollView>
 
-        <com.endiq.zalithlauncher.ui.view.AnimButton
+        <com.endiq.turtlelauncher.ui.view.AnimButton
             android:id="@+id/notice_got_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -81,7 +81,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layout">
 
-        <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+        <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
             android:id="@+id/copy_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_48sdp"
@@ -106,10 +106,10 @@
                 android:text="@android:string/copy"
                 android:textColor="@color/turtle_primary_text"
                 android:textSize="@dimen/_14ssp" />
-        </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+        </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
         <!-- ── Edit (open in in-launcher text editor; single non-binary file only) ── -->
-        <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+        <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
             android:id="@+id/edit_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_48sdp"
@@ -134,9 +134,9 @@
                 android:text="@string/generic_edit"
                 android:textColor="@color/turtle_primary_text"
                 android:textSize="@dimen/_14ssp" />
-        </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+        </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-        <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+        <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
             android:id="@+id/rename_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_48sdp"
@@ -163,9 +163,9 @@
                 android:text="@string/generic_rename"
                 android:textColor="@color/turtle_primary_text"
                 android:textSize="@dimen/_14ssp" />
-        </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+        </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-        <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+        <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
             android:id="@+id/share_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_48sdp"
@@ -190,7 +190,7 @@
                 android:text="@string/generic_share"
                 android:textColor="@color/turtle_primary_text"
                 android:textSize="@dimen/_14ssp" />
-        </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+        </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -204,7 +204,7 @@
         app:layout_constraintStart_toEndOf="@+id/layout_1"
         app:layout_constraintTop_toBottomOf="@+id/layout">
 
-        <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+        <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
             android:id="@+id/move_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_48sdp"
@@ -229,9 +229,9 @@
                 android:text="@string/generic_move"
                 android:textColor="@color/turtle_primary_text"
                 android:textSize="@dimen/_14ssp" />
-        </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+        </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-        <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+        <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
             android:id="@+id/delete_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_48sdp"
@@ -256,9 +256,9 @@
                 android:text="@string/generic_delete"
                 android:textColor="@color/turtle_primary_text"
                 android:textSize="@dimen/_14ssp" />
-        </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+        </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-        <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+        <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
             android:id="@+id/more_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_48sdp"
@@ -284,10 +284,10 @@
                 android:text="@string/generic_more"
                 android:textColor="@color/turtle_primary_text"
                 android:textSize="@dimen/_14ssp" />
-        </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+        </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
         <!-- ── Zip (Compress) ─────────────────────────────────────────── -->
-        <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+        <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
             android:id="@+id/zip_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_48sdp"
@@ -312,10 +312,10 @@
                 android:text="@string/generic_zip"
                 android:textColor="@color/turtle_primary_text"
                 android:textSize="@dimen/_14ssp" />
-        </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+        </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
         <!-- ── Extract (only enabled for .zip files) ──────────────────── -->
-        <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+        <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
             android:id="@+id/extract_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_48sdp"
@@ -340,7 +340,7 @@
                 android:text="@string/generic_extract"
                 android:textColor="@color/turtle_primary_text"
                 android:textSize="@dimen/_14ssp" />
-        </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+        </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,8 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.feature.log.Logging;
 
 import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper;
 import net.kdt.pojavlaunch.progresskeeper.ProgressListener;

@@ -163,7 +163,7 @@
 
             </TableLayout>
 
-            <com.endiq.zalithlauncher.ui.view.AnimButton
+            <com.endiq.turtlelauncher.ui.view.AnimButton
                 android:id="@+id/close_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

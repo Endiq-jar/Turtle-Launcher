@@ -3,8 +3,8 @@
 //
 #include <android/native_window.h>
 #include <stdbool.h>
-#ifndef POJAVLAUNCHER_OSM_BRIDGE_H
-#define POJAVLAUNCHER_OSM_BRIDGE_H
+#ifndef TURTLELAUNCHER_OSM_BRIDGE_H
+#define TURTLELAUNCHER_OSM_BRIDGE_H
 #include "osmesa_loader.h"
 
 
@@ -26,4 +26,4 @@ void osm_swap_buffers();
 void osm_setup_window();
 void osm_swap_interval(int swapInterval);
 
-#endif //POJAVLAUNCHER_OSM_BRIDGE_H
+#endif //TURTLELAUNCHER_OSM_BRIDGE_H

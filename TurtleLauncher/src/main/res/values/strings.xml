@@ -1077,7 +1077,7 @@
     <string name="about_sponsors_amount">Time and Total Amount</string>
     <string name="about_button_support_development">Sponsor Development</string>
     <string name="about_MovTery_desc">Main developer of TurtleLauncher (Endiq)</string>
-    <string name="about_PojavLauncher_desc">Based on the open-source Zalith Launcher project, now maintained and developed by Endiq</string>
+    <string name="about_TurtleLauncher_desc">Based on the open-source Turtle Launcher project, now maintained and developed by Endiq</string>
     <string name="about_mcmod_desc">The launcher uses Mod and modpack Chinese translations from MC Wiki</string>
     <string name="about_VeraFirefly_desc">Provided technical support for rendering in the launcher</string>
     <string name="about_LingMuQiuZhu_desc">Provided technical support for the launcher</string>

@@ -16,11 +16,11 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
-import com.endiq.zalithlauncher.BuildConfig;
-import com.endiq.zalithlauncher.InfoDistributor;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.utils.path.PathManager;
+import com.endiq.turtlelauncher.BuildConfig;
+import com.endiq.turtlelauncher.InfoDistributor;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.utils.path.PathManager;
 
 import net.kdt.pojavlaunch.Tools;
 

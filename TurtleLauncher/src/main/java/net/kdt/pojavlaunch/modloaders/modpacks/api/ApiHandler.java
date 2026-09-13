@@ -3,8 +3,8 @@ package net.kdt.pojavlaunch.modloaders.modpacks.api;
 import android.util.ArrayMap;
 
 import com.google.gson.Gson;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.utils.path.UrlManager;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.utils.path.UrlManager;
 
 import net.kdt.pojavlaunch.Tools;
 

@@ -1,7 +1,7 @@
 package net.kdt.pojavlaunch.authenticator
 
 import android.util.Log
-import com.endiq.zalithlauncher.utils.path.PathManager
+import com.endiq.turtlelauncher.utils.path.PathManager
 import net.kdt.pojavlaunch.Logger
 import net.kdt.pojavlaunch.Tools
 import net.kdt.pojavlaunch.utils.DownloadUtils

@@ -59,7 +59,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.endiq.zalithlauncher.ui.view.AnimButton
+        <com.endiq.turtlelauncher.ui.view.AnimButton
             android:id="@+id/close_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
             android:layout_weight="1"
             android:text="@string/generic_close" />
 
-        <com.endiq.zalithlauncher.ui.view.AnimButton
+        <com.endiq.turtlelauncher.ui.view.AnimButton
             android:id="@+id/download_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

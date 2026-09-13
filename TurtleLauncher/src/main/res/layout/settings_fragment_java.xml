@@ -66,7 +66,7 @@
                 android:paddingHorizontal="@dimen/_2sdp"
                 android:paddingVertical="@dimen/_12sdp">
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/install_jre_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -90,9 +90,9 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentEnd="true"
                         android:text="@string/setting_java_multirt_desc" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/selectRuntimeMode_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -125,9 +125,9 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentEnd="true"
                         android:text="@string/setting_java_select_runtime_ask_me" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/javaArgs_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -152,7 +152,7 @@
                         android:layout_alignParentEnd="true"
                         android:text="@string/setting_java_args_desc" />
     
-                    <com.endiq.zalithlauncher.ui.view.AnimEditText
+                    <com.endiq.turtlelauncher.ui.view.AnimEditText
                         android:id="@+id/javaArgs_edittext"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -160,9 +160,9 @@
                         android:layout_marginTop="@dimen/_8sdp"
                         android:background="@drawable/background_edit_box"
                         android:paddingHorizontal="@dimen/_8sdp" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/allocation_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -217,9 +217,9 @@
                         android:layout_marginVertical="@dimen/_8sdp"
                         android:layout_marginEnd="@dimen/_12sdp"
                         tools:text="0" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/java_sandbox_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -252,7 +252,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
             </androidx.appcompat.widget.LinearLayoutCompat>
 

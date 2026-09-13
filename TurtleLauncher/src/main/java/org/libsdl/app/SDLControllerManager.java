@@ -80,16 +80,16 @@ public class SDLControllerManager
         // Controlify, forced-SDL Controllable/Legacy4J and other controller mods
         // must receive the physical trigger as an SDL gamepad axis. The mouse-only
         // route is strictly a vanilla Snapshot 4/5 camera-fling workaround.
-        if (false /* TurtleLauncher: DroidBridge controller-mod-owns-SDL detection not ported, see SDLControllerManager port notes */) {
+        if (false /* TurtleLauncher: Turtle controller-mod-owns-SDL detection not ported, see SDLControllerManager port notes */) {
             return false;
         }
         synchronized (RIGHT_TRIGGER_KEY_LOCK) {
             boolean previous = Boolean.TRUE.equals(RIGHT_TRIGGER_MOUSE_STATES.get(deviceId));
             if (previous == down) return true;
-            if (true) return false; // TurtleLauncher: DroidBridge's virtual-mouse route wasn't ported, feature disabled
+            if (true) return false; // TurtleLauncher: Turtle's virtual-mouse route wasn't ported, feature disabled
             RIGHT_TRIGGER_MOUSE_STATES.put(deviceId, down);
         }
-        System.out.println("DroidBridgeSDL3Controller: R2 mouse-only route deviceId="
+        System.out.println("TurtleSDL3Controller: R2 mouse-only route deviceId="
                 + deviceId + " down=" + down + " origin=" + origin);
         return true;
     }
@@ -102,7 +102,7 @@ public class SDLControllerManager
      * Records trigger key edges for the camera-fling filter without stealing them
      * from BTA, Controlify, Controllable, Legacy4J or the GLFW mirror.
      *
-     * @param allowVanillaRightTriggerMouseRoute true only when DroidBridge itself
+     * @param allowVanillaRightTriggerMouseRoute true only when Turtle itself
      *                                           owns vanilla game input.
      */
     public static boolean noteControllerKeyEvent(
@@ -571,7 +571,7 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
             mapping.append(i).append(':')
                     .append(MotionEvent.axisToString(canonical.get(i).getAxis()));
         }
-        Log.i(TAG, "DroidBridge canonical SDL axes device="
+        Log.i(TAG, "Turtle canonical SDL axes device="
                 + (device != null ? device.getName() : "<unknown>")
                 + " mapping=" + mapping);
         return canonical;
@@ -737,7 +737,7 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
                     joystick.device_id,
                     axisIndex,
                     down ? 1.0f : -1.0f);
-            System.out.println("DroidBridgeSDLController: synthesized "
+            System.out.println("TurtleSDLController: synthesized "
                     + (leftTrigger ? "L2" : "R2")
                     + " axis from Android key edge down=" + down
                     + " deviceId=" + deviceId);
@@ -791,7 +791,7 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
                 joystick.lastDirectRightTriggerAmount = routeTriggerAmount;
 
                 // Never pass the physical R2 axis into SDL's gamepad axis stream
-                // only for vanilla DroidBridge input. Controller mods need both
+                // only for vanilla Turtle input. Controller mods need both
                 // trigger axes intact for their own mappings.
                 // Snapshot 4 receives the same holdable action as a motion-free left
                 // mouse button above, which avoids both duplicate attacks and the SDL3
@@ -912,7 +912,7 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
                     if ((suspiciousX || suspiciousY)
                             && !joystick.loggedTriggerMirrorSuppression) {
                         joystick.loggedTriggerMirrorSuppression = true;
-                        String message = "DroidBridge suppressed delayed R2 camera fling device="
+                        String message = "Turtle suppressed delayed R2 camera fling device="
                                 + joystick.name
                                 + " x=" + rightX
                                 + " y=" + rightY
@@ -921,7 +921,7 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
                                 + " suppressX=" + suspiciousX
                                 + " suppressY=" + suspiciousY;
                         Log.i(TAG, message);
-                        System.out.println("DroidBridgeSDL3Controller: " + message);
+                        System.out.println("TurtleSDL3Controller: " + message);
                     }
 
                     if (joystick.suppressRightXFromTrigger) {

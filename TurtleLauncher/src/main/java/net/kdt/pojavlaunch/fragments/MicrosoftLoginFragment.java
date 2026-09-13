@@ -15,11 +15,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.databinding.FragmentMicrosoftLoginBinding;
-import com.endiq.zalithlauncher.event.value.MicrosoftLoginEvent;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.ui.fragment.BaseFragment;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.databinding.FragmentMicrosoftLoginBinding;
+import com.endiq.turtlelauncher.event.value.MicrosoftLoginEvent;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.ui.fragment.BaseFragment;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -45,7 +45,7 @@ public class MicrosoftLoginFragment extends BaseFragment {
         // TurtleLauncher: this screen had no entry animation at all (it's a plain
         // BaseFragment, not a FragmentWithAnim), so it appeared instantly while every
         // other page in the launcher animated.
-        com.endiq.zalithlauncher.utils.anim.TurtleTransitions.animateView(view, true);
+        com.endiq.turtlelauncher.utils.anim.TurtleTransitions.animateView(view, true);
         binding.returnButton.setOnClickListener(v -> forceBack());
 
         setWebViewSettings();

@@ -70,7 +70,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/shadowView">
 
-            <com.endiq.zalithlauncher.ui.view.AnimButton
+            <com.endiq.turtlelauncher.ui.view.AnimButton
                 android:id="@+id/back_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

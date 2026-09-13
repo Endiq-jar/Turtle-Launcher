@@ -9,14 +9,14 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 
 import com.kdt.mcgui.ProgressLayout;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.context.ContextExecutor;
-import com.endiq.zalithlauncher.feature.mod.parser.ModChecker;
-import com.endiq.zalithlauncher.feature.mod.parser.ModInfo;
-import com.endiq.zalithlauncher.feature.mod.parser.ModParser;
-import com.endiq.zalithlauncher.feature.mod.parser.ModParserListener;
-import com.endiq.zalithlauncher.feature.version.Version;
-import com.endiq.zalithlauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.context.ContextExecutor;
+import com.endiq.turtlelauncher.feature.mod.parser.ModChecker;
+import com.endiq.turtlelauncher.feature.mod.parser.ModInfo;
+import com.endiq.turtlelauncher.feature.mod.parser.ModParser;
+import com.endiq.turtlelauncher.feature.mod.parser.ModParserListener;
+import com.endiq.turtlelauncher.feature.version.Version;
+import com.endiq.turtlelauncher.setting.AllSettings;
 
 import net.kdt.pojavlaunch.MainActivity;
 import net.kdt.pojavlaunch.Tools;
@@ -65,7 +65,7 @@ public class ContextAwareDoneListener implements AsyncMinecraftDownloader.DoneLi
                 if (modInfoList.isEmpty()) executeTask();
                 else {
                     ContextExecutor.executeTaskWithAllContext(context ->
-                        com.endiq.zalithlauncher.feature.mod.ModAutoMaintenance.runForVersion(
+                        com.endiq.turtlelauncher.feature.mod.ModAutoMaintenance.runForVersion(
                             context, mVersion, modInfoList, () ->
                                 new ModChecker().check(context, modInfoList, modCheckResult -> {
                                     mVersion.setModCheckResult(modCheckResult);
@@ -91,17 +91,17 @@ public class ContextAwareDoneListener implements AsyncMinecraftDownloader.DoneLi
             // TurtleLauncher: deprioritize (not cancel) the shared launcher task pool so it
             // stops competing with Minecraft for CPU. No-op if getQuitLauncher() then kills
             // this process right after - nothing left running to deprioritize at that point.
-            com.endiq.zalithlauncher.task.TaskExecutors.setGameSessionActive(true);
+            com.endiq.turtlelauncher.task.TaskExecutors.setGameSessionActive(true);
             // TurtleLauncher: Background Services (item 20) - same hook point, handles
             // everything setGameSessionActive(true) above doesn't (animation pausing,
             // update-checker pausing, indexing pausing, RAM trim). See its class doc.
-            com.endiq.zalithlauncher.feature.turtle.BackgroundServiceManager.onGameSessionStart(activity);
+            com.endiq.turtlelauncher.feature.turtle.BackgroundServiceManager.onGameSessionStart(activity);
             // TurtleLauncher: Shizuku - apply the privileged keep-alive tweaks (Android 14's
             // phantom-process limit above all) BEFORE the game process is forked, since the
             // limit applies to processes forked by this app and killing the game mid-session
             // is exactly what it does. Fire-and-forget on its own thread: Shizuku is
             // optional, so this must never delay or block the launch. See ShizukuActions.
-            com.endiq.zalithlauncher.feature.shizuku.ShizukuActions.applyBeforeLaunchIfEnabled();
+            com.endiq.turtlelauncher.feature.shizuku.ShizukuActions.applyBeforeLaunchIfEnabled();
             activity.startActivity(gameStartIntent);
             if (AllSettings.getQuitLauncher().getValue()) {
                 activity.finish();

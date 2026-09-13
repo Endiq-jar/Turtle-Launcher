@@ -90,7 +90,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/shadowView">
 
-            <com.endiq.zalithlauncher.ui.view.AnimEditText
+            <com.endiq.turtlelauncher.ui.view.AnimEditText
                 android:id="@+id/search_version"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
                 android:paddingHorizontal="@dimen/_8sdp"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimButton
+            <com.endiq.turtlelauncher.ui.view.AnimButton
                 android:id="@+id/return_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

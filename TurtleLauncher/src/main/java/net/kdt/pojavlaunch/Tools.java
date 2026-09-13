@@ -2,7 +2,7 @@ package net.kdt.pojavlaunch;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.P;
-import static com.endiq.zalithlauncher.setting.AllStaticSettings.notchSize;
+import static com.endiq.turtlelauncher.setting.AllStaticSettings.notchSize;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.NotificationChannel;
@@ -31,20 +31,20 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentActivity;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.endiq.zalithlauncher.InfoDistributor;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.context.ContextExecutor;
-import com.endiq.zalithlauncher.utils.LauncherProfiles;
-import com.endiq.zalithlauncher.feature.customprofilepath.ProfilePathHome;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.feature.version.Version;
-import com.endiq.zalithlauncher.task.Task;
-import com.endiq.zalithlauncher.ui.activity.BaseActivity;
-import com.endiq.zalithlauncher.ui.dialog.EditTextDialog;
-import com.endiq.zalithlauncher.utils.path.PathManager;
-import com.endiq.zalithlauncher.utils.ZHTools;
-import com.endiq.zalithlauncher.utils.runtime.SelectRuntimeUtils;
-import com.endiq.zalithlauncher.utils.stringutils.StringUtils;
+import com.endiq.turtlelauncher.InfoDistributor;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.context.ContextExecutor;
+import com.endiq.turtlelauncher.utils.LauncherProfiles;
+import com.endiq.turtlelauncher.feature.customprofilepath.ProfilePathHome;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.feature.version.Version;
+import com.endiq.turtlelauncher.task.Task;
+import com.endiq.turtlelauncher.ui.activity.BaseActivity;
+import com.endiq.turtlelauncher.ui.dialog.EditTextDialog;
+import com.endiq.turtlelauncher.utils.path.PathManager;
+import com.endiq.turtlelauncher.utils.ZHTools;
+import com.endiq.turtlelauncher.utils.runtime.SelectRuntimeUtils;
+import com.endiq.turtlelauncher.utils.stringutils.StringUtils;
 import net.kdt.pojavlaunch.fragments.MainMenuFragment;
 import net.kdt.pojavlaunch.lifecycle.ContextExecutorTask;
 import net.kdt.pojavlaunch.memory.MemoryHoleFinder;
@@ -83,14 +83,14 @@ public final class Tools {
     public static final String NOTIFICATION_CHANNEL_DEFAULT = "channel_id";
     public static final float BYTE_TO_MB = 1024f * 1024f;
     public static final Gson GLOBAL_GSON = new GsonBuilder().setPrettyPrinting().create();
-    public static final String LAUNCHERPROFILES_RTPREFIX = "pojav://";
+    public static final String LAUNCHERPROFILES_RTPREFIX = "turtle://";
     private final static boolean isClientFirst = false;
     public static int DEVICE_ARCHITECTURE;
     // New since 3.0.0
     public static String DIRNAME_HOME_JRE = "lib";
 
     /**
-     * Checks if the Pojav's storage root is accessible and read-writable
+     * Checks if the Turtle's storage root is accessible and read-writable
      * @return true if storage is fine, false if storage is not accessible
      */
     public static boolean checkStorageRoot() {
@@ -478,7 +478,7 @@ public final class Tools {
                 libItem.downloads.artifact.sha1 = "9e98cf55be371cafdb9c70c35d04ec2a8c2b42ac";
                 libItem.downloads.artifact.url = "https://repo1.maven.org/maven2/com/github/oshi/oshi-core/6.3.0/oshi-core-6.3.0.jar";
             } else if (libItem.name.startsWith("org.ow2.asm:asm-all:")) {
-                // Early versions of the ASM library get repalced with 5.0.4 because Pojav's LWJGL is compiled for
+                // Early versions of the ASM library get repalced with 5.0.4 because Turtle's LWJGL is compiled for
                 // Java 8, which is not supported by old ASM versions. Mod loaders like Forge, which depend on this
                 // library, often include lwjgl in their class transformations, which causes errors with old ASM versions.
                 if (version.length < 1 || parseVersionPart(version[0]) < 0 || parseVersionPart(version[0]) >= 5) continue;
@@ -560,7 +560,7 @@ public final class Tools {
     public enum LwjglMode { NEW_SDL, LEGACY }
 
     public static LwjglMode resolveLwjglMode(JMinecraftVersionList.Version info) {
-        String override = com.endiq.zalithlauncher.setting.AllSettings.getLwjglCompatMode().getValue();
+        String override = com.endiq.turtlelauncher.setting.AllSettings.getLwjglCompatMode().getValue();
         if ("new".equals(override)) return LwjglMode.NEW_SDL;
         if ("legacy".equals(override)) return LwjglMode.LEGACY;
         return versionUsesLwjglSdl(info) ? LwjglMode.NEW_SDL : LwjglMode.LEGACY;

@@ -112,7 +112,7 @@
                     android:text="@string/setting_category_shizuku_options"
                     android:textColor="@color/accent_primary"/>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/shizuku_enabled_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -145,9 +145,9 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/shizuku_auto_perf_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -180,7 +180,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <!-- ── Actions ─────────────────────────────────────────────────── -->
@@ -200,7 +200,7 @@
                     android:text="@string/setting_category_shizuku_actions"
                     android:textColor="@color/accent_primary"/>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/shizuku_grant_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -234,9 +234,9 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:textSize="@dimen/_10ssp"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/shizuku_perf_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -270,9 +270,9 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:textSize="@dimen/_10ssp"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/shizuku_logcat_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -306,7 +306,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:textSize="@dimen/_10ssp"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <!-- ── Result log ──────────────────────────────────────────────── -->

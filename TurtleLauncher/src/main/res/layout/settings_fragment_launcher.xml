@@ -73,7 +73,7 @@
                     android:text="@string/setting_category_download"
                     android:textColor="@color/accent_primary" />
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/checkLibraries_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -107,9 +107,9 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:checked="true"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/verifyManifest_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -143,9 +143,9 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:checked="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/resourceImageCache_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -178,9 +178,9 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/addFullResourceName_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -214,9 +214,9 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:checked="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/downloadSource_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -249,9 +249,9 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentEnd="true"
                         android:text="@string/generic_default" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/dnsServer_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -284,9 +284,9 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentEnd="true"
                         android:text="@string/generic_default" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/maxDownloadThreads_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -333,7 +333,7 @@
                         android:layout_marginVertical="@dimen/_8sdp"
                         android:layout_marginEnd="@dimen/_12sdp"
                         tools:text="0" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
             </androidx.appcompat.widget.LinearLayoutCompat>
     
@@ -354,7 +354,7 @@
                     android:text="@string/setting_category_personalization"
                     android:textColor="@color/accent_primary" />
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/launcherTheme_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -378,9 +378,9 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentEnd="true"
                         android:text="@string/generic_default" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/custom_background_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -404,9 +404,9 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentEnd="true"
                         android:text="@string/custom_background_desc" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/animation_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -440,12 +440,12 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:checked="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- TurtleLauncher: the two transition pickers. Every screen and every
                      show/hide that goes through TurtleTransitions uses these, so they apply
                      app-wide instead of being hardcoded per fragment. -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/animationEnter_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -479,9 +479,9 @@
                         android:layout_alignParentEnd="true"
                         android:text="@string/generic_default"
                         android:textColor="@color/accent_primary" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/animationExit_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -515,9 +515,9 @@
                         android:layout_alignParentEnd="true"
                         android:text="@string/generic_default"
                         android:textColor="@color/accent_primary" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/animationSpeed_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -564,9 +564,9 @@
                         android:layout_marginVertical="@dimen/_8sdp"
                         android:layout_marginEnd="@dimen/_12sdp"
                         tools:text="0" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/pageOpacity_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -613,7 +613,7 @@
                         android:layout_marginVertical="@dimen/_8sdp"
                         android:layout_marginEnd="@dimen/_12sdp"
                         tools:text="0" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
             </androidx.appcompat.widget.LinearLayoutCompat>
     
@@ -634,7 +634,7 @@
                     android:text="@string/setting_category_launcher"
                     android:textColor="@color/accent_primary" />
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/enableLogOutput_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -667,9 +667,9 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/quitLauncher_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -703,9 +703,9 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:checked="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/clean_up_cache_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -729,9 +729,9 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentEnd="true"
                         android:text="@string/clear_up_cache_desc" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/check_update_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -755,9 +755,9 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentEnd="true"
                         android:text="@string/update_summary" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/acceptPreReleaseUpdates_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -791,9 +791,9 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:checked="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/notification_permission_request_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -826,12 +826,12 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 <!-- TurtleLauncher: built-in AI Assistant. Both switches only control the
                      on-device assistant (top bar -> Assistant); the optional AI crash help /
                      skin filter in Experimental are separate and need the user's own API key. -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/aiAssistantEnabled_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -865,9 +865,9 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:checked="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/aiAssistantHistoryEnabled_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -901,7 +901,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:checked="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
     

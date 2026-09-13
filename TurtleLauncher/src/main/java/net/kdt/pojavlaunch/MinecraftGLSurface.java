@@ -18,12 +18,12 @@ import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
-import com.endiq.zalithlauncher.event.single.RefreshHotbarEvent;
-import com.endiq.zalithlauncher.feature.MCOptions;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.setting.AllStaticSettings;
-import com.endiq.zalithlauncher.ui.activity.BaseActivity;
+import com.endiq.turtlelauncher.event.single.RefreshHotbarEvent;
+import com.endiq.turtlelauncher.feature.MCOptions;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.setting.AllStaticSettings;
+import com.endiq.turtlelauncher.ui.activity.BaseActivity;
 import net.kdt.pojavlaunch.customcontrols.ControlLayout;
 import net.kdt.pojavlaunch.customcontrols.gamepad.DefaultDataProvider;
 import net.kdt.pojavlaunch.customcontrols.gamepad.Gamepad;
@@ -33,7 +33,7 @@ import net.kdt.pojavlaunch.customcontrols.mouse.InGUIEventProcessor;
 import net.kdt.pojavlaunch.customcontrols.mouse.InGameEventProcessor;
 import net.kdt.pojavlaunch.customcontrols.mouse.TouchEventProcessor;
 import net.kdt.pojavlaunch.utils.JREUtils;
-import com.endiq.zalithlauncher.launch.SdlAndroidJniPrep;
+import com.endiq.turtlelauncher.launch.SdlAndroidJniPrep;
 import org.libsdl.app.SDLActivity;
 import org.libsdl.app.SDLSurface;
 import org.greenrobot.eventbus.EventBus;
@@ -145,7 +145,7 @@ public class MinecraftGLSurface extends View implements GrabListener {
     private void publishSurfaceToSdl(Surface surface) {
         if (!SdlAndroidJniPrep.isActive()) return;
         try {
-            SDLActivity.setDroidBridgeNativeSurface(surface);
+            SDLActivity.setTurtleNativeSurface(surface);
             SDLSurface.setNativeSurface(surface);
 
             SDLSurface sdlSurface = SDLActivity.getSDLSurface();

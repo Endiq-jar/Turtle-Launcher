@@ -10,8 +10,8 @@ import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.setting.AllStaticSettings;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.setting.AllStaticSettings;
 
 import net.kdt.pojavlaunch.GrabListener;
 

@@ -58,14 +58,13 @@ val getBuildType = {
 }
 
 val nameId = "com.endiq.turtlelauncher"
-// The actual Kotlin/Java source tree still lives under com.endiq.zalithlauncher.* -
 // namespace controls where the generated R/BuildConfig classes land, and must match
-// that source package or every implicit "R" reference and "import ...BuildConfig"
-// across the codebase breaks. applicationId (the public app ID / branding) is free
-// to differ from namespace, which is how we keep the com.endiq.turtlelauncher identity
-// without renaming every package declaration in the project.
-val namespaceId = "com.endiq.zalithlauncher"
-val generatedZalithDir = file("$buildDir/generated/source/zalith/java")
+// the Kotlin/Java source package (com.endiq.turtlelauncher.*) or every implicit "R"
+// reference and "import ...BuildConfig" across the codebase breaks. Since the full
+// Turtle rebrand renamed the source tree to com.endiq.turtlelauncher.*, namespace and
+// applicationId now coincide.
+val namespaceId = "com.endiq.turtlelauncher"
+val generatedTurtleDir = file("$buildDir/generated/source/turtle/java")
 val launcherAPPName = project.findProperty("launcher_app_name") as? String ?: error("The \"launcher_app_name\" property is not set in gradle.properties.")
 val launcherName = project.findProperty("launcher_name") as? String ?: error("The \"launcher_name\" property is not set in gradle.properties.")
 val launcherVersionCode = (project.findProperty("launcher_version_code") as? String)?.toIntOrNull() ?: error("The \"launcher_version_code\" property is not set as an integer in gradle.properties.")
@@ -153,7 +152,7 @@ android {
         }
     }
 
-    sourceSets["main"].java.srcDirs(generatedZalithDir)
+    sourceSets["main"].java.srcDirs(generatedTurtleDir)
 
     androidComponents {
         onVariants { variant ->
@@ -287,7 +286,7 @@ tasks.register("generateInfoDistributor") {
     val launcherName = project.property("launcher_name").toString()
     val appName = project.property("launcher_app_name").toString()
     val buildType = getBuildType()
-    val outputDir = generatedZalithDir
+    val outputDir = generatedTurtleDir
 
     doLast {
         val constantMap = mapOf(
@@ -296,7 +295,7 @@ tasks.register("generateInfoDistributor") {
             "APP_NAME" to appName,
             "BUILD_TYPE" to buildType
         )
-        InfoDistributorGenerator.generate(outputDir, "com.endiq.zalithlauncher", "InfoDistributor", constantMap)
+        InfoDistributorGenerator.generate(outputDir, "com.endiq.turtlelauncher", "InfoDistributor", constantMap)
     }
 }
 
@@ -306,7 +305,7 @@ tasks.named("preBuild") {
 
 dependencies {
     // TurtleLauncher CRASH FIX (MC 26.3+ SDL): org.libsdl.app.* classes now live as real
-    // source under src/main/java/org/libsdl/app (adapted from DroidBridge Launcher's public
+    // source under src/main/java/org/libsdl/app (adapted from Turtle Launcher's public
     // source, itself based on SDL's official Android glue) instead of the precompiled
     // libs/sdl3-android-classes.jar this used to be - that jar's SDLActivity.nativeSetupJNI()
     // was compiled ()V but the bundled libSDL3.so's JNI_OnLoad expects ()I, a version
@@ -320,7 +319,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.core:core-ktx:1.13.0")
     // TurtleLauncher: declarative, dependency-ordered app startup for the pieces of
-    // PojavApplication.onCreate() that don't need to block everything else (ANR watchdog,
+    // TurtleApplication.onCreate() that don't need to block everything else (ANR watchdog,
     // dynamic color theming) - see TurtleStartupInitializer.
     implementation("androidx.startup:startup-runtime:1.1.1")
     // TurtleLauncher: android.os.Trace wrapper that safely no-ops below API 18 instead of

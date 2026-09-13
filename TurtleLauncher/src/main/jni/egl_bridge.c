@@ -71,14 +71,14 @@ EXTERNAL_API void pojavTerminate() {
     }
 }
 
-JNIEXPORT void JNICALL Java_com_movtery_zalithlauncher_bridge_ZLBridge_setupBridgeWindow(JNIEnv* env, ABI_COMPAT jclass clazz, jobject surface) {
-    pojav_environ->pojavWindow = ANativeWindow_fromSurface(env, surface);
+JNIEXPORT void JNICALL Java_com_movtery_turtlelauncher_bridge_TurtleBridge_setupBridgeWindow(JNIEnv* env, ABI_COMPAT jclass clazz, jobject surface) {
+    pojav_environ->turtleWindow = ANativeWindow_fromSurface(env, surface);
     if (br_setup_window) br_setup_window();
 }
 
 JNIEXPORT void JNICALL
-Java_com_movtery_zalithlauncher_bridge_ZLBridge_releaseBridgeWindow(ABI_COMPAT JNIEnv *env, ABI_COMPAT jclass clazz) {
-    ANativeWindow_release(pojav_environ->pojavWindow);
+Java_com_movtery_turtlelauncher_bridge_TurtleBridge_releaseBridgeWindow(ABI_COMPAT JNIEnv *env, ABI_COMPAT jclass clazz) {
+    ANativeWindow_release(pojav_environ->turtleWindow);
 }
 
 EXTERNAL_API void* pojavGetCurrentContext() {
@@ -184,10 +184,10 @@ int pojavInitOpenGL() {
 }
 
 EXTERNAL_API int pojavInit() {
-    ANativeWindow_acquire(pojav_environ->pojavWindow);
-    pojav_environ->savedWidth = ANativeWindow_getWidth(pojav_environ->pojavWindow);
-    pojav_environ->savedHeight = ANativeWindow_getHeight(pojav_environ->pojavWindow);
-    ANativeWindow_setBuffersGeometry(pojav_environ->pojavWindow,pojav_environ->savedWidth,pojav_environ->savedHeight,AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM);
+    ANativeWindow_acquire(pojav_environ->turtleWindow);
+    pojav_environ->savedWidth = ANativeWindow_getWidth(pojav_environ->turtleWindow);
+    pojav_environ->savedHeight = ANativeWindow_getHeight(pojav_environ->turtleWindow);
+    ANativeWindow_setBuffersGeometry(pojav_environ->turtleWindow,pojav_environ->savedWidth,pojav_environ->savedHeight,AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM);
     pojavInitOpenGL();
     return 1;
 }
@@ -249,7 +249,7 @@ EXTERNAL_API void pojavMakeCurrent(void* window) {
 
 EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
     if (pojav_environ->config_renderer == RENDERER_VULKAN)
-        return (void *) pojav_environ->pojavWindow;
+        return (void *) pojav_environ->turtleWindow;
 
     if (pojav_environ->config_renderer == RENDERER_VIRGL)
         return virglCreateContext(contextSrc);

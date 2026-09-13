@@ -46,7 +46,7 @@
                 app:tabIndicatorHeight="@dimen/_3sdp"
                 app:tabMode="fixed" />
 
-            <com.endiq.zalithlauncher.ui.subassembly.filelist.FileRecyclerView
+            <com.endiq.turtlelauncher.ui.subassembly.filelist.FileRecyclerView
                 android:id="@+id/file_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"

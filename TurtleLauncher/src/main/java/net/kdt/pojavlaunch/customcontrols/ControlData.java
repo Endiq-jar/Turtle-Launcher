@@ -1,13 +1,13 @@
 package net.kdt.pojavlaunch.customcontrols;
 
-import static com.endiq.zalithlauncher.context.ContextExecutor.getString;
+import static com.endiq.turtlelauncher.context.ContextExecutor.getString;
 import static net.kdt.pojavlaunch.LwjglGlfwKeycode.GLFW_KEY_UNKNOWN;
 import android.content.Context;
 import android.util.ArrayMap;
 import androidx.annotation.Keep;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.utils.stringutils.StringUtils;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.utils.stringutils.StringUtils;
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.customcontrols.buttons.ControlInterface;
 import net.kdt.pojavlaunch.utils.JSONUtils;

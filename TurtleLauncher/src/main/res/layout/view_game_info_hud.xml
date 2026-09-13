@@ -232,7 +232,7 @@
         tools:ignore="HardcodedText" />
 
     <!-- TurtleLauncher v10: RAM Usage Graph module (sparkline, sits under the FPS/memory text) -->
-    <com.endiq.zalithlauncher.feature.turtle.RamGraphView
+    <com.endiq.turtlelauncher.feature.turtle.RamGraphView
         android:id="@+id/ram_graph_view"
         android:layout_width="@dimen/_84sdp"
         android:layout_height="@dimen/_28sdp"

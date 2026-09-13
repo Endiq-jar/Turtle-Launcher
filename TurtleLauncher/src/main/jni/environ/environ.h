@@ -2,8 +2,8 @@
 // Created by maks on 24.09.2022.
 //
 
-#ifndef POJAVLAUNCHER_ENVIRON_H
-#define POJAVLAUNCHER_ENVIRON_H
+#ifndef TURTLELAUNCHER_ENVIRON_H
+#define TURTLELAUNCHER_ENVIRON_H
 
 #include <ctxbridges/common.h>
 #include <stdatomic.h>
@@ -31,7 +31,7 @@ typedef void GLFW_invoke_Scroll_func(void* window, double xoffset, double yoffse
 typedef void GLFW_invoke_WindowSize_func(void* window, int width, int height);
 
 struct pojav_environ_s {
-    struct ANativeWindow* pojavWindow;
+    struct ANativeWindow* turtleWindow;
     basic_render_window_t* mainWindowBundle;
     int config_renderer;
     atomic_size_t eventCounter; // Count the number of events to be pumped out
@@ -75,4 +75,4 @@ struct pojav_environ_s {
 };
 extern struct pojav_environ_s *pojav_environ;
 
-#endif //POJAVLAUNCHER_ENVIRON_H
+#endif //TURTLELAUNCHER_ENVIRON_H

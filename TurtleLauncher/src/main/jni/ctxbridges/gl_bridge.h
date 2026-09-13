@@ -3,8 +3,8 @@
 //
 #include <EGL//egl.h>
 #include <stdbool.h>
-#ifndef POJAVLAUNCHER_GL_BRIDGE_H
-#define POJAVLAUNCHER_GL_BRIDGE_H
+#ifndef TURTLELAUNCHER_GL_BRIDGE_H
+#define TURTLELAUNCHER_GL_BRIDGE_H
 
 typedef struct {
     char       state;
@@ -44,4 +44,4 @@ void gl_log_egl_info();
  */
 bool gl_low_latency_requested();
 
-#endif //POJAVLAUNCHER_GL_BRIDGE_H
+#endif //TURTLELAUNCHER_GL_BRIDGE_H

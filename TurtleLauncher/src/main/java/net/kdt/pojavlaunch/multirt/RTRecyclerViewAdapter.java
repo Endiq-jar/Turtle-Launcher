@@ -14,11 +14,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.task.Task;
-import com.endiq.zalithlauncher.ui.dialog.SelectRuntimeDialog;
-import com.endiq.zalithlauncher.utils.runtime.RuntimeSelectedListener;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.task.Task;
+import com.endiq.turtlelauncher.ui.dialog.SelectRuntimeDialog;
+import com.endiq.turtlelauncher.utils.runtime.RuntimeSelectedListener;
 
 import net.kdt.pojavlaunch.Architecture;
 import net.kdt.pojavlaunch.Tools;

@@ -26,7 +26,7 @@
             android:layout_marginVertical="@dimen/_12sdp"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+            <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/install_new"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
@@ -54,7 +54,7 @@
                     android:textColor="@color/turtle_primary_text"
                     android:text="@string/version_install_new" />
 
-            </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+            </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
@@ -80,7 +80,7 @@
                     app:tab_indicator_drawable="@drawable/selector_bar_horizontal"
                     app:tab_indicator_y_offset="@dimen/_4sdp">
 
-                    <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                    <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                         android:id="@+id/all_category"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -95,7 +95,7 @@
                             android:text="@string/generic_all"
                             android:textColor="@color/turtle_primary_text"/>
 
-                    </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                    </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 </com.angcyo.tablayout.DslTabLayout>
 
@@ -227,19 +227,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/create_path_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/profiles_path_create_new"/>
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/refresh_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/generic_refresh"/>
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/return_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

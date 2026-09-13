@@ -5,9 +5,9 @@ import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.setting.AllStaticSettings;
-import com.endiq.zalithlauncher.support.touch_controller.ContactHandler;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.setting.AllStaticSettings;
+import com.endiq.turtlelauncher.support.touch_controller.ContactHandler;
 
 import org.lwjgl.glfw.CallbackBridge;
 

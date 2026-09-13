@@ -29,12 +29,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.kdt.DefocusableScrollView;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.listener.SimpleTextWatcher;
-import com.endiq.zalithlauncher.ui.dialog.KeyboardDialog;
-import com.endiq.zalithlauncher.ui.dialog.PixelEditorDialog;
-import com.endiq.zalithlauncher.utils.path.PathManager;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.listener.SimpleTextWatcher;
+import com.endiq.turtlelauncher.ui.dialog.KeyboardDialog;
+import com.endiq.turtlelauncher.ui.dialog.PixelEditorDialog;
+import com.endiq.turtlelauncher.utils.path.PathManager;
 
 import net.kdt.pojavlaunch.EfficientAndroidLWJGLKeycode;
 import net.kdt.pojavlaunch.colorselector.ColorSelector;

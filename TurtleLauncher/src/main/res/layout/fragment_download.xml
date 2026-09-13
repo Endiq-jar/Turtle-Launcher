@@ -45,7 +45,7 @@
             app:tab_indicator_x_offset="@dimen/_4sdp"
             app:tab_orientation="VERTICAL">
 
-            <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+            <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/_8sdp">
@@ -70,9 +70,9 @@
                     android:layout_toEndOf="@+id/mod_image"
                     android:text="@string/download_classify_mod"
                     android:textColor="@color/turtle_primary_text" />
-            </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+            </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-            <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+            <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/_8sdp">
@@ -97,9 +97,9 @@
                     android:layout_toEndOf="@+id/modpack_image"
                     android:text="@string/download_classify_modpack"
                     android:textColor="@color/turtle_primary_text" />
-            </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+            </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-            <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+            <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/_8sdp">
@@ -124,9 +124,9 @@
                     android:layout_toEndOf="@+id/resource_pack_image"
                     android:text="@string/download_classify_resource_pack"
                     android:textColor="@color/turtle_primary_text" />
-            </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+            </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-            <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+            <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/_8sdp">
@@ -151,9 +151,9 @@
                     android:layout_toEndOf="@+id/world_image"
                     android:text="@string/download_classify_world"
                     android:textColor="@color/turtle_primary_text" />
-            </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+            </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-            <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+            <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/_8sdp">
@@ -178,7 +178,7 @@
                     android:layout_toEndOf="@+id/shader_pack_image"
                     android:text="@string/download_classify_shader_pack"
                     android:textColor="@color/turtle_primary_text" />
-            </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+            </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
         </com.angcyo.tablayout.DslTabLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

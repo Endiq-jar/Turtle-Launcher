@@ -16,8 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.ui.dialog.KeyboardDialog;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.ui.dialog.KeyboardDialog;
 
 import net.kdt.pojavlaunch.EfficientAndroidLWJGLKeycode;
 import net.kdt.pojavlaunch.GrabListener;

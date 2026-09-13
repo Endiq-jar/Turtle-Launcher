@@ -4,7 +4,7 @@ import static org.lwjgl.glfw.CallbackBridge.sendMouseButton;
 
 import android.os.Handler;
 
-import com.endiq.zalithlauncher.setting.AllStaticSettings;
+import com.endiq.turtlelauncher.setting.AllStaticSettings;
 
 import net.kdt.pojavlaunch.LwjglGlfwKeycode;
 import net.kdt.pojavlaunch.Tools;

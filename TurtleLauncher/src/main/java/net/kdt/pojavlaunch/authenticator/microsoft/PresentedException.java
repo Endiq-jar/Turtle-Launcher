@@ -2,8 +2,8 @@ package net.kdt.pojavlaunch.authenticator.microsoft;
 
 import android.content.Context;
 
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.utils.stringutils.StringUtils;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.utils.stringutils.StringUtils;
 
 public class PresentedException extends RuntimeException {
     final int localizationStringId;

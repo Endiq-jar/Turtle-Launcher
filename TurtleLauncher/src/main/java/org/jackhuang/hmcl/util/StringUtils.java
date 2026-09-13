@@ -17,7 +17,7 @@
  */
 package org.jackhuang.hmcl.util;
 
-import com.endiq.zalithlauncher.utils.stringutils.StringUtilsKt;
+import com.endiq.turtlelauncher.utils.stringutils.StringUtilsKt;
 
 import java.util.ArrayList;
 import java.util.Collections;

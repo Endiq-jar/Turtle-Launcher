@@ -61,7 +61,7 @@
             android:paddingBottom="@dimen/space_xl">
 
             <!-- Latest log card -->
-            <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+            <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/latest_log_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
                     android:src="@drawable/ic_chevron_down"
                     android:rotation="-90"
                     android:tint="@color/turtle_text_secondary"/>
-            </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+            </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
             <!-- ACTIONS header -->
             <TextView
@@ -123,7 +123,7 @@
                 android:background="@drawable/background_card"
                 android:layout_marginBottom="@dimen/space_l">
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/view_log_row"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -139,11 +139,11 @@
                         android:text="@string/share_logs_view_log_desc" android:textSize="12sp" android:textColor="@color/turtle_text_secondary"/>
                     <ImageView android:layout_width="16dp" android:layout_height="16dp" android:layout_centerVertical="true" android:layout_alignParentEnd="true"
                         android:src="@drawable/ic_chevron_down" android:rotation="-90" android:tint="@color/turtle_text_secondary"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/turtle_divider"/>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/upload_mclogs_row"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -159,11 +159,11 @@
                         android:text="@string/share_logs_upload_mclogs_desc" android:textSize="12sp" android:textColor="@color/turtle_text_secondary"/>
                     <ImageView android:layout_width="16dp" android:layout_height="16dp" android:layout_centerVertical="true" android:layout_alignParentEnd="true"
                         android:src="@drawable/ic_chevron_down" android:rotation="-90" android:tint="@color/turtle_text_secondary"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/turtle_divider"/>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/share_log_row"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -179,11 +179,11 @@
                         android:text="@string/share_logs_share_log_desc" android:textSize="12sp" android:textColor="@color/turtle_text_secondary"/>
                     <ImageView android:layout_width="16dp" android:layout_height="16dp" android:layout_centerVertical="true" android:layout_alignParentEnd="true"
                         android:src="@drawable/ic_chevron_down" android:rotation="-90" android:tint="@color/turtle_text_secondary"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/turtle_divider"/>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/copy_log_row"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -199,11 +199,11 @@
                         android:text="@string/share_logs_copy_clipboard_desc" android:textSize="12sp" android:textColor="@color/turtle_text_secondary"/>
                     <ImageView android:layout_width="16dp" android:layout_height="16dp" android:layout_centerVertical="true" android:layout_alignParentEnd="true"
                         android:src="@drawable/ic_chevron_down" android:rotation="-90" android:tint="@color/turtle_text_secondary"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/turtle_divider"/>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/clear_log_row"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -217,7 +217,7 @@
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:layout_below="@id/clear_log_title" android:layout_toEndOf="@id/clear_log_icon" android:layout_marginStart="@dimen/space_m"
                         android:text="@string/share_logs_clear_desc" android:textSize="12sp" android:textColor="@color/turtle_text_secondary"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
             </LinearLayout>
 
             <TextView

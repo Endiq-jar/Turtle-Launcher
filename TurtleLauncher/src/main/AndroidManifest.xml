@@ -26,7 +26,7 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
-        android:name="net.kdt.pojavlaunch.PojavApplication"
+        android:name="net.kdt.pojavlaunch.TurtleApplication"
         android:allowBackup="true"
         android:allowNativeHeapPointerTagging="false"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -55,7 +55,7 @@
             android:name="android.max_aspect"
             android:value="ratio_float" />
         <activity
-            android:name="com.endiq.zalithlauncher.ui.activity.SplashActivity"
+            android:name="com.endiq.turtlelauncher.ui.activity.SplashActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
@@ -77,12 +77,12 @@
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
             android:screenOrientation="sensorLandscape" />
         <activity
-            android:name="com.endiq.zalithlauncher.ui.activity.ErrorActivity"
+            android:name="com.endiq.turtlelauncher.ui.activity.ErrorActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
             android:theme="@style/CustomDialogStyle"
             android:screenOrientation="sensorLandscape" />
         <activity
-            android:name="com.endiq.zalithlauncher.ui.activity.ConfigEditorActivity"
+            android:name="com.endiq.turtlelauncher.ui.activity.ConfigEditorActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name="net.kdt.pojavlaunch.ShowErrorActivity"
@@ -178,7 +178,7 @@
              optional boilerplate - the system uses them to verify only this app's own
              VPN service can bind to the tunnel it creates. -->
         <service
-            android:name="com.endiq.zalithlauncher.feature.terracotta.TerracottaVpnService"
+            android:name="com.endiq.turtlelauncher.feature.terracotta.TerracottaVpnService"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:foregroundServiceType="specialUse"
             android:exported="false">

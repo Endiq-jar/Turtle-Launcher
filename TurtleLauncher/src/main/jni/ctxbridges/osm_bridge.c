@@ -102,7 +102,7 @@ void osm_make_current(osm_render_window_t* bundle) {
     if(pojav_environ->mainWindowBundle == NULL) {
         pojav_environ->mainWindowBundle = (basic_render_window_t*) bundle;
         __android_log_print(ANDROID_LOG_INFO, g_LogTag, "Main window bundle is now %p", pojav_environ->mainWindowBundle);
-        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->pojavWindow;
+        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->turtleWindow;
         hasSetMainWindow = true;
     }
     if(bundle->nativeSurface == NULL) {
@@ -141,7 +141,7 @@ void osm_setup_window() {
     if(pojav_environ->mainWindowBundle != NULL) {
         __android_log_print(ANDROID_LOG_INFO, g_LogTag, "Main window bundle is not NULL, changing state");
         pojav_environ->mainWindowBundle->state = STATE_RENDERER_NEW_WINDOW;
-        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->pojavWindow;
+        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->turtleWindow;
     }
 }
 

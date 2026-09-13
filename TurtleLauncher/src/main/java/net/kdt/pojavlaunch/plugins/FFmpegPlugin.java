@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-import com.endiq.zalithlauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.feature.log.Logging;
 
 import java.io.File;
 

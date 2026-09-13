@@ -77,7 +77,7 @@
                     android:textColor="@color/accent_primary" />
     
                 <!-- Graphics Backend (simplified Vulkan/OpenGL switch) -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/graphics_backend_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -111,10 +111,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Renderer -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/renderer_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -163,10 +163,10 @@
                         android:contentDescription="@string/setting_category_download"
                         android:src="@drawable/ic_download"
                         android:background="?android:attr/selectableItemBackgroundBorderless"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Local Renderer Import -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/renderer_local_import_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -202,10 +202,10 @@
                         android:contentDescription="@string/setting_renderer_local_manage"
                         android:src="@drawable/ic_setting"
                         android:background="?android:attr/selectableItemBackgroundBorderless"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Driver -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/driver_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -241,10 +241,10 @@
                         android:contentDescription="@string/setting_category_download"
                         android:src="@drawable/ic_download"
                         android:background="?android:attr/selectableItemBackgroundBorderless"/>
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Ignore Notch -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/ignoreNotch_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -278,10 +278,10 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:checked="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Ignore Notch Launcher -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/ignoreNotchLauncher_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -315,10 +315,10 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:checked="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Resolution Ratio -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/resolutionRatio_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -377,7 +377,7 @@
                         android:layout_marginEnd="@dimen/_12sdp"
                         android:background="@drawable/background_text"
                         tools:text="0" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- TurtleLauncher v10: quick resolution presets + auto-detect -->
                 <LinearLayout
@@ -429,7 +429,7 @@
                 </LinearLayout>
     
                 <!-- Sustained Performance -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/sustainedPerformance_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -462,10 +462,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Alternate Surface -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/alternate_surface_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -498,10 +498,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Force VSync -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/force_vsync_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -534,10 +534,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- VSync in Zink -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/vsync_in_zink_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -570,10 +570,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 <!-- Adaptive VSync -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/adaptive_vsync_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -606,7 +606,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 <!-- Low-Latency (Front-Buffer) Rendering -->
                 <!-- TurtleLauncher bugfix: ids renamed from low_latency_rendering_* to
@@ -617,7 +617,7 @@
                      not something View Binding can resolve from two different source ids.
                      Matches AllSettings.lowLatencyFrontBuffer's name (see its own bugfix
                      comment) now that this is unambiguous. -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/low_latency_front_buffer_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -650,10 +650,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Zink Prefer System Driver -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/zinkPreferSystemDriver_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -686,7 +686,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
             </androidx.appcompat.widget.LinearLayoutCompat>
     
@@ -711,7 +711,7 @@
                     android:textColor="@color/accent_primary" />
     
                 <!-- Auto Settings Optimizer -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/autoSettingsOptimizer_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -744,7 +744,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
             </androidx.appcompat.widget.LinearLayoutCompat>
     

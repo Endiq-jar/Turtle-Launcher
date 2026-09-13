@@ -2,8 +2,8 @@
 // Created by movte on 2025/4/25.
 //
 
-#ifndef ZALITHLAUNCHER_LOGGER_H
-#define ZALITHLAUNCHER_LOGGER_H
+#ifndef TURTLELAUNCHER_LOGGER_H
+#define TURTLELAUNCHER_LOGGER_H
 
 #define LOG_E "ERROR"
 #define LOG_W "WARN"
@@ -17,4 +17,4 @@
 
 void zl_log(const char *level, const char *fmt, ...);
 
-#endif // ZALITHLAUNCHER_LOGGER_H
+#endif // TURTLELAUNCHER_LOGGER_H

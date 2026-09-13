@@ -1,4 +1,4 @@
-package com.endiq.zalithlauncher.launch;
+package com.endiq.turtlelauncher.launch;
 
 import java.lang.reflect.Method;
 
@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
  * from it. An earlier attempt at this fix put it in the app's own Kotlin
  * source instead, which produced:
  *   Error: Could not find or load main class
- *     com.endiq.zalithlauncher.launch.SdlMainReadyBootstrap
+ *     com.endiq.turtlelauncher.launch.SdlMainReadyBootstrap
  * because that class simply didn't exist anywhere on the game process's
  * classpath.
  *

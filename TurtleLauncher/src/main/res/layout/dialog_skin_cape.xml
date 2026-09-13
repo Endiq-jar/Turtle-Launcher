@@ -42,7 +42,7 @@
                 android:layout_marginHorizontal="@dimen/_4sdp"
                 android:layout_marginBottom="@dimen/_4sdp"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimEditText
+            <com.endiq.turtlelauncher.ui.view.AnimEditText
                 android:id="@+id/url_edit"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_38sdp"
@@ -54,7 +54,7 @@
                 android:layout_marginHorizontal="@dimen/_4sdp"
                 android:layout_marginBottom="@dimen/_8sdp"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimButton
+            <com.endiq.turtlelauncher.ui.view.AnimButton
                 android:id="@+id/button_apply_url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
                 android:layout_marginHorizontal="@dimen/_4sdp"
                 android:layout_marginBottom="@dimen/_8sdp">
 
-                <com.endiq.zalithlauncher.ui.view.AnimEditText
+                <com.endiq.turtlelauncher.ui.view.AnimEditText
                     android:id="@+id/browse_username_edit"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/_38sdp"
@@ -141,7 +141,7 @@
                     android:paddingHorizontal="@dimen/_8sdp"
                     android:layout_marginEnd="@dimen/_4sdp"/>
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/button_browse_search"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_38sdp"
@@ -176,7 +176,7 @@
                     android:textSize="@dimen/_11ssp"
                     android:layout_marginEnd="@dimen/_8sdp"/>
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/button_browse_apply"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -214,7 +214,7 @@
                 android:layout_marginHorizontal="@dimen/_4sdp"
                 android:layout_marginBottom="@dimen/_4sdp">
 
-                <com.endiq.zalithlauncher.ui.view.AnimEditText
+                <com.endiq.turtlelauncher.ui.view.AnimEditText
                     android:id="@+id/laby_gallery_search_edit"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/_38sdp"
@@ -226,7 +226,7 @@
                     android:paddingHorizontal="@dimen/_8sdp"
                     android:layout_marginEnd="@dimen/_4sdp"/>
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/button_laby_gallery_search"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_38sdp"
@@ -254,7 +254,7 @@
                 android:layout_marginHorizontal="@dimen/_4sdp"
                 android:layout_marginBottom="@dimen/_4sdp">
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/button_laby_gallery_prev"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_32sdp"
@@ -270,7 +270,7 @@
                     android:textSize="@dimen/_10ssp"
                     tools:text="1"/>
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/button_laby_gallery_next"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_32sdp"
@@ -326,7 +326,7 @@
                 android:layout_marginHorizontal="@dimen/_4sdp"
                 android:layout_marginBottom="@dimen/_4sdp">
 
-                <com.endiq.zalithlauncher.ui.view.AnimEditText
+                <com.endiq.turtlelauncher.ui.view.AnimEditText
                     android:id="@+id/littleskin_gallery_search_edit"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/_38sdp"
@@ -338,7 +338,7 @@
                     android:paddingHorizontal="@dimen/_8sdp"
                     android:layout_marginEnd="@dimen/_4sdp"/>
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/button_littleskin_gallery_search"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_38sdp"
@@ -366,7 +366,7 @@
                 android:layout_marginHorizontal="@dimen/_4sdp"
                 android:layout_marginBottom="@dimen/_4sdp">
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/button_littleskin_gallery_prev"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_32sdp"
@@ -382,7 +382,7 @@
                     android:textSize="@dimen/_10ssp"
                     tools:text="1"/>
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/button_littleskin_gallery_next"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_32sdp"
@@ -417,7 +417,7 @@
                 android:background="@color/turtle_highlight_subtle"
                 android:layout_marginVertical="@dimen/_8sdp"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimButton
+            <com.endiq.turtlelauncher.ui.view.AnimButton
                 android:id="@+id/button_gallery"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -462,7 +462,7 @@
                 android:layout_marginBottom="@dimen/_8sdp"
                 android:visibility="gone"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimButton
+            <com.endiq.turtlelauncher.ui.view.AnimButton
                 android:id="@+id/button_copy_lan_instructions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -471,7 +471,7 @@
                 android:layout_marginBottom="@dimen/_12sdp"
                 android:visibility="gone"/>
 
-            <com.endiq.zalithlauncher.ui.view.AnimButton
+            <com.endiq.turtlelauncher.ui.view.AnimButton
                 android:id="@+id/button_cancel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

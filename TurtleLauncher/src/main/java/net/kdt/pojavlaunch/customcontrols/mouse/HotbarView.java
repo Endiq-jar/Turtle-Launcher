@@ -14,14 +14,14 @@ import androidx.annotation.Nullable;
 
 import com.endiq.anim.AnimPlayer;
 import com.endiq.anim.animations.Animations;
-import com.endiq.zalithlauncher.event.single.MCOptionChangeEvent;
-import com.endiq.zalithlauncher.event.single.RefreshHotbarEvent;
-import com.endiq.zalithlauncher.event.value.HotbarChangeEvent;
-import com.endiq.zalithlauncher.feature.MCOptions;
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.setting.AllStaticSettings;
-import com.endiq.zalithlauncher.ui.subassembly.hotbar.HotbarType;
-import com.endiq.zalithlauncher.ui.subassembly.hotbar.HotbarUtils;
+import com.endiq.turtlelauncher.event.single.MCOptionChangeEvent;
+import com.endiq.turtlelauncher.event.single.RefreshHotbarEvent;
+import com.endiq.turtlelauncher.event.value.HotbarChangeEvent;
+import com.endiq.turtlelauncher.feature.MCOptions;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.setting.AllStaticSettings;
+import com.endiq.turtlelauncher.ui.subassembly.hotbar.HotbarType;
+import com.endiq.turtlelauncher.ui.subassembly.hotbar.HotbarUtils;
 
 import net.kdt.pojavlaunch.GrabListener;
 import net.kdt.pojavlaunch.LwjglGlfwKeycode;

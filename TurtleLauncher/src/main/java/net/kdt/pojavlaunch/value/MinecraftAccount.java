@@ -4,11 +4,11 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
 import com.google.gson.JsonSyntaxException;
-import com.endiq.zalithlauncher.feature.accounts.AccountsManager;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.utils.path.PathManager;
-import com.endiq.zalithlauncher.utils.skin.SkinFileDownloader;
-import com.endiq.zalithlauncher.utils.stringutils.StringUtilsKt;
+import com.endiq.turtlelauncher.feature.accounts.AccountsManager;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.utils.path.PathManager;
+import com.endiq.turtlelauncher.utils.skin.SkinFileDownloader;
+import com.endiq.turtlelauncher.utils.stringutils.StringUtilsKt;
 
 import net.kdt.pojavlaunch.Tools;
 

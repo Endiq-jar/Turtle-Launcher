@@ -9,12 +9,12 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.feature.unpack.Jre;
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.setting.AllStaticSettings;
-import com.endiq.zalithlauncher.setting.Settings;
-import com.endiq.zalithlauncher.ui.activity.BaseActivity;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.feature.unpack.Jre;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.setting.AllStaticSettings;
+import com.endiq.turtlelauncher.setting.Settings;
+import com.endiq.turtlelauncher.ui.activity.BaseActivity;
 
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.multirt.MultiRTUtils;

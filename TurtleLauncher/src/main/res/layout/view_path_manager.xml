@@ -23,7 +23,7 @@
             android:layout_marginStart="@dimen/_4sdp"
             android:src="@drawable/ic_move" />
 
-        <com.endiq.zalithlauncher.ui.view.AnimTextView
+        <com.endiq.turtlelauncher.ui.view.AnimTextView
             android:id="@+id/goto_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
             android:scaleY="1.1"
             android:src="@drawable/ic_edit" />
 
-        <com.endiq.zalithlauncher.ui.view.AnimTextView
+        <com.endiq.turtlelauncher.ui.view.AnimTextView
             android:id="@+id/rename"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
             android:scaleY="1.2"
             android:src="@drawable/ic_menu_delete_forever" />
 
-        <com.endiq.zalithlauncher.ui.view.AnimTextView
+        <com.endiq.turtlelauncher.ui.view.AnimTextView
             android:id="@+id/delete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
