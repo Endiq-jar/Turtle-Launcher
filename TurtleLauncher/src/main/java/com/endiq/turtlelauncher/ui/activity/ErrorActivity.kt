@@ -361,7 +361,7 @@ class ErrorActivity : BaseActivity() {
             this.centerText.text = InfoCenter.replaceName(context, R.string.error_fatal)
 
             this.topView.setBackgroundColor(ContextCompat.getColor(context, R.color.background_menu_top_error))
-            this.background.setBackgroundResource(R.drawable.image_xibao)
+            this.background.setBackgroundResource(R.drawable.image_error_background)
         }
     }
 

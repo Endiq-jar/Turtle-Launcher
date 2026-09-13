@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Turtle silhouette used for Android 13+ themed (monochrome) launcher icons -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="24dp"
+    android:viewportWidth="36"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M10 3h8v1h-8zM8 4h11v1h-11zM7 5h14v1h-14zM6 6h15v1h-15zM6 7h16v1h-16zM5 8h17v1h-17zM5 9h18v1h-18zM25 9h6v1h-6zM5 10h27v1h-27zM5 11h27v1h-27zM3 12h29v1h-29zM2 13h30v1h-30zM1 14h31v1h-31zM2 15h3v1h-3zM6 15h25v1h-25zM9 16h6v1h-6zM20 16h6v1h-6zM9 17h6v1h-6zM20 17h6v1h-6zM9 18h6v1h-6zM20 18h6v1h-6zM9 19h6v1h-6zM20 19h6v1h-6zM10 20h4v1h-4zM21 20h4v1h-4z" />
+</vector>
