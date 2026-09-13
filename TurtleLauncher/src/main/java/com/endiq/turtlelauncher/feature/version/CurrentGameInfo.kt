@@ -9,9 +9,9 @@ import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * 当前游戏状态信息（支持旧配置迁移）
- * @property version 当前选择的版本名称
- * @property favoritesMap 收藏夹映射表 <收藏夹名称, 包含的版本集合>
+ * Current game state info (supports migrating old configs).
+ * @property version name of the currently selected version
+ * @property favoritesMap favorite groups map <group name, contained versions>
  */
 data class CurrentGameInfo(
     @SerializedName("version")
@@ -20,7 +20,7 @@ data class CurrentGameInfo(
     val favoritesMap: MutableMap<String, MutableSet<String>> = ConcurrentHashMap()
 ) {
     /**
-     * 原子化保存当前状态到文件
+     * Atomically save the current state to disk.
      */
     fun saveCurrentInfo() {
         val infoFile = getInfoFile()
@@ -40,7 +40,7 @@ data class CurrentGameInfo(
         private fun getLegacyInfoFile() = File(ProfilePathHome.getGameHome(), "CurrentVersion.cfg")
 
         /**
-         * 刷新并返回最新的游戏信息（自动处理旧配置迁移）
+         * Refresh and return the latest game info (migrating old configs automatically).
          */
         fun refreshCurrentInfo(): CurrentGameInfo {
             val infoFile = getInfoFile()

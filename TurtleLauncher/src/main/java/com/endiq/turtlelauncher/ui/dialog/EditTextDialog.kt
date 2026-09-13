@@ -105,7 +105,7 @@ class EditTextDialog private constructor(
         private var required = false
 
         /**
-         * 设置弹窗的标题栏文本
+         * Set the dialog title text.
          */
         @CheckResult
         fun setTitle(title: String): Builder {
@@ -114,7 +114,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置弹窗的标题栏文本
+         * Set the dialog title text.
          */
         @CheckResult
         fun setTitle(title: Int): Builder {
@@ -122,7 +122,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置弹窗的信息栏文本
+         * Set the dialog message text.
          */
         @CheckResult
         fun setMessage(message: String): Builder {
@@ -131,7 +131,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置弹窗的信息栏文本
+         * Set the dialog message text.
          */
         @CheckResult
         fun setMessage(message: Int): Builder {
@@ -139,7 +139,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置输入框的文本
+         * Set the input text.
          */
         @CheckResult
         fun setEditText(editText: String): Builder {
@@ -148,7 +148,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置输入框的Hint提示
+         * Set the input hint.
          */
         @CheckResult
         fun setHintText(hintText: Int): Builder {
@@ -156,7 +156,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置输入框的Hint提示
+         * Set the input hint.
          */
         @CheckResult
         fun setHintText(hintText: String): Builder {
@@ -165,7 +165,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置确认按钮的文本
+         * Set the confirm button text.
          */
         @CheckResult
         fun setConfirmText(text: Int): Builder {
@@ -173,7 +173,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置确认按钮的文本
+         * Set the confirm button text.
          */
         @CheckResult
         fun setConfirmText(text: String): Builder {
@@ -182,7 +182,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 需要设置输入框为必填时，自定义其为空时报错提醒的文本
+         * Custom error text shown when a required field is left empty.
          */
         @CheckResult
         fun setEmptyErrorText(text: Int): Builder {
@@ -190,7 +190,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 需要设置输入框为必填时，自定义其为空时报错提醒的文本
+         * Custom error text shown when a required field is left empty.
          */
         @CheckResult
         fun setEmptyErrorText(text: String): Builder {
@@ -199,7 +199,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置是否启用弹窗的选择框
+         * Set whether the dialog checkbox is enabled.
          */
         @CheckResult
         fun setShowCheckBox(show: Boolean): Builder {
@@ -208,7 +208,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置选择框的文本
+         * Set the checkbox text.
          */
         @CheckResult
         fun setCheckBoxText(text: Int): Builder {
@@ -216,7 +216,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置选择框的文本
+         * Set the checkbox text.
          */
         @CheckResult
         fun setCheckBoxText(text: String): Builder {
@@ -225,7 +225,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置输入框的类型
+         * Set the input type.
          */
         @CheckResult
         fun setInputType(inputType: Int): Builder {
@@ -234,7 +234,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置取消按钮的点击事件
+         * Set the cancel button click listener.
          */
         @CheckResult
         fun setCancelListener(cancel: View.OnClickListener): Builder {
@@ -243,7 +243,7 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置确认按钮的点击事件
+         * Set the confirm button click listener.
          */
         @CheckResult
         fun setConfirmListener(confirmListener: ConfirmListener): Builder {
@@ -252,8 +252,8 @@ class EditTextDialog private constructor(
         }
 
         /**
-         * 设置为必填，当用户点击确认时，将检查输入框的内容是否为空（包括空格检查）
-         * 如果是，那么拦截点击事件并告知用户
+         * Mark the field required: on confirm the content is checked for emptiness (spaces count).
+         * If so, swallow the click and tell the user.
          */
         @CheckResult
         fun setAsRequired(): Builder {

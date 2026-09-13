@@ -21,8 +21,10 @@ class FileDeletionHandler(
         super.start(this)
     }
 
-    //安全获取文件大小，文件在扫描/处理过程中可能被并发删除或是损坏的软链接，
-    //FileUtils.sizeOf 在这些情况下会抛出异常；这里捕获后回退为0，避免造成未捕获异常使App崩溃
+    // Read file sizes safely: while scanning, files may be deleted concurrently or turn out
+    // to be broken symlinks,
+    // FileUtils.sizeOf throws in these cases; catch it and fall back to 0 so an uncaught
+    // exception cannot crash the app.
     private fun safeSizeOf(file: File): Long =
         runCatching { FileUtils.sizeOf(file) }.getOrElse { e ->
             Logging.e("FileDeletionHandler", "Failed to get size of ${file.absolutePath}", e)
@@ -65,7 +67,8 @@ class FileDeletionHandler(
         foundFiles.parallelStream().forEach {
             currentTask?.let { task -> if (task.isCancelled) return@forEach }
 
-            //单个文件的处理失败不应该终止整个删除流程，更不应该导致未捕获异常使App崩溃
+            // A single file failure must not abort the whole delete flow, and certainly must
+            // not crash the app through an uncaught exception.
             runCatching {
                 fileSize.addAndGet(-safeSizeOf(it))
                 fileCount.getAndDecrement()
@@ -73,7 +76,7 @@ class FileDeletionHandler(
             }.onFailure { e -> Logging.e("FileDeletionHandler", "Failed to delete ${it.absolutePath}", e) }
         }
         currentTask?.let { task -> if (task.isCancelled) return }
-        //剩下的都是空文件夹，直接删除
+        // Everything left is an empty folder: delete it straight away.
         mSelectedFiles.forEach {
             runCatching { FileUtils.deleteQuietly(it) }
                 .onFailure { e -> Logging.e("FileDeletionHandler", "Failed to delete root ${it.absolutePath}", e) }

@@ -17,7 +17,7 @@ import java.net.URLEncoder
  * manual.littlesk.in/advanced/api only documents auth-gated Yggdrasil/OAuth endpoints, nothing
  * about the skin library grid). What's used here instead was confirmed by reading the actual
  * source of bs-community/blessing-skin-server (github.com/bs-community/blessing-skin-server) -
- * the open-source project LittleSkin's own manual says it runs ("深度定制的 Blessing Skin
+ * the open-source project LittleSkin's own manual says it runs ("deeply customised Blessing Skin
  * Server", a customized fork) - since these specific routes are core, ecosystem-relied-upon
  * functionality (the raw texture route is even part of the CustomSkinLoader-compatible
  * default load list LittleSkin advertises), not obscure internals likely to have been

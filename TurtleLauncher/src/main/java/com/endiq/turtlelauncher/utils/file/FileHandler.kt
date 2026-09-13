@@ -19,14 +19,15 @@ abstract class FileHandler(
     private var lastSize: Long = 0
     private var lastTime: Long = ZHTools.getCurrentTimeMillis()
 
-    //上下文背后的Activity是否仍然有效（没有finish/destroy）
-    //避免在Activity已经销毁后，对Dialog进行show/dismiss操作导致崩溃
+    // Whether the Activity behind the context is still alive (not finished/destroyed).
+    // Avoid crashing by showing/dismissing a dialog after the Activity was destroyed.
     private fun isContextAlive(): Boolean {
         val activity = context as? Activity ?: return true
         return !activity.isFinishing && !activity.isDestroyed
     }
 
-    //安全地显示/隐藏弹窗，防止 BadTokenException / IllegalArgumentException 等窗口异常使App崩溃
+    // Show/dismiss dialogs safely so window exceptions (BadTokenException,
+    // IllegalArgumentException, ...) cannot crash the app.
     private fun safeDialogAction(action: () -> Unit) {
         if (!isContextAlive()) return
         runCatching { action() }
@@ -36,7 +37,7 @@ abstract class FileHandler(
     protected fun start(progress: FileSearchProgress) {
         TaskExecutors.runInUIThread {
             if (!isContextAlive()) {
-                //Activity已经不存在了，直接结束，不展示弹窗
+                // The Activity is gone: bail out without showing a dialog.
                 onEnd()
                 return@runInUIThread
             }
@@ -49,7 +50,8 @@ abstract class FileHandler(
             dialog.updateText(context.getString(R.string.file_operation_file, "0 B", "0 B", 0))
 
             currentTask = TaskExecutors.getDefault().submit {
-                //整个后台任务都用try-catch包裹：任何单点异常都不应该变成未捕获异常杀掉整个App进程
+                // Wrap the whole background task in try-catch: a single failure must never
+				// become an uncaught exception that kills the app process.
                 try {
                     TaskExecutors.runInUIThread { safeDialogAction { dialog.show() } }
 

@@ -31,7 +31,7 @@ class ControlInfoData : Comparable<ControlInfoData?> {
         val firstLength = a.length
         val secondLength = b.length
 
-        //遍历两个字符串的字符
+        // Walk the characters of both strings.
         for (i in 0 until min(firstLength.toDouble(), secondLength.toDouble()).toInt()) {
             val firstChar = a[i].lowercaseChar()
             val secondChar = b[i].lowercaseChar()

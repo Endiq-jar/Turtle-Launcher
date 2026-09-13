@@ -67,7 +67,7 @@ public class MinecraftAccount {
 
     private void updateSkin(String url) {
         File skinFile = new File(PathManager.DIR_USER_SKIN, uniqueUUID + ".png");
-        if (skinFile.exists()) FileUtils.deleteQuietly(skinFile); //清除一次皮肤文件
+        if (skinFile.exists()) FileUtils.deleteQuietly(skinFile); // clear any cached skin file
         try {
             new SkinFileDownloader().yggdrasil(url, skinFile, profileId);
             Logging.i("SkinLoader", "Update skin success");

@@ -183,7 +183,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         // Set the sustained performance mode for available APIs
         window.setSustainedPerformanceMode(AllSettings.getSustainedPerformance().getValue());
 
-        // 防止系统息屏
+        // Keep the screen from turning off.
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         ControlLayout controlLayout = binding.mainControlLayout;
@@ -211,7 +211,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         //Now, attach to the service. The game will only start when this happens, to make sure that we know the right state.
         bindService(gameServiceIntent, this, 0);
 
-        //初始化输入监听器，当输入法遮挡了游戏画面时，将设置这个监听器
+        // Initialise the input listener; it is installed when the IME covers the game view.
         mInputWatcher = s -> binding.inputPreview.setText(s.toString().trim());
         setupKeyboardInsetsListener();
     }
@@ -383,12 +383,12 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             });
 
             binding.mainGameRenderView.setOnRenderingStartedListener(() -> {
-                //彻底清除背景图片，确保一些设备不再出现“半透明渲染”的问题
+                // Clear the background image completely so no device shows translucent rendering.
                 BackgroundManager.clearBackgroundImage(binding.backgroundView);
                 Logging.i("Rendering Game", "The game rendering has started, " +
                         "and the background image has been cleared to prevent certain issues from occurring.");
 
-                //TurtleLauncher: 开始本次游戏会话计时（用于 Stopwatch / Playtime HUD）
+                // TurtleLauncher: start timing this game session (Stopwatch / playtime HUD).
                 com.endiq.turtlelauncher.feature.inputstats.SessionStatsTracker.start();
             });
 
@@ -529,12 +529,18 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //TurtleLauncher: 结算本次游戏会话计时，并清除按键状态
+        // TurtleLauncher: settle the session stopwatch and clear the key state.
         com.endiq.turtlelauncher.feature.inputstats.SessionStatsTracker.stop();
         com.endiq.turtlelauncher.feature.inputstats.InputStatsTracker.reset();
-        mMenuSettingsInitListener.closeSpinner();
-        CallbackBridge.removeGrabListener(binding.mainTouchpad);
-        CallbackBridge.removeGrabListener(binding.mainGameRenderView);
+        // TurtleLauncher CRASH FIX: when initLayout()/onCreate aborts partway (the
+        // showError-and-finish path), onDestroy still runs on a half-initialized
+        // activity - mMenuSettingsInitListener/binding can be null and an unguarded
+        // deref here turned a diagnosable startup error into a crash-on-teardown.
+        if (mMenuSettingsInitListener != null) mMenuSettingsInitListener.closeSpinner();
+        if (binding != null) {
+            CallbackBridge.removeGrabListener(binding.mainTouchpad);
+            CallbackBridge.removeGrabListener(binding.mainGameRenderView);
+        }
         if (mKeyboardOffsetAnimator != null) mKeyboardOffsetAnimator.cancel();
         // TurtleLauncher: don't leave an encoder/muxer running (and the output file
         // unfinalized/unplayable) if the game exits mid-recording.
@@ -557,7 +563,13 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        TaskExecutors.getUIHandler().postDelayed(() -> binding.mainGameRenderView.refreshSize(), 500);
+        // TurtleLauncher CRASH FIX: if initLayout() aborted before the render view was
+        // wired up (showError-and-finish path), the delayed refreshSize() below could
+        // still fire against a null static binding and NPE on the UI thread.
+        TaskExecutors.getUIHandler().postDelayed(() -> {
+            ActivityGameBinding b = binding;
+            if (b != null) b.mainGameRenderView.refreshSize();
+        }, 500);
     }
 
     @Override
@@ -580,7 +592,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         return AllSettings.getIgnoreNotch().getValue();
     }
 
-    //使用一个输入预览框来展示用户输入的内容
+    // Use an input preview box to show what the user typed.
     //TurtleLauncher: detection moved to setupKeyboardInsetsListener()/onKeyboardVisibilityChanged()
     //above (WindowInsetsCompat IME type) - see that method's doc comment for why the old
     //getWindowVisibleDisplayFrame() heuristic this used to live in was unreliable here.
@@ -652,45 +664,85 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     }
 
     public static void openLink(String link) {
-        Context ctx = binding.mainTouchpad.getContext(); // no more better way to obtain a context statically
-        ((Activity)ctx).runOnUiThread(() -> {
-            try {
-                setUri(ctx, link);
-            } catch (Throwable th) {
-                Tools.showError(ctx, th);
+        // TurtleLauncher CRASH FIX: reachable from the JVM through JNI (CallbackBridge
+        // CLIPBOARD_OPEN). binding is a static that is null before onCreate and after
+        // the game tears down - dereferencing it on the JNI thread aborted the whole
+        // process when the game fired a link open late in shutdown. Everything is
+        // guarded now; a link that can't be opened is logged, not fatal.
+        try {
+            ActivityGameBinding currentBinding = binding;
+            if (currentBinding == null) {
+                Logging.w("MainActivity", "openLink ignored: game UI is gone (link=" + link + ")");
+                return;
             }
-        });
+            Context ctx = currentBinding.mainTouchpad.getContext(); // no more better way to obtain a context statically
+            if (!(ctx instanceof Activity)) return;
+            ((Activity)ctx).runOnUiThread(() -> {
+                try {
+                    setUri(ctx, link);
+                } catch (Throwable th) {
+                    Tools.showError(ctx, th);
+                }
+            });
+        } catch (Throwable t) {
+            Logging.w("MainActivity", "openLink failed", t);
+        }
     }
 
     public static void querySystemClipboard() {
+        // TurtleLauncher CRASH FIX: runs on the UI thread of the game process (an
+        // uncaught exception here kills the running game) and is fed by the AWT/JNI
+        // clipboard path. GLOBAL_CLIPBOARD is null outside the activity lifetime,
+        // getPrimaryClip() can return null on Android 10+ even with focus races, and
+        // getItemAt(0) can be null or URI-only - all previously unguarded NPEs.
         TaskExecutors.runInUIThread(()->{
-            ClipData clipData = GLOBAL_CLIPBOARD.getPrimaryClip();
-            if(clipData == null) {
+            try {
+                ClipboardManager clipboard = GLOBAL_CLIPBOARD;
+                if (clipboard == null) {
+                    AWTInputBridge.nativeClipboardReceived(null, null);
+                    return;
+                }
+                ClipData clipData = clipboard.getPrimaryClip();
+                if(clipData == null || clipData.getItemCount() == 0) {
+                    AWTInputBridge.nativeClipboardReceived(null, null);
+                    return;
+                }
+                ClipData.Item firstClipItem = clipData.getItemAt(0);
+                //TODO: coerce to HTML if the clip item is styled
+                CharSequence clipItemText = firstClipItem != null ? firstClipItem.getText() : null;
+                if(clipItemText == null) {
+                    AWTInputBridge.nativeClipboardReceived(null, null);
+                    return;
+                }
+                AWTInputBridge.nativeClipboardReceived(clipItemText.toString(), "plain");
+            } catch (Throwable t) {
+                Logging.w("MainActivity", "System clipboard query failed", t);
                 AWTInputBridge.nativeClipboardReceived(null, null);
-                return;
             }
-            ClipData.Item firstClipItem = clipData.getItemAt(0);
-            //TODO: coerce to HTML if the clip item is styled
-            CharSequence clipItemText = firstClipItem.getText();
-            if(clipItemText == null) {
-                AWTInputBridge.nativeClipboardReceived(null, null);
-                return;
-            }
-            AWTInputBridge.nativeClipboardReceived(clipItemText.toString(), "plain");
         });
     }
 
     public static void putClipboardData(String data, String mimeType) {
+        // TurtleLauncher CRASH FIX: same JNI/UI-thread exposure as querySystemClipboard -
+        // switch(null) NPEs, GLOBAL_CLIPBOARD can be null during teardown, and either
+        // exception on the UI thread takes the game process with it.
         TaskExecutors.runInUIThread(()-> {
-            ClipData clipData = null;
-            switch(mimeType) {
-                case "text/plain":
-                    clipData = ClipData.newPlainText("AWT Paste", data);
-                    break;
-                case "text/html":
-                    clipData = ClipData.newHtmlText("AWT Paste", data, data);
+            try {
+                if (data == null || mimeType == null) return;
+                ClipboardManager clipboard = GLOBAL_CLIPBOARD;
+                if (clipboard == null) return;
+                ClipData clipData = null;
+                switch(mimeType) {
+                    case "text/plain":
+                        clipData = ClipData.newPlainText("AWT Paste", data);
+                        break;
+                    case "text/html":
+                        clipData = ClipData.newHtmlText("AWT Paste", data, data);
+                }
+                if(clipData != null) clipboard.setPrimaryClip(clipData);
+            } catch (Throwable t) {
+                Logging.w("MainActivity", "Failed to put clipboard data from the game", t);
             }
-            if(clipData != null) GLOBAL_CLIPBOARD.setPrimaryClip(clipData);
         });
     }
 
@@ -759,11 +811,11 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
 
         public MenuSettingsInitListener(ViewGameMenuBinding binding) {
             this.binding = binding;
-            //初始化状态
+            // Initialise the state.
             this.binding.hotbarWidth.setMax(currentDisplayMetrics.widthPixels / 2);
             this.binding.hotbarHeight.setMax(currentDisplayMetrics.heightPixels / 2);
 
-            //初始化Seekbar的值
+            // Initialise the seekbar value.
             MenuUtils.initSeekBarValue(this.binding.resolutionScaler, AllSettings.getResolutionRatio().getValue(), this.binding.resolutionScalerValue, "%");
             binding.resolutionScalerPreview.setText(VideoSettingsFragment.getResolutionRatioPreview(getResources(), AllSettings.getResolutionRatio().getValue()));
             MenuUtils.initSeekBarValue(this.binding.timeLongPressTrigger, AllSettings.getTimeLongPressTrigger().getValue(), this.binding.timeLongPressTriggerValue, "ms");
@@ -772,7 +824,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             MenuUtils.initSeekBarValue(this.binding.hotbarHeight, AllSettings.getHotbarHeight().getValue().getValue(), this.binding.hotbarHeightValue, "px");
             MenuUtils.initSeekBarValue(this.binding.hotbarWidth, AllSettings.getHotbarWidth().getValue().getValue(), this.binding.hotbarWidthValue, "px");
 
-            //初始化Switch的状态
+            // Initialise the switch state.
             this.binding.openMemoryInfo.setChecked(AllSettings.getGameMenuShowMemory().getValue());
             this.binding.openFpsInfo.setChecked(AllSettings.getGameMenuShowFPS().getValue());
             this.binding.showCpsHud.setChecked(AllSettings.getShowCpsHud().getValue());
@@ -788,6 +840,9 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.disableGestures.setChecked(AllSettings.getDisableGestures().getValue());
             this.binding.disableDoubleTap.setChecked(AllSettings.getDisableDoubleTap().getValue());
             this.binding.controlSwitcher.setChecked(AllSettings.getControlSwitcherEnabled().getValue());
+            // TurtleLauncher Emotes row state.
+            this.binding.emotes.setChecked(AllSettings.getEmotesEnabled().getValue());
+            refreshEmotesRows();
             this.binding.enableGyro.setChecked(AllSettings.getEnableGyro().getValue());
             this.binding.gyroInvertX.setChecked(AllSettings.getGyroInvertX().getValue());
             this.binding.gyroInvertY.setChecked(AllSettings.getGyroInvertY().getValue());
@@ -804,7 +859,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.tabBtnHotbar.setOnClickListener(v -> selectTab(this.binding.tabBtnHotbar));
             selectTab(this.binding.tabBtnDebug);
 
-            //初始化点击事件
+            // Initialise the click listener.
             this.binding.forceClose.setOnClickListener(this);
             this.binding.logOutput.setOnClickListener(this);
             this.binding.sendCustomKey.setOnClickListener(this);
@@ -848,6 +903,12 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.disableDoubleTapLayout.setOnClickListener(this);
             this.binding.controlSwitcher.setOnCheckedChangeListener(this);
             this.binding.controlSwitcherLayout.setOnClickListener(this);
+
+            // TurtleLauncher Emotes: toggle + wheel trigger + website shortcut.
+            this.binding.emotes.setOnCheckedChangeListener(this);
+            this.binding.emotesLayout.setOnClickListener(this);
+            this.binding.emoteWheelButton.setOnClickListener(this);
+            this.binding.emoteSiteButton.setOnClickListener(this);
 
             this.binding.timeLongPressTrigger.setOnSeekBarChangeListener(this);
             this.binding.timeLongPressTriggerRemove.setOnClickListener(this);
@@ -895,7 +956,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
 
         private void dialogSendCustomKey() {
             keyboardDialog.setOnMultiKeycodeSelectListener(selectedKeycodes -> {
-                //模拟同时按下，同时松开按键
+                // Simulate pressing (and releasing) the keys simultaneously.
                 Task.runTask(() -> {
                     selectedKeycodes.forEach(keycode -> sendKeyPress(keycode, true));
                     return null;
@@ -923,7 +984,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             SelectControlsDialog dialog = new SelectControlsDialog(MainActivity.this, file -> {
                 try {
                     MainActivity.binding.mainControlLayout.loadLayout(file.getAbsolutePath());
-                    //刷新：是否隐藏菜单按钮
+                    // Refresh: whether the menu button is hidden.
                     mGameMenuWrapper.setVisibility(!MainActivity.binding.mainControlLayout.hasMenuButton());
                 } catch (IOException ignored) {}
             });
@@ -968,6 +1029,9 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             else if (v == binding.disableGesturesLayout) MenuUtils.toggleSwitchState(binding.disableGestures);
             else if (v == binding.disableDoubleTapLayout) MenuUtils.toggleSwitchState(binding.disableDoubleTap);
             else if (v == binding.controlSwitcherLayout) MenuUtils.toggleSwitchState(binding.controlSwitcher);
+            else if (v == binding.emotesLayout) MenuUtils.toggleSwitchState(binding.emotes);
+            else if (v == binding.emoteWheelButton) triggerEmoteWheel();
+            else if (v == binding.emoteSiteButton) openEmoteWebsite();
             else if (v == binding.timeLongPressTriggerRemove) MenuUtils.adjustSeekbar(binding.timeLongPressTrigger, -1);
             else if (v == binding.timeLongPressTriggerAdd) MenuUtils.adjustSeekbar(binding.timeLongPressTrigger, 1);
             else if (v == binding.mouseSpeedRemove) MenuUtils.adjustSeekbar(binding.mouseSpeed, -1);
@@ -1081,10 +1145,14 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
                 AllSettings.getControlSwitcherEnabled().put(isChecked).save();
                 // Apply immediately - the in-game button appears/disappears without a restart.
                 refreshControlSwitcherButton();
+            } else if (v == binding.emotes) {
+                AllSettings.getEmotesEnabled().put(isChecked).save();
+                // Apply immediately - the emote action rows appear/disappear without a restart.
+                refreshEmotesRows();
             } else if (v == binding.enableGyro) {
                 refreshLayoutVisible(binding.gyroLayout, isChecked);
                 AllSettings.getEnableGyro().put(isChecked).save();
-                //刷新陀螺仪的启用状态
+                // Refresh the gyroscope enabled state.
                 AllStaticSettings.enableGyro = isChecked;
                 mGyroControl.updateOrientation();
                 if (isChecked) mGyroControl.enable();
@@ -1099,10 +1167,45 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         }
 
         /**
-         * 刷新View的可见状态
+         * Refresh the visibility state of the view.
          */
         private void refreshLayoutVisible(View view, boolean visible) {
             view.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+
+        /** TurtleLauncher Emotes: show/hide the emote action rows per the Emote button
+         *  toggle. The toggle row itself always stays visible - it IS the toggle. */
+        private void refreshEmotesRows() {
+            boolean on = AllSettings.getEmotesEnabled().getValue();
+            binding.emoteWheelButton.setVisibility(on ? View.VISIBLE : View.GONE);
+            binding.emoteSiteButton.setVisibility(on ? View.VISIBLE : View.GONE);
+        }
+
+        /** TurtleLauncher Emotes: send the configured emote-wheel key (default B, matching
+         *  Emotecraft's default wheel keybind) to the game. Closes the menu drawer first so
+         *  the wheel renders unobstructed. Fully guarded - a key send must never be able to
+         *  take the game process down, and without the Emotecraft mod installed the press is
+         *  simply an unused key as far as the game is concerned. */
+        private void triggerEmoteWheel() {
+            try {
+                MainActivity.binding.mainDrawerOptions.closeDrawers();
+                int key = AllSettings.getEmoteWheelKeycode().getValue();
+                if (key > 0) CallbackBridge.sendKeyPress(key);
+            } catch (Throwable t) {
+                Logging.w("MainActivity", "Emote wheel trigger failed", t);
+            }
+        }
+
+        /** TurtleLauncher Emotes: open the community emote library (the same site the
+         *  Settings -> Emotes screen embeds) in the browser, for when downloading from the
+         *  WebView or managing files is not what the player wants right now. */
+        private void openEmoteWebsite() {
+            try {
+                MainActivity.binding.mainDrawerOptions.closeDrawers();
+                ZHTools.openLink(MainActivity.this, com.endiq.turtlelauncher.feature.emotes.Emotes.EMOTE_SITE_URL);
+            } catch (Throwable t) {
+                Logging.w("MainActivity", "Could not open the emote website", t);
+            }
         }
 
         /**
@@ -1144,8 +1247,9 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         }
         @Override public void onDrawerClosed(@NonNull View drawerView) {}
         @Override public void onDrawerStateChanged(int newState) {
-            //需要在菜单状态改变的时候，关闭Hotbar类型的Spinner，这个库并没有自动关闭的功能，所以需要这么做
-            //关掉！关掉！一定要关掉！
+            // The hotbar spinner has to be closed manually when the menu state changes, because
+            // the library never dismisses it on its own.
+            // Turn it off! Off! It really must be turned off!
             closeSpinner();
         }
 

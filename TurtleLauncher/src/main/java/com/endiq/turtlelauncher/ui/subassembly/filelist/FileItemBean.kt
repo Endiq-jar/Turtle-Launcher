@@ -24,7 +24,7 @@ class FileItemBean(
     constructor(file: File) : this(
         file.name,
         Date(file.lastModified()),
-        //文件夹统计大小需要花费的时间较多，只展示文件的大小就好了
+        // Summing folder sizes takes too long; only show the size of files.
         if (file.isFile) FileUtils.sizeOf(file) else null
     ) {
         this.file = file
@@ -46,17 +46,17 @@ class FileItemBean(
         val thisName = file?.name ?: name
         val otherName = other.file?.name ?: other.name
 
-        //首先检查文件是否为目录 (locals: `file` is a mutable @JvmField var, so a
+        // First check whether the file is a directory (locals: `file` is a mutable @JvmField var, so a
         // re-read after the null check could still NPE - and smart-cast won't apply)
         val thisFile = file
         val otherFile = other.file
         if (thisFile != null && thisFile.isDirectory) {
             if (otherFile != null && !otherFile.isDirectory) {
-                //目录排在文件前面
+                // Directories sort before files.
                 return -1
             }
         } else if (otherFile != null && otherFile.isDirectory) {
-            //文件排在目录后面
+            // Files sort after directories.
             return 1
         }
 

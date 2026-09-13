@@ -11,12 +11,12 @@ import com.skydoves.powerspinner.PowerSpinnerView
 import com.skydoves.powerspinner.databinding.PowerspinnerItemDefaultPowerBinding
 
 /**
- * 改自 [com.skydoves.powerspinner.DefaultSpinnerAdapter]
+ * Adapted from [com.skydoves.powerspinner.DefaultSpinnerAdapter].
  */
 @SuppressLint("NotifyDataSetChanged")
 class ObjectSpinnerAdapter<T>(
     powerSpinnerView: PowerSpinnerView,
-    private val itemNameProvider: (T) -> String //提供函数来获取字符串
+    private val itemNameProvider: (T) -> String // supplies the display string
 ) : RecyclerView.Adapter<ObjectSpinnerAdapter.ViewHolder<T>>(),
     PowerSpinnerInterface<T> {
     companion object {

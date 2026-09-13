@@ -5,7 +5,7 @@ import com.endiq.turtlelauncher.feature.download.enums.VersionType
 import java.util.Date
 
 /**
- * @param dependencies 该版本的依赖 Mod 的信息
+ * @param dependencies info about the mods this version depends on
  */
 class ModVersionItem(
     projectId: String,

@@ -126,7 +126,8 @@ class SeekBarSettingsWrapper(
         this.listener = listener
     }
 
-    //部分场景需要在seekbar被包装前，完成一些操作，比如动态调整最大值或最小值
+    // Some flows need to touch the seekbar before it is wrapped, e.g. to adjust min/max
+    // dynamically.
     fun interface OnStartInit {
         fun onStart(wrapper: SeekBarSettingsWrapper)
     }

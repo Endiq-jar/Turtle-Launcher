@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.endiq.turtlelauncher.R;
 import com.endiq.turtlelauncher.feature.log.Logging;
 import com.endiq.turtlelauncher.task.TaskExecutors;
 
@@ -42,6 +43,10 @@ public class Terracotta {
     private static volatile boolean initialized = false;
     private static volatile TerracottaAndroidAPI.Metadata metadata = null;
     private static volatile TerracottaMode mode = null;
+    /** Application context, captured in [initialize] - used to push state updates to the
+     *  VPN service notification without depending on the (possibly gone) Activity. */
+    @Nullable
+    private static volatile Context appContext = null;
 
     private static final AtomicReference<TerracottaState.Ready> STATE = new AtomicReference<>(null);
     private static final List<StateListener> LISTENERS = new CopyOnWriteArrayList<>();
@@ -112,12 +117,68 @@ public class Terracotta {
     public static synchronized void initialize(Activity activity) {
         if (initialized) return;
 
+        appContext = activity.getApplicationContext();
         metadata = TerracottaAndroidAPI.initialize(activity, () ->
-            TaskExecutors.runInUIThread(() -> startTerracottaVpn(activity))
+            TaskExecutors.runInUIThread(() -> {
+                // TurtleLauncher CRASH FIX: this callback fires whenever EasyTier wants a
+                // VPN - including while the user has backgrounded the app mid-connect.
+                // On Android 12+ startForegroundService() then throws
+                // ForegroundServiceStartNotAllowedException straight onto the main
+                // looper, killing the launcher. Reject the request instead (frees the
+                // backend's 30-second fulfillment window) and fall back to Waiting.
+                try {
+                    startTerracottaVpn(activity);
+                } catch (Throwable t) {
+                    Logging.e("Terracotta", "Could not start the VPN service for Terracotta", t);
+                    try {
+                        TerracottaAndroidAPI.getPendingVpnServiceRequest().reject();
+                        mode = null;
+                        setWaiting(activity, false);
+                    } catch (Throwable ignored) {
+                    }
+                }
+            })
         );
 
         initialized = true;
         startPolling();
+        // Zalith Launcher 2 resets the backend to Waiting right after initialize() so the
+        // first host/join never races a stale native state. The poll daemon needs up to one
+        // tick (500ms) to observe it, and setScanning/setGuesting additionally wait for it
+        // (see awaitWaitingState).
+        TerracottaAndroidAPI.setWaiting();
+    }
+
+    /**
+     * Blocks until the observable state is [TerracottaState.Waiting], seeding it directly
+     * from the native layer if the poll daemon hasn't caught up yet. Fixes the startup
+     * race where Host/Join is tapped within the first poll tick after initialize():
+     * getState() is still null, the old `instanceof Waiting` guard threw
+     * IllegalStateException, and the button appeared dead. Zalith Launcher 2 avoids this
+     * by polling at 1ms; we poll at 500ms (deliberately, see POLL_INTERVAL_NANOS), so the
+     * wait happens here instead.
+     */
+    private static void awaitWaitingState() {
+        long deadline = System.currentTimeMillis() + 3000;
+        while (!(STATE.get() instanceof TerracottaState.Waiting) && System.currentTimeMillis() < deadline) {
+            try {
+                // Seed directly instead of waiting for the daemon: it only polls while a
+                // listener is attached, which isn't guaranteed for every caller. A fresh
+                // native read always supersedes whatever STATE holds (which may be a stale
+                // pre-reset value), so overwrite unconditionally; the daemon's own
+                // index-monotonic compareAndSet still guards listener notifications.
+                TerracottaState.Ready next = TerracottaState.parse(TerracottaAndroidAPI.getState());
+                STATE.set(next);
+                if (next instanceof TerracottaState.Waiting) return;
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            } catch (Throwable t) {
+                Logging.w("Terracotta", "awaitWaitingState: state read failed", t);
+                return;
+            }
+        }
     }
 
     /**
@@ -155,6 +216,10 @@ public class Terracotta {
                     TerracottaState.Ready next = TerracottaState.parse(stateJson);
                     consecutiveFailures = 0;
                     if (next.getIndex() > index && STATE.compareAndSet(current, next)) {
+                        // Keep the VPN foreground notification in sync with the connection
+                        // state - Zalith Launcher 2's notificationJob does the same via its
+                        // EventViewModel (Event.Terracotta.VPNUpdateState).
+                        notifyVpnServiceOfState(next);
                         TaskExecutors.runInUIThread(() -> {
                             for (StateListener listener : LISTENERS) listener.onStateChanged(next);
                         });
@@ -201,6 +266,7 @@ public class Terracotta {
     /** Host a room. player/extraNodes may be null. */
     public static void setScanning(@Nullable String room, @Nullable String player, @Nullable List<String> extraNodes) throws Exception {
         if (!initialized) throw new IllegalStateException("Call Terracotta.initialize() first");
+        if (!(getState() instanceof TerracottaState.Waiting)) awaitWaitingState();
         if (!(getState() instanceof TerracottaState.Waiting)) throw new IllegalStateException("Reset to waiting state first");
 
         mode = TerracottaMode.HOST;
@@ -210,6 +276,7 @@ public class Terracotta {
     /** Join a room by code. Returns false if the room code was rejected outright. */
     public static boolean setGuesting(String room, @Nullable String player, @Nullable List<String> extraNodes) throws Exception {
         if (!initialized) throw new IllegalStateException("Call Terracotta.initialize() first");
+        if (!(getState() instanceof TerracottaState.Waiting)) awaitWaitingState();
         if (!(getState() instanceof TerracottaState.Waiting)) throw new IllegalStateException("Reset to waiting state first");
 
         mode = TerracottaMode.GUEST;
@@ -256,14 +323,54 @@ public class Terracotta {
         } else {
             TerracottaAndroidAPI.getPendingVpnServiceRequest().reject();
             setWaiting(activity, true);
-            Toast.makeText(activity, "VPN permission is required for Friends/LAN play", Toast.LENGTH_SHORT).show();
+            // TurtleLauncher: was a hardcoded English literal; same text lives in
+            // strings.xml as terracotta_vpn_permission_required.
+            Toast.makeText(activity, R.string.terracotta_vpn_permission_required, Toast.LENGTH_SHORT).show();
         }
     }
 
     private static void stopTerracottaVpn(Context context) {
         if (TerracottaVpnService.isRunning()) {
-            Intent intent = new Intent(context, TerracottaVpnService.class).setAction(TerracottaVpnService.ACTION_STOP);
-            ContextCompat.startForegroundService(context, intent);
+            // TurtleLauncher: was ContextCompat.startForegroundService(ACTION_STOP). Ported
+            // from Zalith Launcher 2, which has to use stopService() here (their words:
+            // "must issue the stop command with stopService, to avoid the FGS start-timeout
+            // crash"): on Android 12+ startForegroundService() from the background throws
+            // ForegroundServiceStartNotAllowedException, and "leaving the room" is exactly
+            // what the user does right after backgrounding the launcher - plus every FGS
+            // start restarts Android's 5-second startForeground() deadline for a service
+            // that is about to die anyway. stopService() has no such restriction and lands
+            // in onDestroy(), which performs the identical teardown.
+            context.stopService(new Intent(context, TerracottaVpnService.class));
+        }
+    }
+
+    /** Pushes a state's one-line description to the VPN service notification. Best-effort:
+     *  a background app may not be allowed to send service intents on Android 12+, and a
+     *  stale notification is a cosmetic problem, not a reason to crash the poll daemon. */
+    private static void notifyVpnServiceOfState(TerracottaState.Ready state) {
+        Context context = appContext;
+        if (context == null || state instanceof TerracottaState.Waiting) return;
+        if (!TerracottaVpnService.isRunning()) return;
+
+        int stringRes = state.localStringRes();
+        if (stringRes == 0) return;
+
+        try {
+            Intent intent = new Intent(context, TerracottaVpnService.class)
+                .setAction(TerracottaVpnService.ACTION_UPDATE_STATE)
+                .putExtra(TerracottaVpnService.EXTRA_STATE_TEXT, stringRes);
+            // TurtleLauncher CRASH FIX: was ContextCompat.startForegroundService(). The
+            // service's UPDATE_STATE branch only calls notify() - it never calls
+            // startForeground(). If the service is not already foregrounded when such an
+            // intent lands (teardown/setup race past the isRunning() check), Android's
+            // 5-second startForeground() deadline expires and the system kills the app
+            // with RemoteServiceException. A plain startService() sets no such deadline
+            // and is delivered to the running service just the same; if the OS refuses a
+            // background start, the catch below degrades to a stale (cosmetic) text.
+            context.startService(intent);
+        } catch (Throwable t) {
+            // Includes ForegroundServiceStartNotAllowedException (an IllegalStateException).
+            Logging.w("Terracotta", "Could not update VPN notification state text", t);
         }
     }
 }

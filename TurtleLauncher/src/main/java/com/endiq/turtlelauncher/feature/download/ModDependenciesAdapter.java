@@ -133,7 +133,7 @@ public class ModDependenciesAdapter extends RecyclerView.Adapter<ModDependencies
                             R.string.download_info_downloads,
                             NumberWithUnits.formatNumberWithUnit(
                                     infoItem.getDownloadCount(),
-                                    //判断当前系统语言是否为英文
+                                    // Check whether the current system language is English.
                                     ZHTools.isEnglish(context)
                             )
                     )

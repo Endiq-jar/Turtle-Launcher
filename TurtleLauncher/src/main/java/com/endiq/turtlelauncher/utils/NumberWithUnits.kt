@@ -10,12 +10,12 @@ import java.text.DecimalFormat
 
 class NumberWithUnits {
     companion object {
-        private val UNITS_EN = arrayOf("", "K", "M") //英文单位：千、百万
+        private val UNITS_EN = arrayOf("", "K", "M") // English units: thousand, million
         private val UNITS_ZH = arrayOf(
             "",
             getString(R.string.generic_wan),
             getString(R.string.generic_yi)
-        ) //中文单位:万、亿
+        ) // Chinese-style units (ten thousand / hundred million)
 
         @JvmStatic
         fun formatNumberWithUnit(number: Long, isEnglish: Boolean): String {
@@ -43,7 +43,7 @@ class NumberWithUnits {
                 unitIndex++
             }
 
-            //检查是否为空的单位，如果是，那么就不做格式化，直接返回原始值
+            // If the unit is empty, skip formatting and return the raw value.
             if (units[unitIndex].isEmpty()) {
                 return number.toString()
             } else {

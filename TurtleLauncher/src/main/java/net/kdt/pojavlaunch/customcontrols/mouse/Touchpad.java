@@ -81,6 +81,11 @@ public class Touchpad extends View implements GrabListener, AbstractTouchpad {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        // TurtleLauncher (Zalith Launcher 2 hideMouse port): optionally don't draw the
+        // virtual cursor overlay at all - tracking, movement and clicks keep working
+        // exactly the same, only the on-screen pointer disappears (useful when the game
+        // draws its own crosshair/cursor and the overlay just gets in the way).
+        if (AllSettings.getHideMouse().getValue()) return;
         canvas.translate(mMouseX, mMouseY);
         mMousePointerDrawable.draw(canvas);
     }

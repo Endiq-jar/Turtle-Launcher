@@ -115,7 +115,7 @@ public class ControlListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             String text = StringUtils.insertSpace(context.getString(R.string.controls_info_invalid), controlItemBean.controlInfoData.fileName);
             binding.name.setText(text);
 
-            //设置文本字体
+            // Set the text font.
             binding.name.setTextColor(Color.rgb(255, 60, 60));
             binding.name.setTypeface(null, Typeface.BOLD);
             binding.name.setTextSize(14);
@@ -148,7 +148,7 @@ public class ControlListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             List<TextView> infoViews = new ArrayList<>();
 
-            //初始化控制布局名称，如果为空，那么将设置为文件名
+            // Initialise the control layout name; fall back to the file name when empty.
             if (!controlInfoData.name.isEmpty() && !controlInfoData.name.equals("null")) {
                 if (controlInfoData.name.equals("control.default.title.text")) {
                     controlInfoData.name = mContext.getString(R.string.controls_info_default_title);
@@ -159,23 +159,23 @@ public class ControlListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 binding.title.setText(controlInfoData.fileName);
             }
 
-            //设置高亮
+            // Set the highlight.
             int color = controlItemBean.isHighlighted ?
                     Color.rgb(69, 179, 162) :
                     binding.title.getResources().getColor(R.color.turtle_primary_text, binding.title.getContext().getTheme());
             binding.title.setTextColor(color);
 
-            //初始化作者名，如果没有填写，那么就隐藏它
+            // Initialise the author name; hide the view when it is empty.
             if (!controlInfoData.author.isEmpty() && !controlInfoData.author.equals("null")) {
                 infoViews.add(getAInfoTextView(R.string.controls_info_author, controlInfoData.author));
             }
 
-            //初始化版本
+            // Initialise the version.
             if (!controlInfoData.version.isEmpty() && !controlInfoData.version.equals("null")) {
                 infoViews.add(getAInfoTextView(R.string.controls_info_version, controlInfoData.version));
             }
 
-            //初始化描述说明
+            // Initialise the description.
             if (!controlInfoData.desc.isEmpty() && !controlInfoData.desc.equals("null")) {
                 if (controlInfoData.desc.equals("control.default.desc.text")) {
                     controlInfoData.desc = mContext.getString(R.string.controls_info_default_desc);

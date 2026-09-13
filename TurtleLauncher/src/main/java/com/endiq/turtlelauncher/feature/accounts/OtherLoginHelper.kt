@@ -12,7 +12,7 @@ import net.kdt.pojavlaunch.value.MinecraftAccount
 import java.util.Objects
 
 /**
- * 帮助登录外置账号（创建新的外置账号、仅登录当前外置账号）
+ * Helps logging into external accounts (creating a new one or login-only flows).
  */
 class OtherLoginHelper(
     private val baseUrl: String,
@@ -53,8 +53,9 @@ class OtherLoginHelper(
     }
 
     /**
-     * 将账号信息写入到账号对象中（单独区分出来是为了适配仅登录的情况，刷新账号信息）
-     * @param account 需要写入的账号
+     * Write the account info into the account object (kept separate so login-only flows can
+     * refresh the info).
+     * @param account the account to write
      */
     private fun writeAccount(
         account: MinecraftAccount,
@@ -77,7 +78,7 @@ class OtherLoginHelper(
     }
 
     /**
-     * 通过账号密码，登录一个新的账号
+     * Log into a new account with username and password.
      */
     fun createNewAccount(context: Context) {
         login(context, object : LoginAccountListener {
@@ -110,11 +111,11 @@ class OtherLoginHelper(
     }
 
     /**
-     * 仅仅只是登录外置账号（使用账号密码登录）
+     * Only log into the external account (username/password login).
      * JUST DO IT!!!
      */
     fun justLogin(context: Context, account: MinecraftAccount) {
-        //未找到匹配的ID
+        // No matching id found.
         fun roleNotFound() {
             TaskExecutors.runInUIThread {
                 listener.onFailed(context.getString(R.string.other_login_role_not_found))
@@ -137,7 +138,7 @@ class OtherLoginHelper(
             override fun hasMultipleRoles(authResult: AuthResult) {
                 authResult.availableProfiles.forEach { profile ->
                     if (profile.id == account.profileId) {
-                        //匹配当前账号的ID时，那么这个角色就是这个账号
+                        // If the ID matches the current account, this profile belongs to it.
                         writeAccount(account, authResult, profile.name, profile.id)
                         TaskExecutors.runInUIThread {
                             listener.unLoading()
@@ -190,7 +191,7 @@ class OtherLoginHelper(
     }
 
     /**
-     * 账号拥有的角色数量不同时，所做出的登陆决策
+     * Login decisions taken depending on how many profiles the account owns.
      */
     private interface LoginAccountListener {
         fun onlyOneRole(authResult: AuthResult)

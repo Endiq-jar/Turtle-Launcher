@@ -36,7 +36,7 @@ class VersionAdapter(
 ) : RecyclerView.Adapter<VersionAdapter.InnerHolder>() {
 
     init {
-        mData?.sortedWith { o1, o2 ->  //按照日期进行一波排序
+        mData?.sortedWith { o1, o2 ->  // sort by date first
             o1.uploadDate.compareTo(o2.uploadDate)
         }
     }

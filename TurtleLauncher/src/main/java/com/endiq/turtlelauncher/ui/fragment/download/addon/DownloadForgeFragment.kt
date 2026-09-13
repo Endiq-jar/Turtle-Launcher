@@ -28,7 +28,7 @@ class DownloadForgeFragment : ModListFragment() {
         setTitleText("Forge")
         setLink("https://forums.minecraftforge.net/")
         setMCMod("https://www.mcmod.cn/class/30.html")
-        setReleaseCheckBoxGone() //隐藏“仅展示正式版”选择框，在这里没有用处
+        setReleaseCheckBoxGone() // hide the "releases only" checkbox, useless here
     }
 
     override fun initRefresh(): Future<*> {
@@ -77,7 +77,7 @@ class DownloadForgeFragment : ModListFragment() {
         forgeVersions.forEach(Consumer { forgeVersion: String ->
             currentTask?.apply { if (isCancelled) return@Consumer }
 
-            //查找并分组Minecraft版本与Forge版本 (a version string without a dash
+            // Find and group Minecraft and Forge versions (a version string without a dash
             // would make substring(0, -1) crash - skip the malformed entry)
             val dashIndex = forgeVersion.indexOf("-")
             if (dashIndex <= 0) return@Consumer

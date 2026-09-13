@@ -11,11 +11,11 @@ import net.kdt.pojavlaunch.Tools
 import java.io.File
 
 /**
- * Minecraft 版本，由版本名称进行区分
- * @param versionsFolder 版本所属的版本文件夹
- * @param versionPath 版本的路径
- * @param versionConfig 独立版本的配置
- * @param isValid 版本的有效性
+ * A Minecraft version, distinguished by its version name.
+ * @param versionsFolder version folder this version belongs to
+ * @param versionPath path of the version
+ * @param versionConfig config of the standalone version
+ * @param isValid validity of the version
  */
 class Version(
     private val versionsFolder: String,
@@ -24,51 +24,52 @@ class Version(
     private val isValid: Boolean
 ) :Parcelable {
     /**
-     * 控制是否将当前账号视为离线账号启动游戏
+     * Controls whether the game launches with the current account treated as offline.
      */
     var offlineAccountLogin: Boolean = false
 
     /**
-     * 模组检查结果
+     * Result of the mod checks.
      */
     var modCheckResult: ModChecker.ModCheckResult? = null
 
     /**
-     * @return 获取版本所属的版本文件夹
+     * @return the version folder this version belongs to
      */
     fun getVersionsFolder(): String = versionsFolder
 
     /**
-     * @return 获取版本文件夹
+     * @return the version folder
      */
     fun getVersionPath(): File = File(versionPath)
 
     /**
-     * @return 获取版本名称
+     * @return the version name
      */
     fun getVersionName(): String = getVersionPath().name
 
     /**
-     * @return 获取版本隔离配置
+     * @return the version isolation config
      */
     fun getVersionConfig() = versionConfig
 
     /**
-     * @return 版本的有效性：是否存在版本JSON文件、版本文件夹是否存在
+     * @return version validity: does the version json and folder exist
      */
     fun isValid() = isValid && getVersionPath().exists()
 
     /**
-     * @return 是否开启了版本隔离
+     * @return whether version isolation is enabled
      */
     fun isIsolation() = versionConfig.isIsolation()
 
     /**
-     * @return 获取版本的游戏文件夹路径（若开启了版本隔离，则路径为版本文件夹）
+     * @return the game folder path of the version (its version folder when isolation is on)
      */
     fun getGameDir(): File {
         return if (versionConfig.isIsolation()) versionConfig.getVersionPath()
-        //未开启版本隔离可以使用自定义路径，如果自定义路径为空（则为未设置），那么返回默认游戏路径（.minecraft/）
+        // Without version isolation a custom path may be used; when it is empty (unset), the
+        // default game path (.minecraft/) is returned.
         else if (versionConfig.getCustomPath().isNotEmpty()) File(versionConfig.getCustomPath())
         else File(ProfilePathHome.getGameHome())
     }

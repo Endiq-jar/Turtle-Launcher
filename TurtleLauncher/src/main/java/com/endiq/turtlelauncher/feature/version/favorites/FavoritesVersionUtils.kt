@@ -13,7 +13,7 @@ class FavoritesVersionUtils private constructor() {
         }
 
         /**
-         * 原子化重命名版本
+         * Rename a version atomically.
          */
         fun renameVersion(oldName: String, newName: String) = modifyFavorites { map ->
             map.values.forEach { versions ->
@@ -25,38 +25,38 @@ class FavoritesVersionUtils private constructor() {
         }
 
         /**
-         * 添加一个收藏夹
+         * Add a favorite group.
          */
         fun addFolder(name: String) = modifyFavorites { map ->
             map.putIfAbsent(name, ConcurrentHashMap.newKeySet())
         }
 
         /**
-         * 移除一个收藏夹
+         * Remove a favorite group.
          */
         fun removeFolder(name: String) = modifyFavorites { map ->
             map.remove(name)
         }
 
         /**
-         * 更新版本收藏夹
-         * @param version 目标版本
-         * @param targetFolders 需要包含该版本的收藏夹集合
+         * Update the version favorites.
+         * @param version the target version
+         * @param targetFolders favorite groups that should contain this version
          */
         fun updateVersionFolders(version: String, targetFolders: Set<String>) = modifyFavorites { map ->
-            //添加至目标收藏夹
+            // Add to the target favorite group.
             targetFolders.forEach { folder ->
                 map.getOrPut(folder) { ConcurrentHashMap.newKeySet() }.add(version)
             }
 
-            //从非目标收藏夹移除
+            // Remove from every non-target favorite group.
             map.keys.filterNot { it in targetFolders }.forEach { folder ->
                 map[folder]?.remove(version)
             }
         }
 
         /**
-         * 获取有效收藏夹结构
+         * Get the valid favorite-group structure.
          */
         fun getFavoritesStructure(): Map<String, Set<String>> =
             VersionsManager.currentGameInfo.favoritesMap.let { map ->
@@ -64,7 +64,7 @@ class FavoritesVersionUtils private constructor() {
             }
 
         /**
-         * 获取指定收藏夹的有效版本
+         * Get the valid versions of a favorite group.
          */
         fun getValidVersions(folder: String): Set<String> =
             VersionsManager.currentGameInfo.favoritesMap[folder]

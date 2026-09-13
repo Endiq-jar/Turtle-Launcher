@@ -23,7 +23,7 @@ import kotlin.jvm.Throws
 class ModParser {
     companion object {
         /**
-         * 获取当前版本的所有模组的模组信息
+         * Collect the mod info of every mod in the current version.
          */
         @JvmStatic
         fun checkAllMods(minecraftVersion: Version, parserListener: ModParserListener) {
@@ -38,9 +38,9 @@ class ModParser {
     }
 
     /**
-     * 异步解析模组文件夹中的所有模组
-     * @param modsFolder 模组文件夹
-     * @param listener 解析过程监听器
+     * Parse every mod in the mods folder asynchronously.
+     * @param modsFolder the mods folder
+     * @param listener listener for the parsing process
      */
     fun parseAllMods(modsFolder: File, listener: ModParserListener) {
         val gson = GsonBuilder().disableHtmlEscaping().create()
@@ -70,7 +70,7 @@ class ModParser {
                                 }
                             }
                         }
-                        //等待所有解析任务完成
+                        // Wait for every parse task to finish.
                         deferredList.awaitAll()
                     }
                 }

@@ -47,8 +47,8 @@ class VersionInfoUtils {
         )
 
         /**
-         * 在版本的json文件中，找到版本信息
-         * @return 版本号、ModLoader信息
+         * Find the version info inside the version json file.
+         * @return version number and ModLoader info
          */
         fun parseJson(jsonFile: File): VersionInfo? {
             return runCatching {
@@ -73,7 +73,7 @@ class VersionInfoUtils {
         }
 
         private fun extractMinecraftVersion(json: JsonObject): String {
-            //尝试识别HMCL版本
+            // Try to recognise an HMCL version.
             if (json.has("patches") && json.get("patches").isJsonArray) {
                 val patches = json.getAsJsonArray("patches")
                 if (patches.size() > 0) {
@@ -84,7 +84,7 @@ class VersionInfoUtils {
                 }
             }
 
-            //从minecraft库中获取
+            // Fetch from the minecraft library.
             json.getAsJsonArray("libraries")?.forEach { lib ->
                 val (group, artifact, version) = lib.asJsonObject["name"].asString.split(":").let {
                     Triple(it.getOrElse(0) { "" }, it.getOrElse(1) { "" }, it.getOrNull(2) ?: "")
@@ -96,13 +96,13 @@ class VersionInfoUtils {
 
             val id = json["id"].asString
             return if (json.has("inheritsFrom")) json["inheritsFrom"].asString
-            //尝试从ID中解析MC版本
+            // Try to parse the MC version from the id.
             else LOADER_DETECTORS.firstNotNullOfOrNull { it(id) } ?: id
         }
 
         /**
-         * 通过库判断ModLoader信息：ModLoader名称、版本
-         * @param versionJson 版本json对象
+         * Detect ModLoader info from the library: loader name and version.
+         * @param versionJson the version json object
          */
         private fun detectModLoader(versionJson: JsonObject): VersionInfo.LoaderInfo? {
             versionJson.getAsJsonArray("libraries")?.forEach { libElement ->
@@ -119,9 +119,9 @@ class VersionInfoUtils {
                     //Forge
                     group == "net.minecraftforge" && (artifact == "forge" || artifact == "fmlloader") -> {
                         val forgeVersion = when {
-                            //新版：1.21.4-54.0.26                 -> 54.0.26
+                            // New scheme: 1.21.4-54.0.26             -> 54.0.26
                             version.count { it == '-' } == 1 -> version.substringAfterLast('-')
-                            //旧版：1.7.10-10.13.4.1614-1.7.10     -> 10.13.4.1614
+                            // Old scheme: 1.7.10-10.13.4.1614-1.7.10 -> 10.13.4.1614
                             version.count { it == '-' } >= 2 -> version.split("-").let { parts ->
                                 when {
                                     parts.size >= 3 && parts[0] == parts.last() -> parts[1]
@@ -160,8 +160,8 @@ class VersionInfoUtils {
         }
 
         /**
-         * NeoForge会将版本号存放到游戏参数内
-         * 尝试在 arguments: { "game": [] } 中寻找NeoForge的版本
+         * NeoForge keeps the version number inside the game arguments.
+         * Try to find the NeoForge version inside arguments: { "game": [] }.
          */
         private fun JsonArray.findNeoForgeVersion(): String? {
             val args = this.mapNotNull { it.takeIf(JsonElement::isJsonPrimitive)?.asString }

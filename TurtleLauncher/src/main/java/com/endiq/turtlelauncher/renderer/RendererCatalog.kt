@@ -32,7 +32,7 @@ object RendererCatalog {
         /**
          * Whether shader packs (Iris/OptiFine-style) actually render under this renderer.
          * Not string-verifiable the way library exports are - this is an architectural claim
-         * from FCL-Team/FoldCraftLauncher's own README ("光影支持(需VirGL/Zink/MG渲染器)" -
+         * from FCL-Team/FoldCraftLauncher's own README ("shader support (needs the VirGL/Zink/MG renderer)" -
          * shader support requires the VirGL/Zink/MobileGlues renderer), which is a reasonable
          * source here since this launcher's VirGL/Zink renderer classes are themselves sourced
          * directly from FCL's RendererManager.kt (see their own doc comments). Plain GL4ES-family

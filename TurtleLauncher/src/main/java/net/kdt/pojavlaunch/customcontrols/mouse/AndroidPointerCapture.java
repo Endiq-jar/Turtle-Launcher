@@ -5,6 +5,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import com.endiq.turtlelauncher.setting.AllSettings;
 import com.endiq.turtlelauncher.setting.AllStaticSettings;
 
 import net.kdt.pojavlaunch.MinecraftGLSurface;
@@ -36,6 +37,12 @@ public class AndroidPointerCapture implements ViewTreeObserver.OnWindowFocusChan
     }
 
     public void handleAutomaticCapture() {
+        // TurtleLauncher (Zalith Launcher 2 physicalMouseMode port): with physical mouse
+        // mode ON, the mouse deliberately stays a normal Android pointer - the absolute
+        // hover/button path in MinecraftGLSurface.dispatchGenericMotionEvent drives the
+        // game cursor. Capturing it here would rip the system pointer away, which is
+        // exactly what that setting exists to prevent.
+        if (AllSettings.getPhysicalMouseMode().getValue()) return;
         if(!mHostView.hasWindowFocus()) {
             mHostView.requestFocus();
         } else {
@@ -81,9 +88,12 @@ public class AndroidPointerCapture implements ViewTreeObserver.OnWindowFocusChan
                 mScroller.performScroll(mVector);
             }
         } else {
-            // Position is updated by many events, hence it is send regardless of the event value
-            CallbackBridge.mouseX += (mVector[0] * AllStaticSettings.scaleFactor);
-            CallbackBridge.mouseY += (mVector[1] * AllStaticSettings.scaleFactor);
+            // Position is updated by many events, hence it is send regardless of the event value.
+            // TurtleLauncher (Zalith Launcher 2 mouseCaptureSensitivity port): user-adjustable
+            // multiplier on captured (grabbed) look movement, 25..300%, default 100 = unchanged.
+            float captureSensitivity = AllSettings.getMouseCaptureSensitivity().getValue() / 100f;
+            CallbackBridge.mouseX += (mVector[0] * AllStaticSettings.scaleFactor * captureSensitivity);
+            CallbackBridge.mouseY += (mVector[1] * AllStaticSettings.scaleFactor * captureSensitivity);
             CallbackBridge.sendCursorPos(CallbackBridge.mouseX, CallbackBridge.mouseY);
         }
 
@@ -126,7 +136,9 @@ public class AndroidPointerCapture implements ViewTreeObserver.OnWindowFocusChan
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-        if(hasFocus) mHostView.requestPointerCapture();
+        // Same physicalMouseMode guard as handleAutomaticCapture() - regaining window focus
+        // must not silently re-capture a mouse the user asked to keep as a normal pointer.
+        if(hasFocus && !AllSettings.getPhysicalMouseMode().getValue()) mHostView.requestPointerCapture();
     }
 
     public void detach() {

@@ -105,7 +105,7 @@ public class ControlsListViewCreator {
             for (File file : files) {
                 if (file.isFile()) {
                     ControlInfoData controlInfoData = null;
-                    if (file.getName().endsWith(".json")) { //只有.json文件会被尝试识别
+                    if (file.getName().endsWith(".json")) { // only .json files are recognised
                         controlInfoData = EditControlData.loadFormFile(context, file);
                     }
 
@@ -139,7 +139,7 @@ public class ControlsListViewCreator {
         String name = controlInfoData.name;
         String searchString = !name.isEmpty() && !name.equals("null") ? name : file.getName();
 
-        //支持搜索文件名或布局名称
+        // Supports searching by file name or layout name.
         return StringFilter.containsSubstring(searchString, filterString, caseSensitive) ||
                 StringFilter.containsSubstring(file.getName(), filterString, caseSensitive);
     }
@@ -178,7 +178,7 @@ public class ControlsListViewCreator {
             mainListView.scheduleLayoutAnimation();
 
             if (searchCountText != null) {
-                //展示搜索结果
+                // Show the search results.
                 int count = searchCount.get();
                 searchCountText.setText(searchCountText.getContext().getString(R.string.search_count, count));
                 if (count != 0) searchCountText.setVisibility(View.VISIBLE);

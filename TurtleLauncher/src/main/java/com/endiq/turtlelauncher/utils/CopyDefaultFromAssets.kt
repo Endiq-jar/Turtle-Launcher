@@ -12,7 +12,7 @@ class CopyDefaultFromAssets {
         @JvmStatic
         @Throws(IOException::class)
         fun copyFromAssets(context: Context?) {
-            //默认控制布局
+            // Default control layout.
             if (checkDirectoryEmpty(PathManager.DIR_CTRLMAP_PATH)) {
                 Tools.copyAssetFile(context, "default.json", PathManager.DIR_CTRLMAP_PATH, false)
             }

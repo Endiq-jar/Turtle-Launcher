@@ -54,7 +54,7 @@ class CheckSponsor {
 
                             val originJson = JSONObject(responseBody)
                             val rawBase64 = originJson.getString("content")
-                            //base64解码，因为这里读取的是一个经过Base64加密后的文本
+                            // Base64-decode, because the text stored here is Base64-encoded.
                             val rawJson = StringUtils.decodeBase64(rawBase64)
 
                             sponsorMeta = Tools.GLOBAL_GSON.fromJson(rawJson, SponsorMeta::class.java).takeIf { it.sponsors.isNotEmpty() } ?: run {

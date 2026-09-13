@@ -32,7 +32,7 @@ abstract class Task<V>: TaskExecutionPhaseListener {
     }
 
     /**
-     * 与主任务使用同一个执行者
+     * Runs on the same executor as the main task.
      */
     @CheckResult(SUGGEST)
     fun beforeStart(runnable: Runnable): Task<V> {
@@ -46,7 +46,7 @@ abstract class Task<V>: TaskExecutionPhaseListener {
     }
 
     /**
-     * 与主任务使用同一个执行者
+     * Runs on the same executor as the main task.
      */
     @CheckResult(SUGGEST)
     fun ended(listener: OnTaskEndedListener<V>): Task<V> {
@@ -60,7 +60,7 @@ abstract class Task<V>: TaskExecutionPhaseListener {
     }
 
     /**
-     * 与主任务使用同一个执行者
+     * Runs on the same executor as the main task.
      */
     @CheckResult(SUGGEST)
     fun finallyTask(runnable: Runnable): Task<V> {
@@ -74,7 +74,7 @@ abstract class Task<V>: TaskExecutionPhaseListener {
     }
 
     /**
-     * 与主任务使用同一个执行者
+     * Runs on the same executor as the main task.
      */
     @CheckResult(SUGGEST)
     fun onThrowable(listener: OnTaskThrowableListener): Task<V> {

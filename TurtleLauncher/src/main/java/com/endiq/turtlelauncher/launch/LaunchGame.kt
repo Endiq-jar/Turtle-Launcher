@@ -44,10 +44,11 @@ import org.greenrobot.eventbus.EventBus
 class LaunchGame {
     companion object {
         /**
-         * 改为启动游戏前进行的操作
-         * - 进行登录，同时也能及时的刷新账号的信息（这明显更合理不是吗，TurtleLauncher？）
-         * - 复制 options.txt 文件到游戏目录
-         * @param version 选择的版本
+         * Changed to happen before the game launches.
+         * - perform the login while refreshing the account info right away (obviously more
+         *   sensible, right, TurtleLauncher?)
+         * - copy the options.txt file into the game directory
+         * @param version the selected version
          */
         @JvmStatic
         fun preLaunch(context: Context, version: Version) {
@@ -104,7 +105,7 @@ class LaunchGame {
                 val versionName = version.getVersionName()
                 val mcVersion = AsyncMinecraftDownloader.getListedVersion(versionName)
                 val listener = ContextAwareDoneListener(context, version)
-                //若网络未连接，跳过下载任务直接启动
+                // Without a network, skip the download tasks and launch directly.
                 if (!networkAvailable) {
                     listener.onDownloadDone()
                 } else {
@@ -123,7 +124,8 @@ class LaunchGame {
             }
 
             if (!networkAvailable) {
-                // 网络未链接，无法登录，但是依旧允许玩家启动游戏 (临时创建一个同名的离线账号启动游戏)
+                // No network: login is impossible, but the player can still launch the game
+				// (a temporary offline account with the same name is created).
                 Toast.makeText(context, context.getString(R.string.account_login_no_network), Toast.LENGTH_SHORT).show()
                 launch(true)
                 return
@@ -142,7 +144,7 @@ class LaunchGame {
                     TaskExecutors.runInUIThread {
                         Toast.makeText(context, context.getString(R.string.account_login_done), Toast.LENGTH_SHORT).show()
                     }
-                    //登录完成，正式启动游戏！
+                    // Login done, launch the game for real!
                     launch()
                 },
                 { exception ->
@@ -291,7 +293,7 @@ class LaunchGame {
                 Logging.e("LaunchGame", "TurtleJREAutoInstaller could not provide Java $targetJavaVersion (network unreachable, or download/verification failed) - falling back to whatever runtime is already installed")
             }
 
-            //如果版本未选择Java环境，则自动选择合适的环境
+            // If the version has no Java runtime set, pick a suitable one automatically.
             var runtime = AllSettings.defaultRuntime.getValue()
             val pickedRuntime = MultiRTUtils.read(runtime)
             if (pickedRuntime.javaVersion == 0 || pickedRuntime.javaVersion < targetJavaVersion) {
@@ -377,7 +379,7 @@ class LaunchGame {
                 val versionInfo = Tools.getVersionInfo(minecraftVersion)
                 val gameDirPath = minecraftVersion.getGameDir()
 
-                //预处理
+                // Pre-processing.
                 Tools.disableSplash(gameDirPath)
                 androidx.tracing.Trace.beginSection("LaunchGame.classpath")
                 val launchClassPath = Tools.generateLaunchClassPath(versionInfo, minecraftVersion)

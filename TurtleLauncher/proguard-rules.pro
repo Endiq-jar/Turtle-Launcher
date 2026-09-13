@@ -33,3 +33,35 @@
 }
 
 
+
+# ===================== Terracotta (Friends/LAN play) =====================
+# Ported from the Terracotta module's own proguard-rules.pro (Zalith Launcher 2,
+# github.com/ZalithLauncher/ZalithLauncher2/Terracotta). libterracotta.so resolves its
+# JNI entry points by exact name and calls back into onVpnServiceStateChanged by exact
+# signature; without these keeps R8 renames/strips them and the native library fails at
+# runtime - only in minified release builds, which makes it especially nasty.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+
+-keep class net.burningtnt.terracotta.TerracottaAndroidAPI {
+    native <methods>;
+    private static int onVpnServiceStateChanged(...);
+}
+
+-keep class net.burningtnt.terracotta.TerracottaAndroidAPI$Metadata {
+    *;
+}
+-keep interface net.burningtnt.terracotta.TerracottaAndroidAPI$VpnServiceCallback {
+    *;
+}
+-keep interface net.burningtnt.terracotta.TerracottaAndroidAPI$VpnServiceRequest {
+    *;
+}
+
+# Gson: TerracottaState.TerracottaProfile (and every other Gson model in the app) is
+# instantiated reflectively and its @SerializedName fields are read/written by name.
+# Zalith Launcher 2 protects the same classes with @Keep; this is the matching global
+# rule so the minified "proguard" build types can't strip or rename serialized fields.
+-keepclassmembers,allowobfuscation class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}

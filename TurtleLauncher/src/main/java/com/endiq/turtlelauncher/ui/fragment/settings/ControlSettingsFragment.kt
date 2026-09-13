@@ -14,7 +14,6 @@ import com.endiq.anim.animations.Animations
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.databinding.SettingsFragmentControlBinding
 import com.endiq.turtlelauncher.setting.AllSettings
-import com.endiq.turtlelauncher.ui.fragment.CustomMouseFragment
 import com.endiq.turtlelauncher.ui.fragment.FragmentWithAnim
 import com.endiq.turtlelauncher.ui.fragment.settings.wrapper.BaseSettingsWrapper
 import com.endiq.turtlelauncher.ui.fragment.settings.wrapper.SeekBarSettingsWrapper
@@ -48,30 +47,10 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
         binding.subSettingsBackButton.setOnClickListener { com.endiq.turtlelauncher.utils.ZHTools.onBackPressed(requireActivity()) }
-        SwitchSettingsWrapper(
-            context,
-            AllSettings.disableGestures,
-            binding.disableGesturesLayout,
-            binding.disableGestures
-        )
-
-        SwitchSettingsWrapper(
-            context,
-            AllSettings.disableDoubleTap,
-            binding.disableDoubleTapLayout,
-            binding.disableDoubleTap
-        )
-
-        SeekBarSettingsWrapper(
-            context,
-            AllSettings.timeLongPressTrigger,
-            binding.timeLongPressTriggerLayout,
-            binding.timeLongPressTriggerTitle,
-            binding.timeLongPressTriggerSummary,
-            binding.timeLongPressTriggerValue,
-            binding.timeLongPressTrigger,
-            "ms"
-        )
+        // TurtleLauncher: the touch-gesture rows (disable gestures / double tap / long-press
+        // delay) and all mouse rows moved to the new Mouse & Keyboard screen
+        // (MouseKeyboardSettingsFragment), ported from Zalith Launcher 2's grouping. This
+        // screen keeps button appearance, gyro and gamepad settings.
 
         SeekBarSettingsWrapper(
             context,
@@ -90,47 +69,6 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
             binding.buttonAllCapsLayout,
             binding.buttonAllCaps
         )
-
-        SeekBarSettingsWrapper(
-            context,
-            AllSettings.mouseScale,
-            binding.mousescaleLayout,
-            binding.mousescaleTitle,
-            binding.mousescaleSummary,
-            binding.mousescaleValue,
-            binding.mousescale,
-            "%"
-        )
-
-        SeekBarSettingsWrapper(
-            context,
-            AllSettings.mouseSpeed,
-            binding.mousespeedLayout,
-            binding.mousespeedTitle,
-            binding.mousespeedSummary,
-            binding.mousespeedValue,
-            binding.mousespeed,
-            "%"
-        )
-
-        SwitchSettingsWrapper(
-            context,
-            AllSettings.virtualMouseStart,
-            binding.mouseStartLayout,
-            binding.mouseStart
-        )
-
-        BaseSettingsWrapper(
-            context,
-            binding.customMouseLayout
-        ) {
-            ZHTools.swapFragmentWithAnim(
-                    this,
-                    CustomMouseFragment::class.java,
-                    CustomMouseFragment.TAG,
-                    null
-                )
-        }
 
         SwitchSettingsWrapper(
             context,
@@ -234,10 +172,6 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
 
     private fun computeVisibility() {
         binding.apply {
-            setViewVisibility(
-                timeLongPressTriggerLayout,
-                !AllSettings.disableGestures.getValue()
-            )
             setViewVisibility(gyroSensitivityLayout, AllSettings.enableGyro.getValue())
             setViewVisibility(gyroSampleRateLayout, AllSettings.enableGyro.getValue())
             setViewVisibility(gyroInvertXLayout, AllSettings.enableGyro.getValue())

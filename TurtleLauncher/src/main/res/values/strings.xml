@@ -559,6 +559,24 @@
     <string name="terracotta_exception_scaffolding_invalid_response">The invite code\'s server sent back something unexpected.</string>
     <string name="terracotta_exception_unknown">Something went wrong with the connection.</string>
     <string name="terracotta_unavailable">Friends/LAN isn\'t available on this device.</string>
+    <!-- VPN foreground notification (ported from Zalith Launcher 2) -->
+    <string name="terracotta_notification_channel">Friends/LAN connection</string>
+    <string name="terracotta_notification_channel_desc">Ongoing status of the Friends/LAN P2P connection</string>
+    <string name="terracotta_notification_title">Friends/LAN · Multiplayer running</string>
+    <string name="terracotta_notification_desc">Identity: %1$s · State: %2$s</string>
+    <string name="terracotta_player_kind_host">Host</string>
+    <string name="terracotta_player_kind_guest">Guest</string>
+    <string name="terracotta_player_anonymous">Anonymous Player</string>
+    <!-- State one-liners used by the notification and the loading line -->
+    <string name="terracotta_status_host_ok">Room created</string>
+    <string name="terracotta_status_guest_ok">Room joined</string>
+    <string name="terracotta_status_exception">Connection lost</string>
+    <!-- Guest-side network difficulty estimate shown while joining -->
+    <string name="terracotta_difficulty_easiest">Excellent network: almost connected!</string>
+    <string name="terracotta_difficulty_simple">Good network: connection may take some time…</string>
+    <string name="terracotta_difficulty_medium">Average network: fallback routes enabled, connection may fail</string>
+    <string name="terracotta_difficulty_tough">Poor network: fallback routes enabled, connection may fail</string>
+    <string name="terracotta_version_line">Terracotta %1$s · EasyTier %2$s</string>
     <string name="main_section_community">Community</string>
     <string name="main_section_selected_version">Selected Version</string>
     <string name="main_welcome_back">Welcome back!</string>
@@ -593,6 +611,8 @@
     <string name="setting_category_optimization">Optimization</string>
     <string name="settings_row_controls_title">Controls</string>
     <string name="settings_row_controls_desc">Touch, gamepad, mouse, and gyro settings</string>
+    <string name="settings_row_mouse_keyboard_title">Mouse &amp; Keyboard</string>
+    <string name="settings_row_mouse_keyboard_desc">Physical mouse, cursor, tap gestures, and keyboard shortcuts</string>
     <string name="settings_row_phone_title">Phone Settings</string>
     <string name="settings_row_phone_desc">CPU, memory, and JNI optimization for this device</string>
     <string name="settings_row_accessibility_title">Accessibility</string>
@@ -653,6 +673,29 @@
     <string name="log_viewer_match_count">%1$d matching line(s)</string>
     <string name="file_size_label">Size: %s</string>
     <string name="setting_category_virtual_mouse">Virtual mouse</string>
+    <!-- Settings -> Mouse & Keyboard (category screen ported from Zalith Launcher 2) -->
+    <string name="setting_category_mouse_keyboard">Mouse &amp; Keyboard</string>
+    <string name="setting_category_mouse">Mouse</string>
+    <string name="setting_category_touch_gestures">Touch gestures</string>
+    <string name="setting_category_keyboard">Keyboard</string>
+    <string name="setting_physical_mouse_mode_title">Physical mouse mode</string>
+    <string name="setting_physical_mouse_mode_desc">Use a connected mouse as a regular on-screen pointer. Turn off to capture the mouse for raw in-game aiming, like on a PC.</string>
+    <string name="setting_mouse_capture_sensitivity_title">Mouse capture sensitivity</string>
+    <string name="setting_mouse_capture_sensitivity_desc">Aim speed while the game has the mouse grabbed (in-game look), and of a captured physical mouse.</string>
+    <string name="setting_hide_mouse_title">Hide mouse cursor</string>
+    <string name="setting_hide_mouse_desc">Never draw the virtual cursor overlay. Cursor movement and clicks keep working - useful when the game draws its own crosshair.</string>
+    <string name="setting_gesture_tap_action_title">Quick tap button</string>
+    <string name="setting_gesture_tap_action_desc">Mouse button sent by a quick tap on the screen while playing.</string>
+    <string name="setting_gesture_long_press_action_title">Long press button</string>
+    <string name="setting_gesture_long_press_action_desc">Mouse button held down when long-pressing the screen while playing.</string>
+    <string name="mouse_button_left">Left button</string>
+    <string name="mouse_button_right">Right button</string>
+    <string name="setting_physical_key_ime_title">Keyboard key opens on-screen keyboard</string>
+    <string name="setting_physical_key_ime_desc">Bind a physical keyboard key that toggles the on-screen keyboard in game. Tap to bind or change.</string>
+    <string name="setting_physical_key_ime_unbound">Not bound</string>
+    <string name="setting_physical_key_ime_bound">Bound: %1$s</string>
+    <string name="setting_physical_key_ime_dialog_message">Press any key on your physical keyboard to bind it…</string>
+    <string name="setting_physical_key_ime_unbind">Unbind</string>
     <string name="setting_category_gyro_controls">Gyro controls</string>
     <string name="setting_category_controller_settings">Controller settings</string>
     <string name="setting_category_java_tweaks">Java tweaks</string>
@@ -1302,4 +1345,32 @@
     <string name="shizuku_result_characters">%d chars</string>
     <string name="shizuku_result_count">%1$d/%2$d ok</string>
     <string name="shizuku_result_working">…</string>
+
+    <!-- TurtleLauncher: Emotes (Emotecraft integration - in-game menu row, Settings hub screen) -->
+    <string name="settings_row_emotes_title">Emotes</string>
+    <string name="settings_row_emotes_desc">Browse and download emotes, set the wheel key, check the Emotecraft mod</string>
+    <string name="emotes_screen_title">Emotes</string>
+    <string name="emotes_site_hint">Community emote library below - tapping a download saves the .emote file straight into this version\'s emotes folder, ready for Emotecraft in game.</string>
+    <string name="emotes_status_installed">Emotecraft mod: installed - emotes will play in game</string>
+    <string name="emotes_status_missing">Emotecraft mod: not found in this version\'s mods folder - install it (Fabric, Forge, NeoForge or Quilt) to use emotes</string>
+    <string name="emotes_get_mod">Get Emotecraft (Modrinth)</string>
+    <string name="emotes_open_browser">Open site in browser</string>
+    <string name="emotes_folder_info">Emotes are saved to: %s</string>
+    <string name="emotes_saved">Emote saved: %s</string>
+    <string name="emotes_save_failed">Could not download emote</string>
+    <string name="emotes_wheel_key_title">Emote wheel key</string>
+    <string name="emotes_wheel_key_summary">The in-game menu\'s emote button sends this key to the game. It must match Emotecraft\'s own keybind (default: B). Tap to change.</string>
+    <string name="emotes_wheel_key_value">Key: %s</string>
+    <string name="setting_emotes_enabled_title">Emote button</string>
+    <string name="game_menu_emote_wheel">Play emote (open wheel)</string>
+    <string name="game_menu_emote_site">Get emotes (website)</string>
+
+    <!-- TurtleLauncher: skin setting on Microsoft / third-party (ely.by, Battly, ...) accounts -->
+    <string name="skin_cape_slim_model">Slim (Alex) model - Microsoft upload</string>
+    <string name="skin_cape_ms_upload_ok">Skin uploaded to your Microsoft profile</string>
+    <string name="skin_cape_ms_upload_failed">Microsoft skin upload failed: %s</string>
+    <string name="skin_cape_ms_upload_expired">Microsoft login expired - use the account screen\'s refresh button, then apply the skin again</string>
+    <string name="skin_cape_other_login_title">Server-managed skin</string>
+    <string name="skin_cape_other_login_message">This account logs in through %s, which serves its own skins - the launcher cannot inject one at launch. The skin was saved locally; to wear it on this account, upload it on the server\'s website.</string>
+    <string name="skin_cape_open_site">Open skin website</string>
 </resources>

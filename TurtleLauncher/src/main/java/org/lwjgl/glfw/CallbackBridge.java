@@ -110,22 +110,43 @@ public class CallbackBridge {
     // Called from JRE side
     @SuppressWarnings("unused")
     public static @Nullable String accessAndroidClipboard(int type, String copy) {
-        switch (type) {
-            case CLIPBOARD_COPY:
-                MainActivity.GLOBAL_CLIPBOARD.setPrimaryClip(ClipData.newPlainText("Copy", copy));
-                return null;
+        // TurtleLauncher CRASH FIX: this method is invoked from the JVM through JNI. Any
+        // exception escaping it unwinds into native code and aborts the whole game
+        // process - a paste with an empty/racing clipboard used to be able to kill the
+        // running game. Every branch is null-guarded now (Android 10+ can return null
+        // from getPrimaryClip() even when hasPrimaryClip() just said true, clip items
+        // can be URI-only with getText() == null, and GLOBAL_CLIPBOARD is a static that
+        // is null outside the game activity's lifetime), and the whole body is wrapped
+        // so an unexpected SecurityException/NPE degrades to "paste returned nothing".
+        try {
+            switch (type) {
+                case CLIPBOARD_COPY:
+                    if (MainActivity.GLOBAL_CLIPBOARD != null && copy != null) {
+                        MainActivity.GLOBAL_CLIPBOARD.setPrimaryClip(ClipData.newPlainText("Copy", copy));
+                    }
+                    return null;
 
-            case CLIPBOARD_PASTE:
-                if (MainActivity.GLOBAL_CLIPBOARD.hasPrimaryClip() && MainActivity.GLOBAL_CLIPBOARD.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-                    return MainActivity.GLOBAL_CLIPBOARD.getPrimaryClip().getItemAt(0).getText().toString();
-                } else {
-                    return "";
+                case CLIPBOARD_PASTE: {
+                    android.content.ClipboardManager clipboard = MainActivity.GLOBAL_CLIPBOARD;
+                    if (clipboard == null || !clipboard.hasPrimaryClip()) return "";
+                    ClipDescription description = clipboard.getPrimaryClipDescription();
+                    if (description == null || !description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) return "";
+                    ClipData clip = clipboard.getPrimaryClip(); // may STILL be null: race or background restriction
+                    if (clip == null || clip.getItemCount() == 0) return "";
+                    ClipData.Item item = clip.getItemAt(0);
+                    if (item == null) return "";
+                    CharSequence text = item.getText(); // null for URI-only items
+                    return text != null ? text.toString() : "";
                 }
 
-            case CLIPBOARD_OPEN:
-                MainActivity.openLink(copy);
-                return null;
-            default: return null;
+                case CLIPBOARD_OPEN:
+                    MainActivity.openLink(copy);
+                    return null;
+                default: return null;
+            }
+        } catch (Throwable t) {
+            android.util.Log.w("CallbackBridge", "Clipboard access from the game failed; continuing", t);
+            return type == CLIPBOARD_PASTE ? "" : null;
         }
     }
 
@@ -149,14 +170,21 @@ public class CallbackBridge {
     public static void setModifiers(int keyCode, boolean isDown){
         switch (keyCode){
             case LwjglGlfwKeycode.GLFW_KEY_LEFT_SHIFT:
+            // TurtleLauncher FIX: real GLFW sets MOD_SHIFT/MOD_CONTROL/MOD_ALT for EITHER
+            // side's key, but only the left ones were tracked here - so a control button
+            // (or physical key) mapped to Right Shift/Ctrl/Alt never raised the modifier
+            // bits and the game saw the press as the bare key. Handle both sides.
+            case LwjglGlfwKeycode.GLFW_KEY_RIGHT_SHIFT:
                 CallbackBridge.holdingShift = isDown;
                 return;
 
             case LwjglGlfwKeycode.GLFW_KEY_LEFT_CONTROL:
+            case LwjglGlfwKeycode.GLFW_KEY_RIGHT_CONTROL:
                 CallbackBridge.holdingCtrl = isDown;
                 return;
 
             case LwjglGlfwKeycode.GLFW_KEY_LEFT_ALT:
+            case LwjglGlfwKeycode.GLFW_KEY_RIGHT_ALT:
                 CallbackBridge.holdingAlt = isDown;
                 return;
 
@@ -179,7 +207,17 @@ public class CallbackBridge {
 
             System.out.println("Grab changed : " + grabbing);
             synchronized (grabListeners) {
-                for (GrabListener g : grabListeners) g.onGrabState(grabbing);
+                for (GrabListener g : grabListeners) {
+                    // TurtleLauncher CRASH FIX: this runs inside a Choreographer frame
+                    // callback - one listener throwing (view torn down mid-frame, OEM
+                    // quirk) used to take the whole game process down. A missed grab
+                    // notification is recoverable; a dead game is not.
+                    try {
+                        g.onGrabState(grabbing);
+                    } catch (Throwable t) {
+                        android.util.Log.w("CallbackBridge", "Grab listener failed", t);
+                    }
+                }
             }
 
         }, 16);

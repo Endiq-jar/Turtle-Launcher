@@ -142,20 +142,20 @@ class ControlButtonFragment : FragmentWithAnim(R.layout.fragment_control_manager
                 val suffix = ".json"
                 Toast.makeText(requireActivity(), String.format(getString(R.string.file_add_file_tip), suffix), Toast.LENGTH_SHORT).show()
                 openDocumentLauncher?.launch(suffix)
-            } //限制.json文件
+            } // only .json files
 
             createFolderButton.setOnClickListener {
                 val editControlInfoDialog = EditControlInfoDialog(requireContext(), true, null, ControlInfoData())
                 editControlInfoDialog.setTitle(getString(R.string.controls_create_new))
                 editControlInfoDialog.setOnConfirmClickListener { fileName: String, controlInfoData: ControlInfoData ->
                     val file = File(File(PathManager.DIR_CTRLMAP_PATH).absolutePath, "$fileName.json")
-                    if (file.exists()) { //检查文件是否已经存在
+                    if (file.exists()) { // check whether the file is already there
                         editControlInfoDialog.fileNameEditBox.error =
                             getString(R.string.file_rename_exitis)
                         return@setOnConfirmClickListener
                     }
 
-                    //创建布局文件
+                    // Create the layout file.
                     createNewControlFile(requireContext(), file, controlInfoData)
 
                     controlsListViewCreator.refresh()
@@ -204,7 +204,7 @@ class ControlButtonFragment : FragmentWithAnim(R.layout.fragment_control_manager
                 Toast.makeText(requireActivity(), getString(R.string.tasks_ongoing), Toast.LENGTH_SHORT).show()
             }
             filesDialog.dismiss()
-        } //加载
+        } // load
         filesDialog.show()
     }
 

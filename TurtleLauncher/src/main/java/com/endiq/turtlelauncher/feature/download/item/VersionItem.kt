@@ -4,16 +4,16 @@ import com.endiq.turtlelauncher.feature.download.enums.VersionType
 import java.util.Date
 
 /**
- * 版本信息类
- * @param projectId 该版本所在项目的唯一标识
- * @param title 该版本的标题
- * @param downloadCount 该版本的总下载量
- * @param uploadDate 该版本的上传日期
- * @param mcVersions 该版本的 MC版本
- * @param versionType 该版本的版本状态
- * @param fileName 该版本的文件名称
- * @param fileHash 该版本的文件HASH值
- * @param fileUrl 该版本的文件下载链接
+ * Version info class.
+ * @param projectId unique id of the project this version belongs to
+ * @param title title of the version
+ * @param downloadCount total downloads of this version
+ * @param uploadDate upload date of this version
+ * @param mcVersions MC versions of this version
+ * @param versionType release state of this version
+ * @param fileName file name of the version
+ * @param fileHash hash of the version file
+ * @param fileUrl download link of the version file
  */
 open class VersionItem(
     val projectId: String,

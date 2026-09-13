@@ -44,7 +44,7 @@ class MCBBSModPack(private val context: Context, private val zipFile: File?) {
                 val overridesDir = "overrides" + File.separatorChar
                 val dirNameLen = overridesDir.length
 
-                val fileCounters = AtomicInteger() //文件数量计数
+                val fileCounters = AtomicInteger() // file counter
                 // A manifest without a files list (or with null entries) used to NPE
                 // here - skip straight to loader detection instead.
                 val files = mcbbsPackMeta.files ?: return createInfo(mcbbsPackMeta.addons)
@@ -73,7 +73,8 @@ class MCBBSModPack(private val context: Context, private val zipFile: File?) {
                         val equals = file.hash == fileHash
 
                         if (equals) {
-                            //如果哈希值一致，则复制文件（文件已存在则根据“强制”设定来决定是否覆盖文件）
+                            // If the hashes match, copy the file (an existing file is only
+							// overwritten when the "force" setting says so).
                             FileUtils.ensureParentDirectory(zipDestination)
 
                             modpackZipFile.getInputStream(entry).use { entryInputStream ->

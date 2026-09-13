@@ -67,9 +67,9 @@ class ContextExecutor {
         }
 
         /**
-         * 忽略Context是来自谁，直接使用这个Context执行任务
+         * Ignore where the Context comes from and run the task on it directly.
          * @see AllContextExecutorTask
-         * @param task 想要执行的任务
+         * @param task the task to run
          */
         @JvmStatic
         fun executeTaskWithAllContext(task: AllContextExecutorTask) {
@@ -94,9 +94,9 @@ class ContextExecutor {
         }
 
         /**
-         * 通过这里保存的Activity获得res string
-         * 如果Activity没有设置或者无法查找对应的res string，那么就会找到Application尝试获取
-         * 如果仍旧失败，那么就只能接受报错了
+         * Resolve a resource string through the Activity stored here.
+         * If the Activity is unset or cannot resolve the string, the Application is asked next.
+         * If that fails too, the error has to be accepted.
          */
         @JvmStatic
         fun getString(resId: Int): String {
@@ -106,10 +106,10 @@ class ContextExecutor {
         }
 
         /**
-         * 在Java语言中，想要通过这个类来展示一个Toast会比较复杂
-         * 这个函数就是用来解决这个痛点的XD
-         * @param resId 要展示的文本的 res ID
-         * @param duration 时长 LENGTH_SHORT LENGTH_LONG，与官方一致
+         * Showing a Toast from plain Java is more verbose than it should be;
+         * this class exists to spare everyone that pain.
+         * @param resId resource id of the text to show
+         * @param duration LENGTH_SHORT or LENGTH_LONG, same semantics as the platform
          */
         @JvmStatic
         fun showToast(resId: Int, duration: Int) {
@@ -117,10 +117,10 @@ class ContextExecutor {
         }
 
         /**
-         * 在Java语言中，想要通过这个类来展示一个Toast会比较复杂
-         * 这个函数就是用来解决这个痛点的XD
-         * @param string 要展示的文本
-         * @param duration 时长 LENGTH_SHORT LENGTH_LONG，与官方一致
+         * Showing a Toast from plain Java is more verbose than it should be;
+         * this class exists to spare everyone that pain.
+         * @param string the text to show
+         * @param duration LENGTH_SHORT or LENGTH_LONG, same semantics as the platform
          */
         @JvmStatic
         fun showToast(string: String, duration: Int) {
@@ -128,8 +128,8 @@ class ContextExecutor {
         }
 
         /**
-         * 尝试获取Activity
-         * @throws RuntimeException 如果Activity不存在，那么将抛出异常
+         * Try to obtain the Activity.
+         * @throws RuntimeException when no Activity is available
          */
         @JvmStatic
         fun getActivity(): Activity {
@@ -137,8 +137,8 @@ class ContextExecutor {
         }
 
         /**
-         * 尝试获取Application
-         * @throws RuntimeException 如果Application不存在，那么将抛出异常
+         * Try to obtain the Application.
+         * @throws RuntimeException when no Application is available
          */
         @JvmStatic
         fun getApplication(): Application {
@@ -153,8 +153,8 @@ class ContextExecutor {
      */
     fun interface AllContextExecutorTask {
         /**
-         * 将会伴随着Activity或者是Application的Context执行的任务
-         * @param context Activity或者是Application的Context
+         * A task that runs attached to the Activity or Application context.
+         * @param context an Activity or Application context
          */
         fun execute(context: Context)
     }

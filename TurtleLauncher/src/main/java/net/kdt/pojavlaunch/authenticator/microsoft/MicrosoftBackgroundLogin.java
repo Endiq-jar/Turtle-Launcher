@@ -91,7 +91,7 @@ public class MicrosoftBackgroundLogin {
 
             MinecraftAccount acc;
             if (account == null) {
-                //尝试找到本地已经存在的，相同Profile UUID的账号
+                // Try to find a local account with the same profile UUID.
                 MinecraftAccount acc1 = MinecraftAccount.loadFromProfileID(mcUuid);
                 acc = acc1 != null ? acc1 : new MinecraftAccount();
             } else {

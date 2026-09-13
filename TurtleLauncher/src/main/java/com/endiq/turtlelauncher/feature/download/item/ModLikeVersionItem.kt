@@ -5,7 +5,7 @@ import com.endiq.turtlelauncher.feature.download.enums.VersionType
 import java.util.Date
 
 /**
- * @param modloaders 该版本的 Mod 加载器信息
+ * @param modloaders mod loader info of this version
  */
 open class ModLikeVersionItem(
     projectId: String,

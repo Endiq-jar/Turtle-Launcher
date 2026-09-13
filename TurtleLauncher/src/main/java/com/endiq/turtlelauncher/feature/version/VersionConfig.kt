@@ -189,7 +189,8 @@ class VersionConfig(private var versionPath: File) : Parcelable {
 
         @JvmStatic
         fun parseConfig(versionPath: File): VersionConfig {
-            //兼容旧版本的版本隔离文件（识别并保存为新版本后，旧的版本隔离文件将被删除）
+            // Support legacy version-isolation files (once recognised and re-saved in the new
+            // format, the old isolation file is deleted).
             val oldConfigFile = File(getTurtleVersionPath(versionPath), "TurtleVersion.cfg")
             val configFile = File(getTurtleVersionPath(versionPath), "VersionConfig.json")
 
@@ -202,12 +203,12 @@ class VersionConfig(private var versionPath: File) : Parcelable {
                             save()
                         }
                     }.getOrNull().let { config ->
-                        //移除旧的配置文件
+                        // Remove the old config file.
                         oldConfigFile.delete()
                         config?.let { return@getConfig it }
                     }
                 }
-                //读取此文件的内容，并解析为VersionConfig
+                // Read this file and parse it into a VersionConfig.
                 val configString = Tools.read(configFile)
                 val config = Tools.GLOBAL_GSON.fromJson(configString, VersionConfig::class.java)
                 runCatching {

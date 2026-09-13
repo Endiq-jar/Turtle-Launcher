@@ -125,12 +125,12 @@ class InfoAdapter(
                 descriptionTextview.text = item.description
                 platformImageview.setImageDrawable(getPlatformIcon(item.platform))
                 platformTextview.text = item.platform.pName
-                //设置类别
+                // Set the category.
                 categoriesLayout.removeAllViews()
                 item.category.forEach { item ->
                     addCategoryView(categoriesLayout, mContext.getString(item.resNameID))
                 }
-                //设置标签
+                // Set the label.
                 tagsLayout.removeAllViews()
 
                 val downloadCount = NumberWithUnits.formatNumberWithUnit(item.downloadCount, ZHTools.isEnglish(mContext))
@@ -188,13 +188,13 @@ class InfoAdapter(
      */
     interface CallSearchListener {
         /**
-         * 用于判定当前搜索结果是否为最后一页
-         * 如果是最后一页，那么将不再展示加载视图，也不会请求搜索更多结果
+         * Used to decide whether the current search results are the last page.
+         * On the last page the loading view is hidden and no further results are requested.
          */
         fun isLastPage(): Boolean
 
         /**
-         * 请求加载更多结果
+         * Request more results.
          */
         fun loadMoreResult()
     }

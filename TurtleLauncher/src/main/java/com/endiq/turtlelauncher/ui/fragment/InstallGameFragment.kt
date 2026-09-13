@@ -112,7 +112,7 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
     }
 
     /**
-     * 检查不兼容的Addon，并禁止用户选择该Addon版本
+     * Check for incompatible addons and block selecting that addon version.
      */
     @SuppressLint("SetTextI18n")
     private fun checkIncompatible() {
@@ -135,11 +135,11 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
     }
 
     /**
-     * 检查传入的Addon是否在AddonMap中有不兼容的Addon
-     * @param addon 传入的Addon
-     * @param layout Addon的layout
-     * @param versionText Addon的版本信息
-     * @param installText Addon的安装类型
+     * Check whether the given addon has a known conflict in the AddonMap.
+     * @param addon the Addon passed in
+     * @param layout layout of the Addon
+     * @param versionText version info of the Addon
+     * @param installText install type of the Addon
      */
     private fun checkIncompatible(
         addon: Addon,
@@ -188,7 +188,7 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
     }
 
     /**
-     * 切换至Addon版本选择界面
+     * Switch to the Addon version picker screen.
      */
     private fun swapFragment(fragmentClass: Class<out Fragment>, tag: String) {
         val bundle = Bundle()
@@ -197,7 +197,7 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
     }
 
     /**
-     * 移除Addon，并刷新当前不兼容的Addon
+     * Remove an addon and refresh the current incompatibilities.
      */
     private fun removeAddon(addon: Addon) {
         addonMap.remove(addon)
@@ -236,8 +236,8 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
             Tools.backToMainMenu(activity)
         }
 
-        //检查OptiFine与Forge附加包是否同时存在
-        //最后告诉用户兼容性问题
+        // Check whether OptiFine and Forge addons are present at the same time.
+        // Tell the user about the compatibility problem at the end.
         if (addonMap.containsKey(Addon.OPTIFINE) && addonMap.containsKey(Addon.FORGE)) {
             TipDialog.Builder(activity)
                 .setTitle(R.string.generic_warning)
@@ -317,7 +317,7 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
         val taskMap: MutableMap<Addon, InstallTaskItem> = EnumMap(Addon::class.java)
 
         fun getModPath(): File {
-            return if (AllSettings.versionIsolation.getValue()) //启用了版本隔离
+            return if (AllSettings.versionIsolation.getValue()) // version isolation enabled
                 File(
                     ProfilePathHome.getGameHome(),
                     "versions${File.separator}$customVersionName${File.separator}mods"
@@ -328,7 +328,7 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
         addonMap.forEach { (addon, taskPair) ->
             when (addon) {
                 Addon.OPTIFINE -> {
-                    val endTask: InstallTaskItem.EndTask = if (mapSize < 2) { //安装为一个版本
+                    val endTask: InstallTaskItem.EndTask = if (mapSize < 2) { // install as a single version
                         InstallTaskItem.EndTask { activity, file ->
                             installInGUITask(activity, addon.addonName, taskPair.first) { intent, argUtils ->
                                 argUtils.setOptiFine(intent, file, customVersionName)
@@ -401,8 +401,9 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
     }
 
     /**
-     * 在JavaGUI内进行安装，作为EndTask，需要在UI线程内运行
-     * @param activity **此处必须使用activity的上下文！不能调用Fragment的上下文！！因为调用到这里的时候，Fragment早就被销毁了！！！**
+     * Installed from inside the Java GUI; as an EndTask it must run on the UI thread.
+     * @param activity **the Activity context is mandatory here! Never pass the Fragment context:
+     *                by the time this runs the Fragment is long gone!**
      */
     @Throws(Throwable::class)
     private fun installInGUITask(activity: Activity, addonName: String, selectVersion: String, setArgs: (Intent, InstallArgsUtils) -> Unit) {

@@ -20,8 +20,8 @@ object MCOptions {
     private lateinit var versionGetter: MinecraftVersionGetter
 
     /**
-     * 初始化 MCOptions
-     * 检查 options.txt 是否存在，如果不存在，将会复制一份默认的 options.txt 文件
+     * Initialise MCOptions.
+     * Check that options.txt exists; otherwise copy the bundled default options.txt.
      */
     fun setup(context: Context, versionGetter: MinecraftVersionGetter) {
         this.versionGetter = versionGetter
@@ -134,7 +134,7 @@ object MCOptions {
     }
 
     /**
-     * 这个接口用于获取 Minecraft 版本信息
+     * This interface provides the Minecraft version info.
      */
     fun interface MinecraftVersionGetter {
         fun getVersion(): Version

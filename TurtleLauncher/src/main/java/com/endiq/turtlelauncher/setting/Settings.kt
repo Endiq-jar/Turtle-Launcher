@@ -37,7 +37,7 @@ class Settings {
         }
 
         /**
-         * 刷新启动器的所有设置项
+         * Refresh every launcher setting.
          */
         @Synchronized
         fun refreshSettings() {
@@ -48,7 +48,7 @@ class Settings {
     class Manager private constructor() {
         companion object {
             /**
-             * 在启动器设置中获取键对应的值
+             * Read the value of a key from the launcher settings.
              */
             fun <T> getValue(key: String, defaultValue: T, parser: (String) -> T?): T {
                 // A corrupt settings file must never crash the app: an unparseable
@@ -58,7 +58,7 @@ class Settings {
             }
 
             /**
-             * 检查启动器设置中，是否存在某个键
+             * Check whether a key exists in the launcher settings.
              */
             @JvmStatic
             fun contains(key: String): Boolean {
@@ -66,7 +66,7 @@ class Settings {
             }
 
             /**
-             * 在启动器设置中存入键值
+             * Store a key/value pair in the launcher settings.
              */
             @JvmStatic
             @CheckResult
@@ -77,7 +77,7 @@ class Settings {
             private val valueMap = ConcurrentHashMap<String, Any>()
 
             /**
-             * 在启动器设置中存入键值
+             * Store a key/value pair in the launcher settings.
              */
             @CheckResult
             fun put(key: String, value: Any): SettingBuilder {
@@ -86,8 +86,8 @@ class Settings {
             }
 
             /**
-             * 在启动器设置中存入键值
-             * @param unit 设置单元
+             * Store a key/value pair in the launcher settings.
+             * @param unit the setting unit
              */
             @CheckResult
             fun put(unit: AbstractSettingUnit<*>, value: Any): SettingBuilder {

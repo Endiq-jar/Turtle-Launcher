@@ -66,7 +66,7 @@ class AboutInfoPageFragment() : Fragment(R.layout.fragment_about_info_page) {
                 qqGroupButton.setOnClickListener {
                     TipDialog.Builder(context)
                         .setTitle("QQ")
-                        .setMessage("欢迎加入 ${InfoDistributor.APP_NAME} 官方 QQ 交流群（群号：${InfoCenter.QQ_GROUP}）！由于群人数有限，加入群聊前需要赞助 5元 或以上金额，请点击右侧“赞助开发”按钮访问爱发电。")
+                        .setMessage("Thanks for using ${InfoDistributor.APP_NAME}! If you enjoy the launcher, tap the \"Sponsor development\" button on the right.")
                         .setSelectable(true)
                         .setConfirm(R.string.generic_confirm)
                         .setShowCancel(false)

@@ -1,7 +1,7 @@
 package com.endiq.turtlelauncher.feature.download.item
 
 /**
- * 用于记录搜索结果
+ * Records a search result.
  */
 class SearchResult {
     var previousCount: Int = 0

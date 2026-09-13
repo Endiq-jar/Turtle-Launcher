@@ -276,7 +276,7 @@ static void apply_low_latency_mode(EGLSurface surface) {
 }
 
 void gl_swap_surface(gl_render_window_t* bundle) {
-    // 有新 Surface 待切换，这里直接切换
+    // A new Surface is waiting: switch to it right away.
     if (bundle->newNativeSurface != NULL)
     {
         __android_log_print(ANDROID_LOG_ERROR, g_LogTag, "Switching to new native surface");
@@ -322,7 +322,7 @@ void gl_swap_surface(gl_render_window_t* bundle) {
                             nativeWindowWidth, nativeWindowHeight);
     }
 
-    // 无新窗口可用，回退到 1x1 pbuffer 避免渲染彻底中断
+    // No new window available: fall back to a 1x1 pbuffer so rendering never stops completely.
     __android_log_print(ANDROID_LOG_ERROR, g_LogTag, "No new native surface, switching to 1x1 pbuffer");
     bundle->nativeSurface = NULL;
     const EGLint pbuffer_attrs[] = {EGL_WIDTH, 1 , EGL_HEIGHT, 1, EGL_NONE};
@@ -383,7 +383,8 @@ void gl_swap_buffers() {
             currentBundle->newNativeSurface = NULL;
             gl_swap_surface(currentBundle);
             eglMakeCurrent_p(g_EglDisplay, currentBundle->surface, currentBundle->surface, currentBundle->context);
-            // 清理过期状态，避免下一帧重复进入 gl_swap_surface 导致回退到 1×1 pbuffer
+            // Clear the stale state so the next frame does not re-enter gl_swap_surface and fall back
+    // to the 1x1 pbuffer.
             if (currentBundle->nativeSurface != NULL && currentBundle->state == STATE_RENDERER_NEW_WINDOW) {
                 currentBundle->state = STATE_RENDERER_ALIVE;
             }

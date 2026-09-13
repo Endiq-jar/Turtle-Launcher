@@ -174,8 +174,8 @@ abstract class ModListFragment : FragmentWithAnim(R.layout.fragment_mod_download
     }
 
     /**
-     * 如果一个Map中没有包含指定Key的List集合，则创建一个新的ArrayList，并将元素添加进去
-     * 如果这个Map中存在这个集合，则直接将元素添加进去
+     * Create the list for a missing key in the map, then add the element.
+     * If the list already exists in the map, add the element straight away.
      */
     protected fun <K, E> addIfAbsent(map: MutableMap<K, MutableList<E>>, key: K, element: E) {
         map.computeIfAbsent(key) { ArrayList() }
@@ -246,7 +246,7 @@ abstract class ModListFragment : FragmentWithAnim(R.layout.fragment_mod_download
     fun switchToChild(adapter: RecyclerView.Adapter<*>?, title: String?) {
         if (currentTask?.isDone == true && adapter != null) {
             binding.apply {
-                //保存父级，设置选中的标题文本，切换至子级
+                // Remember the parent, set the selected title, switch to the child.
                 parentAdapter = recyclerView.adapter
                 selectTitle.text = title
                 hideParentElement(true)

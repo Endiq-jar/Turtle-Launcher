@@ -9,7 +9,7 @@ class SortStrings {
             val firstLength = thisName.length
             val secondLength = otherName.length
 
-            //遍历两个字符串的字符
+            // Walk the characters of both strings.
             for (i in 0 until min(firstLength.toDouble(), secondLength.toDouble()).toInt()) {
                 val firstChar = thisName[i].lowercaseChar()
                 val secondChar = otherName[i].lowercaseChar()

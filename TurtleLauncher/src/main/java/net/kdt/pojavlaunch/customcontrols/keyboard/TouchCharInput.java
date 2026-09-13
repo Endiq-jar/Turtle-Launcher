@@ -109,7 +109,10 @@ public class TouchCharInput extends androidx.appcompat.widget.AppCompatEditText 
 
     /** Send the enter key. */
     private void sendEnter(){
-        mCharacterSender.sendEnter();
+        // TurtleLauncher CRASH FIX: mCharacterSender is assigned in MainActivity's setup
+        // try-block; if anything earlier in that block fails it stays null and the IME's
+        // "Enter" action would NPE on the UI thread of the game process.
+        if (mCharacterSender != null) mCharacterSender.sendEnter();
         clear();
     }
 

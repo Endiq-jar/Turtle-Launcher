@@ -6,7 +6,7 @@ import com.endiq.turtlelauncher.feature.download.enums.Sort
 
 
 /**
- * 用于平台进行搜索时，提供筛选信息
+ * Provides the filter info used for platform searches.
  */
 class Filters {
     var name: String = ""

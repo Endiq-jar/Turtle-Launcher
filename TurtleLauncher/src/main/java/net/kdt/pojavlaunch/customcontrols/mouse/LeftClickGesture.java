@@ -6,7 +6,6 @@ import android.os.Handler;
 
 import com.endiq.turtlelauncher.setting.AllStaticSettings;
 
-import net.kdt.pojavlaunch.LwjglGlfwKeycode;
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.utils.MathUtils;
 
@@ -38,7 +37,10 @@ public class LeftClickGesture extends ValidatorGesture {
         boolean fingerStill = LeftClickGesture.isFingerStill(mGestureStartX, mGestureStartY, mGestureEndX, mGestureEndY, FINGER_STILL_THRESHOLD);
         // If the finger is still, fire the gesture.
         if(fingerStill) {
-            sendMouseButton(LwjglGlfwKeycode.GLFW_MOUSE_BUTTON_LEFT, true);
+            // TurtleLauncher (Zalith Launcher 2 gestureLongPressMouseAction port): which
+            // mouse button the long-press gesture holds is user-configurable; upstream
+            // hardcodes LEFT.
+            sendMouseButton(GestureButtons.longPressButton(), true);
             mMouseActivated = true;
         }
         // Otherwise, don't click but still keep it active
@@ -48,7 +50,7 @@ public class LeftClickGesture extends ValidatorGesture {
     @Override
     public void onGestureCancelled(boolean isSwitching) {
         if(mMouseActivated) {
-            sendMouseButton(LwjglGlfwKeycode.GLFW_MOUSE_BUTTON_LEFT, false);
+            sendMouseButton(GestureButtons.longPressButton(), false);
             mMouseActivated = false;
         }
     }

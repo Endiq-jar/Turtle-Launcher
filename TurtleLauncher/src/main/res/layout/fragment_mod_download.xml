@@ -235,7 +235,7 @@
                     android:layout_marginEnd="@dimen/_12sdp"
                     android:background="?android:attr/selectableItemBackground"
                     android:gravity="center_vertical"
-                    android:text="MC 百科"
+                    android:text="MC Mod Wiki"
                     android:textStyle="bold"
                     android:visibility="gone"
                     tools:ignore="HardcodedText" />

@@ -18,6 +18,19 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+    <!-- Required since targetSdk 34/Android 14 for TerracottaVpnService, which runs as
+         foregroundServiceType="connectedDevice" - the type Android itself designates for
+         VpnService foreground services. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
+    <!-- Terracotta/EasyTier P2P networking. The upstream Terracotta library module
+         (ZalithLauncher2/Terracotta/src/main/AndroidManifest.xml) declares these and they
+         merge into the host app there; this project vendors the binding directly, so they
+         have to be declared here. EasyTier manages network interfaces and probes Wi-Fi
+         state while the Friends/LAN tunnel is up. -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
     <!-- Required since targetSdk 34/Android 14 to run a foregroundServiceType="mediaProjection"
          service - see ScreenRecorderAudioService's class doc for why ScreenRecorder's in-game
          audio capture needs one even though it never mirrors the display. -->
@@ -176,14 +189,15 @@
         <!-- Terracotta P2P connection for the Friends/LAN feature. permission+intent-filter
              here are mandatory Android requirements for every VpnService subclass, not
              optional boilerplate - the system uses them to verify only this app's own
-             VPN service can bind to the tunnel it creates. -->
+             VPN service can bind to the tunnel it creates.
+             foregroundServiceType is connectedDevice, matching Zalith Launcher 2 and
+             Android's own guidance for VPN foreground services (it was specialUse here,
+             which is a Play-policy grey zone and not the designated VPN type). -->
         <service
             android:name="com.endiq.turtlelauncher.feature.terracotta.TerracottaVpnService"
             android:permission="android.permission.BIND_VPN_SERVICE"
-            android:foregroundServiceType="specialUse"
+            android:foregroundServiceType="connectedDevice"
             android:exported="false">
-            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Maintains the peer-to-peer connection used by the Friends/LAN play feature."/>
             <intent-filter>
                 <action android:name="android.net.VpnService" />
             </intent-filter>

@@ -6,18 +6,18 @@ import com.endiq.turtlelauncher.feature.download.enums.Platform
 import java.util.Date
 
 /**
- * 基础的信息类
- * @param classify 该项目的类别
- * @param platform 该项目的所属平台
- * @param projectId 该项目的唯一标识
- * @param slug 该项目的slug
- * @param author 该项目的作者
- * @param title 该项目的标题
- * @param description 该项目的描述
- * @param downloadCount 该项目的总下载量
- * @param uploadDate 该项目的上传日期
- * @param iconUrl 该项目的封面链接
- * @param category 该项目的标签
+ * Base info class.
+ * @param classify category of the project
+ * @param platform platform hosting the project
+ * @param projectId unique id of the project
+ * @param slug slug of the project
+ * @param author author of the project
+ * @param title title of the project
+ * @param description description of the project
+ * @param downloadCount total downloads of the project
+ * @param uploadDate upload date of the project
+ * @param iconUrl cover image link of the project
+ * @param category tags of the project
  */
 open class InfoItem(
     val classify: Classify,

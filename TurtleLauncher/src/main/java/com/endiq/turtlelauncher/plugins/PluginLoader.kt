@@ -15,7 +15,7 @@ import org.apache.commons.io.FileUtils
 
 
 /**
- * 统一插件的加载，保证仅获取一次应用列表
+ * Centralises plugin loading so the app list is fetched only once.
  */
 object PluginLoader {
     private var isInitialized: Boolean = false
@@ -44,21 +44,22 @@ object PluginLoader {
             FeaturePluginManager.parseApkPlugin(context, applicationInfo)
         }
 
-        //尝试解析本地渲染器插件
+        // Try to parse the local renderer plugins.
         PathManager.DIR_INSTALLED_RENDERER_PLUGIN.listFiles()?.let { files ->
             files.forEach { file ->
                 if (!(file.isDirectory && RendererPluginManager.parseLocalPlugin(context, file))) {
-                    //不符合要求的渲染器插件，将被删除！
+                    // Renderer plugins that fail validation get deleted.
                     FileUtils.deleteQuietly(file)
                 }
             }
         }
 
-        //尝试解析本地驱动器插件（TurtleLauncher 新增，支持驱动自动更新功能安装的插件）
+        // Try to parse the local driver plugins (a TurtleLauncher addition that supports
+        // plugins installed by the driver auto-update feature).
         PathManager.DIR_INSTALLED_DRIVER_PLUGIN.listFiles()?.let { files ->
             files.forEach { file ->
                 if (!(file.isDirectory && DriverPluginManager.parseLocalPlugin(file))) {
-                    //不符合要求的驱动器插件，将被删除！
+                    // Driver plugins that fail validation get deleted.
                     FileUtils.deleteQuietly(file)
                 }
             }
@@ -89,7 +90,8 @@ object PluginLoader {
             if (failedToLoadList.isNotEmpty()) RendererPluginManager.removeRenderer(failedToLoadList)
         }
 
-        //TurtleLauncher: 启动时静默检查渲染器/驱动器插件更新（受 5 分钟冷却、Fast Boot 与开关控制）
+        // TurtleLauncher: silently check renderer/driver plugin updates at startup
+        // (gated by the 5 minute cooldown, Fast Boot and the setting toggle).
         // Background Services (item 20) - "pause update checker": loadAllPlugins() runs
         // again for real the moment MainActivity (a separate :game process) reaches this
         // same BaseActivity.onCreate() codepath at the start of every session, since

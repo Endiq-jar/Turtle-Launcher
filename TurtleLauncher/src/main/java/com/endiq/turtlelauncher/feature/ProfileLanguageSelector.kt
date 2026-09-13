@@ -14,7 +14,7 @@ class ProfileLanguageSelector {
         private fun getOlderLanguage(lang: String): String {
             val underscoreIndex = lang.indexOf('_')
             return if (underscoreIndex != -1) {
-                //只将下划线后面的字符转换为大写
+                // Only uppercase the part after the underscore.
                 val builder = StringBuilder(lang.substring(0, underscoreIndex + 1))
                 builder.append(lang.substring(underscoreIndex + 1).uppercase())
                 builder.toString()
@@ -34,7 +34,7 @@ class ProfileLanguageSelector {
                     if (isOlderVersionRelease(versionId)) getOlderLanguage(lang) // 1.10 -
                     else lang
                 }
-                MCVersionRegex.SNAPSHOT_REGEX.matcher(versionId).matches() -> { // 快照版本 "24w09a" "16w20a"
+                MCVersionRegex.SNAPSHOT_REGEX.matcher(versionId).matches() -> { // snapshot ids like "24w09a" / "16w20a"
                     if (isOlderVersionSnapshot(versionId)) getOlderLanguage(lang)
                     else lang
                 }

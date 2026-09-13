@@ -1,7 +1,7 @@
 package com.endiq.turtlelauncher.renderer
 
 /**
- * @param rendererIdentifier 渲染器唯一标识符
- * @param rendererNames 渲染器名称列表
+ * @param rendererIdentifier unique renderer identifier
+ * @param rendererNames list of renderer names
  */
 class RenderersList(val rendererIdentifier: List<String>, val rendererNames: List<String>)

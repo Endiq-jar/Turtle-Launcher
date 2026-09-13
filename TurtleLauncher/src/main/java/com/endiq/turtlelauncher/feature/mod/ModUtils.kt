@@ -26,7 +26,7 @@ class ModUtils {
             // already-enabled mod) - substring(0, -1) would throw StringIndexOutOfBounds.
             val suffixIndex = fileName.lastIndexOf(DISABLE_JAR_FILE_SUFFIX)
             var newFileName = if (suffixIndex == -1) fileName else fileName.substring(0, suffixIndex)
-            if (!fileName.endsWith(JAR_FILE_SUFFIX)) newFileName += JAR_FILE_SUFFIX //如果没有.jar结尾，那么默认加上.jar后缀
+            if (!fileName.endsWith(JAR_FILE_SUFFIX)) newFileName += JAR_FILE_SUFFIX // append .jar when missing
 
             val newFile = File(fileParent, newFileName)
             renameFile(file, newFile)

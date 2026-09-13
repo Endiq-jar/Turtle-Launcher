@@ -261,26 +261,26 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                     })
                 }
 
-                if (fromUser) { //需要判断是否为用户手动点击的，否则会一直进入微软登录界面
+                if (fromUser) { // only react to real taps, otherwise we would loop into Microsoft login
                     when (toIndex) {
-                        //微软账户
+                        // Microsoft account.
                         0 -> ZHTools.swapFragmentWithAnim(
                             this@AccountFragment,
                             MicrosoftLoginFragment::class.java,
                             MicrosoftLoginFragment.TAG,
                             null
                         )
-                        //离线账户
+                        // Offline account.
                         1 -> {
                             nonMicrosoftLogin(
                                 R.string.account_no_microsoft_account_local
                             ) { localLogin() }
                         }
-                        //外置账户
+                        // Third-party account.
                         else -> {
                             nonMicrosoftLogin(
                                 R.string.account_no_microsoft_account_other
-                            ) { otherLogin(toIndex - 2) /* Server索引需要从0开始 */ }
+                            ) { otherLogin(toIndex - 2) /* Server indices are zero-based */ }
                         }
                     }
                 }
@@ -472,7 +472,7 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
             // navigated away while it was running (requireActivity()/binding
             // access would crash with "not attached" otherwise).
             if (!isAdded) return@ended
-            //将外置服务器添加到账号类别选择栏上
+            // Add the external server to the account category bar.
             mOtherServerViewList.forEach { view ->
                 binding.accountTypeTab.removeView(view)
             }
@@ -554,7 +554,7 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                     checkServerConfig()
                     mOtherServerConfig?.server?.apply addServer@{
                         forEach {
-                            //确保服务器不重复
+                            // Make sure servers are not duplicated.
                             if (it.baseUrl == server.baseUrl) return@addServer
                         }
                         add(server)
@@ -609,7 +609,7 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                     checkServerConfig()
                     mOtherServerConfig?.server?.apply addServer@{
                         forEach {
-                            //确保服务器不重复
+                            // Make sure servers are not duplicated.
                             if (it.baseUrl == server.baseUrl) return@addServer
                         }
                         add(server)

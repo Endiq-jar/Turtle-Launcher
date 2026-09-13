@@ -68,11 +68,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         Tools.updateWindowSize(this);
 
         checkStoragePermissions(true);
-        //加载渲染器
+        // Load the renderer.
         Renderers.INSTANCE.init(false);
-        //加载插件
+        // Load the plugin.
         PluginLoader.loadAllPlugins(this, false);
-        //刷新游戏路径
+        // Refresh the game path.
         ProfilePathManager.INSTANCE.refreshPath();
     }
 
@@ -168,14 +168,15 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 检查所有文件管理权限
-     * @param force 是否跳过节流、同步执行检查。onCreate() 首次检查后，
-     *              ProfilePathManager/ProfilePathAdapter 会立刻同步读取
-     *              StoragePermissionsUtils.checkPermissions() 的缓存结果，
-     *              所以这一次必须在返回前完成，不能丢到后台异步执行，
-     *              否则会读到未刷新的默认值。onCreate() 每个Activity实例只跑一次，
-     *              不是热路径，同步执行的开销可以接受；onResume() 才是被高频调用、
-     *              真正需要异步 + 节流的地方。
+     * Check the all-files access permission.
+     * @param force whether to skip throttling and run the check synchronously. After the first
+     *              onCreate() check,
+     *              ProfilePathManager/ProfilePathAdapter read it synchronously right away,
+     *              the cached result of StoragePermissionsUtils.checkPermissions();
+     *              instance, so this one pass must finish before returning - it cannot be
+     *              otherwise stale defaults would be read. onCreate() runs once per Activity
+     *              this is not a hot path, so the synchronous cost is fine. onResume() is the
+     *              pushed to a background thread; that is what onResume() needs (async + throttled).
      */
     private void checkStoragePermissions(boolean force) {
         if (force) {

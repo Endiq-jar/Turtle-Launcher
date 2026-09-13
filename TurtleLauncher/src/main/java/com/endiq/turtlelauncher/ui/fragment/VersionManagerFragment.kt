@@ -96,7 +96,7 @@ class VersionManagerFragment : FragmentWithAnim(R.layout.fragment_version_manage
                 versionSettings -> ZHTools.swapFragmentWithAnim(this@VersionManagerFragment, VersionConfigFragment::class.java, VersionConfigFragment.TAG, null)
                 versionRename -> {
                     VersionsManager.openRenameDialog(activity, version) {
-                        Tools.backToMainMenu(activity) //重命名前，为了不出现问题，需要退出当前Fragment
+                        Tools.backToMainMenu(activity) // leave the current Fragment before renaming
                     }
                 }
                 versionCopy -> VersionsManager.openCopyDialog(activity, version)

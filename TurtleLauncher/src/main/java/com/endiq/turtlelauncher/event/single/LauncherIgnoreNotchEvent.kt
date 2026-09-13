@@ -1,6 +1,6 @@
 package com.endiq.turtlelauncher.event.single
 
 /**
- * 启动器全屏模式设置项变更事件
+ * Event for launcher fullscreen-mode setting changes.
  */
 class LauncherIgnoreNotchEvent

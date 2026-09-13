@@ -122,6 +122,38 @@ class AllSettings {
         @JvmStatic val mouseSpeed               = IntSettingUnit("mousespeed", 100)
         @JvmStatic val virtualMouseStart        = BooleanSettingUnit("mouse_start", true)
         @JvmStatic val customMouse              = StringSettingUnit("custom_mouse", "")
+
+        // ── Mouse & Keyboard (ported from Zalith Launcher 2's control settings) ──
+        /** Zalith2 physicalMouseMode: when ON a connected physical mouse stays a normal
+         *  Android pointer (absolute hover positioning); when OFF the launcher grabs it via
+         *  pointer capture for raw relative input, like a PC game does. Wired in
+         *  AndroidPointerCapture/MinecraftGLSurface. */
+        @JvmStatic val physicalMouseMode        = BooleanSettingUnit("physicalMouseMode", true)
+        /** Zalith2 mouseCaptureSensitivity (25..300): extra multiplier on look movement
+         *  while the game has the mouse grabbed (in-game processor + captured pointer). */
+        @JvmStatic val mouseCaptureSensitivity  = IntSettingUnit("mouseCaptureSensitivity", 100)
+        /** Zalith2 hideMouse: don't draw the virtual cursor overlay; movement and clicks
+         *  keep working. Wired in Touchpad.onDraw. */
+        @JvmStatic val hideMouse                = BooleanSettingUnit("hideMouse", false)
+        /** Zalith2 gestureTapMouseAction: mouse button sent by the quick-tap gesture
+         *  ("left"/"right"). Wired in RightClickGesture (the tap gesture). */
+        @JvmStatic val gestureTapMouseAction    = StringSettingUnit("gestureTapMouseAction", "right")
+        /** Zalith2 gestureLongPressMouseAction: mouse button held by the long-press
+         *  gesture ("left"/"right"). Wired in LeftClickGesture (the long-press gesture). */
+        @JvmStatic val gestureLongPressMouseAction = StringSettingUnit("gestureLongPressMouseAction", "left")
+        /** Zalith2 physicalKeyImeCode: Android KeyEvent keycode of a hardware-keyboard key
+         *  that toggles the on-screen keyboard in game; -1 = unbound. Wired in
+         *  MinecraftGLSurface.processKeyEvent. */
+        @JvmStatic val physicalKeyImeCode       = IntSettingUnit("physicalKeyImeCode", -1)
+        /** TurtleLauncher Emotes: master toggle for the in-game menu's Emotes actions
+         *  ("Play emote" wheel button + emote-website shortcut). Wired in MainActivity's
+         *  MenuSettingsInitListener. */
+        @JvmStatic val emotesEnabled            = BooleanSettingUnit("emotesEnabled", true)
+        /** TurtleLauncher Emotes: GLFW keycode the in-game menu's "Play emote" button sends
+         *  to the game. Default 66 = GLFW_KEY_B, matching Emotecraft's default "open emote
+         *  wheel" keybind; rebindable on the Settings -> Emotes screen so it can follow the
+         *  user's own in-game Emotecraft controls. */
+        @JvmStatic val emoteWheelKeycode        = IntSettingUnit("emoteWheelKeycode", 66)
         /** Optional. CurseForge's v1 API requires a key (issued to registered apps by
          *  Overwolf/CurseForge Core) to resolve a mod's actual download URL from its
          *  project/file ID - there's no keyless path anymore, the old addons-ecs.forgesvc.net
@@ -488,7 +520,7 @@ class AllSettings {
         @JvmStatic val enableTerracottaNodes    = BooleanSettingUnit("enableTerracottaNodes", false)
         /** Custom EasyTier server node URI (e.g. tcp://your.server:11010). Ignored unless
          *  [enableTerracottaNodes] is also on; blank falls back to the default node list
-         *  even when the toggle is on, same as upstream's "为空则继续使用默认的节点逻辑". */
+         *  even when the toggle is on, same as upstream's "keep the default node logic when empty". */
         @JvmStatic val terracottaNodes          = StringSettingUnit("terracottaNodes", "")
     }
 }

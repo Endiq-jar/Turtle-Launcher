@@ -52,7 +52,7 @@ class ModrinthHelper : AbstractPlatformHelper(ApiHandler("https://api.modrinth.c
 
     @Throws(Throwable::class)
     override fun searchWorld(filters: Filters, lastResult: SearchResult): SearchResult? {
-        throw PlatformNotSupportedException("Modrinth does not provide archive download support.") //Modrinth不提供MC存档
+        throw PlatformNotSupportedException("Modrinth does not provide archive download support.") // Modrinth has no MC archives
     }
 
     @Throws(Throwable::class)
@@ -77,7 +77,7 @@ class ModrinthHelper : AbstractPlatformHelper(ApiHandler("https://api.modrinth.c
 
     @Throws(Throwable::class)
     override fun getWorldVersions(infoItem: InfoItem, force: Boolean): List<VersionItem>? {
-        throw PlatformNotSupportedException("Modrinth does not provide archive download support.") //Modrinth不提供MC存档
+        throw PlatformNotSupportedException("Modrinth does not provide archive download support.") // Modrinth has no MC archives
     }
 
     @Throws(Throwable::class)

@@ -76,7 +76,7 @@ class DownloadOptiFineFragment : ModListFragment() {
         val mcVersion = arguments?.getString(BUNDLE_MC_VERSION) ?: throw IllegalArgumentException("The Minecraft version is not passed")
 
         val mOptiFineVersions: MutableMap<String, MutableList<OptiFineVersion>> = HashMap()
-        optiFineVersions.optifineVersions.forEach(Consumer<List<OptiFineVersion>> { optiFineVersionList: List<OptiFineVersion> ->  //通过版本列表一层层遍历并合成为 Minecraft版本 + Optifine版本的Map集合
+        optiFineVersions.optifineVersions.forEach(Consumer<List<OptiFineVersion>> { optiFineVersionList: List<OptiFineVersion> ->  // flatten the version lists into a Minecraft+OptiFine version map
             currentTask?.apply { if (isCancelled) return@Consumer }
 
             optiFineVersionList.forEach(Consumer Consumer2@{ optiFineVersion: OptiFineVersion ->

@@ -1,13 +1,13 @@
 package com.endiq.turtlelauncher.event.value
 
 /**
- * 下载页面的一些事件
+ * Events used by the download pages.
  */
 class DownloadPageEvent {
     /**
-     * 切换下载页面时，使用这个事件通知Fragment播放动画
-     * @param index Fragment的类别索引
-     * @param classify 动画类型（IN：进入动画，OUT：退出动画）
+     * When switching download pages, this event tells the Fragment to play its animation.
+     * @param index category index of the Fragment
+     * @param classify animation direction (IN: enter, OUT: exit)
      */
     class PageSwapEvent(val index: Int, val classify: Int) {
         companion object {
@@ -17,12 +17,12 @@ class DownloadPageEvent {
     }
 
     /**
-     * 下载页面已销毁事件
+     * Event raised when the download page is destroyed.
      */
     class PageDestroyEvent
 
     /**
-     * 是否禁用RecyclerView
+     * Whether the RecyclerView is disabled.
      */
     class RecyclerEnableEvent(val enable: Boolean)
 }

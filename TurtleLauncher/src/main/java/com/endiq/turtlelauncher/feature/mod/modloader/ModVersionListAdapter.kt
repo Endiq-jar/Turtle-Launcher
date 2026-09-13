@@ -39,7 +39,7 @@ class ModVersionListAdapter(
 
     fun interface OnItemClickListener {
         /**
-         * @return 如果任务正在执行中，需要阻止这次的点击事件，则返回 false
+         * @return false when a task is running and this click must be blocked
          */
         fun onClick(version: Any): Boolean
     }

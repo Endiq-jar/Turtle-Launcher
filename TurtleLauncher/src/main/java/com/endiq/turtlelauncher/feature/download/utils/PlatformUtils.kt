@@ -11,8 +11,8 @@ import org.jackhuang.hmcl.util.StringUtils
 class PlatformUtils {
     companion object {
         /**
-         * 修改自源代码：[HMCL Github](https://github.com/HMCL-dev/HMCL/blob/main/HMCL/src/main/java/org/jackhuang/hmcl/game/LocalizedRemoteModRepository.java#L44-#L104)
-         * 原项目版权归原作者所有，遵循GPL v3协议
+         * Adapted from [HMCL Github](https://github.com/HMCL-dev/HMCL/blob/main/HMCL/src/main/java/org/jackhuang/hmcl/game/LocalizedRemoteModRepository.java#L44-#L104)
+         * All rights of the original project belong to their authors, licensed under GPL v3.
          */
         fun searchModLikeWithChinese(
             filters: Filters,
@@ -33,7 +33,8 @@ class PlatformUtils {
                 if (count >= 3) break
             }
 
-            // TODO 由于搜索逻辑与HMCL大不相同，这里就不做进一步的筛查逻辑了，直接返回本地匹配结果，作为平台的搜索关键词，不过无法保证结果的准确度
+            // TODO Our search logic differs a lot from HMCL, so no extra screening is done here:
+            // the local match is returned as the platform search keyword, accuracy not guaranteed.
             return englishSearchFiltersSet.joinToString(" ")
         }
 
