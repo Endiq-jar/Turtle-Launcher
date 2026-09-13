@@ -8,8 +8,8 @@ import static net.kdt.pojavlaunch.customcontrols.ControlDrawerData.Orientation.U
 
 import android.content.Context;
 
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.context.ContextExecutor;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.context.ContextExecutor;
 
 import net.kdt.pojavlaunch.Tools;
 

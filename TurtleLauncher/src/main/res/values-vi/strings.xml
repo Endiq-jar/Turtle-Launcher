@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Zalith Launcher -->
+    <!-- Turtle Launcher -->
     <string name="generic_open">Mở</string>
     <string name="generic_close">Đóng</string>
     <string name="generic_return">Quay lại</string>
@@ -645,7 +645,7 @@
     <string name="splash_screen_apply">Đồng ý và cài đặt</string>
     <!-- About -->
     <string name="about_tab">Giới thiệu về %s</string>
-    <string name="about_dec1">%s là một trình khởi chạy Minecraft dựa trên PojavLauncher, cho phép chạy Minecraft: Java Edition trên các thiết bị Android.</string>
+    <string name="about_dec1">%s là một trình khởi chạy Minecraft dựa trên TurtleLauncher, cho phép chạy Minecraft: Java Edition trên các thiết bị Android.</string>
     <string name="about_dec2">%s tập trung vào việc tối ưu hóa trải nghiệm người dùng, thiết kế lại giao diện ứng dụng và thêm nhiều tính năng thực tế hơn, nhằm giảm bớt rào cản khi chơi và giúp nhiều người dễ dàng trải nghiệm Minecraft.</string>
     <string name="about_dec3">%s sử dụng giấy phép mã nguồn mở GPL 3.0, giấy phép này mang tính "lan truyền". Bất kỳ mã nào sử dụng, sửa đổi hoặc phát sinh từ thư viện hoặc phần mềm GPL cũng phải áp dụng giấy phép GPL để mở mã nguồn. Nếu bạn có ý định phân phối phần mềm này, vui lòng tuân thủ các quy định liên quan của giấy phép mã nguồn mở GPL 3.0.</string>
     <string name="about_contributors">Những người đóng góp và Lời cảm ơn:</string>
@@ -655,7 +655,7 @@
     <string name="about_sponsors_amount">Thời gian và Tổng số tiền</string>
     <string name="about_button_support_development">Tài trợ phát triển</string>
     <string name="about_MovTery_desc">Nhà phát triển chính của TurtleLauncher (Endiq)</string>
-    <string name="about_PojavLauncher_desc">Nhóm phát triển của PojavLauncher, đã phát triển và mở nguồn PojavLauncher</string>
+    <string name="about_TurtleLauncher_desc">Nhóm phát triển của TurtleLauncher, đã phát triển và mở nguồn TurtleLauncher</string>
     <string name="about_mcmod_desc">Launcher sử dụng bản dịch tiếng Trung của Mod và gói tích hợp từ Bách khoa toàn thư MC</string>
     <string name="about_VeraFirefly_desc">Cung cấp hỗ trợ kỹ thuật về render cho launcher</string>
     <string name="about_LingMuQiuZhu_desc">Cung cấp hỗ trợ kỹ thuật cho launcher</string>

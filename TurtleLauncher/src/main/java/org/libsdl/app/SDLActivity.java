@@ -55,12 +55,12 @@ import android.widget.Toast;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-// TurtleLauncher: this file is adapted from DroidBridge Launcher's public source
-// (ca.dnamobile.droidbridgelauncher.runtime.SDLActivity fork of SDL's own Android
+// TurtleLauncher: this file is adapted from Turtle Launcher's public source
+// (ca.dnamobile.turtlelauncher.runtime.SDLActivity fork of SDL's own Android
 // glue, itself LGPL-3.0/zlib-licensed - see the project's GitHub for the original).
-// The "DroidBridge*" field/method names below are kept as-is from that source rather
+// The "Turtle*" field/method names below are kept as-is from that source rather
 // than renamed, to avoid touching 40+ call sites by hand with no compiler available
-// in this environment to check the result. Two of DroidBridge's own classes are NOT
+// in this environment to check the result. Two of Turtle's own classes are NOT
 // included here because they require a native library this codebase doesn't have -
 // see the stubbed call sites below and SdlAndroidJniPrep's class doc.
 
@@ -241,55 +241,55 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     protected static SDLGenericMotionListener_API14 mMotionListener;
     protected static HIDDeviceManager mHIDDeviceManager;
 
-    // DroidBridge embeds the JVM in GameActivity instead of launching SDLActivity.
-    // Keep the official SDL JNI callback class, but allow it to use DroidBridge's
+    // Turtle embeds the JVM in GameActivity instead of launching SDLActivity.
+    // Keep the official SDL JNI callback class, but allow it to use Turtle's
     // existing Activity and Minecraft Surface. This path is enabled only for
     // Minecraft versions that actually use the SDL3 backend.
-    private static volatile Activity mDroidBridgeHostActivity;
-    private static volatile Surface mDroidBridgeNativeSurface;
-    // TurtleLauncher: the token-Surface fields DroidBridge needed here
-    // (mDroidBridgeTokenSurfaceTexture/mDroidBridgeTokenSurface) are gone - they only made
-    // sense behind DroidBridge's native ANativeWindow hook, which isn't ported, and the code
+    private static volatile Activity mTurtleHostActivity;
+    private static volatile Surface mTurtleNativeSurface;
+    // TurtleLauncher: the token-Surface fields Turtle needed here
+    // (mTurtleTokenSurfaceTexture/mTurtleTokenSurface) are gone - they only made
+    // sense behind Turtle's native ANativeWindow hook, which isn't ported, and the code
     // that "returned" them was unreachable anyway. See getNativeSurface() below.
-    private static volatile View mDroidBridgeInputView;
-    private static volatile boolean mDroidBridgeExternalSurfaceMode;
+    private static volatile View mTurtleInputView;
+    private static volatile boolean mTurtleExternalSurfaceMode;
 
-    public static void setDroidBridgeHostActivity(Activity activity) {
-        mDroidBridgeHostActivity = activity;
+    public static void setTurtleHostActivity(Activity activity) {
+        mTurtleHostActivity = activity;
         if (activity != null) SDL.setContext(activity);
     }
 
-    public static void setDroidBridgeNativeSurface(Surface surface) {
-        mDroidBridgeNativeSurface = surface;
-        // TurtleLauncher: upstream calls DroidBridgeSDL3NativeWindowBridge.publish()/
+    public static void setTurtleNativeSurface(Surface surface) {
+        mTurtleNativeSurface = surface;
+        // TurtleLauncher: upstream calls TurtleSDL3NativeWindowBridge.publish()/
         // clear() here - the native cross-VM ANativeWindow hook (see SDL.java's
         // loadLibrary() for why it isn't ported). This still records the Surface in
-        // mDroidBridgeNativeSurface for getNativeSurface() below, best-effort, but
+        // mTurtleNativeSurface for getNativeSurface() below, best-effort, but
         // without that native hook there's no cross-VM publication happening.
     }
 
-    public static void setDroidBridgeInputView(View view) {
-        mDroidBridgeInputView = view;
+    public static void setTurtleInputView(View view) {
+        mTurtleInputView = view;
     }
 
-    private static View getDroidBridgePointerTarget() {
-        if (mDroidBridgeInputView != null) return mDroidBridgeInputView;
+    private static View getTurtlePointerTarget() {
+        if (mTurtleInputView != null) return mTurtleInputView;
         if (mSurface != null) return mSurface;
         return getContentView();
     }
 
     /**
-     * DroidBridge provides an already-oriented Android Surface instead of using
+     * Turtle provides an already-oriented Android Surface instead of using
      * SDLActivity's own SDLSurface. In this mode SurfaceFlinger has already
      * applied the device rotation, so reporting the physical display rotation to
      * SDL would rotate Vulkan/OpenGL output a second time.
      */
-    public static void setDroidBridgeExternalSurfaceMode(boolean enabled) {
-        mDroidBridgeExternalSurfaceMode = enabled;
+    public static void setTurtleExternalSurfaceMode(boolean enabled) {
+        mTurtleExternalSurfaceMode = enabled;
     }
 
-    public static void applyDroidBridgeExternalSurfaceOrientation(int width, int height) {
-        if (!mDroidBridgeExternalSurfaceMode) {
+    public static void applyTurtleExternalSurfaceOrientation(int width, int height) {
+        if (!mTurtleExternalSurfaceMode) {
             int natural = getNaturalOrientation();
             int rotation = getCurrentRotation();
             nativeSetNaturalOrientation(natural);
@@ -299,7 +299,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         }
 
         /*
-         * DroidBridge supplies a landscape-oriented external Surface. Keep SDL's
+         * Turtle supplies a landscape-oriented external Surface. Keep SDL's
          * logical display/input orientation aligned with that Surface and let the
          * Vulkan swapchain wrapper neutralize the Android WSI pre-transform. Do not
          * rotate GameActivity or the live SurfaceView; either action can destroy the
@@ -313,7 +313,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         nativeSetNaturalOrientation(logicalOrientation);
         mCurrentRotation = 0;
         onNativeRotationChanged(0);
-        System.out.println("DroidBridgeSDL3: external Surface logicalOrientation="
+        System.out.println("TurtleSDL3: external Surface logicalOrientation="
                 + (logicalOrientation == SDL_ORIENTATION_LANDSCAPE ? "landscape" : "portrait")
                 + " logicalRotation=0 androidNatural=" + reportedNatural
                 + " androidRotation=" + reportedRotation
@@ -321,9 +321,9 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                 + " viewTransform=none");
     }
 
-    private static Activity getDroidBridgeActivity() {
+    private static Activity getTurtleActivity() {
         if (mSingleton != null) return mSingleton;
-        if (mDroidBridgeHostActivity != null) return mDroidBridgeHostActivity;
+        if (mTurtleHostActivity != null) return mTurtleHostActivity;
         Context context = SDL.getContext();
         return context instanceof Activity ? (Activity) context : null;
     }
@@ -468,7 +468,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         // Amethyst retyped theirs to plain Activity; here the same need is met by the
         // existing host-Activity field, and getHostActivity() below is the one accessor
         // SDLSurface's lifecycle forwarding goes through.
-        mDroidBridgeHostActivity = activity;
+        mTurtleHostActivity = activity;
         // Must be set before SDLSurface.setNativeSurface: that records the Surface SDL will
         // report, and SDLActivity.getNativeSurface() below reads it back through mSurface.
         mSurface = surface;
@@ -496,13 +496,13 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     /**
      * The Activity behind this SDL session, whether SDL is running inside a real
      * SDLActivity (mSingleton) or embedded in another app's Activity via
-     * [externalInitialize]/[setDroidBridgeHostActivity]. SDLSurface's surface lifecycle
+     * [externalInitialize]/[setTurtleHostActivity]. SDLSurface's surface lifecycle
      * forwarding needs an Activity for getRequestedOrientation() and previously bailed out
      * whenever mSingleton was null - i.e. always, in the embedded case this launcher runs.
      */
     public static Activity getHostActivity() {
         if (mSingleton != null) return mSingleton;
-        return mDroidBridgeHostActivity;
+        return mTurtleHostActivity;
     }
 
     protected SDLSurface createSDLSurface(Context context) {
@@ -941,7 +941,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
             mSingleton.pressBackButton();
             return;
         }
-        Activity activity = getDroidBridgeActivity();
+        Activity activity = getTurtleActivity();
         if (activity != null) activity.runOnUiThread(activity::onBackPressed);
     }
 
@@ -1268,7 +1268,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     public static boolean setActivityTitle(String title) {
         // Called from SDLMain() thread and can't directly affect the view
         if (mSingleton != null) return mSingleton.sendCommand(COMMAND_CHANGE_TITLE, title);
-        Activity activity = getDroidBridgeActivity();
+        Activity activity = getTurtleActivity();
         if (activity == null) return false;
         activity.runOnUiThread(() -> activity.setTitle(title));
         return true;
@@ -1278,7 +1278,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
      * This method is called by SDL using JNI.
      */
     public static void setWindowStyle(boolean fullscreen) {
-        // DroidBridge owns the Activity's edge-to-edge/fullscreen policy.
+        // Turtle owns the Activity's edge-to-edge/fullscreen policy.
         if (mSingleton != null) {
             mSingleton.sendCommand(COMMAND_CHANGE_WINDOW_STYLE, fullscreen ? 1 : 0);
         }
@@ -1291,10 +1291,10 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
      */
     public static void setOrientation(int w, int h, boolean resizable, String hint)
     {
-        if (mDroidBridgeExternalSurfaceMode) {
+        if (mTurtleExternalSurfaceMode) {
             // GameActivity owns orientation. Rotating the Activity here recreates
             // the Surface and invalidates Minecraft's Vulkan swapchain.
-            System.out.println("DroidBridgeSDL3: ignored SDL Activity orientation request"
+            System.out.println("TurtleSDL3: ignored SDL Activity orientation request"
                     + " size=" + w + "x" + h + " hint=" + hint);
             return;
         }
@@ -1373,7 +1373,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
      * This method is called by SDL using JNI.
      */
     public static void minimizeWindow() {
-        Activity activity = getDroidBridgeActivity();
+        Activity activity = getTurtleActivity();
         if (activity == null) return;
 
         Intent startMain = new Intent(Intent.ACTION_MAIN);
@@ -1412,12 +1412,12 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
      */
     public static boolean supportsRelativeMouse()
     {
-        // DroidBridge's external SDL Surface always supports logical relative mode.
+        // Turtle's external SDL Surface always supports logical relative mode.
         // Android pointer capture is useful for a physical mouse, but the launcher's
         // controller camera and touch look generate relative deltas themselves. SDL
         // must therefore expose the grab transition even when the OEM input listener
         // reports that hardware pointer capture is unavailable.
-        if (mDroidBridgeExternalSurfaceMode) {
+        if (mTurtleExternalSurfaceMode) {
             return true;
         }
 
@@ -1440,13 +1440,13 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
      */
     public static boolean setRelativeMouseEnabled(boolean enabled)
     {
-        if (mDroidBridgeExternalSurfaceMode) {
+        if (mTurtleExternalSurfaceMode) {
             // Treat SDL's relative-mode request as the authoritative GUI/gameplay
             // grab state. Best-effort pointer capture still benefits a real mouse,
             // but failure must not block controller camera/WASD mode.
-            // TurtleLauncher: upstream notifies its own DroidBridgeSDL3Bootstrap here
+            // TurtleLauncher: upstream notifies its own TurtleSDL3Bootstrap here
             // (not ported - that class's ~2000 lines of platform-bootstrap logic are
-            // DroidBridge-specific and weren't part of this port's scope). Whatever
+            // Turtle-specific and weren't part of this port's scope). Whatever
             // TurtleLauncher code needs to react to this should hook in here instead.
             try {
                 SDLActivity.getMotionListener().setRelativeMouseEnabled(enabled);
@@ -1593,7 +1593,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     // This method is called by SDLControllerManager's API 26 Generic Motion Handler.
     public static View getContentView() {
         if (mLayout != null) return mLayout;
-        Activity activity = getDroidBridgeActivity();
+        Activity activity = getTurtleActivity();
         return activity != null ? activity.findViewById(android.R.id.content) : null;
     }
 
@@ -1653,7 +1653,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
      * This method is called by SDL using JNI.
      */
     public static boolean showTextInput(int input_type, int x, int y, int w, int h) {
-        // DroidBridge supplies its own hidden EditText/IME bridge.
+        // Turtle supplies its own hidden EditText/IME bridge.
         if (mSingleton == null || mLayout == null) return false;
         return mSingleton.commandHandler.post(new ShowTextInputTask(input_type, x, y, w, h));
     }
@@ -1748,21 +1748,21 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     public static Surface getNativeSurface() {
         if (SDLActivity.mSurface != null) {
             Surface officialSurface = SDLActivity.mSurface.getNativeSurface();
-            System.out.println("DroidBridgeSDL3: getNativeSurface official="
+            System.out.println("TurtleSDL3: getNativeSurface official="
                     + officialSurface + " valid="
                     + (officialSurface != null && officialSurface.isValid()));
             return officialSurface;
         }
-        Surface surface = mDroidBridgeNativeSurface;
+        Surface surface = mTurtleNativeSurface;
         boolean valid = surface != null && surface.isValid();
 
         // TurtleLauncher: this used to contain an unreachable branch - `boolean
         // nativeWindowReady = false;` followed by `if (!valid && nativeWindowReady) { ... }`
         // - which built a SurfaceTexture-backed token Surface that could never be returned,
         // plus a return of `valid || nativeWindowReady ? surface : null` whose second
-        // operand was always false. The token only ever made sense behind DroidBridge's
+        // operand was always false. The token only ever made sense behind Turtle's
         // native ANativeWindow hook (see SDL.java's loadLibrary() and
-        // setDroidBridgeNativeSurface() for why that hook isn't ported here), so the dead
+        // setTurtleNativeSurface() for why that hook isn't ported here), so the dead
         // code is gone rather than kept as decoration. What's left is honest: report the
         // real Surface this launcher published, or null, and say which in the log.
         //
@@ -1771,7 +1771,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         // through SdlAndroidJniPrep/MinecraftGLSurface.publishSurfaceToSdl(). Returning null
         // here is still possible (SDL asking before the launcher's Surface exists), which is
         // why the log line stays: it's the difference between "no Surface yet" and "crashed".
-        System.out.println("DroidBridgeSDL3: getNativeSurface external=" + surface + " valid=" + valid);
+        System.out.println("TurtleSDL3: getNativeSurface external=" + surface + " valid=" + valid);
         return valid ? surface : null;
     }
 
@@ -2095,7 +2095,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     public static boolean setCustomCursor(int cursorID) {
         if (Build.VERSION.SDK_INT < 24 /* Android 7.0 (N) */) return false;
         try {
-            View target = getDroidBridgePointerTarget();
+            View target = getTurtlePointerTarget();
             if (target == null || mCursors == null) return false;
             target.setPointerIcon(mCursors.get(cursorID));
             return true;
@@ -2173,7 +2173,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         }
         if (Build.VERSION.SDK_INT >= 24 /* Android 7.0 (N) */) {
             try {
-                View target = getDroidBridgePointerTarget();
+                View target = getTurtlePointerTarget();
                 if (target == null) return false;
                 target.setPointerIcon(PointerIcon.getSystemIcon(SDL.getContext(), cursor_type));
             } catch (Exception e) {
@@ -2223,7 +2223,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
             }
             i.addFlags(flags);
 
-            Activity activity = getDroidBridgeActivity();
+            Activity activity = getTurtleActivity();
             if (activity == null) return false;
             activity.startActivity(i);
         } catch (Exception ex) {
@@ -2237,7 +2237,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
      */
     public static boolean showToast(String message, int duration, int gravity, int xOffset, int yOffset)
     {
-        final Activity hostActivity = getDroidBridgeActivity();
+        final Activity hostActivity = getTurtleActivity();
         if (hostActivity == null) return false;
 
         try
@@ -2281,7 +2281,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
      * This method is called by SDL using JNI.
      */
     public static int openFileDescriptor(String uri, String mode) throws Exception {
-        Activity activity = getDroidBridgeActivity();
+        Activity activity = getTurtleActivity();
         if (activity == null) return -1;
 
         try {

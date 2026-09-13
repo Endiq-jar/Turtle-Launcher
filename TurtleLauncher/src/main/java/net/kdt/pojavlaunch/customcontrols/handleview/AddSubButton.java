@@ -6,8 +6,8 @@ import android.util.AttributeSet;
 
 import androidx.annotation.Nullable;
 
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.ui.view.AnimButton;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.ui.view.AnimButton;
 
 import net.kdt.pojavlaunch.customcontrols.ControlData;
 import net.kdt.pojavlaunch.customcontrols.buttons.ControlDrawer;

@@ -1,5 +1,5 @@
 package net.kdt.pojavlaunch.fragments;
-import com.endiq.zalithlauncher.utils.anim.TurtleTransitions;
+import com.endiq.turtlelauncher.utils.anim.TurtleTransitions;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -20,10 +20,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.endiq.anim.AnimPlayer;
 import com.endiq.anim.animations.Animations;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.databinding.FragmentControllerRemapperBinding;
-import com.endiq.zalithlauncher.ui.fragment.FragmentWithAnim;
-import com.endiq.zalithlauncher.utils.ZHTools;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.databinding.FragmentControllerRemapperBinding;
+import com.endiq.turtlelauncher.ui.fragment.FragmentWithAnim;
+import com.endiq.turtlelauncher.utils.ZHTools;
 
 import net.kdt.pojavlaunch.customcontrols.gamepad.Gamepad;
 import net.kdt.pojavlaunch.customcontrols.gamepad.GamepadMapperAdapter;

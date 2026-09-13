@@ -10,7 +10,7 @@
 
 <H1 ALIGN= "CENTER">A modern, high-performance Android launcher for Minecraft: Java Edition.</H1>
 
-Turtle Launcher is a fast, beautiful, and feature-rich Minecraft Java launcher built for Android by **Endiq**. Based on the open-source **Zalith Launcher** project, it combines a modern Material 3 interface with powerful customization, performance optimizations, and extensive modding support.
+Turtle Launcher is a fast, beautiful, and feature-rich Minecraft Java launcher built for Android by **Endiq**. Based on the open-source **Turtle Launcher** project, it combines a modern Material 3 interface with powerful customization, performance optimizations, and extensive modding support.
 
 ![Minecraft](1.jpg)
 ---
@@ -164,8 +164,7 @@ Licensed under **GPL-3.0**.
 
 Built upon ideas and technologies from:
 
-* PojavLauncher
-* Zalith Launcher
+* TurtleLauncher
 * HMCL
 * Boardwalk
 * OpenJDK

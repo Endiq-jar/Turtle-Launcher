@@ -1,7 +1,7 @@
 package net.kdt.pojavlaunch.fragments;
-import com.endiq.zalithlauncher.utils.anim.TurtleTransitions;
+import com.endiq.turtlelauncher.utils.anim.TurtleTransitions;
 
-import static com.endiq.zalithlauncher.event.single.RefreshVersionsEvent.MODE.END;
+import static com.endiq.turtlelauncher.event.single.RefreshVersionsEvent.MODE.END;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -18,40 +18,40 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.endiq.anim.AnimPlayer;
 import com.endiq.anim.animations.Animations;
-import com.endiq.zalithlauncher.InfoCenter;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.databinding.FragmentLauncherBinding;
-import com.endiq.zalithlauncher.event.single.AccountUpdateEvent;
-import com.endiq.zalithlauncher.event.single.LaunchGameEvent;
-import com.endiq.zalithlauncher.event.single.RefreshVersionsEvent;
-import com.endiq.zalithlauncher.event.value.InstallLocalModpackEvent;
-import com.endiq.zalithlauncher.feature.mod.modpack.install.InstallExtra;
-import com.endiq.zalithlauncher.feature.log.CrashAnalyzer;
-import com.endiq.zalithlauncher.feature.turtle.DailyPlaytimeStats;
-import com.endiq.zalithlauncher.feature.version.Version;
-import com.endiq.zalithlauncher.feature.version.utils.VersionIconUtils;
-import com.endiq.zalithlauncher.feature.version.VersionInfo;
-import com.endiq.zalithlauncher.feature.version.VersionsManager;
-import com.endiq.zalithlauncher.task.TaskExecutors;
-import com.endiq.zalithlauncher.ui.fragment.AboutFragment;
-import com.endiq.zalithlauncher.ui.fragment.ControlButtonFragment;
-import com.endiq.zalithlauncher.ui.fragment.FilesFragment;
-import com.endiq.zalithlauncher.ui.fragment.FragmentWithAnim;
-import com.endiq.zalithlauncher.ui.fragment.LogViewerFragment;
-import com.endiq.zalithlauncher.ui.fragment.AccountFragment;
-import com.endiq.zalithlauncher.ui.fragment.VersionsListFragment;
-import com.endiq.zalithlauncher.ui.subassembly.version.VersionManagerDropdown;
-import com.endiq.zalithlauncher.feature.accounts.AccountsManager;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.utils.skin.SkinLoader;
+import com.endiq.turtlelauncher.InfoCenter;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.databinding.FragmentLauncherBinding;
+import com.endiq.turtlelauncher.event.single.AccountUpdateEvent;
+import com.endiq.turtlelauncher.event.single.LaunchGameEvent;
+import com.endiq.turtlelauncher.event.single.RefreshVersionsEvent;
+import com.endiq.turtlelauncher.event.value.InstallLocalModpackEvent;
+import com.endiq.turtlelauncher.feature.mod.modpack.install.InstallExtra;
+import com.endiq.turtlelauncher.feature.log.CrashAnalyzer;
+import com.endiq.turtlelauncher.feature.turtle.DailyPlaytimeStats;
+import com.endiq.turtlelauncher.feature.version.Version;
+import com.endiq.turtlelauncher.feature.version.utils.VersionIconUtils;
+import com.endiq.turtlelauncher.feature.version.VersionInfo;
+import com.endiq.turtlelauncher.feature.version.VersionsManager;
+import com.endiq.turtlelauncher.task.TaskExecutors;
+import com.endiq.turtlelauncher.ui.fragment.AboutFragment;
+import com.endiq.turtlelauncher.ui.fragment.ControlButtonFragment;
+import com.endiq.turtlelauncher.ui.fragment.FilesFragment;
+import com.endiq.turtlelauncher.ui.fragment.FragmentWithAnim;
+import com.endiq.turtlelauncher.ui.fragment.LogViewerFragment;
+import com.endiq.turtlelauncher.ui.fragment.AccountFragment;
+import com.endiq.turtlelauncher.ui.fragment.VersionsListFragment;
+import com.endiq.turtlelauncher.ui.subassembly.version.VersionManagerDropdown;
+import com.endiq.turtlelauncher.feature.accounts.AccountsManager;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.utils.skin.SkinLoader;
 
 import androidx.core.content.ContextCompat;
 
 import net.kdt.pojavlaunch.value.MinecraftAccount;
-import com.endiq.zalithlauncher.utils.file.FileTools;
-import com.endiq.zalithlauncher.utils.path.PathManager;
-import com.endiq.zalithlauncher.utils.ZHTools;
-import com.endiq.zalithlauncher.utils.anim.ViewAnimUtils;
+import com.endiq.turtlelauncher.utils.file.FileTools;
+import com.endiq.turtlelauncher.utils.path.PathManager;
+import com.endiq.turtlelauncher.utils.ZHTools;
+import com.endiq.turtlelauncher.utils.anim.ViewAnimUtils;
 
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension;
@@ -112,9 +112,9 @@ public class MainMenuFragment extends FragmentWithAnim {
         // implemented - native lib, VPN service, host/join UI - but had NO entry point
         // anywhere in the UI, so it was unreachable. This is it.
         binding.terracottaButton.setOnClickListener(v -> ZHTools.swapFragmentWithAnim(this,
-            com.endiq.zalithlauncher.ui.fragment.TerracottaFragment.class,
-            com.endiq.zalithlauncher.ui.fragment.TerracottaFragment.TAG, null));
-        binding.shareLogsButton.setOnClickListener(v -> ZHTools.swapFragmentWithAnim(this, com.endiq.zalithlauncher.ui.fragment.ShareLogsFragment.class, com.endiq.zalithlauncher.ui.fragment.ShareLogsFragment.TAG, null));
+            com.endiq.turtlelauncher.ui.fragment.TerracottaFragment.class,
+            com.endiq.turtlelauncher.ui.fragment.TerracottaFragment.TAG, null));
+        binding.shareLogsButton.setOnClickListener(v -> ZHTools.swapFragmentWithAnim(this, com.endiq.turtlelauncher.ui.fragment.ShareLogsFragment.class, com.endiq.turtlelauncher.ui.fragment.ShareLogsFragment.TAG, null));
         binding.modpackImportButton.setOnClickListener(v -> {
             if (ProgressKeeper.getTaskCount() == 0) {
                 modpackImportLauncher.launch(null);
@@ -123,10 +123,10 @@ public class MainMenuFragment extends FragmentWithAnim {
             }
         });
         // Footer: launcher name, version string, and GitHub link
-        binding.footerAppName.setText(com.endiq.zalithlauncher.InfoDistributor.LAUNCHER_NAME);
-        binding.footerVersionText.setText("v" + com.endiq.zalithlauncher.BuildConfig.VERSION_NAME);
+        binding.footerAppName.setText(com.endiq.turtlelauncher.InfoDistributor.LAUNCHER_NAME);
+        binding.footerVersionText.setText("v" + com.endiq.turtlelauncher.BuildConfig.VERSION_NAME);
         binding.footerGithubButton.setOnClickListener(v ->
-            ZHTools.openLink(requireActivity(), com.endiq.zalithlauncher.utils.path.UrlManager.URL_HOME));
+            ZHTools.openLink(requireActivity(), com.endiq.turtlelauncher.utils.path.UrlManager.URL_HOME));
 
         binding.version.setOnClickListener(v -> {
             if (!isTaskRunning()) {
@@ -162,7 +162,7 @@ public class MainMenuFragment extends FragmentWithAnim {
         binding.versionInfo.setSelected(true);
 
         // Top app bar: title/subtitle + quick-action icon row
-        binding.homeTopBarTitle.setText(com.endiq.zalithlauncher.InfoDistributor.LAUNCHER_NAME);
+        binding.homeTopBarTitle.setText(com.endiq.turtlelauncher.InfoDistributor.LAUNCHER_NAME);
         // TurtleLauncher: account manager moved here from the view_account card that used to
         // sit above the play panel - same destination (AccountFragment), just reachable from
         // the top bar now like the other quick actions. refreshAccountButton() keeps the icon
@@ -176,27 +176,27 @@ public class MainMenuFragment extends FragmentWithAnim {
             ZHTools.swapFragmentWithAnim(this, FilesFragment.class, FilesFragment.TAG, bundle);
         });
         binding.topBarDownloadButton.setOnClickListener(v -> ZHTools.swapFragmentWithAnim(this,
-            com.endiq.zalithlauncher.ui.fragment.DownloadFragment.class,
-            com.endiq.zalithlauncher.ui.fragment.DownloadFragment.TAG, null));
+            com.endiq.turtlelauncher.ui.fragment.DownloadFragment.class,
+            com.endiq.turtlelauncher.ui.fragment.DownloadFragment.TAG, null));
         // TurtleLauncher: top-bar shortcut straight to the cursor manager/editor - previously
         // only reachable via Settings -> Control Settings -> Custom Mouse, several taps deep.
         binding.topBarCursorButton.setOnClickListener(v -> ZHTools.swapFragmentWithAnim(this,
-            com.endiq.zalithlauncher.ui.fragment.CustomMouseFragment.class,
-            com.endiq.zalithlauncher.ui.fragment.CustomMouseFragment.TAG, null));
+            com.endiq.turtlelauncher.ui.fragment.CustomMouseFragment.class,
+            com.endiq.turtlelauncher.ui.fragment.CustomMouseFragment.TAG, null));
         binding.topBarSettingsButton.setOnClickListener(v -> ZHTools.swapFragmentWithAnim(this,
-            com.endiq.zalithlauncher.ui.fragment.settings.SettingsFragment.class,
-            com.endiq.zalithlauncher.ui.fragment.settings.SettingsFragment.TAG, null));
+            com.endiq.turtlelauncher.ui.fragment.settings.SettingsFragment.class,
+            com.endiq.turtlelauncher.ui.fragment.settings.SettingsFragment.TAG, null));
         // TurtleLauncher: built-in AI Assistant. Runs entirely on-device - no API key, no
         // account, no network (see feature/ai/TurtleAssistant.kt) - so unlike the optional
         // AI crash help / skin filter in Settings -> Experimental there's nothing for the
         // player to configure before it works. The button is only hidden when the player
         // turns AllSettings.aiAssistantEnabled off.
         binding.topBarAiButton.setVisibility(
-            com.endiq.zalithlauncher.setting.AllSettings.getAiAssistantEnabled().getValue()
+            com.endiq.turtlelauncher.setting.AllSettings.getAiAssistantEnabled().getValue()
                 ? View.VISIBLE : View.GONE);
         binding.topBarAiButton.setOnClickListener(v -> ZHTools.swapFragmentWithAnim(this,
-            com.endiq.zalithlauncher.ui.fragment.AiChatFragment.class,
-            com.endiq.zalithlauncher.ui.fragment.AiChatFragment.TAG, null));
+            com.endiq.turtlelauncher.ui.fragment.AiChatFragment.class,
+            com.endiq.turtlelauncher.ui.fragment.AiChatFragment.TAG, null));
         // TurtleLauncher: replaces the old always-visible bottom ProgressLayout bar - tasks
         // (downloads, login, mod checks, etc, anything routed through ProgressKeeper) are
         // now checked on demand via this button instead of a permanent bar at the bottom.
@@ -246,15 +246,15 @@ public class MainMenuFragment extends FragmentWithAnim {
     }
 
     /**
-     * Adds one Quick Actions row per discovered {@link com.endiq.zalithlauncher.plugins.feature.FeaturePlugin}
-     * (see {@link com.endiq.zalithlauncher.plugins.feature.FeaturePluginManager} for the discovery
+     * Adds one Quick Actions row per discovered {@link com.endiq.turtlelauncher.plugins.feature.FeaturePlugin}
+     * (see {@link com.endiq.turtlelauncher.plugins.feature.FeaturePluginManager} for the discovery
      * contract). This is the whole point of the feature-plugin architecture: a new launcher feature
      * shipped as a separate installed app shows up here automatically, without this Fragment/the
      * launcher APK needing to change at all.
      */
     private void populateFeaturePlugins() {
-        java.util.List<com.endiq.zalithlauncher.plugins.feature.FeaturePlugin> plugins =
-                com.endiq.zalithlauncher.plugins.feature.FeaturePluginManager.getFeaturePluginList();
+        java.util.List<com.endiq.turtlelauncher.plugins.feature.FeaturePlugin> plugins =
+                com.endiq.turtlelauncher.plugins.feature.FeaturePluginManager.getFeaturePluginList();
         binding.featurePluginsContainer.removeAllViews();
         if (plugins.isEmpty()) {
             binding.featurePluginsContainer.setVisibility(View.GONE);
@@ -262,7 +262,7 @@ public class MainMenuFragment extends FragmentWithAnim {
         }
         binding.featurePluginsContainer.setVisibility(View.VISIBLE);
         android.content.pm.PackageManager packageManager = requireContext().getPackageManager();
-        for (com.endiq.zalithlauncher.plugins.feature.FeaturePlugin plugin : plugins) {
+        for (com.endiq.turtlelauncher.plugins.feature.FeaturePlugin plugin : plugins) {
             View row = getLayoutInflater().inflate(R.layout.item_feature_plugin, binding.featurePluginsContainer, false);
             android.widget.ImageView icon = row.findViewById(R.id.feature_plugin_icon);
             android.widget.TextView title = row.findViewById(R.id.feature_plugin_title);
@@ -401,8 +401,8 @@ public class MainMenuFragment extends FragmentWithAnim {
      * old always-visible bottom ProgressLayout bar.
      */
     private void showRunningTasksDialog() {
-        com.endiq.zalithlauncher.databinding.DialogRunningTasksBinding dialogBinding =
-                com.endiq.zalithlauncher.databinding.DialogRunningTasksBinding.inflate(getLayoutInflater());
+        com.endiq.turtlelauncher.databinding.DialogRunningTasksBinding dialogBinding =
+                com.endiq.turtlelauncher.databinding.DialogRunningTasksBinding.inflate(getLayoutInflater());
 
         // TurtleLauncher fix: this used to render one point-in-time snapshot when the dialog
         // opened and never touch it again, so a download that kept progressing while the
@@ -519,7 +519,7 @@ public class MainMenuFragment extends FragmentWithAnim {
     // pop, which is a scale effect rather than an entrance, so it runs alongside the stagger.
     @Override
     public void slideIn(AnimPlayer animPlayer) {
-        com.endiq.zalithlauncher.utils.anim.TurtleTransitions.stagger(
+        com.endiq.turtlelauncher.utils.anim.TurtleTransitions.stagger(
                 animPlayer,
                 java.util.Arrays.asList(binding.launcherMenu, binding.playLayout),
                 55L);

@@ -1,11 +1,11 @@
 package net.kdt.pojavlaunch;
 
-import static com.endiq.zalithlauncher.context.ContextExecutor.getString;
+import static com.endiq.turtlelauncher.context.ContextExecutor.getString;
 import static org.lwjgl.glfw.CallbackBridge.sendKeyPress;
 
 import android.view.KeyEvent;
 
-import com.endiq.zalithlauncher.R;
+import com.endiq.turtlelauncher.R;
 
 import org.lwjgl.glfw.CallbackBridge;
 

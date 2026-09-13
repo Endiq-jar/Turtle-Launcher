@@ -228,7 +228,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <com.endiq.zalithlauncher.ui.view.AnimTextView
+                <com.endiq.turtlelauncher.ui.view.AnimTextView
                     android:id="@+id/mcmod_link"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -253,7 +253,7 @@
 
             </LinearLayout>
 
-            <com.endiq.zalithlauncher.ui.view.AnimButton
+            <com.endiq.turtlelauncher.ui.view.AnimButton
                 android:id="@+id/return_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -265,7 +265,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <com.endiq.zalithlauncher.ui.view.AnimButton
+            <com.endiq.turtlelauncher.ui.view.AnimButton
                 android:id="@+id/refresh_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -277,7 +277,7 @@
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <com.endiq.zalithlauncher.ui.view.AnimCheckBox
+            <com.endiq.turtlelauncher.ui.view.AnimCheckBox
                 android:id="@+id/release_version"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

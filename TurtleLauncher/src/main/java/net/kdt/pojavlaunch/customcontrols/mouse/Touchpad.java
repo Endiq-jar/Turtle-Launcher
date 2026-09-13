@@ -11,11 +11,11 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.setting.AllStaticSettings;
-import com.endiq.zalithlauncher.utils.ZHTools;
-import com.endiq.zalithlauncher.utils.image.Dimension;
-import com.endiq.zalithlauncher.utils.image.ImageUtils;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.setting.AllStaticSettings;
+import com.endiq.turtlelauncher.utils.ZHTools;
+import com.endiq.turtlelauncher.utils.image.Dimension;
+import com.endiq.turtlelauncher.utils.image.ImageUtils;
 
 import net.kdt.pojavlaunch.GrabListener;
 

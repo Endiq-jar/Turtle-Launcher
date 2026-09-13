@@ -6,8 +6,8 @@ import android.text.Html;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.setting.AllSettings;
 
 import net.kdt.pojavlaunch.ShowErrorActivity;
 import net.kdt.pojavlaunch.lifecycle.ContextExecutorTask;

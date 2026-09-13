@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Zalith Launcher -->
+    <!-- Turtle Launcher -->
     <string name="generic_open">开启</string>
     <string name="generic_close">关闭</string>
     <string name="generic_return">返回</string>
@@ -683,7 +683,7 @@
 
     <!-- About -->
     <string name="about_tab">关于 %s</string>
-    <string name="about_dec1">%s 是一款基于 PojavLauncher 开发的 Minecraft 启动器，它能够在 Android 设备上运行 Minecraft: Java Edition。</string>
+    <string name="about_dec1">%s 是一款基于 TurtleLauncher 开发的 Minecraft 启动器，它能够在 Android 设备上运行 Minecraft: Java Edition。</string>
     <string name="about_dec2">%s 致力于优化用户体验，重新设计了应用界面，新增了更多实用的功能，旨在最大程度地降低游玩门槛，让更多人能够轻松体验 Minecraft 的乐趣。</string>
     <string name="about_dec3">%s 使用的是 GPL 3.0 开源协议，这一协议具有 “传染性”，任何使用、修改或衍生自 GPL 类库或软件的代码也必须采用 GPL 协议进行开源。如果你打算传播或分发本软件，请务必遵守 GPL 3.0 开源协议的相关规定。</string>
     <string name="about_contributors">贡献者与鸣谢:</string>
@@ -693,7 +693,7 @@
     <string name="about_sponsors_amount">时间与总金额</string>
     <string name="about_button_support_development">赞助开发</string>
     <string name="about_MovTery_desc">TurtleLauncher 主要开发者 (Endiq)</string>
-    <string name="about_PojavLauncher_desc">PojavLauncher 的开发团队，开发并开源了 PojavLauncher</string>
+    <string name="about_TurtleLauncher_desc">TurtleLauncher 的开发团队，开发并开源了 TurtleLauncher</string>
     <string name="about_mcmod_desc">启动器使用了来自 MC 百科的模组以及整合包中文翻译</string>
     <string name="about_VeraFirefly_desc">为启动器提供渲染方面的技术支持</string>
     <string name="about_LingMuQiuZhu_desc">为启动器提供了技术支持</string>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:paddingHorizontal="@dimen/_8sdp"
@@ -21,4 +21,4 @@
         android:layout_toEndOf="@id/icon"
         android:paddingHorizontal="@dimen/_8sdp"/>
 
-</com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+</com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>

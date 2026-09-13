@@ -19,9 +19,9 @@ package org.jackhuang.hmcl.ui.versions;
 
 import static org.jackhuang.hmcl.util.Pair.pair;
 
-import com.endiq.zalithlauncher.feature.download.enums.Classify;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.utils.stringutils.StringUtilsKt;
+import com.endiq.turtlelauncher.feature.download.enums.Classify;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.utils.stringutils.StringUtilsKt;
 
 import net.kdt.pojavlaunch.Tools;
 

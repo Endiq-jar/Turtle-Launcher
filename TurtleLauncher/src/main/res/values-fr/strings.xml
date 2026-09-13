@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Zalith Launcher -->
+    <!-- Turtle Launcher -->
     <string name="generic_open">Ouvrir</string>
     <string name="generic_close">Fermer</string>
     <string name="generic_return">Retour</string>
@@ -645,7 +645,7 @@
     <string name="splash_screen_apply">Accepter et installer</string>
     <!-- About -->
     <string name="about_tab">À propos de %s</string>
-    <string name="about_dec1">%s est un lanceur Minecraft basé sur PojavLauncher qui permet de faire fonctionner Minecraft: Java Edition sur les appareils Android.</string>
+    <string name="about_dec1">%s est un lanceur Minecraft basé sur TurtleLauncher qui permet de faire fonctionner Minecraft: Java Edition sur les appareils Android.</string>
     <string name="about_dec2">%s se concentre sur l\'optimisation de l\'expérience utilisateur, la refonte de l\'interface de l\'application et l\'ajout de fonctionnalités pratiques, visant à réduire les barrières à l\'entrée et à permettre à davantage de personnes de profiter facilement du plaisir de Minecraft.</string>
     <string name="about_dec3">%s utilise la licence open source GPL 3.0, qui est "virale". Tout code utilisant, modifiant ou dérivant de bibliothèques ou logiciels sous GPL doit également adopter la licence GPL pour l\'open source. Si vous envisagez de distribuer ce logiciel, veuillez respecter les dispositions pertinentes de la licence open source GPL 3.0.</string>
     <string name="about_contributors">Contributeurs et Remerciements :</string>
@@ -655,7 +655,7 @@
     <string name="about_sponsors_amount">Temps et Montant Total</string>
     <string name="about_button_support_development">Soutenir le développement</string>
     <string name="about_MovTery_desc">Développeur principal de TurtleLauncher (Endiq)</string>
-    <string name="about_PojavLauncher_desc">Équipe de développement de PojavLauncher, qui a développé et open-sourcé PojavLauncher</string>
+    <string name="about_TurtleLauncher_desc">Équipe de développement de TurtleLauncher, qui a développé et open-sourcé TurtleLauncher</string>
     <string name="about_mcmod_desc">Le lanceur utilise des Mods de MC 百科 ainsi que des traductions en chinois pour les packs d\'intégration</string>
     <string name="about_VeraFirefly_desc">Support technique pour le lanceur en matière de rendu</string>
     <string name="about_LingMuQiuZhu_desc">Support technique pour le lanceur</string>

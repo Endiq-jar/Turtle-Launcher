@@ -19,7 +19,7 @@
         app:tabIndicatorHeight="@dimen/_3sdp"
         app:tabMode="fixed" />
 
-    <com.endiq.zalithlauncher.ui.view.AnimEditText
+    <com.endiq.turtlelauncher.ui.view.AnimEditText
         android:id="@+id/search_version"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
         android:hint="@string/generic_search"
         android:paddingHorizontal="@dimen/_8sdp"/>
 
-    <com.endiq.zalithlauncher.ui.subassembly.versionlist.VersionListView
+    <com.endiq.turtlelauncher.ui.subassembly.versionlist.VersionListView
         android:id="@+id/version"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

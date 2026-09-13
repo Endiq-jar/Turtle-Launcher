@@ -30,7 +30,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.endiq.zalithlauncher.ui.subassembly.filelist.FileRecyclerView
+            <com.endiq.turtlelauncher.ui.subassembly.filelist.FileRecyclerView
                 android:id="@+id/file_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -61,7 +61,7 @@
                     android:text="@string/file_nothing"
                     android:layout_marginStart="@dimen/_8sdp" />
 
-                <com.endiq.zalithlauncher.ui.view.AnimTextView
+                <com.endiq.turtlelauncher.ui.view.AnimTextView
                     android:id="@+id/go_download_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.endiq.zalithlauncher.ui.view.AnimCheckBox
+                <com.endiq.turtlelauncher.ui.view.AnimCheckBox
                     android:id="@+id/select_all"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -141,7 +141,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/external_storage"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -168,9 +168,9 @@
                         android:layout_toEndOf="@+id/imageView"
                         android:textColor="@color/turtle_primary_text"
                         android:text="@string/file_external_storage" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/software_private"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -197,9 +197,9 @@
                         android:layout_toEndOf="@+id/imageView1"
                         android:textColor="@color/turtle_primary_text"
                         android:text="@string/file_software_private" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-                <com.endiq.zalithlauncher.ui.view.AnimCheckBox
+                <com.endiq.turtlelauncher.ui.view.AnimCheckBox
                     android:id="@+id/multi_select_files"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

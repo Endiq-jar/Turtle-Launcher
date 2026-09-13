@@ -78,7 +78,7 @@
                     android:textColor="@color/accent_primary" />
     
                 <!-- Unlimited FPS -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/unlimitedFps_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -111,10 +111,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Low Latency Rendering -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/lowLatencyRendering_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -147,10 +147,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Frame Pacing -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/framePacing_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -183,10 +183,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Frame Skipping -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/frameSkipping_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -219,10 +219,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
                 <!-- Adaptive Frame Timing -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/adaptiveFrameTiming_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -255,10 +255,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 <!-- Auto Memory Cleanup -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/autoMemoryCleanup_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -291,10 +291,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 <!-- TurtleLauncher: Advanced Renderer Settings - Shader Cache -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/rendererShaderCache_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -327,10 +327,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 <!-- TurtleLauncher: Advanced Renderer Settings - Debug Logging -->
-                <com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/rendererDebugLogging_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -363,7 +363,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
-                </com.endiq.zalithlauncher.ui.layout.AnimRelativeLayout>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 <!-- GL4ES LIBGL_* JNI tweaks moved to Phone Settings > JNI Optimization (four
                      granular switches instead of this one combined toggle). -->

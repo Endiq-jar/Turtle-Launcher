@@ -3,7 +3,7 @@ package net.kdt.pojavlaunch.customcontrols.gamepad;
 import android.util.Log;
 
 import com.google.gson.JsonParseException;
-import com.endiq.zalithlauncher.utils.path.PathManager;
+import com.endiq.turtlelauncher.utils.path.PathManager;
 
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.utils.FileUtils;

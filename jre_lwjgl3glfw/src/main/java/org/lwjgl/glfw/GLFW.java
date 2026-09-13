@@ -625,7 +625,7 @@ public class GLFW
         Init = apiGetFunctionAddress(GLFW, "pojavInit"),
         CreateContext = apiGetFunctionAddress(GLFW, "pojavCreateContext"),
         GetCurrentContext = apiGetFunctionAddress(GLFW, "pojavGetCurrentContext"),
-        //DetachOnCurrentThread = apiGetFunctionAddress(GLFW, "pojavDetachOnCurrentThread"),
+        //DetachOnCurrentThread = apiGetFunctionAddress(GLFW, "turtleDetachOnCurrentThread"),
         MakeContextCurrent = apiGetFunctionAddress(GLFW, "pojavMakeCurrent"),
         Terminate = apiGetFunctionAddress(GLFW, "pojavTerminate"),
         SetWindowHint = apiGetFunctionAddress(GLFW, "pojavSetWindowHint"),

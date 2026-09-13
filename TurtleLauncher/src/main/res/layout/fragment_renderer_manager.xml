@@ -25,7 +25,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/renderer_manager_reset" />
 
-        <com.endiq.zalithlauncher.ui.view.AnimButton
+        <com.endiq.turtlelauncher.ui.view.AnimButton
             android:id="@+id/renderer_manager_reset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <com.endiq.zalithlauncher.ui.view.AnimButton
+        <com.endiq.turtlelauncher.ui.view.AnimButton
             android:id="@+id/renderer_manager_return"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -46,7 +46,7 @@
                             android:layout_weight="1"
                             android:orientation="horizontal">
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_esc"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -58,28 +58,28 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f1"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="F1" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f2"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="F2" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f3"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="F3" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f4"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -91,28 +91,28 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="0.5" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f5"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="F5" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f6"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="F6" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f7"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="F7" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f8"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -124,28 +124,28 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="0.5" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f9"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="F9" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f10"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="F10" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f11"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="F11" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f12"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -159,7 +159,7 @@
                             android:layout_weight="1"
                             android:orientation="horizontal">
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_grave"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -167,7 +167,7 @@
                                 android:textSize="11sp"
                                 android:text="~\n`" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_1"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -175,7 +175,7 @@
                                 android:textSize="9.6sp"
                                 android:text="!\n1" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_2"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -183,7 +183,7 @@
                                 android:textSize="9.6sp"
                                 android:text="\@\n2" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_3"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -191,7 +191,7 @@
                                 android:textSize="9.6sp"
                                 android:text="#\n3" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_4"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -199,7 +199,7 @@
                                 android:textSize="9.6sp"
                                 android:text="$\n4" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_5"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -207,7 +207,7 @@
                                 android:textSize="9.6sp"
                                 android:text="%\n5" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_6"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -215,7 +215,7 @@
                                 android:textSize="9.6sp"
                                 android:text="^\n6" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_7"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -223,7 +223,7 @@
                                 android:textSize="9.6sp"
                                 android:text="&amp;\n7" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_8"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -231,7 +231,7 @@
                                 android:textSize="9.6sp"
                                 android:text="*\n8" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_9"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -239,7 +239,7 @@
                                 android:textSize="9.6sp"
                                 android:text="(\n9" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_0"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -247,7 +247,7 @@
                                 android:textSize="9.6sp"
                                 android:text=")\n0" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_minus"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -255,7 +255,7 @@
                                 android:textSize="10sp"
                                 android:text="_\n-" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_equals"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -263,7 +263,7 @@
                                 android:textSize="10sp"
                                 android:text="+\n=" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_backspace"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -278,84 +278,84 @@
                             android:layout_weight="1"
                             android:orientation="horizontal">
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_tab"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1.2"
                                 android:text="tab" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_q"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="Q" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_w"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="W" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_e"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="E" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_r"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="R" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_t"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="T" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_y"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="Y" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_u"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="U" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_i"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="I" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_o"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="O" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_p"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="P" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_left_bracket"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -363,7 +363,7 @@
                                 android:textSize="9.6sp"
                                 android:text="{\n[" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_right_bracket"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -371,7 +371,7 @@
                                 android:textSize="9.6sp"
                                 android:text="}\n]" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_backslash"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -386,7 +386,7 @@
                             android:layout_weight="1"
                             android:orientation="horizontal">
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_capslock"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -394,70 +394,70 @@
                                 android:textSize="10sp"
                                 android:text="Caps Lock" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_a"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="A" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_s"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="S" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_d"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="D" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_f"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="F" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_g"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="G" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_h"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="H" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_j"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="J" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_k"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="K" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_l"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="L" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_semicolon"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -465,7 +465,7 @@
                                 android:textSize="10sp"
                                 android:text=":\n;" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_apostrophe"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -473,7 +473,7 @@
                                 android:textSize="10sp"
                                 android:text="&quot;\n'" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_enter"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -487,63 +487,63 @@
                             android:layout_weight="1"
                             android:orientation="horizontal">
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_left_shift"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="2.3"
                                 android:text="Shift" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_z"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="Z" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_x"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="X" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_c"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="C" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_v"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="V" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_b"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="B" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_n"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="N" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_m"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:text="M" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_comma"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -551,7 +551,7 @@
                                 android:textSize="10sp"
                                 android:text="&lt;\n," />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_period"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -559,7 +559,7 @@
                                 android:textSize="10sp"
                                 android:text="&gt;\n." />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_slash"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -567,7 +567,7 @@
                                 android:textSize="10sp"
                                 android:text="\?\n/" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_right_shift"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -581,35 +581,35 @@
                             android:layout_weight="1"
                             android:orientation="horizontal">
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_left_ctrl"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1.05"
                                 android:text="Ctrl" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_left_alt"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1.05"
                                 android:text="Alt" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_space"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="7"
                                 android:text="Space" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_right_alt"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1.05"
                                 android:text="Alt" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_right_ctrl"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -643,7 +643,7 @@
                                 android:layout_weight="1"
                                 android:orientation="horizontal">
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_pause"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -651,7 +651,7 @@
                                     android:textSize="8.6sp"
                                     android:text="Pause" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_insert"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -659,7 +659,7 @@
                                     android:textSize="8.6sp"
                                     android:text="Insert" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_home"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -674,7 +674,7 @@
                                 android:layout_weight="1"
                                 android:orientation="horizontal">
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_end"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -682,7 +682,7 @@
                                     android:textSize="8.6sp"
                                     android:text="End" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_page_up"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -690,7 +690,7 @@
                                     android:textSize="8.6sp"
                                     android:text="PGUp" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_page_down"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -715,7 +715,7 @@
                                     android:layout_height="match_parent"
                                     android:layout_weight="1" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_up"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -734,21 +734,21 @@
                                 android:layout_weight="1"
                                 android:orientation="horizontal">
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_left"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
                                     android:text="←" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_down"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
                                     android:text="↓" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_right"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -775,7 +775,7 @@
                                 android:layout_weight="1"
                                 android:orientation="horizontal">
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_num_lock"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -783,14 +783,14 @@
                                     android:textSize="9sp"
                                     android:text="Num Lock" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_divide"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
                                     android:text="/" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_multiply"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -804,21 +804,21 @@
                                 android:layout_weight="1"
                                 android:orientation="horizontal">
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_7"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
                                     android:text="7" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_8"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
                                     android:text="8" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_9"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -832,21 +832,21 @@
                                 android:layout_weight="1"
                                 android:orientation="horizontal">
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_4"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
                                     android:text="4" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_5"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
                                     android:text="5" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_6"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -860,21 +860,21 @@
                                 android:layout_weight="1"
                                 android:orientation="horizontal">
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_1"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
                                     android:text="1" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_2"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
                                     android:text="2" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_3"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -888,14 +888,14 @@
                                 android:layout_weight="1"
                                 android:orientation="horizontal">
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_0"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="2"
                                     android:text="0" />
 
-                                <com.endiq.zalithlauncher.ui.view.AnimButton
+                                <com.endiq.turtlelauncher.ui.view.AnimButton
                                     android:id="@+id/keyboard_kp_decimal"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
@@ -917,21 +917,21 @@
                                 android:layout_height="0dp"
                                 android:layout_weight="1" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_kp_subract"
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_weight="1"
                                 android:text="-" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_kp_add"
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_weight="2"
                                 android:text="+" />
 
-                            <com.endiq.zalithlauncher.ui.view.AnimButton
+                            <com.endiq.turtlelauncher.ui.view.AnimButton
                                 android:id="@+id/keyboard_kp_enter"
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
@@ -964,7 +964,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <com.endiq.zalithlauncher.ui.view.AnimButton
+        <com.endiq.turtlelauncher.ui.view.AnimButton
             android:id="@+id/close1"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/_45sdp"
@@ -975,7 +975,7 @@
             android:text="@string/generic_close"
             tools:ignore="RelativeOverlap" />
 
-        <com.endiq.zalithlauncher.ui.view.AnimButton
+        <com.endiq.turtlelauncher.ui.view.AnimButton
             android:id="@+id/send"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/_45sdp"

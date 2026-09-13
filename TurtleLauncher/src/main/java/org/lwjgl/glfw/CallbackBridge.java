@@ -48,7 +48,7 @@ public class CallbackBridge {
     }
 
     public static void sendKeycode(int keycode, char keychar, int scancode, int modifiers, boolean isDown) {
-        com.endiq.zalithlauncher.feature.inputstats.InputStatsTracker.onKeyEvent(keycode, isDown);
+        com.endiq.turtlelauncher.feature.inputstats.InputStatsTracker.onKeyEvent(keycode, isDown);
         // TODO CHECK: This may cause input issue, not receive input!
         if(keycode != 0)  nativeSendKey(keycode,scancode,isDown ? 1 : 0, modifiers);
         if(isDown && keychar != '\u0000') {
@@ -84,7 +84,7 @@ public class CallbackBridge {
     }
 
     public static void sendMouseKeycode(int button, int modifiers, boolean isDown) {
-        com.endiq.zalithlauncher.feature.inputstats.InputStatsTracker.onMouseEvent(button, isDown);
+        com.endiq.turtlelauncher.feature.inputstats.InputStatsTracker.onMouseEvent(button, isDown);
         // if (isGrabbing()) DEBUG_STRING.append("MouseGrabStrace: " + android.util.Log.getStackTraceString(new Throwable()) + "\n");
         nativeSendMouseButton(button, isDown ? 1 : 0, modifiers);
     }

@@ -1,6 +1,6 @@
 package net.kdt.pojavlaunch.tasks;
 
-import com.endiq.zalithlauncher.utils.path.PathManager;
+import com.endiq.turtlelauncher.utils.path.PathManager;
 
 import net.kdt.pojavlaunch.Architecture;
 import net.kdt.pojavlaunch.utils.FileUtils;

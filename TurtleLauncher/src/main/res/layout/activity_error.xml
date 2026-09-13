@@ -151,7 +151,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/self_heal_status">
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/crash_repair_button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -163,7 +163,7 @@
                     android:visibility="gone"
                     android:text="@string/crash_repair_button"/>
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/crash_search_online_button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -175,7 +175,7 @@
                     android:visibility="gone"
                     android:text="@string/crash_search_online_button"/>
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/crash_export_button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -189,7 +189,7 @@
             </LinearLayout>
 
             <!-- Advanced log toggle -->
-            <com.endiq.zalithlauncher.ui.view.AnimButton
+            <com.endiq.turtlelauncher.ui.view.AnimButton
                 android:id="@+id/toggle_advanced_log"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -225,7 +225,7 @@
                     android:textColor="@color/turtle_text_secondary"
                     tools:ignore="HardcodedText"/>
 
-                <com.endiq.zalithlauncher.ui.view.AnimButton
+                <com.endiq.turtlelauncher.ui.view.AnimButton
                     android:id="@+id/copy_log"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -248,7 +248,7 @@
         android:paddingTop="@dimen/_6sdp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <com.endiq.zalithlauncher.ui.view.AnimButton
+        <com.endiq.turtlelauncher.ui.view.AnimButton
             android:id="@+id/share_log"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -257,7 +257,7 @@
             android:textSize="@dimen/_12ssp"
             android:text="@string/main_share_logs"/>
 
-        <com.endiq.zalithlauncher.ui.view.AnimButton
+        <com.endiq.turtlelauncher.ui.view.AnimButton
             android:id="@+id/error_restart"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -266,7 +266,7 @@
             android:textSize="@dimen/_12ssp"
             android:text="@string/generic_restart"/>
 
-        <com.endiq.zalithlauncher.ui.view.AnimButton
+        <com.endiq.turtlelauncher.ui.view.AnimButton
             android:id="@+id/error_confirm"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -1,6 +1,6 @@
 package net.kdt.pojavlaunch.utils;
 
-import static com.endiq.zalithlauncher.utils.path.PathManager.DIR_NATIVE_LIB;
+import static com.endiq.turtlelauncher.utils.path.PathManager.DIR_NATIVE_LIB;
 import static net.kdt.pojavlaunch.Architecture.ARCH_X86;
 import static net.kdt.pojavlaunch.Architecture.is64BitsDevice;
 import static net.kdt.pojavlaunch.Tools.currentDisplayMetrics;
@@ -15,26 +15,26 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.endiq.zalithlauncher.InfoDistributor;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.event.value.JvmExitEvent;
-import com.endiq.zalithlauncher.feature.customprofilepath.ProfilePathHome;
-import com.endiq.zalithlauncher.feature.customprofilepath.ProfilePathManager;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.feature.version.Version;
-import com.endiq.zalithlauncher.feature.version.VersionInfo;
-import com.endiq.zalithlauncher.plugins.driver.DriverPluginManager;
-import com.endiq.zalithlauncher.plugins.renderer.RendererPluginManager;
-import com.endiq.zalithlauncher.plugins.renderer.RendererPlugin;
-import com.endiq.zalithlauncher.renderer.RendererInterface;
-import com.endiq.zalithlauncher.renderer.Renderers;
-import com.endiq.zalithlauncher.renderer.renderers.HolyGL4ESRenderer;
-import com.endiq.zalithlauncher.renderer.renderers.ZinkRenderer;
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.ui.activity.ErrorActivity;
-import com.endiq.zalithlauncher.utils.ZHTools;
-import com.endiq.zalithlauncher.utils.path.LibPath;
-import com.endiq.zalithlauncher.utils.path.PathManager;
+import com.endiq.turtlelauncher.InfoDistributor;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.event.value.JvmExitEvent;
+import com.endiq.turtlelauncher.feature.customprofilepath.ProfilePathHome;
+import com.endiq.turtlelauncher.feature.customprofilepath.ProfilePathManager;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.feature.version.Version;
+import com.endiq.turtlelauncher.feature.version.VersionInfo;
+import com.endiq.turtlelauncher.plugins.driver.DriverPluginManager;
+import com.endiq.turtlelauncher.plugins.renderer.RendererPluginManager;
+import com.endiq.turtlelauncher.plugins.renderer.RendererPlugin;
+import com.endiq.turtlelauncher.renderer.RendererInterface;
+import com.endiq.turtlelauncher.renderer.Renderers;
+import com.endiq.turtlelauncher.renderer.renderers.HolyGL4ESRenderer;
+import com.endiq.turtlelauncher.renderer.renderers.ZinkRenderer;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.ui.activity.ErrorActivity;
+import com.endiq.turtlelauncher.utils.ZHTools;
+import com.endiq.turtlelauncher.utils.path.LibPath;
+import com.endiq.turtlelauncher.utils.path.PathManager;
 import com.oracle.dalvik.VMLauncher;
 
 import net.kdt.pojavlaunch.Architecture;
@@ -296,13 +296,13 @@ public final class JREUtils {
             // previously one combined toggle (gl4esPerformanceTweaks), now four granular
             // switches so a specific device/driver combo that regresses under one of them
             // can disable just that one instead of all four.
-            if (com.endiq.zalithlauncher.setting.AllSettings.getJniBatching().getValue())
+            if (com.endiq.turtlelauncher.setting.AllSettings.getJniBatching().getValue())
                 envMap.put("LIBGL_BATCH", "1"); // batch GL calls instead of dispatching each one immediately
-            if (com.endiq.zalithlauncher.setting.AllSettings.getJniCachedReferences().getValue())
+            if (com.endiq.turtlelauncher.setting.AllSettings.getJniCachedReferences().getValue())
                 envMap.put("LIBGL_USEVBO", "1"); // keep vertex data in VBOs instead of re-uploading client-side arrays
-            if (com.endiq.zalithlauncher.setting.AllSettings.getReducedJniCalls().getValue())
+            if (com.endiq.turtlelauncher.setting.AllSettings.getReducedJniCalls().getValue())
                 envMap.put("LIBGL_SKIPTEXCOPIES", "1"); // skip a redundant texture copy on upload
-            if (com.endiq.zalithlauncher.setting.AllSettings.getNativeObjectPooling().getValue())
+            if (com.endiq.turtlelauncher.setting.AllSettings.getNativeObjectPooling().getValue())
                 envMap.put("LIBGL_RECYCLEFBO", "1"); // reuse framebuffer objects instead of recreating them
         }
 
@@ -316,7 +316,7 @@ public final class JREUtils {
         if (RendererPluginManager.getSelectedRendererPlugin() != null) return;
 
         boolean isZinkRenderer = rendererId.equals(ZinkRenderer.ID);
-        boolean shaderCacheEnabled = com.endiq.zalithlauncher.setting.AllSettings.getRendererShaderCacheEnabled().getValue();
+        boolean shaderCacheEnabled = com.endiq.turtlelauncher.setting.AllSettings.getRendererShaderCacheEnabled().getValue();
 
         if (isZinkRenderer) {
             envMap.put("MESA_LOADER_DRIVER_OVERRIDE", "zink");
@@ -337,13 +337,13 @@ public final class JREUtils {
             envMap.put("LIB_MESA_NAME", loadGraphicsLibrary());
         }
 
-        if (com.endiq.zalithlauncher.setting.AllSettings.getRendererDebugLogging().getValue()) {
+        if (com.endiq.turtlelauncher.setting.AllSettings.getRendererDebugLogging().getValue()) {
             Logging.i("RendererDebug", "renderer=" + rendererId + " gl4esFamily=" + isGl4esRenderer +
                     " zink=" + isZinkRenderer + " shaderCache=" + shaderCacheEnabled +
-                    " jni=[batch=" + com.endiq.zalithlauncher.setting.AllSettings.getJniBatching().getValue() +
-                    ",cache=" + com.endiq.zalithlauncher.setting.AllSettings.getJniCachedReferences().getValue() +
-                    ",pool=" + com.endiq.zalithlauncher.setting.AllSettings.getNativeObjectPooling().getValue() +
-                    ",reduced=" + com.endiq.zalithlauncher.setting.AllSettings.getReducedJniCalls().getValue() + "]" +
+                    " jni=[batch=" + com.endiq.turtlelauncher.setting.AllSettings.getJniBatching().getValue() +
+                    ",cache=" + com.endiq.turtlelauncher.setting.AllSettings.getJniCachedReferences().getValue() +
+                    ",pool=" + com.endiq.turtlelauncher.setting.AllSettings.getNativeObjectPooling().getValue() +
+                    ",reduced=" + com.endiq.turtlelauncher.setting.AllSettings.getReducedJniCalls().getValue() + "]" +
                     " env=" + envMap);
         }
 
@@ -452,7 +452,7 @@ public final class JREUtils {
                 envMap.put("SDL_OPENGL_LIBRARY", sdlGraphicsLib);
             }
 
-            envMap.put("ZALITH_VERSION_CODE", String.valueOf(ZHTools.getVersionCode()));
+            envMap.put("TURTLE_VERSION_CODE", String.valueOf(ZHTools.getVersionCode()));
         }
 
         for (Map.Entry<String, String> env : envMap.entrySet()) {
@@ -520,7 +520,7 @@ public final class JREUtils {
         // TurtleLauncher Memory Optimizer: Equal Heap Sizes (-Xms = -Xmx) reserves the whole
         // heap up front, trading a bigger initial commit for fewer heap-resize GC pauses mid
         // game. Off instead starts small (half of -Xmx) and lets the JVM grow it on demand.
-        boolean equalHeapSizes = com.endiq.zalithlauncher.setting.AllSettings.getEqualHeapSizes().getValue();
+        boolean equalHeapSizes = com.endiq.turtlelauncher.setting.AllSettings.getEqualHeapSizes().getValue();
         int xmsMb = equalHeapSizes ? ramAllocationMb : Math.max(256, ramAllocationMb / 2);
         userArgs.add("-Xms" + xmsMb + "M");
         userArgs.add("-Xmx" + ramAllocationMb + "M");
@@ -543,12 +543,12 @@ public final class JREUtils {
         //      number here means the query itself is unreliable, not that the device
         //      genuinely has that many).
         int coreCount;
-        int perInstanceCores = (gameVersion != null && com.endiq.zalithlauncher.setting.AllSettings.getPerInstanceCpuOverride().getValue())
+        int perInstanceCores = (gameVersion != null && com.endiq.turtlelauncher.setting.AllSettings.getPerInstanceCpuOverride().getValue())
                 ? gameVersion.getVersionConfig().getCpuCoreOverride() : -1;
         if (perInstanceCores > 0) {
             coreCount = perInstanceCores;
-        } else if (com.endiq.zalithlauncher.setting.AllSettings.getManualCoreOverride().getValue()) {
-            coreCount = com.endiq.zalithlauncher.setting.AllSettings.getManualCoreCount().getValue();
+        } else if (com.endiq.turtlelauncher.setting.AllSettings.getManualCoreOverride().getValue()) {
+            coreCount = com.endiq.turtlelauncher.setting.AllSettings.getManualCoreCount().getValue();
         } else {
             coreCount = java.lang.Runtime.getRuntime().availableProcessors();
         }
@@ -557,7 +557,7 @@ public final class JREUtils {
 
         // TurtleLauncher Phone Settings: GC Statistics - JDK unified logging of every GC
         // pause to the launcher log, so a slow session can be diagnosed after the fact.
-        if (com.endiq.zalithlauncher.setting.AllSettings.getGcStatistics().getValue()) {
+        if (com.endiq.turtlelauncher.setting.AllSettings.getGcStatistics().getValue()) {
             userArgs.add("-Xlog:gc:file=" + PathManager.DIR_CACHE.getAbsolutePath() + "/gc.log::filecount=0");
         }
 
@@ -584,7 +584,7 @@ public final class JREUtils {
         // (the ABI mismatch is confirmed fixed; the original SIGSEGV is not confirmed
         // fixed, only improved-odds - this has not been tested on a real device).
         if (gameVersion != null && Tools.resolveLwjglMode(Tools.getVersionInfo(gameVersion)) == Tools.LwjglMode.NEW_SDL) {
-            com.endiq.zalithlauncher.launch.SdlAndroidJniPrep.setup(activity);
+            com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.setup(activity);
         }
 
         // TurtleLauncher: start draining system logcat into a rolling file for this session
@@ -593,22 +593,22 @@ public final class JREUtils {
         // logger's buffered `latestlog.txt` dies with the process - leaving the crash screen
         // with an empty log, which is the "logs didn't appear" half of the support reports.
         // logcat lives in logd, not in this process, so it survives. See GameLogcat.
-        com.endiq.zalithlauncher.feature.log.GameLogcat.start();
+        com.endiq.turtlelauncher.feature.log.GameLogcat.start();
 
         final int exitCode = VMLauncher.launchJVM(userArgs.toArray(new String[0]));
         // Reached only on a graceful JVM exit - on a signal the process is already gone and
         // the drain dies with it, which is exactly the case the captured file exists for.
-        com.endiq.zalithlauncher.feature.log.GameLogcat.stop();
+        com.endiq.turtlelauncher.feature.log.GameLogcat.stop();
         Logger.appendToLog("Java Exit code: " + exitCode);
         if (exitCode != 0) {
             // TurtleLauncher Fast Boot auto-recovery: if Fast Boot was on for this crashed
             // launch, turn it off automatically so the *next* launch attempt runs with full
             // checksum verification — in case a skipped check let a corrupt file through.
-            if (com.endiq.zalithlauncher.setting.AllSettings.getFastBoot().getValue()) {
-                com.endiq.zalithlauncher.setting.AllSettings.getFastBoot().put(false).save();
+            if (com.endiq.turtlelauncher.setting.AllSettings.getFastBoot().getValue()) {
+                com.endiq.turtlelauncher.setting.AllSettings.getFastBoot().put(false).save();
                 Logger.appendToLog("Fast Boot auto-disabled after a crash, so the next launch re-verifies files.");
             }
-            String diagnosis = com.endiq.zalithlauncher.feature.log.CrashAnalyzer.analyzeGameExit(gameVersion, exitCode);
+            String diagnosis = com.endiq.turtlelauncher.feature.log.CrashAnalyzer.analyzeGameExit(gameVersion, exitCode);
             ErrorActivity.showExitMessage(activity, exitCode, false, diagnosis);
         }
         EventBus.getDefault().post(new JvmExitEvent(exitCode));
@@ -660,8 +660,8 @@ public final class JREUtils {
                 // support was dropped project-wide), so this is always safe to force.
                 "-Dos.arch=aarch64",
                 "-Dos.version=Android-" + Build.VERSION.RELEASE,
-                "-Dpojav.path.minecraft=" + ProfilePathHome.getGameHome(),
-                "-Dpojav.path.private.account=" + PathManager.DIR_ACCOUNT_NEW,
+                "-Dturtle.path.minecraft=" + ProfilePathHome.getGameHome(),
+                "-Dturtle.path.private.account=" + PathManager.DIR_ACCOUNT_NEW,
                 "-Duser.timezone=" + TimeZone.getDefault().getID(),
 
                 "-Dorg.lwjgl.vulkan.libname=libvulkan.so",

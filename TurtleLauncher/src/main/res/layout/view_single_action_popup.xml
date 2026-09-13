@@ -18,7 +18,7 @@
         android:layout_marginStart="@dimen/_4sdp"
         android:layout_gravity="center_vertical"/>
 
-    <com.endiq.zalithlauncher.ui.view.AnimTextView
+    <com.endiq.turtlelauncher.ui.view.AnimTextView
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

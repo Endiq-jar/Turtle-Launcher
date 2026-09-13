@@ -13,7 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.endiq.zalithlauncher.R;
+import com.endiq.turtlelauncher.R;
 
 /**
  * This class is intended for sending characters used in chat via the virtual keyboard

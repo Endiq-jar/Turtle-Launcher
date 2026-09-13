@@ -7,7 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import com.endiq.zalithlauncher.R;
+import com.endiq.turtlelauncher.R;
 import net.kdt.pojavlaunch.lifecycle.ContextExecutorTask;
 import net.kdt.pojavlaunch.utils.NotificationUtils;
 import java.io.Serializable;

@@ -40,7 +40,7 @@
 // Uncomment to try redirect signal handling to JVM
 // #define TRY_SIG2JVM
 
-// PojavLancher: fixme: are these wrong?
+// TurtleLancher: fixme: are these wrong?
 #define FULL_VERSION "1.8.0-internal"
 #define DOT_VERSION "1.8"
 

@@ -307,8 +307,8 @@ void gl_swap_surface(gl_render_window_t* bundle) {
      * to set the bloody height and width to their proper values. They just do it, instantly.
      */
     usleep(750000); // An overkill amount of time to wait for a surface to finish dying
-    int32_t nativeWindowWidth = ANativeWindow_getWidth(pojav_environ->pojavWindow);
-    int32_t nativeWindowHeight = ANativeWindow_getHeight(pojav_environ->pojavWindow);
+    int32_t nativeWindowWidth = ANativeWindow_getWidth(pojav_environ->turtleWindow);
+    int32_t nativeWindowHeight = ANativeWindow_getHeight(pojav_environ->turtleWindow);
     if ((nativeWindowWidth > 0) || (nativeWindowHeight > 0)) {
         __android_log_print(ANDROID_LOG_INFO, g_LogTag, "Native surface dimensions (%d x %d)\n",
                             nativeWindowWidth, nativeWindowHeight);
@@ -345,7 +345,7 @@ void gl_make_current(gl_render_window_t* bundle) {
     {
         pojav_environ->mainWindowBundle = (basic_render_window_t*)bundle;
         __android_log_print(ANDROID_LOG_INFO, g_LogTag, "Main window bundle is now %p", pojav_environ->mainWindowBundle);
-        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->pojavWindow;
+        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->turtleWindow;
         hasSetMainWindow = true;
     }
 
@@ -397,7 +397,7 @@ void gl_setup_window() {
     {
         __android_log_print(ANDROID_LOG_INFO, g_LogTag, "Main window bundle is not NULL, changing state");
         pojav_environ->mainWindowBundle->state = STATE_RENDERER_NEW_WINDOW;
-        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->pojavWindow;
+        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->turtleWindow;
     }
 }
 

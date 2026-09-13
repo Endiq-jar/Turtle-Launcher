@@ -2,8 +2,8 @@ package net.kdt.pojavlaunch.mirrors;
 
 import androidx.annotation.Nullable;
 
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.setting.AllSettings;
 
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.utils.DownloadUtils;

@@ -81,7 +81,7 @@
                         app:layout_constraintStart_toStartOf="@+id/control_name"
                         app:layout_constraintTop_toBottomOf="@+id/isolation_type" />
 
-                    <com.endiq.zalithlauncher.ui.view.AnimTextView
+                    <com.endiq.turtlelauncher.ui.view.AnimTextView
                         android:id="@+id/control_name"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
                         app:layout_constraintEnd_toStartOf="@id/reset_control"
                         app:layout_constraintTop_toBottomOf="@+id/control_title" />
 
-                    <com.endiq.zalithlauncher.ui.view.AnimButton
+                    <com.endiq.turtlelauncher.ui.view.AnimButton
                         android:id="@+id/reset_control"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
@@ -118,7 +118,7 @@
                             app:layout_constraintStart_toStartOf="@+id/custom_path"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <com.endiq.zalithlauncher.ui.view.AnimTextView
+                        <com.endiq.turtlelauncher.ui.view.AnimTextView
                             android:id="@+id/custom_path"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -132,7 +132,7 @@
                             app:layout_constraintTop_toBottomOf="@+id/custom_path_title"
                             tools:ignore="HardcodedText" />
 
-                        <com.endiq.zalithlauncher.ui.view.AnimButton
+                        <com.endiq.turtlelauncher.ui.view.AnimButton
                             android:id="@+id/reset_custom_path"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
@@ -218,7 +218,7 @@
                         android:textSize="@dimen/_10ssp"
                         android:text="@string/setting_version_custom_info_desc" />
 
-                    <com.endiq.zalithlauncher.ui.view.AnimEditText
+                    <com.endiq.turtlelauncher.ui.view.AnimEditText
                         android:id="@+id/custom_info_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -243,7 +243,7 @@
                         android:textSize="@dimen/_10ssp"
                         android:text="@string/setting_java_args_desc" />
 
-                    <com.endiq.zalithlauncher.ui.view.AnimEditText
+                    <com.endiq.turtlelauncher.ui.view.AnimEditText
                         android:id="@+id/jvm_args_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -268,7 +268,7 @@
                         android:textSize="@dimen/_10ssp"
                         android:text="@string/setting_cpu_core_override_desc" />
 
-                    <com.endiq.zalithlauncher.ui.view.AnimEditText
+                    <com.endiq.turtlelauncher.ui.view.AnimEditText
                         android:id="@+id/cpu_core_override_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -333,7 +333,7 @@
             app:layout_constraintStart_toEndOf="@+id/shadowView"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.endiq.zalithlauncher.ui.layout.AnimConstraintLayout
+            <com.endiq.turtlelauncher.ui.layout.AnimConstraintLayout
                 android:id="@+id/icon_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -363,7 +363,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/icon"
                     app:layout_constraintEnd_toEndOf="@+id/icon" />
 
-            </com.endiq.zalithlauncher.ui.layout.AnimConstraintLayout>
+            </com.endiq.turtlelauncher.ui.layout.AnimConstraintLayout>
 
             <ImageView
                 android:id="@+id/icon_reset"
@@ -375,7 +375,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/icon_layout" />
 
-            <com.endiq.zalithlauncher.ui.view.AnimButton
+            <com.endiq.turtlelauncher.ui.view.AnimButton
                 android:id="@+id/save_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -385,7 +385,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <com.endiq.zalithlauncher.ui.view.AnimButton
+            <com.endiq.turtlelauncher.ui.view.AnimButton
                 android:id="@+id/cancel_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

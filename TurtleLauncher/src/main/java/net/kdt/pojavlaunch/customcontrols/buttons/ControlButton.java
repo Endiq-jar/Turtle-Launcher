@@ -20,8 +20,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.setting.AllSettings;
 
 import net.kdt.pojavlaunch.LauncherActivity;
 import net.kdt.pojavlaunch.LwjglGlfwKeycode;

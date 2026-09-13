@@ -2,10 +2,10 @@ package net.kdt.pojavlaunch.utils;
 
 import androidx.annotation.Nullable;
 
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.utils.path.PathManager;
-import com.endiq.zalithlauncher.utils.ZHTools;
-import com.endiq.zalithlauncher.utils.path.UrlManager;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.utils.path.PathManager;
+import com.endiq.turtlelauncher.utils.ZHTools;
+import com.endiq.turtlelauncher.utils.path.UrlManager;
 
 import net.kdt.pojavlaunch.Tools;
 

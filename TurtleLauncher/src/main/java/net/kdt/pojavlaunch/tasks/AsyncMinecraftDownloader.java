@@ -1,6 +1,6 @@
 package net.kdt.pojavlaunch.tasks;
 
-import com.endiq.zalithlauncher.event.sticky.MinecraftVersionValueEvent;
+import com.endiq.turtlelauncher.event.sticky.MinecraftVersionValueEvent;
 
 import net.kdt.pojavlaunch.JMinecraftVersionList;
 

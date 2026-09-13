@@ -16,7 +16,7 @@ public class Architecture {
 	public static final long ADDRESS_SPACE_LIMIT_32_BIT = 0xbfffffffL;
 	/*
 	 * Technically, this is supposed to be 48 bits on x86_64, but nobody's allocating
-	 * 524288 terabytes of RAM on Pojav any time soon.
+	 * 524288 terabytes of RAM on Turtle any time soon.
 	 */
 	public static final long ADDRESS_SPACE_LIMIT_64_BIT = 0x7fffffffffL;
 

@@ -28,7 +28,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.endiq.zalithlauncher.ui.view.AnimEditText
+        <com.endiq.turtlelauncher.ui.view.AnimEditText
             android:id="@+id/editName_editText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
             app:layout_constraintTop_toBottomOf="@id/editName_editText"
             tools:visibility="visible" />
 
-        <com.endiq.zalithlauncher.ui.view.AnimEditText
+        <com.endiq.turtlelauncher.ui.view.AnimEditText
             android:id="@+id/editSize_editTextX"
             android:layout_width="@dimen/_128sdp"
             android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editSize_textView" />
 
-        <com.endiq.zalithlauncher.ui.view.AnimEditText
+        <com.endiq.turtlelauncher.ui.view.AnimEditText
             android:id="@+id/editSize_editTextY"
             android:layout_width="@dimen/_128sdp"
             android:layout_height="0dp"

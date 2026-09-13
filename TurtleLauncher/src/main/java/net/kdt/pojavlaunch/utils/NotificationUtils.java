@@ -7,7 +7,7 @@ import android.content.Intent;
 
 import androidx.core.app.NotificationCompat;
 
-import com.endiq.zalithlauncher.R;
+import com.endiq.turtlelauncher.R;
 
 import net.kdt.pojavlaunch.Tools;
 

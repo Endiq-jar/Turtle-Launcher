@@ -28,11 +28,11 @@ bool is_renderer_vulkan() {
          || pojav_environ->config_renderer == RENDERER_VIRGL);
 }
 
-char* construct_main_path(const char* mesa_name, const char* pojav_native_dir) {
+char* construct_main_path(const char* mesa_name, const char* turtle_native_dir) {
     char* main_path = NULL;if (mesa_name != NULL && strncmp(mesa_name, "/data", 5) == 0) {
         main_path = strdup(mesa_name);
     } else {
-        if (asprintf(&main_path, "%s/%s", pojav_native_dir, mesa_name) == -1) {
+        if (asprintf(&main_path, "%s/%s", turtle_native_dir, mesa_name) == -1) {
             return NULL;
         }
     }
@@ -43,9 +43,9 @@ void dlsym_OSMesa() {
     if (!is_renderer_vulkan()) return;
 
     char* mesa_name = getenv("LIB_MESA_NAME");
-    char* pojav_native_dir = getenv("POJAV_NATIVEDIR");
+    char* turtle_native_dir = getenv("POJAV_NATIVEDIR");
 
-    char* main_path = construct_main_path(mesa_name, pojav_native_dir);
+    char* main_path = construct_main_path(mesa_name, turtle_native_dir);
     if (!main_path) {
         fprintf(stderr, "Error: Failed to construct main path.\n");
         abort();

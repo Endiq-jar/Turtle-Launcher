@@ -11,8 +11,8 @@ import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.listener.SimpleTextWatcher;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.listener.SimpleTextWatcher;
 
 public class ColorSelector implements HueSelectionListener, RectangleSelectionListener, AlphaSelectionListener, SimpleTextWatcher {
     private static final int ALPHA_MASK = ~(0xFF << 24);

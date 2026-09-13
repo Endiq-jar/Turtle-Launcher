@@ -5,11 +5,11 @@ import static org.apache.commons.io.FileUtils.listFiles;
 import android.system.Os;
 
 import com.kdt.mcgui.ProgressLayout;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.feature.unpack.Jre;
-import com.endiq.zalithlauncher.utils.path.PathManager;
-import com.endiq.zalithlauncher.utils.stringutils.SortStrings;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.feature.unpack.Jre;
+import com.endiq.turtlelauncher.utils.path.PathManager;
+import com.endiq.turtlelauncher.utils.stringutils.SortStrings;
 
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.utils.MathUtils;
@@ -125,7 +125,7 @@ public class MultiRTUtils {
 
         unpack200(PathManager.DIR_NATIVE_LIB,RUNTIME_FOLDER + "/" + name);
 
-        File binpack_verfile = new File(RUNTIME_FOLDER,"/"+name+"/pojav_version");
+        File binpack_verfile = new File(RUNTIME_FOLDER,"/"+name+"/turtle_version");
         FileOutputStream fos = new FileOutputStream(binpack_verfile);
         fos.write(binpackVersion.getBytes());
         fos.close();
@@ -137,7 +137,7 @@ public class MultiRTUtils {
 
 
     public static String readInternalRuntimeVersion(String name) {
-        File versionFile = new File(RUNTIME_FOLDER,"/" + name + "/pojav_version");
+        File versionFile = new File(RUNTIME_FOLDER,"/" + name + "/turtle_version");
         try {
             if (versionFile.exists()) {
                 return Tools.read(versionFile.getAbsolutePath());

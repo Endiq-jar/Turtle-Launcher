@@ -39,44 +39,44 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.endiq.anim.AnimPlayer;
 import com.endiq.anim.animations.Animations;
-import com.endiq.zalithlauncher.R;
-import com.endiq.zalithlauncher.context.ContextExecutor;
-import com.endiq.zalithlauncher.databinding.ActivityGameBinding;
-import com.endiq.zalithlauncher.databinding.ViewControlMenuBinding;
-import com.endiq.zalithlauncher.databinding.ViewGameMenuBinding;
-import com.endiq.zalithlauncher.event.single.RefreshHotbarEvent;
-import com.endiq.zalithlauncher.event.value.HotbarChangeEvent;
-import com.endiq.zalithlauncher.feature.MCOptions;
-import com.endiq.zalithlauncher.feature.ProfileLanguageSelector;
-import com.endiq.zalithlauncher.feature.background.BackgroundManager;
-import com.endiq.zalithlauncher.feature.background.BackgroundType;
-import com.endiq.zalithlauncher.feature.log.Logging;
-import com.endiq.zalithlauncher.feature.version.Version;
-import com.endiq.zalithlauncher.feature.version.VersionInfo;
-import com.endiq.zalithlauncher.launch.LaunchGame;
-import com.endiq.zalithlauncher.listener.SimpleTextWatcher;
-import com.endiq.zalithlauncher.plugins.driver.DriverPluginManager;
-import com.endiq.zalithlauncher.renderer.Renderers;
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.setting.AllStaticSettings;
-import com.endiq.zalithlauncher.task.Task;
-import com.endiq.zalithlauncher.task.TaskExecutors;
-import com.endiq.zalithlauncher.ui.activity.BaseActivity;
-import com.endiq.zalithlauncher.ui.dialog.KeyboardDialog;
-import com.endiq.zalithlauncher.ui.dialog.SelectControlsDialog;
-import com.endiq.zalithlauncher.ui.dialog.SelectMouseDialog;
-import com.endiq.zalithlauncher.ui.fragment.settings.VideoSettingsFragment;
-import com.endiq.zalithlauncher.ui.subassembly.adapter.ObjectSpinnerAdapter;
-import com.endiq.zalithlauncher.ui.subassembly.hotbar.HotbarType;
-import com.endiq.zalithlauncher.ui.subassembly.hotbar.HotbarUtils;
-import com.endiq.zalithlauncher.ui.subassembly.menu.ControlMenu;
-import com.endiq.zalithlauncher.ui.subassembly.menu.MenuUtils;
-import com.endiq.zalithlauncher.ui.subassembly.view.GameMenuViewWrapper;
-import com.endiq.zalithlauncher.utils.path.PathManager;
-import com.endiq.zalithlauncher.utils.ZHTools;
-import com.endiq.zalithlauncher.utils.anim.AnimUtils;
-import com.endiq.zalithlauncher.utils.file.FileTools;
-import com.endiq.zalithlauncher.utils.stringutils.StringUtils;
+import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.context.ContextExecutor;
+import com.endiq.turtlelauncher.databinding.ActivityGameBinding;
+import com.endiq.turtlelauncher.databinding.ViewControlMenuBinding;
+import com.endiq.turtlelauncher.databinding.ViewGameMenuBinding;
+import com.endiq.turtlelauncher.event.single.RefreshHotbarEvent;
+import com.endiq.turtlelauncher.event.value.HotbarChangeEvent;
+import com.endiq.turtlelauncher.feature.MCOptions;
+import com.endiq.turtlelauncher.feature.ProfileLanguageSelector;
+import com.endiq.turtlelauncher.feature.background.BackgroundManager;
+import com.endiq.turtlelauncher.feature.background.BackgroundType;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.feature.version.Version;
+import com.endiq.turtlelauncher.feature.version.VersionInfo;
+import com.endiq.turtlelauncher.launch.LaunchGame;
+import com.endiq.turtlelauncher.listener.SimpleTextWatcher;
+import com.endiq.turtlelauncher.plugins.driver.DriverPluginManager;
+import com.endiq.turtlelauncher.renderer.Renderers;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.setting.AllStaticSettings;
+import com.endiq.turtlelauncher.task.Task;
+import com.endiq.turtlelauncher.task.TaskExecutors;
+import com.endiq.turtlelauncher.ui.activity.BaseActivity;
+import com.endiq.turtlelauncher.ui.dialog.KeyboardDialog;
+import com.endiq.turtlelauncher.ui.dialog.SelectControlsDialog;
+import com.endiq.turtlelauncher.ui.dialog.SelectMouseDialog;
+import com.endiq.turtlelauncher.ui.fragment.settings.VideoSettingsFragment;
+import com.endiq.turtlelauncher.ui.subassembly.adapter.ObjectSpinnerAdapter;
+import com.endiq.turtlelauncher.ui.subassembly.hotbar.HotbarType;
+import com.endiq.turtlelauncher.ui.subassembly.hotbar.HotbarUtils;
+import com.endiq.turtlelauncher.ui.subassembly.menu.ControlMenu;
+import com.endiq.turtlelauncher.ui.subassembly.menu.MenuUtils;
+import com.endiq.turtlelauncher.ui.subassembly.view.GameMenuViewWrapper;
+import com.endiq.turtlelauncher.utils.path.PathManager;
+import com.endiq.turtlelauncher.utils.ZHTools;
+import com.endiq.turtlelauncher.utils.anim.AnimUtils;
+import com.endiq.turtlelauncher.utils.file.FileTools;
+import com.endiq.turtlelauncher.utils.stringutils.StringUtils;
 import com.skydoves.powerspinner.OnSpinnerItemSelectedListener;
 import net.kdt.pojavlaunch.customcontrols.ControlButtonMenuListener;
 import net.kdt.pojavlaunch.customcontrols.ControlLayout;
@@ -199,7 +199,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         // MenuSettingsInitListener below. Icon is the keyboard's Tab key.
         refreshControlSwitcherButton();
         binding.controlSwitcherButton.setOnClickListener(v -> {
-            String switchedTo = com.endiq.zalithlauncher.feature.turtle.ControlSwitcher
+            String switchedTo = com.endiq.turtlelauncher.feature.turtle.ControlSwitcher
                     .cycleToNext(MainActivity.this, binding.mainControlLayout);
             // Only re-evaluate the menu button when the layout actually changed: a layout can
             // bring its own menu button, which is what hides the launcher's own.
@@ -389,7 +389,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
                         "and the background image has been cleared to prevent certain issues from occurring.");
 
                 //TurtleLauncher: 开始本次游戏会话计时（用于 Stopwatch / Playtime HUD）
-                com.endiq.zalithlauncher.feature.inputstats.SessionStatsTracker.start();
+                com.endiq.turtlelauncher.feature.inputstats.SessionStatsTracker.start();
             });
 
             if (AllSettings.getEnableLogOutput().getValue()) binding.mainLoggerView.setVisibilityWithAnim(true);
@@ -530,16 +530,16 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     protected void onDestroy() {
         super.onDestroy();
         //TurtleLauncher: 结算本次游戏会话计时，并清除按键状态
-        com.endiq.zalithlauncher.feature.inputstats.SessionStatsTracker.stop();
-        com.endiq.zalithlauncher.feature.inputstats.InputStatsTracker.reset();
+        com.endiq.turtlelauncher.feature.inputstats.SessionStatsTracker.stop();
+        com.endiq.turtlelauncher.feature.inputstats.InputStatsTracker.reset();
         mMenuSettingsInitListener.closeSpinner();
         CallbackBridge.removeGrabListener(binding.mainTouchpad);
         CallbackBridge.removeGrabListener(binding.mainGameRenderView);
         if (mKeyboardOffsetAnimator != null) mKeyboardOffsetAnimator.cancel();
         // TurtleLauncher: don't leave an encoder/muxer running (and the output file
         // unfinalized/unplayable) if the game exits mid-recording.
-        if (com.endiq.zalithlauncher.feature.turtle.ScreenRecorder.INSTANCE.isRecording()) {
-            com.endiq.zalithlauncher.feature.turtle.ScreenRecorder.INSTANCE.stop(null);
+        if (com.endiq.turtlelauncher.feature.turtle.ScreenRecorder.INSTANCE.isRecording()) {
+            com.endiq.turtlelauncher.feature.turtle.ScreenRecorder.INSTANCE.stop(null);
         }
         ContextExecutor.clearActivity();
     }
@@ -570,8 +570,8 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             } catch (IOException e) {
                 Logging.e("LoadLayout", Tools.printToString(e));
             }
-        } else if (requestCode == com.endiq.zalithlauncher.feature.turtle.ScreenRecorder.REQUEST_CODE_AUDIO_CAPTURE) {
-            com.endiq.zalithlauncher.feature.turtle.ScreenRecorder.INSTANCE.onActivityResult(this, requestCode, resultCode, data);
+        } else if (requestCode == com.endiq.turtlelauncher.feature.turtle.ScreenRecorder.REQUEST_CODE_AUDIO_CAPTURE) {
+            com.endiq.turtlelauncher.feature.turtle.ScreenRecorder.INSTANCE.onActivityResult(this, requestCode, resultCode, data);
         }
     }
 
@@ -944,11 +944,11 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             else if (v == binding.logOutput) MainActivity.binding.mainLoggerView.toggleViewWithAnim();
             else if (v == binding.sendCustomKey) dialogSendCustomKey();
             else if (v == binding.startRecording) {
-                com.endiq.zalithlauncher.feature.turtle.ScreenRecorder.INSTANCE.start(MainActivity.this);
+                com.endiq.turtlelauncher.feature.turtle.ScreenRecorder.INSTANCE.start(MainActivity.this);
                 refreshRecordingButtons();
             }
             else if (v == binding.stopRecording) {
-                com.endiq.zalithlauncher.feature.turtle.ScreenRecorder.INSTANCE.stop(MainActivity.this);
+                com.endiq.turtlelauncher.feature.turtle.ScreenRecorder.INSTANCE.stop(MainActivity.this);
                 refreshRecordingButtons();
             }
             else if (v == binding.openMemoryInfoLayout) MenuUtils.toggleSwitchState(binding.openMemoryInfo);
@@ -1156,7 +1156,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         /** TurtleLauncher: shared by onDrawerOpened() and onClick() (start/stop recording) -
          * see onDrawerOpened()'s doc comment for why this needs refreshing from two places. */
         public void refreshRecordingButtons() {
-            boolean recording = com.endiq.zalithlauncher.feature.turtle.ScreenRecorder.INSTANCE.isRecording();
+            boolean recording = com.endiq.turtlelauncher.feature.turtle.ScreenRecorder.INSTANCE.isRecording();
             binding.startRecording.setVisibility(recording ? View.GONE : View.VISIBLE);
             binding.stopRecording.setVisibility(recording ? View.VISIBLE : View.GONE);
         }

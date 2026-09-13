@@ -11,9 +11,9 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.endiq.anim.animations.Animations;
-import com.endiq.zalithlauncher.databinding.ViewLoggerBinding;
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.utils.anim.ViewAnimUtils;
+import com.endiq.turtlelauncher.databinding.ViewLoggerBinding;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.utils.anim.ViewAnimUtils;
 
 import net.kdt.pojavlaunch.Logger;
 

@@ -23,12 +23,12 @@
  }
 
 # TurtleLauncher: the prebuilt libpojavexec.so (all ABIs) hardcodes the JNI class
-# path com/movtery/zalithlauncher/ui/activity/ErrorActivity and calls its static
+# path com/movtery/turtlelauncher/ui/activity/ErrorActivity and calls its static
 # showExitMessage(Context, int, boolean) from the game-exit hook. Nothing in Java
 # references that trampoline class, so without this R8 strips/renames it in the
 # minified build types and every game launch SIGABRTs on the FindClass. See the
 # trampoline's own doc comment for the full story.
--keep class com.movtery.zalithlauncher.ui.activity.ErrorActivity {
+-keep class com.movtery.turtlelauncher.ui.activity.ErrorActivity {
     *;
 }
 

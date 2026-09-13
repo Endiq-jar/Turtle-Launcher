@@ -18,21 +18,21 @@
 # a real device or emulator, which this environment doesn't have.
 
 # App entry points
-Lcom/endiq/zalithlauncher/ui/activity/SplashActivity;
-Lnet/kdt/pojavlaunch/PojavApplication;
+Lcom/endiq/turtlelauncher/ui/activity/SplashActivity;
+Lnet/kdt/pojavlaunch/TurtleApplication;
 Lnet/kdt/pojavlaunch/LauncherActivity;
 
 # Startup sequencing (this session's addition)
-Lcom/endiq/zalithlauncher/startup/TurtleStartupInitializer;
+Lcom/endiq/turtlelauncher/startup/TurtleStartupInitializer;
 
 # Touched on every cold start regardless of which screen the user lands on
-Lcom/endiq/zalithlauncher/setting/AllSettings;
-Lcom/endiq/zalithlauncher/setting/AllSettings$Companion;
-Lcom/endiq/zalithlauncher/feature/log/Logging;
-Lcom/endiq/zalithlauncher/task/TaskExecutors;
-Lcom/endiq/zalithlauncher/utils/path/PathManager;
-Lcom/endiq/zalithlauncher/context/ContextExecutor;
+Lcom/endiq/turtlelauncher/setting/AllSettings;
+Lcom/endiq/turtlelauncher/setting/AllSettings$Companion;
+Lcom/endiq/turtlelauncher/feature/log/Logging;
+Lcom/endiq/turtlelauncher/task/TaskExecutors;
+Lcom/endiq/turtlelauncher/utils/path/PathManager;
+Lcom/endiq/turtlelauncher/context/ContextExecutor;
 
 # Home screen (first thing rendered after splash in the common case)
 Lnet/kdt/pojavlaunch/fragments/MainMenuFragment;
-Lcom/endiq/zalithlauncher/feature/turtle/AssetPrefetcher;
+Lcom/endiq/turtlelauncher/feature/turtle/AssetPrefetcher;

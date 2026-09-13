@@ -34,11 +34,11 @@ import android.widget.ImageView;
 
 import androidx.core.math.MathUtils;
 
-import com.endiq.zalithlauncher.event.single.MCOptionChangeEvent;
-import com.endiq.zalithlauncher.feature.MCOptions;
-import com.endiq.zalithlauncher.setting.AllSettings;
-import com.endiq.zalithlauncher.setting.AllStaticSettings;
-import com.endiq.zalithlauncher.utils.ZHTools;
+import com.endiq.turtlelauncher.event.single.MCOptionChangeEvent;
+import com.endiq.turtlelauncher.feature.MCOptions;
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.setting.AllStaticSettings;
+import com.endiq.turtlelauncher.utils.ZHTools;
 
 import net.kdt.pojavlaunch.GrabListener;
 import net.kdt.pojavlaunch.LwjglGlfwKeycode;

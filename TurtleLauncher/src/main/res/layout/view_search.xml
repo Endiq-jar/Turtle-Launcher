@@ -9,7 +9,7 @@
     android:paddingHorizontal="@dimen/_2sdp"
     android:paddingVertical="@dimen/_10sdp">
 
-    <com.endiq.zalithlauncher.ui.view.AnimEditText
+    <com.endiq.turtlelauncher.ui.view.AnimEditText
         android:id="@+id/edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

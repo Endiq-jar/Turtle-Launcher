@@ -17,8 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import com.endiq.zalithlauncher.InfoCenter;
-import com.endiq.zalithlauncher.R;
+import com.endiq.turtlelauncher.InfoCenter;
+import com.endiq.turtlelauncher.R;
 
 import net.kdt.pojavlaunch.MainActivity;
 import net.kdt.pojavlaunch.Tools;

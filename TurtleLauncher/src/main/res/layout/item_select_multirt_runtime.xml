@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.endiq.zalithlauncher.ui.layout.AnimConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.endiq.turtlelauncher.ui.layout.AnimConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -46,4 +46,4 @@
         app:layout_constraintStart_toEndOf="@+id/multirt_view_java_version_full"
         app:layout_constraintTop_toTopOf="@+id/multirt_view_java_version_full" />
 
-</com.endiq.zalithlauncher.ui.layout.AnimConstraintLayout>
+</com.endiq.turtlelauncher.ui.layout.AnimConstraintLayout>

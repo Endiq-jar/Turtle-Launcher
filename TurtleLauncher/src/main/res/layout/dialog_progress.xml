@@ -69,7 +69,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.endiq.zalithlauncher.ui.view.AnimButton
+    <com.endiq.turtlelauncher.ui.view.AnimButton
         android:id="@+id/cancel_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

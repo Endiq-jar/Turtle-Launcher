@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Zalith Launcher -->
+    <!-- Turtle Launcher -->
     <string name="generic_open">فتح</string>
     <string name="generic_close">إغلاق</string>
     <string name="generic_return">عودة</string>
@@ -645,7 +645,7 @@
     <string name="splash_screen_apply">موافقة وتثبيت</string>
     <!-- About -->
     <string name="about_tab">حول %s</string>
-    <string name="about_dec1">%s هو مشغل Minecraft يعتمد على PojavLauncher ويسمح بتشغيل Minecraft: Java Edition على أجهزة Android.</string>
+    <string name="about_dec1">%s هو مشغل Minecraft يعتمد على TurtleLauncher ويسمح بتشغيل Minecraft: Java Edition على أجهزة Android.</string>
     <string name="about_dec2">%s يركز على تحسين تجربة المستخدم، وإعادة تصميم واجهة التطبيق، وإضافة المزيد من الميزات العملية بهدف تقليل عوائق اللعب وجعل المزيد من الأشخاص يستمتعون بمتعة Minecraft بسهولة.</string>
     <string name="about_dec3">%s يستخدم رخصة المصدر المفتوح GPL 3.0، التي تعتبر "معدية". أي كود يستخدم أو يعدل أو يشتق من مكتبات أو برامج GPL يجب أن يعتمد أيضًا رخصة GPL للمصدر المفتوح. إذا كنت تنوي توزيع هذا البرنامج، يرجى الالتزام بأحكام رخصة المصدر المفتوح GPL 3.0.</string>
     <string name="about_contributors">المساهمون والتقديرات:</string>
@@ -655,7 +655,7 @@
     <string name="about_sponsors_amount">الوقت والإجمالي</string>
     <string name="about_button_support_development">دعم التطوير</string>
     <string name="about_MovTery_desc">المطور الرئيسي لـ TurtleLauncher (Endiq)</string>
-    <string name="about_PojavLauncher_desc">فريق تطوير PojavLauncher، الذي طور وفتح مصدر PojavLauncher</string>
+    <string name="about_TurtleLauncher_desc">فريق تطوير TurtleLauncher، الذي طور وفتح مصدر TurtleLauncher</string>
     <string name="about_mcmod_desc">المشغل يستخدم الترجمات الصينية لـ Mod وحزم التكامل من MC Wiki</string>
     <string name="about_VeraFirefly_desc">قدّم دعمًا تقنيًا في مجال العرض للمشغل</string>
     <string name="about_LingMuQiuZhu_desc">قدّم دعمًا تقنيًا للمشغل</string>
