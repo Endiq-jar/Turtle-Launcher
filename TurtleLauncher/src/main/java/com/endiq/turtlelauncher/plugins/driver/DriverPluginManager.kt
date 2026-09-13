@@ -16,7 +16,7 @@ import java.io.File
 import java.util.zip.ZipFile
 
 /**
- * FCL 驱动器插件 + TurtleLauncher 本地驱动器插件（zip 安装，支持自动更新）
+ * FCL driver plugins plus TurtleLauncher local driver plugins (zip install, auto-update).
  * [FCL DriverPlugin.kt](https://github.com/FCL-Team/FoldCraftLauncher/blob/main/FCLauncher/src/main/java/com/tungsten/fclauncher/plugins/DriverPlugin.kt)
  */
 object DriverPluginManager {
@@ -44,8 +44,8 @@ object DriverPluginManager {
     fun getDriver(): Driver = currentDriver
 
     /**
-     * 初始化驱动器
-     * @param reset 是否清除已有插件
+     * Initialise the drivers.
+     * @param reset whether existing plugins should be cleared
      */
     fun initDriver(context: Context, reset: Boolean) {
         if (reset) driverList.clear()
@@ -54,7 +54,7 @@ object DriverPluginManager {
     }
 
     /**
-     * 通用 FCL 插件
+     * Generic FCL plugin.
      */
     fun parsePlugin(info: ApplicationInfo) {
         if (info.flags and ApplicationInfo.FLAG_SYSTEM == 0) {
@@ -73,21 +73,23 @@ object DriverPluginManager {
     }
 
     /**
-     * 从本地 `/files/driver_plugins/` 目录下尝试解析驱动器插件（TurtleLauncher 新增）
-     * @return 是否是符合要求的插件
+     * Try to parse driver plugins from the local `/files/driver_plugins/` directory
+     * (a TurtleLauncher addition).
+     * @return whether the plugin passes validation
      *
-     * 驱动器插件文件夹格式（与渲染器插件保持一致的目录约定）：
+     * Driver plugin folder layout (same convention as renderer plugins):
      * driver_plugins/
-     * ----文件夹名称/
-     * --------meta.json (可选，存放驱动名称/版本信息)
-     * --------libs/ (驱动 `.so` 文件的存放目录，与渲染器插件相同的架构子目录约定)
+     * ----<folder name>/
+     * --------meta.json (optional, driver name/version info)
+     * --------libs/ (holds the driver `.so` files, same architecture sub-folder layout as renderers)
      * ------------arm64-v8a/
      * ----------------libvulkan_freedreno.so
      * ------------armeabi-v7a/
      * ------------x86/
      * ------------x86_64/
      *
-     * 如果插件包没有按架构分目录，也允许直接将 `.so` 文件放在插件文件夹根目录下。
+     * Plugin packs without architecture sub-folders may place the `.so` files directly in the
+     * plugin folder root.
      */
     fun parseLocalPlugin(directory: File): Boolean {
         val archModel: String = UpdateUtils.getArchModel(Architecture.getDeviceArchitecture()) ?: return false
@@ -121,7 +123,7 @@ object DriverPluginManager {
     }
 
     /**
-     * 导入本地驱动器插件（zip 格式，与渲染器插件导入逻辑一致）
+     * Import a local driver plugin (zip format, same logic as renderer plugins).
      */
     fun importLocalDriverPlugin(pluginFile: File): Boolean {
         if (!pluginFile.exists() || !pluginFile.isFile) {

@@ -488,7 +488,7 @@ class AllSettings {
         @JvmStatic val enableTerracottaNodes    = BooleanSettingUnit("enableTerracottaNodes", false)
         /** Custom EasyTier server node URI (e.g. tcp://your.server:11010). Ignored unless
          *  [enableTerracottaNodes] is also on; blank falls back to the default node list
-         *  even when the toggle is on, same as upstream's "为空则继续使用默认的节点逻辑". */
+         *  even when the toggle is on, same as upstream's "keep the default node logic when empty". */
         @JvmStatic val terracottaNodes          = StringSettingUnit("terracottaNodes", "")
     }
 }

@@ -37,8 +37,8 @@ class UpdateUtils {
         private var LAST_UPDATE_CHECK_TIME: Long = 0
 
         /**
-         * 启动软件的更新检测是5分钟的冷却，避免频繁检测导致Github限制访问
-         * @param force 强制检测（用于设置内更新检测）
+         * Update checks at startup have a 5 minute cooldown so GitHub does not rate-limit us.
+         * @param force force the check (used by the in-settings update check)
          */
         @JvmStatic
         fun checkDownloadedPackage(context: Context, force: Boolean, ignore: Boolean) {
@@ -71,14 +71,14 @@ class UpdateUtils {
                     AllSettings.updateCheck.put(ZHTools.getCurrentTimeMillis()).save()
                     Logging.i("Check Update", "Checking new update!")
 
-                    //如果安装包不存在，那么将自动获取更新
+                    // If the package is missing, fetch the update automatically.
                     updateCheckerMainProgram(context, ignore)
                 }
             }
         }
 
         private fun checkCooling(): Boolean {
-            return ZHTools.getCurrentTimeMillis() - AllSettings.updateCheck.getValue() > 5 * 60 * 1000 //5分钟冷却
+            return ZHTools.getCurrentTimeMillis() - AllSettings.updateCheck.getValue() > 5 * 60 * 1000 // 5 minute cooldown
         }
 
         // Real releases page, tags are vX.Y.Z.W (e.g. v1.0.0.3) - see pickLatestRelease().
@@ -121,7 +121,7 @@ class UpdateUtils {
                             return
                         }
 
-                        if (ignore && launcherVersion.versionName == ignoreUpdate.getValue()) return  //忽略此版本
+                        if (ignore && launcherVersion.versionName == ignoreUpdate.getValue()) return  // skip this version
 
                         runInUIThread {
                             UpdateDialog(context, launcherVersion).show()
@@ -258,7 +258,7 @@ class UpdateUtils {
                     .setCenterMessage(false)
                     .setCancelable(false)
                     .setConfirmClickListener {
-                        //安装
+                        // Install.
                         val intent = Intent(Intent.ACTION_VIEW)
                         val apkUri = FileProvider.getUriForFile(context, context.packageName + ".provider", outputFile)
                         intent.setDataAndType(apkUri, "application/vnd.android.package-archive")

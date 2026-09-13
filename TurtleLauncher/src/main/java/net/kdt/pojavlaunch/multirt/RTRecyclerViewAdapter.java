@@ -144,7 +144,7 @@ public class RTRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 mJavaVersionTextView.setText(runtime.name);
                 mFullJavaVersionTextView.setTextColor(Color.RED);
             } else {
-                //自动选择
+                // Auto-select.
                 mJavaVersionTextView.setText(R.string.install_auto_select);
                 mFullJavaVersionTextView.setVisibility(View.GONE);
                 mainView.setOnClickListener(v -> selectRuntime(null));

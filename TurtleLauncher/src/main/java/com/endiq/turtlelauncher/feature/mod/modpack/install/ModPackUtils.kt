@@ -87,14 +87,14 @@ class ModPackUtils {
         }
 
         @JvmStatic
-        fun verifyModrinthIndex(modrinthIndex: ModrinthIndex?): Boolean { //检测是否为modrinth整合包(通过modrinth.index.json内的数据进行判断)
+        fun verifyModrinthIndex(modrinthIndex: ModrinthIndex?): Boolean { // detect Modrinth modpacks via modrinth.index.json
             if (modrinthIndex == null) return false
             if ("minecraft" != modrinthIndex.game) return false
             if (modrinthIndex.formatVersion != 1) return false
             return modrinthIndex.dependencies != null
         }
 
-        fun verifyMCBBSPackMeta(mcbbsPackMeta: MCBBSPackMeta?): Boolean { //检测是否为MCBBS整合包(通过mcbbs.packmeta内的数据进行判断)
+        fun verifyMCBBSPackMeta(mcbbsPackMeta: MCBBSPackMeta?): Boolean { // detect MCBBS modpacks via mcbbs.packmeta
             if (mcbbsPackMeta == null) return false
             if ("minecraftModpack" != mcbbsPackMeta.manifestType) return false
             if (mcbbsPackMeta.manifestVersion != 2) return false

@@ -20,7 +20,7 @@ class CheckNewNotice {
         private var isChecking = false
 
         private fun checkCooling(): Boolean {
-            return ZHTools.getCurrentTimeMillis() - AllSettings.noticeCheck.getValue() > 2 * 60 * 1000 //2分钟冷却
+            return ZHTools.getCurrentTimeMillis() - AllSettings.noticeCheck.getValue() > 2 * 60 * 1000 // 2 minute cooldown
         }
 
         @JvmStatic
@@ -58,12 +58,12 @@ class CheckNewNotice {
 
                             val originJson = JSONObject(responseBody)
                             val rawBase64 = originJson.getString("content")
-                            //base64解码，因为这里读取的是一个经过Base64加密后的文本
+                            // Base64-decode, because the text stored here is Base64-encoded.
                             val rawJson = StringUtils.decodeBase64(rawBase64)
 
                             val noticeJson = Tools.GLOBAL_GSON.fromJson(rawJson, NoticeJsonObject::class.java)
 
-                            //获取通知消息
+                            // Fetch the notice message.
                             val language = ZHTools.getSystemLanguage()
                             val title = getLanguageText(language, noticeJson.title)
                             val content = getLanguageText(language, noticeJson.content)

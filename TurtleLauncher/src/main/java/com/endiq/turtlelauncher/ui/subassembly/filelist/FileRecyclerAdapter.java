@@ -84,7 +84,7 @@ public class FileRecyclerAdapter extends RecyclerView.Adapter<FileRecyclerAdapte
     public void setMultiSelectMode(boolean multiSelectMode) {
         isMultiSelectMode = multiSelectMode;
         if (!multiSelectMode) {
-            selectedFiles.clear(); // 退出多选模式时重置选择的文件
+            selectedFiles.clear(); // reset the selection when leaving multi-select mode
         }
         notifyDataSetChanged();
     }
@@ -92,7 +92,7 @@ public class FileRecyclerAdapter extends RecyclerView.Adapter<FileRecyclerAdapte
     @SuppressLint("NotifyDataSetChanged")
     public void selectAllFiles(boolean selectAll) {
         selectedFiles.clear();
-        if (selectAll) { //全选时遍历全部item设置选择状态
+        if (selectAll) { // select-all walks every item and sets the state
             for (FileItemBean item : mData) {
                 if (item.isCanCheck) {
                     selectedFiles.add(item);
@@ -212,7 +212,7 @@ public class FileRecyclerAdapter extends RecyclerView.Adapter<FileRecyclerAdapte
             binding.infoLayout.setVisibility(infoLayoutVisible);
 
             if (fileItemBean.isHighlighted) {
-                binding.name.setTextColor(Color.rgb(69, 179, 162)); //设置高亮
+                binding.name.setTextColor(Color.rgb(69, 179, 162)); // highlight
             } else {
                 binding.name.setTextColor(binding.name.getResources().getColor(R.color.black_or_white, binding.name.getContext().getTheme()));
             }

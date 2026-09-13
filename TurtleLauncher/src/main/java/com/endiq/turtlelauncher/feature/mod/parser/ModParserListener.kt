@@ -1,19 +1,19 @@
 package com.endiq.turtlelauncher.feature.mod.parser
 
 /**
- * 模组解析进度监听器，用于回调当前已经处理的模组和模组总数
+ * Mod parse progress listener, reporting processed mods versus the total.
  */
 interface ModParserListener {
     /**
-     * 解析进度回调，通过这个函数回调当前模组的解析进度
-     * @param recentlyParsedModInfo 刚刚解析完成的模组信息
-     * @param totalFileCount 所有需要检查的文件的数量
+     * Progress callback reporting how far the current mod parse has got.
+     * @param recentlyParsedModInfo the mod info that was just parsed
+     * @param totalFileCount number of files that have to be checked
      */
     fun onProgress(recentlyParsedModInfo: ModInfo, totalFileCount: Int)
 
     /**
-     * 解析完成后通过这个函数将解析的结果进行回调
-     * @param modInfoList 所有模组信息列表
+     * Callback carrying the parse result once parsing completes.
+     * @param modInfoList list of every mod info
      */
     fun onParseEnded(modInfoList: List<ModInfo>)
 }

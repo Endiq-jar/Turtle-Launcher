@@ -36,7 +36,7 @@ public class LauncherPreferences {
 
     public static void reloadRuntime() {
         if (!Settings.Manager.contains("defaultRuntime") && !MultiRTUtils.getRuntimes().isEmpty()) {
-            //设置默认运行环境
+            // Set the default runtime.
             AllSettings.getDefaultRuntime().put("Internal-17").save();
         }
     }

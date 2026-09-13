@@ -44,7 +44,7 @@ public class OpenDocumentWithExtension extends ActivityResultContract<Object, Li
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(mimeType);
 
-        //根据构造函数参数决定是否允许多选
+        // Multi-select is allowed depending on the constructor argument.
         if (allowMultiple) {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
@@ -66,7 +66,7 @@ public class OpenDocumentWithExtension extends ActivityResultContract<Object, Li
 
         List<Uri> uris = new ArrayList<>();
         if (intent.getClipData() != null) {
-            //多个项目被选中
+            // Multiple items selected.
             for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
                 uris.add(intent.getClipData().getItemAt(i).getUri());
             }

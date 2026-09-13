@@ -14,7 +14,7 @@ class SkinFileDownloader {
     private val mClient = UrlManager.createOkHttpClient()
 
     /**
-     * 尝试下载yggdrasil皮肤
+     * Try to download the yggdrasil skin.
      */
     @Throws(Exception::class)
     fun yggdrasil(url: String, skinFile: File, uuid: String) {

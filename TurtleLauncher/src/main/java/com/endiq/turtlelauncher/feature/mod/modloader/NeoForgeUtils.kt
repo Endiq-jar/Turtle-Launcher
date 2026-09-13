@@ -69,9 +69,9 @@ class NeoForgeUtils {
         fun formatGameVersion(neoForgeVersion: String): String {
             return when {
                 neoForgeVersion.contains("1.20.1") -> "1.20.1"
-                //暂时认为0开头代表特殊版本
+                // For now, a leading 0 marks a special version.
                 neoForgeVersion.startsWith("0.") -> {
-                    //特殊版本
+                    // Special version.
                     val versionPart = neoForgeVersion.replace("0.", "").substringBefore("-")
                     //"25w14craftmine.3" -> "25w14craftmine"
                     versionPart.substringBeforeLast(".")

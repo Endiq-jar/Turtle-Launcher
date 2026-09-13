@@ -132,7 +132,7 @@ class FileRecyclerViewCreator(
         }
 
         private fun showFileOrFolder(file: File, showFile: Boolean, showFolder: Boolean): Boolean {
-            //显示文件与显示文件夹
+            // Show files and show folders.
             if (file.isDirectory && !showFolder) return false
             return !file.isFile || showFile
         }

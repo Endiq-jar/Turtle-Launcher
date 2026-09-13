@@ -3,15 +3,16 @@ package com.endiq.turtlelauncher.feature.download.enums
 import com.endiq.turtlelauncher.R
 
 /**
- * CurseForge与Modrinth双平台的类别汇集，记录类别所代指的实际值，以便搜索资源时填入类别。
- * 如果某类别的curseforge id或modrinth id为null，那么就代表此类别在该平台不存在
+ * Category collection for both CurseForge and Modrinth; records the real value behind each
+ * category so resource searches can fill it in.
+ * A null curseforge/modrinth id means the category does not exist on that platform.
  */
 enum class Category(val classify: Classify, val resNameID: Int, val curseforgeID: String?, val modrinthName: String?) {
     ALL(Classify.ALL, R.string.generic_all, null, null),
 
-    //Mod与ModPack数据来源：https://github.com/Hex-Dragon/PCL2/blob/f40a2990103ae85c34acb5d8d367ab1644aa7ca6/Plain%20Craft%20Launcher%202/Modules/Minecraft/ModComp.vb#L281
-    //感谢龙腾猫跃!!!!
-    //Mod类别
+    // Mod and modpack data source: https://github.com/Hex-Dragon/PCL2/blob/f40a2990103ae85c34acb5d8d367ab1644aa7ca6/Plain%20Craft%20Launcher%202/Modules/Minecraft/ModComp.vb#L281
+    // Thanks to Longteng Maoyue!!!!
+    // Mod category.
     MOD_WORLDGEN(Classify.MOD, R.string.category_worldgen, "406", "worldgen"),
     MOD_BIOMES(Classify.MOD, R.string.category_biomes, "407", null),
     MOD_DIMENSIONS(Classify.MOD, R.string.category_dimensions, "410", null),
@@ -38,7 +39,7 @@ enum class Category(val classify: Classify, val resNameID: Int, val curseforgeID
     MOD_UTILITY(Classify.MOD, R.string.category_utility, "5191", "utility"),
     MOD_LIBRARY(Classify.MOD, R.string.category_library, "421", "library"),
 
-    //整合包类别
+    // Modpack category.
     MODPACK_MULTIPLAYER(Classify.MODPACK, R.string.category_multiplayer, "4484", "multiplayer"),
     MODPACK_OPTIMIZATION(Classify.MODPACK, R.string.category_optimization, null, "optimization"),
     MODPACK_CHALLENGING(Classify.MODPACK, R.string.category_challenging, "4479", "challenging"),
@@ -58,7 +59,7 @@ enum class Category(val classify: Classify, val resNameID: Int, val curseforgeID
     MODPACK_LIGHTWEIGHT(Classify.MODPACK, R.string.category_lightweight, "4481", "lightweight"),
     MODPACK_EXTRA_LARGE(Classify.MODPACK, R.string.category_extra_large, "4482", null),
 
-    //资源包类别
+    // Resource pack category.
     RP_TRADITIONAL(Classify.RESOURCE_PACK, R.string.category_traditional, "403", null),
     RP_STEAMPUNK(Classify.RESOURCE_PACK, R.string.category_steampunk, "399", null),
     RP_COMBAT(Classify.RESOURCE_PACK, R.string.category_combat, null, "combat"),
@@ -76,7 +77,7 @@ enum class Category(val classify: Classify, val resNameID: Int, val curseforgeID
     RP_256X(Classify.RESOURCE_PACK, R.string.category_256x, "397", null),
     RP_512X(Classify.RESOURCE_PACK, R.string.category_512x, "398", null),
 
-    //世界类别
+    // World category.
     WORLD_ADVENTURE(Classify.WORLD, R.string.category_world_adventure, "253", null),
     WORLD_SURVIVAL(Classify.WORLD, R.string.category_survival, "248", null),
     WORLD_CREATION(Classify.WORLD, R.string.category_creation, "249", null),
@@ -85,7 +86,7 @@ enum class Category(val classify: Classify, val resNameID: Int, val curseforgeID
     WORLD_PARKOUR(Classify.WORLD, R.string.category_parkour, "251", null),
     WORLD_PUZZLE(Classify.WORLD, R.string.category_puzzle, "252", null),
 
-    //光影类别
+    // Shader pack category.
     SHADER_CARTOON(Classify.SHADER_PACK, R.string.category_cartoon, null, "cartoon"),
     SHADER_CURSED(Classify.SHADER_PACK, R.string.category_cursed, null, "cursed"),
     SHADER_FANTASY(Classify.SHADER_PACK, R.string.category_fantasy, "6554", "fantasy"),

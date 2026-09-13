@@ -1,7 +1,7 @@
 package com.endiq.turtlelauncher.feature.mod.parser
 
 /**
- * 模组信息数据缓存
+ * Mod info data cache.
  *
  * [cacheKey] used to be a full SHA-256 of the jar's contents, which meant every
  * mod scan re-read every mod jar byte-for-byte just to find out most of them

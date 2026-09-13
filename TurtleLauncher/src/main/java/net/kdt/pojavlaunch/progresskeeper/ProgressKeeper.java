@@ -83,7 +83,7 @@ public class ProgressKeeper {
     }
 
     /**
-     * @return 当前任务集合内是否存在任务key
+     * @return whether the task key exists in the current task set
      */
     public static boolean containsProgress(String progressKey) {
         return sProgressStates.containsKey(progressKey);

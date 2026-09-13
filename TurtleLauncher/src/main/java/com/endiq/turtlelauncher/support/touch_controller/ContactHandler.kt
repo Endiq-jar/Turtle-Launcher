@@ -7,7 +7,7 @@ import top.fifthlight.touchcontroller.proxy.client.LauncherProxyClient
 import top.fifthlight.touchcontroller.proxy.data.Offset
 
 /**
- * 单独在这里处理触点，为TouchController模组的控制代理提供信息
+ * Touch points are handled here to feed the TouchController control proxy.
  */
 object ContactHandler {
     private val pointerIdMap = SparseIntArray()

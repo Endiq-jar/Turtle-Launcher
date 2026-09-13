@@ -45,7 +45,7 @@ class DraggableViewWrapper(private val mainView: View, private val fetcher: Attr
         }
     }
 
-    //避免过于频繁的更新导致的性能开销
+    // Avoid the performance cost of updating too often.
     private fun updateRateLimits(): Boolean {
         var limit = false
         val millis = ZHTools.getCurrentTimeMillis()
@@ -55,9 +55,9 @@ class DraggableViewWrapper(private val mainView: View, private val fetcher: Attr
     }
 
     interface AttributesFetcher {
-        //获取对应的屏幕的高宽限制值
+        // Get the matching screen width/height limits.
         val screenPixels: ScreenPixels
-        fun get(): IntArray //获取x, y值
+        fun get(): IntArray // get the x, y values
         fun set(x: Int, y: Int)
     }
 

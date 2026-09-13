@@ -116,7 +116,7 @@ class VersionsListFragment : FragmentWithAnim(R.layout.fragment_versions_list) {
                 }
 
                 override fun isVersionFavorited(versionName: String): Boolean {
-                    //如果收藏栏选择的不是“全部”，那么当前版本一定会是被收藏的状态
+                    // When the favorites filter is not "All", every listed version is a favorite.
                     if (favoritesFolderTab.currentItemIndex != 0) {
                         return true
                     }
@@ -128,9 +128,10 @@ class VersionsListFragment : FragmentWithAnim(R.layout.fragment_versions_list) {
                 layoutAnimation = TurtleTransitions.listLayoutAnimationController(view.context)
                 layoutManager = LinearLayoutManager(requireContext())
                 this.adapter = versionsAdapter
-                //版本列表项尺寸固定，开启setHasFixedSize可以跳过不必要的重新测量布局，滚动更顺滑
+                // Version rows have a fixed size: setHasFixedSize skips needless re-measures
+				// and keeps scrolling smooth.
                 setHasFixedSize(true)
-                //预先缓存更多被滚出屏幕的item视图，减少快速滚动时频繁创建/绑定视图造成的卡顿
+                // Cache more off-screen item views to avoid create/bind storms while fast scrolling.
                 setItemViewCacheSize(12)
             }
 
@@ -224,7 +225,7 @@ class VersionsListFragment : FragmentWithAnim(R.layout.fragment_versions_list) {
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
-                //长按删除
+                // Long-press to delete.
                 root.setOnLongClickListener {
                     showFavoritesDeletePopupWindow(root, folderName)
                     true
@@ -291,8 +292,10 @@ class VersionsListFragment : FragmentWithAnim(R.layout.fragment_versions_list) {
 
     @Subscribe
     fun event(event: RefreshVersionsEvent) {
-        //版本删除等操作完成的回调可能在Fragment已经被销毁/分离之后才执行（例如删除当前版本后立刻返回主菜单），
-        //此时binding里的View已不再附着于窗口，继续操作可能抛出异常导致App崩溃，这里直接跳过
+        // Completion callbacks (e.g. version deletion) can run after the Fragment was already
+        // destroyed/detached (deleting the current version and backing out right away),
+        // The binding views are detached from the window at this point; touching them could
+        // throw and crash the app, so skip.
         if (!isAdded || view == null) return
         binding.apply {
             TaskExecutors.runInUIThread {
@@ -312,7 +315,7 @@ class VersionsListFragment : FragmentWithAnim(R.layout.fragment_versions_list) {
                         refreshVersions.visibility = View.GONE
                     }
                 }
-                //无论刷新进度，都应该关闭所有的操作弹窗
+                // Whatever the progress, dismiss every action dialog.
                 closeAllPopupWindow()
             }
         }

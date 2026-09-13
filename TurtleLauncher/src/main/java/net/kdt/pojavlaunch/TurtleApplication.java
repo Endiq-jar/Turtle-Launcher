@@ -133,8 +133,9 @@ public class TurtleApplication extends Application {
 	@Override
 	public void onTrimMemory(int level) {
 		super.onTrimMemory(level);
-		//智能内存管理：系统发出内存压力信号时，主动收缩图片缓存，而不是等到真的OOM才处理。
-		//游戏运行期间内存最宝贵，这里趁早把不必要的缓存让出去给游戏本体用
+		// Smart memory management: shrink the image cache as soon as the system
+		// reports memory pressure instead of waiting for a real OOM.
+		// Memory is precious while the game runs, so release caches the game does not need.
 		try {
 			com.bumptech.glide.Glide.get(this).trimMemory(level);
 		} catch (Throwable t) {

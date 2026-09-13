@@ -68,7 +68,7 @@ class PathManager {
             FILE_SETTINGS = File(DIR_FILE, "/launcher_settings.json")
 
             runCatching {
-                //此处的账号文件已不再使用，需要检查并清除
+                // This account file is obsolete; check for it and clean it up.
                 FileUtils.deleteQuietly(File("$DIR_DATA/accounts"))
                 FileUtils.deleteQuietly(File(DIR_DATA, "/user_skin"))
             }

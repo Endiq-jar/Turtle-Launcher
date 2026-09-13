@@ -17,7 +17,8 @@ class FileCopyHandler @JvmOverloads constructor(
     private val mTarget: File,
     private val mFileExtensionGetter: FileExtensionGetter?,
     private val endTask: Task<*>,
-    //自动替换：粘贴时如果目标位置已存在同名文件/文件夹，直接覆盖替换，而不是生成"xxx (1)"这样的副本
+    // Auto-replace: when pasting over an existing file/folder with the same name, overwrite it
+    // instead of creating "xxx (1)" copies.
     private val autoReplace: Boolean = true
 ) : FileHandler(mContext), FileSearchProgress {
     private val foundFiles = mutableMapOf<File, File>()
@@ -29,8 +30,10 @@ class FileCopyHandler @JvmOverloads constructor(
         super.start(this)
     }
 
-    //安全获取文件大小，文件在扫描/处理过程中可能被并发删除或是损坏的软链接，
-    //FileUtils.sizeOf 在这些情况下会抛出异常；这里捕获后回退为0，避免造成未捕获异常使App崩溃
+    // Read file sizes safely: while scanning, files may be deleted concurrently or turn out
+    // to be broken symlinks,
+    // FileUtils.sizeOf throws in these cases; catch it and fall back to 0 so an uncaught
+    // exception cannot crash the app.
     private fun safeSizeOf(file: File): Long =
         runCatching { FileUtils.sizeOf(file) }.getOrElse { e ->
             Logging.e("FileCopyHandler", "Failed to get size of ${file.absolutePath}", e)
@@ -40,7 +43,7 @@ class FileCopyHandler @JvmOverloads constructor(
     private fun addFile(file: File) {
         fileCount.incrementAndGet()
         fileSize.addAndGet(safeSizeOf(file))
-        //当前文件 - 目标文件
+        // current file - target file
         foundFiles [file] = getNewDestination(file, getTargetFile(file), mFileExtensionGetter?.onGet(file))
     }
 
@@ -65,15 +68,16 @@ class FileCopyHandler @JvmOverloads constructor(
         return File(file.absolutePath.replace(mRoot.absolutePath, mTarget.absolutePath).removeSuffix(file.name))
     }
 
-    //如果目标地点已存在同名文件：
-    //  - 开启自动替换(autoReplace)时，直接覆盖目标文件/文件夹（删除旧的，让后续copy/move直接写入）
-    //  - 否则，将目标文件的文件名加上数字标识，防止文件被覆盖
+    // If a file with the same name already exists at the target:
+    //  - with autoReplace enabled the target file/folder is replaced outright (the old one is
+    //    deleted so the following copy/move writes straight through)
+    //  - otherwise a numeric suffix is added to the target name so files are not overwritten
     private fun getNewDestination(sourceFile: File, targetDir: File, fileExtension: String?): File {
         var destFile = File(targetDir, sourceFile.name)
         if (!destFile.exists()) return destFile
 
         if (autoReplace) {
-            //同一个文件，不需要做任何事（避免误删源文件本身，比如复制到原地）
+            // Same file: nothing to do (avoids deleting the source when copying in place).
             if (destFile.canonicalPath != sourceFile.canonicalPath) {
                 runCatching { FileUtils.deleteQuietly(destFile) }
                     .onFailure { e -> Logging.e("FileCopyHandler", "Failed to auto-replace ${destFile.absolutePath}", e) }
@@ -115,7 +119,8 @@ class FileCopyHandler @JvmOverloads constructor(
         foundFiles.entries.parallelStream().forEach { (currentFile, targetFile) ->
             currentTask?.let { task -> if (task.isCancelled) return@forEach }
 
-            //单个文件的处理失败不应该终止整个复制/移动流程，更不应该导致未捕获异常使App崩溃
+            // A single file failure must not abort the whole copy/move flow, and certainly must
+            // not crash the app through an uncaught exception.
             runCatching {
                 fileSize.addAndGet(-safeSizeOf(currentFile))
                 fileCount.decrementAndGet()

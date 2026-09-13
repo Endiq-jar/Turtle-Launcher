@@ -80,7 +80,7 @@ class FabricLikeUtils private constructor(
             val jsonArray = Gson().fromJson(jsonString, JsonArray::class.java)
                 ?: throw DownloadUtils.ParseException(null)
             if (jsonArray.size() == 0) throw DownloadUtils.ParseException(null)
-            val jsonObject = jsonArray[0].asJsonObject //始终获取最新的安装器信息
+            val jsonObject = jsonArray[0].asJsonObject // always take the newest installer info
             val url = jsonObject["url"]?.takeIf { it.isJsonPrimitive }?.asString
                 ?: throw DownloadUtils.ParseException(null)
             println(url)

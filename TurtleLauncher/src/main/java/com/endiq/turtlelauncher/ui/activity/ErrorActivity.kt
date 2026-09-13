@@ -72,7 +72,7 @@ class ErrorActivity : BaseActivity() {
             return
         }
         if (extras.getBoolean(BUNDLE_IS_GAME_CRASH, false)) {
-            //如果不是应用崩溃，那么这个页面就不允许截图
+            // Unless the app crashed, this page may not be captured in screenshots.
             window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
             showGameCrash(extras)
             return

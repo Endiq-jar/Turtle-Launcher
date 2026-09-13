@@ -84,11 +84,12 @@ public class JavaGUILauncherActivity extends BaseActivity implements View.OnTouc
             Tools.showError(this, e, true);
         }
 
-        // 黑屏/卡死检测：游戏进程没有退出，但日志长时间没有任何新增内容时给出提示
+        // Black-screen/freeze detection: warn when the game process is alive but the log has
+        // not grown for a long time.
         mGameWatchdog = new GameWatchdog(this, this::forceClose);
         mGameWatchdog.start();
 
-        // 防止系统息屏
+        // Keep the screen from turning off.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         MainActivity.GLOBAL_CLIPBOARD = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
@@ -287,21 +288,21 @@ public class JavaGUILauncherActivity extends BaseActivity implements View.OnTouc
             char c = str.charAt(i);
 
             if (c == '"' && (i == 0 || str.charAt(i - 1) != '\\')) {
-                // 切换引号状态（忽略转义引号）
+                // Toggle the quote state (escaped quotes ignored).
                 inQuotes = !inQuotes;
             } else if (Character.isWhitespace(c) && !inQuotes) {
-                // 如果不在引号内且遇到空格，则结束当前部分并添加到结果中
+                // Outside quotes a space ends the current part and appends it to the result.
                 if (currentPart.length() > 0) {
                     result.add(currentPart.toString());
-                    currentPart.setLength(0); // 清空当前部分
+                    currentPart.setLength(0); // reset the current part
                 }
             } else {
-                // 将字符添加到当前部分
+                // Append the character to the current part.
                 currentPart.append(c);
             }
         }
 
-        // 添加最后一部分（如果有的话）
+        // Append the last part, if any.
         if (currentPart.length() > 0) {
             result.add(currentPart.toString());
         }

@@ -121,7 +121,7 @@ class ModsFragment : FragmentWithAnim(R.layout.fragment_mods) {
 
                                 filesDialog.setCopyButtonClick { visibility = View.VISIBLE }
 
-                                //检测后缀名，以设置正确的按钮
+                                // Detect the file extension to set up the right button.
                                 if (fileName.endsWith(ModUtils.JAR_FILE_SUFFIX)) {
                                     filesDialog.setFileSuffix(ModUtils.JAR_FILE_SUFFIX)
                                     filesDialog.setMoreButtonClick {
@@ -150,7 +150,7 @@ class ModsFragment : FragmentWithAnim(R.layout.fragment_mods) {
                 setOnMultiSelectListener { itemBeans: List<FileItemBean> ->
                     if (itemBeans.isNotEmpty()) {
                         Task.runTask {
-                            //取出全部文件
+                            // Extract every file.
                             val selectedFiles: MutableList<File> = ArrayList()
                             itemBeans.forEach(Consumer { value: FileItemBean ->
                                 val file = value.file
@@ -286,7 +286,7 @@ class ModsFragment : FragmentWithAnim(R.layout.fragment_mods) {
     }
 
     private fun closeMultiSelect() {
-        //点击其它控件时关闭多选模式
+        // Leave multi-select mode when another control is tapped.
         binding.apply {
             multiSelectFiles.isChecked = false
             selectAll.visibility = View.GONE

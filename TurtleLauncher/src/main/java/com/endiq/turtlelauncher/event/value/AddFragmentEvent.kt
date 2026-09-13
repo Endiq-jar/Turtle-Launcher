@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 
 /**
- * 将一个新的Fragment添加到事务管理中，由LauncherActivity接受并处理
- * 保证Fragment添加的时候，父Fragment一定是当前的Fragment
+ * Add a new Fragment to the transaction; LauncherActivity receives and handles it.
+ * Guarantees the parent Fragment is the current one when a Fragment is added.
  * @see net.kdt.pojavlaunch.LauncherActivity
  * @see com.endiq.turtlelauncher.utils.ZHTools.addFragment
  */
@@ -17,7 +17,7 @@ class AddFragmentEvent(
     val fragmentActivityCallback: FragmentActivityCallBack?
 ) {
     /**
-     * 对于当前Fragment的FragmentActivity的一些回调处理
+     * Callback handling for the FragmentActivity hosting the current Fragment.
      */
     fun interface FragmentActivityCallBack {
         fun callBack(fragmentActivity: FragmentActivity)

@@ -138,7 +138,7 @@ class FileTools {
 
             if (modifyTime > 0) {
                 val difference =
-                    (ZHTools.getCurrentTimeMillis() - fileList[0].lastModified()) / 1000 //转换为秒
+                    (ZHTools.getCurrentTimeMillis() - fileList[0].lastModified()) / 1000 // to seconds
                 if (difference >= modifyTime) {
                     return null
                 }
@@ -278,7 +278,7 @@ class FileTools {
             val units = arrayOf("B", "KB", "MB", "GB")
             var unitIndex = 0
             var value = bytes.toDouble()
-            //循环获取合适的单位
+            // Loop until a fitting unit is found.
             while (value >= 1024 && unitIndex < units.size - 1) {
                 value /= 1024.0
                 unitIndex++
@@ -304,7 +304,7 @@ class FileTools {
         fun zipFile(file: File, entryName: String, zos: ZipOutputStream) {
             FileInputStream(file).use { fis ->
                 val zipEntry = ZipEntry(entryName)
-                zipEntry.time = file.lastModified() //保留文件的修改时间
+                zipEntry.time = file.lastModified() // preserve the file modification time
                 zos.putNextEntry(zipEntry)
 
                 val buffer = ByteArray(4096)
@@ -337,7 +337,7 @@ class FileTools {
         }
 
         /**
-         * 字节数组转十六进制字符串（高效实现）
+         * Byte array to hex string (fast implementation).
          */
         private fun ByteArray.toHex(): String {
             val hexChars = "0123456789abcdef"

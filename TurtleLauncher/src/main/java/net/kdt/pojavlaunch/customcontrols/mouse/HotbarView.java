@@ -52,7 +52,8 @@ public class HotbarView extends View implements View.OnLayoutChangeListener, Run
     private int mLastIndex = -1;
     private int mGuiScale;
 
-    //调整判定框宽高时，用这个动画播放器播放一个淡化动画，来给用户一个当前判定框范围的反馈
+    // While resizing the hitbox, play a fade animation through this player so the user sees
+    // the current hitbox bounds.
     private final AnimPlayer adjustAnimPlayer = new AnimPlayer();
 
     public HotbarView(Context context) {
@@ -105,8 +106,8 @@ public class HotbarView extends View implements View.OnLayoutChangeListener, Run
     }
 
     /**
-     * 在Hotbar刷新事件被监听到时，会刷新判定
-     * @param event 刷新事件
+     * Re-evaluated whenever a hotbar refresh event is observed.
+     * @param event the refresh event
      */
     @Subscribe
     public void event(RefreshHotbarEvent event) {
@@ -114,8 +115,8 @@ public class HotbarView extends View implements View.OnLayoutChangeListener, Run
     }
 
     /**
-     * 当options.txt文件变更时，会刷新判定，因为需要检查gui尺寸
-     * @param event 刷新事件
+     * Re-evaluated when options.txt changes, because the GUI scale has to be checked.
+     * @param event the refresh event
      */
     @Subscribe
     public void event(MCOptionChangeEvent event) {
@@ -124,8 +125,8 @@ public class HotbarView extends View implements View.OnLayoutChangeListener, Run
     }
 
     /**
-     * 监听手动调整判定框宽高的事件
-     * @param event 变更事件
+     * Listen for manual hitbox resize events.
+     * @param event the change event
      */
     @Subscribe
     public void event(HotbarChangeEvent event) {

@@ -36,7 +36,7 @@ class VersionAdapter(
     private val listener: OnVersionItemClickListener
 ) : RecyclerView.Adapter<VersionAdapter.ViewHolder>() {
     private val versions: MutableList<Version> = ArrayList()
-    //所有的RadioButton的List，其记录了当前所代表的版本路径
+    // List of every RadioButton, recording the version path each one represents.
     private val radioButtonList: MutableList<RadioButton> = mutableListOf()
     private var currentVersion: String? = null
     private var managerPopupWindow: PopupWindow = PopupWindow().apply {
@@ -53,7 +53,7 @@ class VersionAdapter(
             clear()
         }
         currentVersion = VersionsManager.getCurrentVersion()?.getVersionPath()?.absolutePath
-        //查找当前版本的索引
+        // Find the index of the current version.
         val currentIndex = versions.indexOfFirst { it.getVersionPath().absolutePath == currentVersion }
         notifyDataSetChanged()
 
@@ -69,13 +69,14 @@ class VersionAdapter(
             VersionsManager.saveCurrentVersion(version.getVersionName())
             currentVersion = version.getVersionPath().absolutePath
         } else {
-            //版本无效时，不能设置版本，默认点击就会提示用户删除
+            // An invalid version cannot be selected; tapping it offers to delete it.
             deleteVersion(version, context.getString(R.string.version_manager_delete_tip_invalid))
         }
         radioButtonList.forEach { radioButton -> radioButton.isChecked = radioButton.tag.toString() == currentVersion }
     }
 
-    //删除版本前提示用户，如果版本无效，那么默认点击事件就是删除版本
+    // Warn the user before deleting a version; for an invalid version the default tap
+    // action is deletion.
     private fun deleteVersion(version: Version, deleteMessage: String) {
         // FIX: Guard against IllegalStateException when fragment is detached during deletion
         if (!parentFragment.isAdded || parentFragment.activity == null) return
@@ -102,7 +103,7 @@ class VersionAdapter(
             }.showDialog()
     }
 
-    //TurtleLauncher: 一键导出 modpack（mods/config/options.txt/servers.dat 打包为单个 zip）
+    // TurtleLauncher: one-click modpack export (mods/config/options.txt/servers.dat into one zip).
     private fun exportModpack(context: Context, version: Version) {
         Task.runTask {
             ModpackExporter.export(version)
@@ -349,12 +350,12 @@ class VersionAdapter(
 
     interface OnVersionItemClickListener {
         /**
-         * 用户点击了“收藏”按钮，检查并展示“收藏”弹窗
+         * The user tapped "favorite": check the state and show the favorites dialog.
          */
         fun showFavoritesDialog(versionName: String)
 
         /**
-         * 检查当前版本是否被收藏了
+         * Check whether the current version is favorited.
          */
         fun isVersionFavorited(versionName: String): Boolean
     }

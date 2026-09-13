@@ -61,7 +61,7 @@ public class InGameEventProcessor implements TouchEventProcessor {
     @Override
     public void dispatchTouchEvent(MotionEvent event, View view) {
         if (AllStaticSettings.useControllerProxy) {
-            //单独处理触摸事件，支持TouchController模组
+            // Handle touch events separately to support the TouchController mod.
             ContactHandler.INSTANCE.progressEvent(event, view);
         }
     }

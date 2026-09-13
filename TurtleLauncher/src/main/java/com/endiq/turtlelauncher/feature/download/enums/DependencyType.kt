@@ -1,63 +1,66 @@
 package com.endiq.turtlelauncher.feature.download.enums
 
 /**
- * Mod的依赖类型，并且为每一个类型单独指定一个代表色，便于区分
- * @param curseforge 类型在 CurseForge 上的代称
- * @param modrinth 类型在 Modrinth 上的代称
- * @param color 该类型的代表色
+ * Mod dependency types, each with its own representative colour for easy distinction.
+ * @param curseforge name of the category on CurseForge
+ * @param modrinth name of the category on Modrinth
+ * @param color representative colour of the type
  */
 enum class DependencyType(val curseforge: String?, val modrinth: String?, val color: Int) {
     /**
-     * 需装：这种依赖对项目来说是必须的，如果缺少这种依赖，项目将无法正常运行
+     * Required: the project cannot work correctly without this dependency.
      *
      * CurseForge: "3"
      * Modrinth: "required"
-     * 颜色：0x4CFF9800（橙色，Alpha 30%）
+     * Colour: 0x4CFF9800 (orange, 30% alpha)
      */
     REQUIRED("3", "required", 0x4CFF9800),
 
     /**
-     * 可选：这些依赖不是必须的，但可以为项目添加额外的功能或特性
+     * Optional: not required, but adds extra features to the project.
      *
      * CurseForge: "2"
      * Modrinth: "optional"
-     * 颜色：0x4C34C759（浅绿色，Alpha 30%）
+     * Colour: 0x4C34C759 (light green, 30% alpha)
      */
     OPTIONAL("2", "optional", 0x4C34C759),
 
     /**
-     * 不兼容：这种依赖表示项目与其他特定的项目或依赖有冲突，不建议同时使用，如果尝试同时使用这些依赖，可能会导致错误或故障
+     * Incompatible: this dependency conflicts with certain other projects or dependencies;
+     * using them together is not recommended and may cause errors or failures.
      *
      * CurseForge: "5"
      * Modrinth: "incompatible"
-     * 颜色：0x4CEF5350（浅红色，Alpha 30%）
+     * Colour: 0x4CEF5350 (light red, 30% alpha)
      */
     INCOMPATIBLE("5", "incompatible", 0x4CEF5350),
 
     /**
-     * 嵌入式：这些依赖已经包含在项目内，用户不需要单独安装，它们是项目的一部分，用于确保项目正常运行
+     * Embedded: already shipped inside the project, no separate install needed; they keep the
+     * project running correctly.
      *
      * CurseForge: "1"
      * Modrinth: "embedded"
-     * 颜色：0x4CFFD54F（浅黄色，Alpha 30%）
+     * Colour: 0x4CFFD54F (light yellow, 30% alpha)
      */
     EMBEDDED("1", "embedded", 0x4CFFD54F),
 
     /**
-     * 工具：这类依赖是用于开发或操作项目的工具，它们本身并不是项目运行所必需的
+     * Tooling: dependencies used to develop or operate the project, not needed at runtime.
      *
      * CurseForge: "4"
      * Modrinth: null
-     * 颜色：0x4CBDBDBD（灰色，Alpha 30%）
+     * Colour: 0x4CBDBDBD (grey, 30% alpha)
      */
     TOOL("4", null, 0x4CBDBDBD),
 
     /**
-     * 包含：这种依赖是指项目所包含的文件或资源，虽然它们不是项目的核心功能，但可以为项目提供额外的支持或功能
+     * Includes: files or resources bundled with the project; not core functionality, but they
+     * provide extra support or features.
      *
      * CurseForge: "6"
      * Modrinth: null
-     * 颜色：0x4C9575CD（紫色，Alpha 30%）
+     * Colour: 0x4C9575CD (purple, 30% alpha)
      */
     INCLUDE("6", null, 0x4C9575CD)
 }

@@ -37,7 +37,7 @@ class ModDependenciesDialog(
 
             setGravity(Gravity.CENTER)
 
-            //隐藏状态栏
+            // Hide the status bar.
             decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or

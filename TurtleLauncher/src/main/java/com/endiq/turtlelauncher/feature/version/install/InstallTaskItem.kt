@@ -4,7 +4,7 @@ import android.app.Activity
 import java.io.File
 
 /**
- * InstallTask的包装类，用于记录更详细的信息
+ * Wrapper around InstallTask that records more detailed information.
  * @see InstallTask
  */
 class InstallTaskItem(
@@ -19,9 +19,9 @@ class InstallTaskItem(
 
     fun interface EndTask {
         /**
-         * 使用这个任务执行ModLoader的安装
-         * @param activity 当前的Activity，用来调出jre选择弹窗、切换至JavaGUI界面
-         * @param file 上一个任务执行完成后输出的文件
+         * Run the ModLoader installation through this task.
+         * @param activity the current Activity, used to show the JRE picker and switch to the Java GUI
+         * @param file the file produced by the previous task
          */
         @Throws(Throwable::class)
         fun endTask(activity: Activity, file: File)

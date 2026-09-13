@@ -44,7 +44,7 @@ abstract class FullScreenDialog(context: Context) : Dialog(context, R.style.Cust
     }
 
     /**
-     * 修改自FCL [FCLAlertDialog.java](https://github.com/FCL-Team/FoldCraftLauncher/blob/e7d82af/FCLLibrary/src/main/java/com/tungsten/fcllibrary/component/dialog/FCLAlertDialog.java#L62-L77)
+     * Adapted from FCL [FCLAlertDialog.java](https://github.com/FCL-Team/FoldCraftLauncher/blob/e7d82af/FCLLibrary/src/main/java/com/tungsten/fcllibrary/component/dialog/FCLAlertDialog.java#L62-L77)
      */
     protected fun checkHeight(root: View, content: View, scrollView: View, dpValue: Int = 50) {
         root.post {

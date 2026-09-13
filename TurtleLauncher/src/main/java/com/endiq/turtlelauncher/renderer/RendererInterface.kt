@@ -1,36 +1,36 @@
 package com.endiq.turtlelauncher.renderer
 
 /**
- * 启动器渲染器实现
+ * Launcher renderer implementation.
  */
 interface RendererInterface {
     /**
-     * 获取渲染器的ID
+     * Get the renderer id.
      */
     fun getRendererId(): String
 
     /**
-     * 获取渲染器的唯一标识ID
+     * Get the unique renderer id.
      */
     fun getUniqueIdentifier(): String
 
     /**
-     * 获取渲染器的名称
+     * Get the renderer name.
      */
     fun getRendererName(): String
 
     /**
-     * 获取渲染器的环境变量
+     * Get the renderer environment variables.
      */
     fun getRendererEnv(): Lazy<Map<String, String>>
 
     /**
-     * 获取需要dlopen的库
+     * Get the libraries that need dlopen.
      */
     fun getDlopenLibrary(): Lazy<List<String>>
 
     /**
-     * 获取渲染器的库
+     * Get the renderer libraries.
      */
     fun getRendererLibrary(): String
 
@@ -52,7 +52,7 @@ interface RendererInterface {
     fun getNativeRendererId(): String = getRendererId()
 
     /**
-     * 获取EGL名称
+     * Get the EGL name.
      */
     fun getRendererEGL(): String? = null
 }

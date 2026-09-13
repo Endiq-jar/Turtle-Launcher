@@ -14,7 +14,7 @@ import top.fifthlight.touchcontroller.proxy.client.MessageTransport;
 import top.fifthlight.touchcontroller.proxy.client.android.transport.UnixSocketTransportKt;
 
 /**
- * 为适配 TouchController 模组
+ * For compatibility with the TouchController mod.
  * <a href="">https://modrinth.com/mod/touchcontroller</a>
  */
 public final class ControllerProxy {
@@ -23,7 +23,7 @@ public final class ControllerProxy {
     private ControllerProxy() {}
 
     /**
-     * 启动控制代理客户端，目的是与 TouchController 模组进行通信
+     * Start the control proxy client to talk to the TouchController mod.
      */
     public static void startProxy(Context context) {
         if (proxyClient == null) {

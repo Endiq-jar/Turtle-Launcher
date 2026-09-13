@@ -10,8 +10,9 @@ import java.util.concurrent.TimeUnit
 
 class TaskExecutors {
     companion object {
-        //根据设备CPU核心数动态调整线程池大小，并允许空闲线程超时退出：
-        //低端设备不会被固定4线程占满资源，繁忙时仍可弹性扩展到核心数，空闲时自动收缩省电省内存
+        // Size the pool from the device core count and let idle threads time out:
+        // Low-end devices are not pinned to 4 threads: the pool grows to the core count under
+        // load and shrinks again when idle, saving battery and memory.
         private val cpuCores = Runtime.getRuntime().availableProcessors().coerceAtLeast(2)
         private val corePoolSize = cpuCores.coerceIn(2, 4)
         private val maxPoolSize = (cpuCores).coerceAtLeast(corePoolSize)
@@ -37,7 +38,7 @@ class TaskExecutors {
                 )
             }
         }.apply {
-            //核心线程闲置一段时间后也允许被回收，而不是永久占用
+            // Let core threads be reclaimed after idling instead of living forever.
             allowCoreThreadTimeOut(true)
         }
         private val uiHandler = Handler(Looper.getMainLooper())

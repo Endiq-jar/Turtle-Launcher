@@ -63,7 +63,7 @@ public class LoggerView extends ConstraintLayout {
     }
 
     /**
-     * 强制展示日志，如果点击关闭按钮，那么将进行回调
+     * Force-show the log; closing it through the button triggers the callback.
      */
     public void forceShow(OnCloseClickListener listener) {
         setVisibilityWithAnim(true);

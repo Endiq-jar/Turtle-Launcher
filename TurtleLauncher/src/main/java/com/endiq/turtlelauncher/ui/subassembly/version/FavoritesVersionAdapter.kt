@@ -13,7 +13,7 @@ class FavoritesVersionAdapter(private val versionName: String) : RecyclerView.Ad
     private val selectedCategorySet: MutableSet<String> = HashSet()
 
     init {
-        //找到当前收藏了当前版本的收藏夹，添加进selectedCategoryList
+        // Find the favorite groups containing this version and add them to selectedCategoryList.
         favoritesMap.forEach { (categoryName, versions) ->
             if (versions.contains(versionName)) {
                 selectedCategorySet.add(categoryName)
@@ -22,7 +22,7 @@ class FavoritesVersionAdapter(private val versionName: String) : RecyclerView.Ad
     }
 
     /**
-     * @return 获取当前已经选择的收藏夹名称
+     * @return the currently selected favorite group name
      */
     fun getSelectedCategorySet() = selectedCategorySet
 

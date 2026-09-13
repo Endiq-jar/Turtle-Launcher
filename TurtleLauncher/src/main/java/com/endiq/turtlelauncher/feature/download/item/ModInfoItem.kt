@@ -7,7 +7,7 @@ import com.endiq.turtlelauncher.feature.download.enums.Platform
 import java.util.Date
 
 /**
- * @param modloaders Mod 加载器信息
+ * @param modloaders mod loader info
  */
 open class ModInfoItem(
     classify: Classify,

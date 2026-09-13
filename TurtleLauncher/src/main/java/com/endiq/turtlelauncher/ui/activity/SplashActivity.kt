@@ -64,15 +64,16 @@ class SplashActivity : BaseActivity() {
             return
         }
 
-        //如果安卓版本小于等于9，则检查存储权限（不是管理所有文件权限），拥有存储权限会保证文件、文件夹正常创建
-        //但是并不强制要求用户必须授予权限，如果用户拒绝，那么之后产生的问题将由用户承担
+        // On Android 9 and below check the storage permission (not all-files access); with it,
+        // files and folders are created reliably.
+        // The permission is not enforced though: if the user declines, later problems are theirs.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P && !StoragePermissionsUtils.hasStoragePermissions(this)) {
             TipDialog.Builder(this)
                 .setTitle(R.string.generic_warning)
                 .setMessage(InfoCenter.replaceName(this, R.string.permissions_write_external_storage))
                 .setWarning()
                 .setConfirmClickListener { requestStoragePermissions() }
-                .setCancelClickListener { checkEnd() } //用户取消，那就跟随用户的意愿
+                .setCancelClickListener { checkEnd() } // the user cancelled, respect that
                 .showDialog()
         } else {
             checkEnd()
@@ -94,8 +95,9 @@ class SplashActivity : BaseActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
-            //无论用户是否授予了权限，都会完成检查，因为启动器并不强制要求权限
-            //但是一旦因为存储权限出现了问题，那么将由用户自行承担后果
+            // The check always completes whether or not the permission was granted, since the
+            // launcher does not require it.
+            // but if storage permissions cause trouble afterwards, that is on the user.
             checkEnd()
         }
     }

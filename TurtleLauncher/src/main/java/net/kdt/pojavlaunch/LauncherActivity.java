@@ -165,7 +165,7 @@ public class LauncherActivity extends BaseActivity {
     @Subscribe()
     public void event(SwapToLoginEvent event) {
         Fragment currentFragment = getCurrentFragment();
-        //如果当前可见的Fragment不为空，则判断当前的Fragment是否为AccountFragment，不是就跳转至AccountFragment
+        // If a Fragment is visible and it is not the AccountFragment, navigate to the AccountFragment.
         if (currentFragment == null || getVisibleFragment(AccountFragment.TAG) != null) return;
         ZHTools.swapFragmentWithAnim(currentFragment, AccountFragment.class, AccountFragment.TAG, null);
     }
@@ -392,7 +392,7 @@ public class LauncherActivity extends BaseActivity {
 
         //checkNotice();
 
-        //检查已经下载后的包，或者检查更新
+        // Check the already downloaded package, or check for updates.
         Task.runTask(() -> {
             UpdateUtils.checkDownloadedPackage(this, false, true);
             return null;
@@ -405,11 +405,11 @@ public class LauncherActivity extends BaseActivity {
             public void handleOnBackPressed() {
                 Fragment currentFragment = getCurrentFragment();
                 if (currentFragment instanceof BaseFragment && !((BaseFragment) currentFragment).onBackPressed()) {
-                    //Fragment那边拒绝了返回事件
+                    // The Fragment consumed the back event.
                     return;
                 }
 
-                //如果栈中只剩下1个或没有Fragment，则直接退出启动器
+                // If at most one Fragment is left on the stack, quit the launcher.
                 if (getSupportFragmentManager().getBackStackEntryCount() <= 1) {
                     finish();
                 } else {
@@ -419,7 +419,7 @@ public class LauncherActivity extends BaseActivity {
         });
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        //如果栈中没有Fragment，那么就将主Fragment添加进来
+        // If the back stack is empty, add the main Fragment.
         if (fragmentManager.getBackStackEntryCount() < 1) {
             fragmentManager.beginTransaction()
                     .setReorderingAllowed(true)
@@ -521,7 +521,7 @@ public class LauncherActivity extends BaseActivity {
             }
         }).init();
 
-        //愚人节彩蛋
+        // April Fools easter egg.
         if (ZHTools.checkDate(4, 1)) binding.hair.setVisibility(View.VISIBLE);
         else binding.hair.setVisibility(View.GONE);
     }
@@ -614,7 +614,8 @@ public class LauncherActivity extends BaseActivity {
             if (checkNotice.isCancelled() || noticeInfo == null) {
                 return;
             }
-            //当偏好设置内是开启通知栏 或者 检测到通知编号不为偏好设置里保存的值时，显示通知栏
+            // Show the notification when the preference enables it, or when the notification id
+            // differs from the stored value.
             if (AllSettings.getNoticeDefault().getValue() ||
                     (noticeInfo.numbering != AllSettings.getNoticeNumbering().getValue())) {
                 TaskExecutors.runInUIThread(() -> setNotice(true));

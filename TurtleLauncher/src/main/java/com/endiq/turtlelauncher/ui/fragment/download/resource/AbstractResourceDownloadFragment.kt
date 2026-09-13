@@ -100,9 +100,9 @@ abstract class AbstractResourceDownloadFragment(
             recyclerView.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 layoutAnimation = TurtleTransitions.listLayoutAnimationController(requireContext())
-                //列表容器尺寸固定不随内容变化，可以安全跳过多余的重新测量
+                // The list container size is fixed, so extra measure passes can be skipped.
                 setHasFixedSize(true)
-                //搜索结果列表条目较多且滑动频繁，适当增大缓存可以减少快速滑动时的卡顿
+                // Search results are long and scrolled fast; a bigger view cache reduces jank.
                 setItemViewCacheSize(16)
                 addOnScrollListener(object : OnScrollListener() {
                     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -126,7 +126,7 @@ abstract class AbstractResourceDownloadFragment(
                 false
             }
 
-            // 打开版本选择弹窗
+            // Open the version picker dialog.
             selectedMcVersionView.setOnClickListener {
                 val selectVersionDialog = SelectVersionDialog(requireContext())
                 selectVersionDialog.setOnVersionSelectedListener(object : VersionSelectedListener() {
@@ -144,7 +144,7 @@ abstract class AbstractResourceDownloadFragment(
             }
         }
 
-        // 初始化 Spinner
+        // Initialise the spinner.
         mPlatformAdapter.setItems(Platform.entries)
         mSortAdapter.setItems(Sort.entries)
         mCategoryAdapter.setItems(categoryList)
@@ -296,7 +296,7 @@ abstract class AbstractResourceDownloadFragment(
     }
 
     /**
-     * 清除上一次的搜索状态，然后执行搜索
+     * Clear the previous search state, then search.
      */
     private fun search() {
         setStatusText(false)
@@ -314,7 +314,7 @@ abstract class AbstractResourceDownloadFragment(
     }
 
     /**
-     * 检查当前适配器内的item数量是否为0，如果是，那么执行搜索
+     * Run the search when the adapter currently holds no items.
      */
     private fun checkSearch() {
         if (mInfoAdapter.itemCount == 0) search()

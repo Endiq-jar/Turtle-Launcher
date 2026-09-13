@@ -20,7 +20,7 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * 启动器日志记录，将软件日志及时写入本地文件存储
+ * Launcher logging; writes the app log to local storage promptly.
  */
 object Logging {
     @OptIn(ExperimentalCoroutinesApi::class)

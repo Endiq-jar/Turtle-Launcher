@@ -21,8 +21,8 @@ class UnpackWorldZipHelper {
         }
 
         /**
-         * 读取zip文件，并找到level.data文件所在的路径
-         * @param file 压缩包文件
+         * Read the zip and locate the level.dat file inside it.
+         * @param file the archive file
          */
         private fun extractLevelPath(file: File): String? {
             if (!file.exists() || !file.isFile) {
@@ -34,7 +34,7 @@ class UnpackWorldZipHelper {
             }
 
             ZipFile(file).use { zip ->
-                val entries = zip.entries().asSequence() //转换为序列，方便过滤
+                val entries = zip.entries().asSequence() // as a sequence for easy filtering
                 val levelDatEntry = entries.find { it.name.endsWith("level.dat", ignoreCase = true) }
                 if (levelDatEntry == null) {
                     return null

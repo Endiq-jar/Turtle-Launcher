@@ -85,7 +85,7 @@ abstract class DownloadFabricLikeFragment(val utils: FabricLikeUtils, val icon: 
             return
         }
 
-        //为整理好的Fabric版本设置Adapter
+        // Set the adapter for the prepared Fabric versions.
         val adapter = ModVersionListAdapter(icon, mFabricVersions)
         adapter.setOnItemClickListener { version ->
             if (isTaskRunning()) return@setOnItemClickListener false

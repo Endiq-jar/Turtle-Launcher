@@ -33,11 +33,11 @@ public class StringUtils {
     }
 
     /**
-     * 在字符串之间插入空格
+     * Insert spaces between the strings.
      *
-     * @param prefixString 第一个字符串
-     * @param suffixString 之后的多个字符串
-     * @return 返回插入好空格的字符串 "string1 string2 string3"
+     * @param prefixString the first string
+     * @param suffixString the strings that follow
+     * @return the strings joined with spaces: "string1 string2 string3"
      */
     public static String insertSpace(String prefixString, String... suffixString) {
         return insertString(" ", prefixString, suffixString);
@@ -49,11 +49,11 @@ public class StringUtils {
     }
 
     /**
-     * 在字符串之间插入换行符
+     * Insert newlines between the strings.
      *
-     * @param prefixString 第一个字符串
-     * @param suffixString 之后的多个字符串
-     * @return 返回插入好换行符的字符串
+     * @param prefixString the first string
+     * @param suffixString the strings that follow
+     * @return the strings joined with newlines
      */
     public static String insertNewline(String prefixString, String... suffixString) {
         return insertString("\r\n", prefixString, suffixString);
@@ -76,7 +76,7 @@ public class StringUtils {
             return input;
         }
 
-        //确保位移个数在字符串长度范围内 (normalize negatives too: Java's %
+        // Keep the shift count within the string length (normalize negatives too: Java's %
         // keeps the sign, and a negative shiftCount would crash substring() below)
         int length = input.length();
         shiftCount = ((shiftCount % length) + length) % length;
@@ -95,7 +95,7 @@ public class StringUtils {
     }
 
     /**
-     * @return 检查字符串是否为null，如果是那么则返回""，如果不是，则返回字符串本身
+     * @return "" when the string is null, otherwise the string itself
      */
     public static String getStringNotNull(String string) {
         if (string == null) return "";
@@ -103,9 +103,9 @@ public class StringUtils {
     }
 
     /**
-     * 检查一段字符串内是否含有中文字符（中文标点）
-     * @param str 检查的字符
-     * @return 是否带有中文
+     * Check whether a string contains Chinese characters (or Chinese punctuation).
+     * @param str the string to check
+     * @return whether the string contains Chinese characters
      */
     public static boolean containsChinese(String str) {
         if (str == null || str.isEmpty()) {

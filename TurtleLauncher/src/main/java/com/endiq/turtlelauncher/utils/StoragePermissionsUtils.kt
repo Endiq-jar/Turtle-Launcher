@@ -23,7 +23,7 @@ class StoragePermissionsUtils {
         private var hasStoragePermission: Boolean = false
 
         /**
-         * 检查存储权限，返回是否拥有存储权限
+         * Check the storage permission and return whether it is granted.
          */
         @JvmStatic
         fun checkPermissions(context: Context) {
@@ -35,13 +35,13 @@ class StoragePermissionsUtils {
         }
 
         /**
-         * 获得提前检查好的存储权限
+         * Obtain the storage permission that was checked earlier.
          */
         @JvmStatic
         fun checkPermissions() = hasStoragePermission
 
         /**
-         * 检查存储权限，如果没有存储权限，则弹出弹窗向用户申请
+         * Check the storage permission and ask the user via dialog when it is missing.
          */
         @JvmStatic
         fun checkPermissions(
@@ -58,7 +58,7 @@ class StoragePermissionsUtils {
         }
 
         /**
-         * 适用于安卓10及一下的存储权限检查
+         * Storage permission check for Android 10 and below.
          */
         fun hasStoragePermissions(context: Context): Boolean {
             return ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&

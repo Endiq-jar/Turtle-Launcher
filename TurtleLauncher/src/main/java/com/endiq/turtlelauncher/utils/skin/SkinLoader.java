@@ -51,7 +51,7 @@ public class SkinLoader {
                 if (bitmap == null) throw new IOException("Failed to read the skin picture and try to parse it to a bitmap");
                 return new BitmapDrawable(context.getResources(), getAvatar(bitmap, size));
             } catch (Exception e) {
-                //本地皮肤加载失败，输出到日志内，稍后尝试加载默认的头像“steve”
+                // Local skin failed to load; log it and fall back to the bundled "steve" avatar.
                 Logging.e("SkinLoader", "Failed to load avatar from locally!", e);
             }
         }

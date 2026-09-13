@@ -183,7 +183,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         // Set the sustained performance mode for available APIs
         window.setSustainedPerformanceMode(AllSettings.getSustainedPerformance().getValue());
 
-        // 防止系统息屏
+        // Keep the screen from turning off.
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         ControlLayout controlLayout = binding.mainControlLayout;
@@ -211,7 +211,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         //Now, attach to the service. The game will only start when this happens, to make sure that we know the right state.
         bindService(gameServiceIntent, this, 0);
 
-        //初始化输入监听器，当输入法遮挡了游戏画面时，将设置这个监听器
+        // Initialise the input listener; it is installed when the IME covers the game view.
         mInputWatcher = s -> binding.inputPreview.setText(s.toString().trim());
         setupKeyboardInsetsListener();
     }
@@ -383,12 +383,12 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             });
 
             binding.mainGameRenderView.setOnRenderingStartedListener(() -> {
-                //彻底清除背景图片，确保一些设备不再出现“半透明渲染”的问题
+                // Clear the background image completely so no device shows translucent rendering.
                 BackgroundManager.clearBackgroundImage(binding.backgroundView);
                 Logging.i("Rendering Game", "The game rendering has started, " +
                         "and the background image has been cleared to prevent certain issues from occurring.");
 
-                //TurtleLauncher: 开始本次游戏会话计时（用于 Stopwatch / Playtime HUD）
+                // TurtleLauncher: start timing this game session (Stopwatch / playtime HUD).
                 com.endiq.turtlelauncher.feature.inputstats.SessionStatsTracker.start();
             });
 
@@ -529,7 +529,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //TurtleLauncher: 结算本次游戏会话计时，并清除按键状态
+        // TurtleLauncher: settle the session stopwatch and clear the key state.
         com.endiq.turtlelauncher.feature.inputstats.SessionStatsTracker.stop();
         com.endiq.turtlelauncher.feature.inputstats.InputStatsTracker.reset();
         mMenuSettingsInitListener.closeSpinner();
@@ -580,7 +580,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         return AllSettings.getIgnoreNotch().getValue();
     }
 
-    //使用一个输入预览框来展示用户输入的内容
+    // Use an input preview box to show what the user typed.
     //TurtleLauncher: detection moved to setupKeyboardInsetsListener()/onKeyboardVisibilityChanged()
     //above (WindowInsetsCompat IME type) - see that method's doc comment for why the old
     //getWindowVisibleDisplayFrame() heuristic this used to live in was unreliable here.
@@ -759,11 +759,11 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
 
         public MenuSettingsInitListener(ViewGameMenuBinding binding) {
             this.binding = binding;
-            //初始化状态
+            // Initialise the state.
             this.binding.hotbarWidth.setMax(currentDisplayMetrics.widthPixels / 2);
             this.binding.hotbarHeight.setMax(currentDisplayMetrics.heightPixels / 2);
 
-            //初始化Seekbar的值
+            // Initialise the seekbar value.
             MenuUtils.initSeekBarValue(this.binding.resolutionScaler, AllSettings.getResolutionRatio().getValue(), this.binding.resolutionScalerValue, "%");
             binding.resolutionScalerPreview.setText(VideoSettingsFragment.getResolutionRatioPreview(getResources(), AllSettings.getResolutionRatio().getValue()));
             MenuUtils.initSeekBarValue(this.binding.timeLongPressTrigger, AllSettings.getTimeLongPressTrigger().getValue(), this.binding.timeLongPressTriggerValue, "ms");
@@ -772,7 +772,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             MenuUtils.initSeekBarValue(this.binding.hotbarHeight, AllSettings.getHotbarHeight().getValue().getValue(), this.binding.hotbarHeightValue, "px");
             MenuUtils.initSeekBarValue(this.binding.hotbarWidth, AllSettings.getHotbarWidth().getValue().getValue(), this.binding.hotbarWidthValue, "px");
 
-            //初始化Switch的状态
+            // Initialise the switch state.
             this.binding.openMemoryInfo.setChecked(AllSettings.getGameMenuShowMemory().getValue());
             this.binding.openFpsInfo.setChecked(AllSettings.getGameMenuShowFPS().getValue());
             this.binding.showCpsHud.setChecked(AllSettings.getShowCpsHud().getValue());
@@ -804,7 +804,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.tabBtnHotbar.setOnClickListener(v -> selectTab(this.binding.tabBtnHotbar));
             selectTab(this.binding.tabBtnDebug);
 
-            //初始化点击事件
+            // Initialise the click listener.
             this.binding.forceClose.setOnClickListener(this);
             this.binding.logOutput.setOnClickListener(this);
             this.binding.sendCustomKey.setOnClickListener(this);
@@ -895,7 +895,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
 
         private void dialogSendCustomKey() {
             keyboardDialog.setOnMultiKeycodeSelectListener(selectedKeycodes -> {
-                //模拟同时按下，同时松开按键
+                // Simulate pressing (and releasing) the keys simultaneously.
                 Task.runTask(() -> {
                     selectedKeycodes.forEach(keycode -> sendKeyPress(keycode, true));
                     return null;
@@ -923,7 +923,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             SelectControlsDialog dialog = new SelectControlsDialog(MainActivity.this, file -> {
                 try {
                     MainActivity.binding.mainControlLayout.loadLayout(file.getAbsolutePath());
-                    //刷新：是否隐藏菜单按钮
+                    // Refresh: whether the menu button is hidden.
                     mGameMenuWrapper.setVisibility(!MainActivity.binding.mainControlLayout.hasMenuButton());
                 } catch (IOException ignored) {}
             });
@@ -1084,7 +1084,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             } else if (v == binding.enableGyro) {
                 refreshLayoutVisible(binding.gyroLayout, isChecked);
                 AllSettings.getEnableGyro().put(isChecked).save();
-                //刷新陀螺仪的启用状态
+                // Refresh the gyroscope enabled state.
                 AllStaticSettings.enableGyro = isChecked;
                 mGyroControl.updateOrientation();
                 if (isChecked) mGyroControl.enable();
@@ -1099,7 +1099,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         }
 
         /**
-         * 刷新View的可见状态
+         * Refresh the visibility state of the view.
          */
         private void refreshLayoutVisible(View view, boolean visible) {
             view.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -1144,8 +1144,9 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         }
         @Override public void onDrawerClosed(@NonNull View drawerView) {}
         @Override public void onDrawerStateChanged(int newState) {
-            //需要在菜单状态改变的时候，关闭Hotbar类型的Spinner，这个库并没有自动关闭的功能，所以需要这么做
-            //关掉！关掉！一定要关掉！
+            // The hotbar spinner has to be closed manually when the menu state changes, because
+            // the library never dismisses it on its own.
+            // Turn it off! Off! It really must be turned off!
             closeSpinner();
         }
 

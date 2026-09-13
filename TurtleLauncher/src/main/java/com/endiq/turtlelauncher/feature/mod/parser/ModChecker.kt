@@ -65,7 +65,7 @@ class ModChecker {
     }
 
     /**
-     * 检查所有模组，并对一些已知的模组进行判断
+     * Inspect every mod and apply checks for known mods.
      */
     fun check(context: Context, modInfoList: List<ModInfo>, executeTask: (ModCheckResult?) -> Unit) {
         runCatching {

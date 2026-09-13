@@ -203,7 +203,7 @@ public class ModDownloader {
     }
 
     /**
-     * 一个已下载文件数量、已下载文件总大小的监听器
+     * Listener for the number and total size of downloaded files.
      */
     public interface DownloadProgressListener {
         void feedback(int downloadedCount, int totalCount, long downloadedSize);

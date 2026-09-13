@@ -1,7 +1,7 @@
 package com.endiq.turtlelauncher.event.value
 
 /**
- * 切换设置页面时，使用这个事件通知Fragment播放动画
- * @param index Fragment的类别索引
+ * When switching settings pages, this event tells the Fragment to play its animation.
+ * @param index category index of the Fragment
  */
 class SettingsPageSwapEvent(val index: Int)

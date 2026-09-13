@@ -134,7 +134,7 @@ public class KeyboardDialog extends FullScreenDialog implements View.OnClickList
         if (!isGamepadMapper) buttons.add(0, getKey(getString(R.string.keycode_unspecified)));
 
         if (showSpecialButtons) {
-            //此处如果不是手柄映射模式，那么将反着加入
+            // Outside gamepad-mapping mode the entries are added in reverse.
             int specialCount = isGamepadMapper ? 0 : specialButtons.size() - 1;
             for (View specialButton : specialButtons) {
                 int finalSpecialCount = specialCount;
@@ -154,7 +154,7 @@ public class KeyboardDialog extends FullScreenDialog implements View.OnClickList
             button.setTag(finalButtonCount);
             button.setOnClickListener(this);
 
-            if (    //保证顺序正确
+            if (    // keep the ordering correct
                     Objects.equals(button, binding.keyboard9) ||
                     Objects.equals(button, binding.keyboardSlash) ||
                     Objects.equals(button, binding.keyboardPageDown) ||

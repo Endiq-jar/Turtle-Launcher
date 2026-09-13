@@ -47,7 +47,7 @@ class ModrinthModHelper {
                 val modloaders: MutableList<ModLoader> = ArrayList()
                 for (category in categories) {
                     val string = category.asString
-                    if (string == "datapack") continue@responseHit //这里经常能搜到数据包，很奇怪...
+                    if (string == "datapack") continue@responseHit // datapacks show up here surprisingly often...
                     ModLoaderUtils.getModLoaderByModrinth(string)?.let { modloaders.add(it) }
                 }
 

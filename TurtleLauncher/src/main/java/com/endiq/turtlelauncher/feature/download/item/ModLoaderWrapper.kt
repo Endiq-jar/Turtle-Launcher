@@ -78,7 +78,7 @@ class ModLoaderWrapper(
      * This method returns null if the mod loader does not require GUI installation
      * @param context the package resolving Context (can be the base context)
      * @param modInstallerJar the JAR file of the mod installer, provided by ModloaderDownloadListener after the installation
-     * @param customName 自定义安装的版本名称
+     * @param customName custom name for the installed version
      * finishes.
      * @return the Intent which the launcher needs to start in order to install the mod loader
      */

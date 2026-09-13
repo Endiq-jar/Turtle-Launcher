@@ -17,7 +17,8 @@ import java.io.File
 
 
 /**
- * 启动器所有渲染器总管理者，启动器内置的渲染器与渲染器插件加载的渲染器，都会加载到这里
+ * Manager for every renderer: built-in renderers and those loaded from renderer plugins all
+ * end up here.
  *
  * TurtleLauncher: this renderer set was originally the six renderers
  * FCL-Team/FoldCraftLauncher ships (Holy GL4ES, VirGL, VGPU, Zink, Freedreno, Krypton
@@ -107,7 +108,7 @@ object Renderers {
     }
 
     /**
-     * 获取兼容当前设备的所有渲染器
+     * Get every renderer compatible with this device.
      */
     fun getCompatibleRenderers(context: Context): Pair<RenderersList, List<RendererInterface>> = compatibleRenderers ?: run {
         val deviceHasVulkan = Tools.checkVulkanSupport(context.packageManager)
@@ -160,7 +161,7 @@ object Renderers {
     }
 
     /**
-     * 加入一些渲染器
+     * Add several renderers.
      */
     @JvmStatic
     fun addRenderers(vararg renderers: RendererInterface) {
@@ -170,7 +171,7 @@ object Renderers {
     }
 
     /**
-     * 加入单个渲染器
+     * Add a single renderer.
      */
     @JvmStatic
     fun addRenderer(renderer: RendererInterface): Boolean {
@@ -186,10 +187,10 @@ object Renderers {
     }
 
     /**
-     * 设置当前的渲染器
-     * @param context 用于初始化适配当前设备的渲染器
-     * @param uniqueIdentifier 渲染器的唯一标识符，用于找到当前想要设置的渲染器
-     * @param retryToFirstOnFailure 如果未找到匹配的渲染器，是否跳回渲染器列表的首个渲染器
+     * Set the current renderer.
+     * @param context used to initialise the renderer for this device
+     * @param uniqueIdentifier unique renderer id used to find the renderer to apply
+     * @param retryToFirstOnFailure fall back to the first renderer in the list when no match is found
      */
     fun setCurrentRenderer(context: Context, uniqueIdentifier: String, retryToFirstOnFailure: Boolean = true) {
         if (!isInitialized) throw IllegalStateException("Uninitialized renderer!")
@@ -204,7 +205,7 @@ object Renderers {
     }
 
     /**
-     * 获取当前的渲染器
+     * Get the current renderer.
      */
     fun getCurrentRenderer(): RendererInterface {
         if (!isInitialized) throw IllegalStateException("Uninitialized renderer!")
@@ -212,7 +213,7 @@ object Renderers {
     }
 
     /**
-     * 当前是否设置了渲染器
+     * Whether a renderer is currently configured.
      */
     fun isCurrentRendererValid(): Boolean = isInitialized && this.currentRenderer != null
 }
