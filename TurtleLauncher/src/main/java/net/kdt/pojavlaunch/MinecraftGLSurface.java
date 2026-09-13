@@ -324,6 +324,11 @@ public class MinecraftGLSurface extends View implements GrabListener {
         int mouseCursorIndex = -1;
 
         if(Gamepad.isGamepadEvent(event)){
+            // TurtleLauncher CRASH FIX: isGamepadEvent() can pass on the source bits of an
+            // injected event whose getDevice() is null; Gamepad/GamepadJoystick would then
+            // NPE later inside a Choreographer tick on the UI thread. Real gamepads always
+            // carry a device - ignore the ones that don't.
+            if(event.getDevice() == null) return false;
             if(mGamepad == null) createGamepad(this, event.getDevice());
 
             mInputManager.handleMotionEventInput(getContext(), event, mGamepad);
@@ -383,7 +388,7 @@ public class MinecraftGLSurface extends View implements GrabListener {
         // Checked before the key reaches the game so the binding works even for keys the
         // game would otherwise consume. -1 = unbound = zero cost here.
         int imeKeyCode = AllSettings.getPhysicalKeyImeCode().getValue();
-        if (imeKeyCode != -1 && eventKeycode == imeKeyCode
+        if (imeKeyCode != -1 && eventKeycode == imeKeyCode && touchCharInput != null
                 && event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
             touchCharInput.switchKeyboardState();
             return true;
@@ -401,7 +406,10 @@ public class MinecraftGLSurface extends View implements GrabListener {
         //Even weirder, is is unknown why a key or another is selected to trigger a keyEvent
         if((event.getFlags() & KeyEvent.FLAG_SOFT_KEYBOARD) == KeyEvent.FLAG_SOFT_KEYBOARD){
             if(eventKeycode == KeyEvent.KEYCODE_ENTER) return true; //We already listen to it.
-            touchCharInput.dispatchKeyEvent(event);
+            // TurtleLauncher CRASH FIX: touchCharInput is a static assigned in
+            // MainActivity.onCreate - guard the deref so an early/late soft-keyboard
+            // event can never NPE on the game process's UI thread.
+            if (touchCharInput != null) touchCharInput.dispatchKeyEvent(event);
             return true;
         }
 
@@ -417,6 +425,8 @@ public class MinecraftGLSurface extends View implements GrabListener {
         }
 
         if(Gamepad.isGamepadEvent(event)){
+            // TurtleLauncher CRASH FIX: same null-device guard as dispatchGenericMotionEvent.
+            if(event.getDevice() == null) return false;
             if(mGamepad == null) createGamepad(this, event.getDevice());
 
             mInputManager.handleKeyEventInput(getContext(), event, mGamepad);

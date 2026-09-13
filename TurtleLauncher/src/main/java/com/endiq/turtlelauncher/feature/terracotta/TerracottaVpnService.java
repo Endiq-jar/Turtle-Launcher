@@ -94,7 +94,7 @@ public class TerracottaVpnService extends VpnService {
 
         if (ACTION_UPDATE_STATE.equals(action)) {
             currentStateStringRes = getStateTextRes(intent);
-            if (!isStopping) {
+            if (!isStopping && notificationManager != null) {
                 Notification notification = buildVpnNotification();
                 if (notification != null) {
                     notificationManager.notify(VPN_NOTIFICATION_ID, notification);
@@ -121,7 +121,14 @@ public class TerracottaVpnService extends VpnService {
 
         Notification notification = buildVpnNotification();
         if (notification == null) {
-            return Service.START_NOT_STICKY;
+            // TurtleLauncher CRASH FIX: this branch is reached through
+            // startForegroundService(ACTION_START), which arms Android's 5-second
+            // startForeground() deadline. Returning without foregrounding (as before,
+            // when getMode() is transiently null during a connect race) killed the app
+            // with "did not then call Service.startForeground()". The VPN session is
+            // about to be started below regardless, so foreground with a generic
+            // notification instead of bailing out.
+            notification = buildFallbackNotification();
         }
         startForeground0(notification);
 
@@ -222,6 +229,21 @@ public class TerracottaVpnService extends VpnService {
             .setDeleteIntent(buildDeleteIntent());
 
         return builder.build();
+    }
+
+    /** Minimal always-buildable notification so the ACTION_START path can always honor
+     *  the startForegroundService() contract even when Terracotta.getMode() hasn't been
+     *  populated yet (connect race). Same channel, icon and title; generic text. */
+    private Notification buildFallbackNotification() {
+        return new Notification.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_friends_network)
+            .setContentTitle(getString(R.string.terracotta_notification_title))
+            .setContentText(getString(R.string.terracotta_status_default))
+            .setWhen(System.currentTimeMillis())
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setCategory(Notification.CATEGORY_SERVICE)
+            .build();
     }
 
     private PendingIntent buildDeleteIntent() {

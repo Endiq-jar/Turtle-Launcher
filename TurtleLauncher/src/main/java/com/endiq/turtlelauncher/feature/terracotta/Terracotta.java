@@ -119,7 +119,25 @@ public class Terracotta {
 
         appContext = activity.getApplicationContext();
         metadata = TerracottaAndroidAPI.initialize(activity, () ->
-            TaskExecutors.runInUIThread(() -> startTerracottaVpn(activity))
+            TaskExecutors.runInUIThread(() -> {
+                // TurtleLauncher CRASH FIX: this callback fires whenever EasyTier wants a
+                // VPN - including while the user has backgrounded the app mid-connect.
+                // On Android 12+ startForegroundService() then throws
+                // ForegroundServiceStartNotAllowedException straight onto the main
+                // looper, killing the launcher. Reject the request instead (frees the
+                // backend's 30-second fulfillment window) and fall back to Waiting.
+                try {
+                    startTerracottaVpn(activity);
+                } catch (Throwable t) {
+                    Logging.e("Terracotta", "Could not start the VPN service for Terracotta", t);
+                    try {
+                        TerracottaAndroidAPI.getPendingVpnServiceRequest().reject();
+                        mode = null;
+                        setWaiting(activity, false);
+                    } catch (Throwable ignored) {
+                    }
+                }
+            })
         );
 
         initialized = true;
@@ -341,7 +359,15 @@ public class Terracotta {
             Intent intent = new Intent(context, TerracottaVpnService.class)
                 .setAction(TerracottaVpnService.ACTION_UPDATE_STATE)
                 .putExtra(TerracottaVpnService.EXTRA_STATE_TEXT, stringRes);
-            ContextCompat.startForegroundService(context, intent);
+            // TurtleLauncher CRASH FIX: was ContextCompat.startForegroundService(). The
+            // service's UPDATE_STATE branch only calls notify() - it never calls
+            // startForeground(). If the service is not already foregrounded when such an
+            // intent lands (teardown/setup race past the isRunning() check), Android's
+            // 5-second startForeground() deadline expires and the system kills the app
+            // with RemoteServiceException. A plain startService() sets no such deadline
+            // and is delivered to the running service just the same; if the OS refuses a
+            // background start, the catch below degrades to a stale (cosmetic) text.
+            context.startService(intent);
         } catch (Throwable t) {
             // Includes ForegroundServiceStartNotAllowedException (an IllegalStateException).
             Logging.w("Terracotta", "Could not update VPN notification state text", t);

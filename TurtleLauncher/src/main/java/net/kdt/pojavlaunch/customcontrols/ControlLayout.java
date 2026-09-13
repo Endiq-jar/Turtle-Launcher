@@ -80,21 +80,40 @@ public class ControlLayout extends FrameLayout {
 
 
 	public void loadLayout(String jsonPath) throws IOException, JsonSyntaxException {
+		// TurtleLauncher CRASH FIX: the throws clause is kept so existing callers still
+		// compile, but this method no longer actually propagates failures. Several call
+		// sites (control switcher, onActivityResult) only catch IOException, so a
+		// JsonSyntaxException/RuntimeException from a corrupt user layout used to kill
+		// the running game. Now: corrupt file -> bundled default -> no custom controls.
 		File jsonFile = jsonPath != null ? new File(jsonPath) : new File(AllSettings.getDefaultCtrl().getValue());
 
-		CustomControls layout;
-		if (jsonFile.exists()) {
-			layout = LayoutConverter.loadAndConvertIfNecessary(getContext(), jsonFile.getAbsolutePath());
-		} else {
-			layout = LayoutConverter.loadFromAssets(getContext(), "default.json");
+		CustomControls layout = null;
+		boolean fromFile = false;
+		try {
+			if (jsonFile.exists()) {
+				layout = LayoutConverter.loadAndConvertIfNecessary(getContext(), jsonFile.getAbsolutePath());
+				fromFile = true;
+			}
+		} catch (Throwable t) {
+			Logging.w("ControlLayout", "Control file " + jsonFile.getAbsolutePath() + " is unreadable/corrupt, falling back to the default", t);
+			layout = null;
+		}
+		if (layout == null) {
+			try {
+				layout = LayoutConverter.loadFromAssets(getContext(), "default.json");
+			} catch (Throwable t) {
+				Logging.w("ControlLayout", "Bundled default control layout failed to load", t);
+				layout = null;
+			}
 		}
 		if (layout != null) {
 			loadLayout(layout);
-			if (jsonFile.exists()) {
-				mLayoutFileName = StringUtilsKt.removeSuffix(jsonFile.getName(), ".json");
-			} else {
-				mLayoutFileName = "default";
-			}
+			mLayoutFileName = fromFile ? StringUtilsKt.removeSuffix(jsonFile.getName(), ".json") : "default";
+		} else {
+			// Last resort: clear the layout entirely. The game stays playable with
+			// keyboard/mouse/gamepad instead of crashing at startup.
+			loadLayout((CustomControls) null);
+			mLayoutFileName = "default";
 		}
 	}
 
@@ -102,6 +121,12 @@ public class ControlLayout extends FrameLayout {
 		boolean sanitizedModified = false;
 		if(controlLayout != null) {
 			sanitizedModified = LayoutSanitizer.sanitizeLayout(controlLayout);
+			// TurtleLauncher CRASH FIX: Gson leaves these null when the user JSON
+			// explicitly contains "mControlDataList": null etc. - the for-each loops
+			// below would NPE at game startup. Empty lists keep the game alive.
+			if(controlLayout.mControlDataList == null) controlLayout.mControlDataList = new ArrayList<>();
+			if(controlLayout.mDrawerDataList == null) controlLayout.mDrawerDataList = new ArrayList<>();
+			if(controlLayout.mJoystickDataList == null) controlLayout.mJoystickDataList = new ArrayList<>();
 		}
 		mInfoData = controlLayout == null ? null : controlLayout.mControlInfoDataList;
 		if (mInfoData == null) {
@@ -128,20 +153,36 @@ public class ControlLayout extends FrameLayout {
 		mLayout = controlLayout;
 		
 
+		// TurtleLauncher CRASH FIX: each element is added defensively - one corrupt
+		// button/joystick/drawer in a user layout now costs that single control instead
+		// of crashing the whole game while it boots.
+
 		// Joystick(s) first, to workaround the touch dispatch
 		for(ControlJoystickData joystick : mLayout.mJoystickDataList){
-			addJoystickView(joystick);
+			try {
+				addJoystickView(joystick);
+			} catch (Throwable t) {
+				Logging.w("ControlLayout", "Skipped corrupt joystick entry", t);
+			}
 		}
 
 		//CONTROL BUTTON
 		for (ControlData button : controlLayout.mControlDataList) {
-			addControlView(button);
+			try {
+				addControlView(button);
+			} catch (Throwable t) {
+				Logging.w("ControlLayout", "Skipped corrupt control button entry", t);
+			}
 		}
 
 		//CONTROL DRAWER
 		for(ControlDrawerData drawerData : controlLayout.mDrawerDataList){
-			ControlDrawer drawer = addDrawerView(drawerData);
-			if(mModifiable) drawer.areButtonsVisible = true;
+			try {
+				ControlDrawer drawer = addDrawerView(drawerData);
+				if(mModifiable && drawer != null) drawer.areButtonsVisible = true;
+			} catch (Throwable t) {
+				Logging.w("ControlLayout", "Skipped corrupt drawer entry", t);
+			}
 		}
 
 		mLayout.scaledAt = AllSettings.getButtonScale().getValue();

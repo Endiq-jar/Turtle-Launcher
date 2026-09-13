@@ -532,9 +532,15 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         // TurtleLauncher: settle the session stopwatch and clear the key state.
         com.endiq.turtlelauncher.feature.inputstats.SessionStatsTracker.stop();
         com.endiq.turtlelauncher.feature.inputstats.InputStatsTracker.reset();
-        mMenuSettingsInitListener.closeSpinner();
-        CallbackBridge.removeGrabListener(binding.mainTouchpad);
-        CallbackBridge.removeGrabListener(binding.mainGameRenderView);
+        // TurtleLauncher CRASH FIX: when initLayout()/onCreate aborts partway (the
+        // showError-and-finish path), onDestroy still runs on a half-initialized
+        // activity - mMenuSettingsInitListener/binding can be null and an unguarded
+        // deref here turned a diagnosable startup error into a crash-on-teardown.
+        if (mMenuSettingsInitListener != null) mMenuSettingsInitListener.closeSpinner();
+        if (binding != null) {
+            CallbackBridge.removeGrabListener(binding.mainTouchpad);
+            CallbackBridge.removeGrabListener(binding.mainGameRenderView);
+        }
         if (mKeyboardOffsetAnimator != null) mKeyboardOffsetAnimator.cancel();
         // TurtleLauncher: don't leave an encoder/muxer running (and the output file
         // unfinalized/unplayable) if the game exits mid-recording.
@@ -557,7 +563,13 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        TaskExecutors.getUIHandler().postDelayed(() -> binding.mainGameRenderView.refreshSize(), 500);
+        // TurtleLauncher CRASH FIX: if initLayout() aborted before the render view was
+        // wired up (showError-and-finish path), the delayed refreshSize() below could
+        // still fire against a null static binding and NPE on the UI thread.
+        TaskExecutors.getUIHandler().postDelayed(() -> {
+            ActivityGameBinding b = binding;
+            if (b != null) b.mainGameRenderView.refreshSize();
+        }, 500);
     }
 
     @Override
@@ -652,45 +664,85 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     }
 
     public static void openLink(String link) {
-        Context ctx = binding.mainTouchpad.getContext(); // no more better way to obtain a context statically
-        ((Activity)ctx).runOnUiThread(() -> {
-            try {
-                setUri(ctx, link);
-            } catch (Throwable th) {
-                Tools.showError(ctx, th);
+        // TurtleLauncher CRASH FIX: reachable from the JVM through JNI (CallbackBridge
+        // CLIPBOARD_OPEN). binding is a static that is null before onCreate and after
+        // the game tears down - dereferencing it on the JNI thread aborted the whole
+        // process when the game fired a link open late in shutdown. Everything is
+        // guarded now; a link that can't be opened is logged, not fatal.
+        try {
+            ActivityGameBinding currentBinding = binding;
+            if (currentBinding == null) {
+                Logging.w("MainActivity", "openLink ignored: game UI is gone (link=" + link + ")");
+                return;
             }
-        });
+            Context ctx = currentBinding.mainTouchpad.getContext(); // no more better way to obtain a context statically
+            if (!(ctx instanceof Activity)) return;
+            ((Activity)ctx).runOnUiThread(() -> {
+                try {
+                    setUri(ctx, link);
+                } catch (Throwable th) {
+                    Tools.showError(ctx, th);
+                }
+            });
+        } catch (Throwable t) {
+            Logging.w("MainActivity", "openLink failed", t);
+        }
     }
 
     public static void querySystemClipboard() {
+        // TurtleLauncher CRASH FIX: runs on the UI thread of the game process (an
+        // uncaught exception here kills the running game) and is fed by the AWT/JNI
+        // clipboard path. GLOBAL_CLIPBOARD is null outside the activity lifetime,
+        // getPrimaryClip() can return null on Android 10+ even with focus races, and
+        // getItemAt(0) can be null or URI-only - all previously unguarded NPEs.
         TaskExecutors.runInUIThread(()->{
-            ClipData clipData = GLOBAL_CLIPBOARD.getPrimaryClip();
-            if(clipData == null) {
+            try {
+                ClipboardManager clipboard = GLOBAL_CLIPBOARD;
+                if (clipboard == null) {
+                    AWTInputBridge.nativeClipboardReceived(null, null);
+                    return;
+                }
+                ClipData clipData = clipboard.getPrimaryClip();
+                if(clipData == null || clipData.getItemCount() == 0) {
+                    AWTInputBridge.nativeClipboardReceived(null, null);
+                    return;
+                }
+                ClipData.Item firstClipItem = clipData.getItemAt(0);
+                //TODO: coerce to HTML if the clip item is styled
+                CharSequence clipItemText = firstClipItem != null ? firstClipItem.getText() : null;
+                if(clipItemText == null) {
+                    AWTInputBridge.nativeClipboardReceived(null, null);
+                    return;
+                }
+                AWTInputBridge.nativeClipboardReceived(clipItemText.toString(), "plain");
+            } catch (Throwable t) {
+                Logging.w("MainActivity", "System clipboard query failed", t);
                 AWTInputBridge.nativeClipboardReceived(null, null);
-                return;
             }
-            ClipData.Item firstClipItem = clipData.getItemAt(0);
-            //TODO: coerce to HTML if the clip item is styled
-            CharSequence clipItemText = firstClipItem.getText();
-            if(clipItemText == null) {
-                AWTInputBridge.nativeClipboardReceived(null, null);
-                return;
-            }
-            AWTInputBridge.nativeClipboardReceived(clipItemText.toString(), "plain");
         });
     }
 
     public static void putClipboardData(String data, String mimeType) {
+        // TurtleLauncher CRASH FIX: same JNI/UI-thread exposure as querySystemClipboard -
+        // switch(null) NPEs, GLOBAL_CLIPBOARD can be null during teardown, and either
+        // exception on the UI thread takes the game process with it.
         TaskExecutors.runInUIThread(()-> {
-            ClipData clipData = null;
-            switch(mimeType) {
-                case "text/plain":
-                    clipData = ClipData.newPlainText("AWT Paste", data);
-                    break;
-                case "text/html":
-                    clipData = ClipData.newHtmlText("AWT Paste", data, data);
+            try {
+                if (data == null || mimeType == null) return;
+                ClipboardManager clipboard = GLOBAL_CLIPBOARD;
+                if (clipboard == null) return;
+                ClipData clipData = null;
+                switch(mimeType) {
+                    case "text/plain":
+                        clipData = ClipData.newPlainText("AWT Paste", data);
+                        break;
+                    case "text/html":
+                        clipData = ClipData.newHtmlText("AWT Paste", data, data);
+                }
+                if(clipData != null) clipboard.setPrimaryClip(clipData);
+            } catch (Throwable t) {
+                Logging.w("MainActivity", "Failed to put clipboard data from the game", t);
             }
-            if(clipData != null) GLOBAL_CLIPBOARD.setPrimaryClip(clipData);
         });
     }
 

@@ -220,11 +220,16 @@ class MouseKeyboardSettingsFragment() : AbstractSettingsFragment(R.layout.settin
     }
 
     private fun updateImeKeyLabel() {
+        // TurtleLauncher CRASH FIX: also invoked from the key-bind dialog's listeners,
+        // which are not lifecycle-aware - Fragment.getString() throws
+        // IllegalStateException once the fragment detaches, so resolve strings through
+        // the context and bail out quietly if it is already gone.
+        val ctx = context ?: return
         val code = AllSettings.physicalKeyImeCode.getValue()
         binding.physicalKeyImeValue.text = if (code == -1) {
-            getString(R.string.setting_physical_key_ime_unbound)
+            ctx.getString(R.string.setting_physical_key_ime_unbound)
         } else {
-            getString(R.string.setting_physical_key_ime_bound, KeyEvent.keyCodeToString(code))
+            ctx.getString(R.string.setting_physical_key_ime_bound, KeyEvent.keyCodeToString(code))
         }
     }
 
