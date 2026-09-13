@@ -14,6 +14,7 @@ import com.endiq.turtlelauncher.databinding.FragmentSettingsBinding
 import com.endiq.turtlelauncher.setting.Settings
 import com.endiq.turtlelauncher.ui.fragment.AboutFragment
 import com.endiq.turtlelauncher.ui.fragment.AccountFragment
+import com.endiq.turtlelauncher.ui.fragment.EmotesFragment
 import com.endiq.turtlelauncher.ui.fragment.FragmentWithAnim
 import com.endiq.turtlelauncher.utils.ZHTools
 
@@ -53,6 +54,7 @@ class SettingsFragment : FragmentWithAnim(R.layout.fragment_settings) {
             Triple(binding.phoneSettingsRow, binding.performanceSectionContainer, R.string.settings_row_phone_title),
             Triple(binding.accessibilitySettingsRow, binding.performanceSectionContainer, R.string.settings_row_accessibility_title),
             Triple(binding.recordingSettingsRow, binding.performanceSectionContainer, R.string.settings_row_recording_title),
+            Triple(binding.emotesSettingsRow, binding.otherSectionContainer, R.string.settings_row_emotes_title),
             Triple(binding.experimentalSettingsRow, binding.otherSectionContainer, R.string.settings_row_advanced_title),
             Triple(binding.aboutSettingsRow, binding.otherSectionContainer, R.string.settings_row_about_title),
         )
@@ -116,6 +118,9 @@ class SettingsFragment : FragmentWithAnim(R.layout.fragment_settings) {
         }
         binding.recordingSettingsRow.setOnClickListener {
             ZHTools.swapFragmentWithAnim(this, RecordingSettingsFragment::class.java, RecordingSettingsFragment.TAG, null)
+        }
+        binding.emotesSettingsRow.setOnClickListener {
+            ZHTools.swapFragmentWithAnim(this, EmotesFragment::class.java, EmotesFragment.TAG, null)
         }
         binding.experimentalSettingsRow.setOnClickListener {
             ZHTools.swapFragmentWithAnim(this, ExperimentalSettingsFragment::class.java, ExperimentalSettingsFragment.TAG, null)

@@ -1345,4 +1345,32 @@
     <string name="shizuku_result_characters">%d chars</string>
     <string name="shizuku_result_count">%1$d/%2$d ok</string>
     <string name="shizuku_result_working">…</string>
+
+    <!-- TurtleLauncher: Emotes (Emotecraft integration - in-game menu row, Settings hub screen) -->
+    <string name="settings_row_emotes_title">Emotes</string>
+    <string name="settings_row_emotes_desc">Browse and download emotes, set the wheel key, check the Emotecraft mod</string>
+    <string name="emotes_screen_title">Emotes</string>
+    <string name="emotes_site_hint">Community emote library below - tapping a download saves the .emote file straight into this version\'s emotes folder, ready for Emotecraft in game.</string>
+    <string name="emotes_status_installed">Emotecraft mod: installed - emotes will play in game</string>
+    <string name="emotes_status_missing">Emotecraft mod: not found in this version\'s mods folder - install it (Fabric, Forge, NeoForge or Quilt) to use emotes</string>
+    <string name="emotes_get_mod">Get Emotecraft (Modrinth)</string>
+    <string name="emotes_open_browser">Open site in browser</string>
+    <string name="emotes_folder_info">Emotes are saved to: %s</string>
+    <string name="emotes_saved">Emote saved: %s</string>
+    <string name="emotes_save_failed">Could not download emote</string>
+    <string name="emotes_wheel_key_title">Emote wheel key</string>
+    <string name="emotes_wheel_key_summary">The in-game menu\'s emote button sends this key to the game. It must match Emotecraft\'s own keybind (default: B). Tap to change.</string>
+    <string name="emotes_wheel_key_value">Key: %s</string>
+    <string name="setting_emotes_enabled_title">Emote button</string>
+    <string name="game_menu_emote_wheel">Play emote (open wheel)</string>
+    <string name="game_menu_emote_site">Get emotes (website)</string>
+
+    <!-- TurtleLauncher: skin setting on Microsoft / third-party (ely.by, Battly, ...) accounts -->
+    <string name="skin_cape_slim_model">Slim (Alex) model - Microsoft upload</string>
+    <string name="skin_cape_ms_upload_ok">Skin uploaded to your Microsoft profile</string>
+    <string name="skin_cape_ms_upload_failed">Microsoft skin upload failed: %s</string>
+    <string name="skin_cape_ms_upload_expired">Microsoft login expired - use the account screen\'s refresh button, then apply the skin again</string>
+    <string name="skin_cape_other_login_title">Server-managed skin</string>
+    <string name="skin_cape_other_login_message">This account logs in through %s, which serves its own skins - the launcher cannot inject one at launch. The skin was saved locally; to wear it on this account, upload it on the server\'s website.</string>
+    <string name="skin_cape_open_site">Open skin website</string>
 </resources>

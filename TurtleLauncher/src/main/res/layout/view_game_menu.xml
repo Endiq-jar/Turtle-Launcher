@@ -760,6 +760,63 @@
                     android:layout_centerVertical="true" />
             </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
+            <!-- TurtleLauncher Emotes: master toggle for the two emote actions below.
+                 The wheel button sends AllSettings.emoteWheelKeycode to the game
+                 (default B = Emotecraft's default emote-wheel keybind); the website
+                 button opens the community emote library (emotes.kosmx.dev) in the
+                 browser. Settings -> Emotes has the full download screen. -->
+            <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                android:id="@+id/emotes_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:background="@drawable/background_item"
+                android:padding="@dimen/_8sdp"
+                app:ripple_for_relative="true">
+
+                <TextView
+                    android:id="@+id/emotes_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:layout_toStartOf="@+id/emotes"
+                    android:text="@string/setting_emotes_enabled_title"
+                    android:textColor="@color/turtle_primary_text" />
+
+                <Switch
+                    android:id="@+id/emotes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+            </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+            <com.endiq.turtlelauncher.ui.view.AnimTextView
+                android:id="@+id/emote_wheel_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:background="@drawable/background_item"
+                android:text="@string/game_menu_emote_wheel"
+                android:gravity="center_horizontal"
+                android:paddingVertical="@dimen/_12sdp"
+                android:paddingHorizontal="@dimen/_8sdp"
+                app:ripple_for_text="true"/>
+
+            <com.endiq.turtlelauncher.ui.view.AnimTextView
+                android:id="@+id/emote_site_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:background="@drawable/background_item"
+                android:text="@string/game_menu_emote_site"
+                android:gravity="center_horizontal"
+                android:paddingVertical="@dimen/_12sdp"
+                android:paddingHorizontal="@dimen/_8sdp"
+                app:ripple_for_text="true"/>
+
             <LinearLayout
                 android:id="@+id/timeLongPressTrigger_layout"
                 android:layout_width="match_parent"

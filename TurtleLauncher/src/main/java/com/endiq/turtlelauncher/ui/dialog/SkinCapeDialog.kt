@@ -24,7 +24,10 @@ import com.endiq.turtlelauncher.databinding.DialogSkinCapeBinding
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.feature.skin.LabyModGalleryApi
 import com.endiq.turtlelauncher.feature.skin.LabyModSkinApi
+import com.endiq.turtlelauncher.feature.accounts.AccountUtils
 import com.endiq.turtlelauncher.feature.skin.LittleSkinGalleryApi
+import com.endiq.turtlelauncher.feature.skin.SkinUploader
+import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.feature.skin.SkinCapeHistoryStore
 import com.endiq.turtlelauncher.feature.skin.TurtleSkinServer
 import com.endiq.turtlelauncher.setting.AllSettings
@@ -108,6 +111,7 @@ class SkinCapeDialog(
 
         binding.buttonCancel.setOnClickListener { dismiss() }
 
+        setupSlimModelSwitch()
         setupLanVisibilityControls()
         setupGallerySection()
         setupLabyGallerySection()
@@ -115,6 +119,66 @@ class SkinCapeDialog(
 
         checkHeight(binding.root, binding.contentView, binding.scrollView)
         DraggableDialog.initDialog(this)
+    }
+
+    /** TurtleLauncher: the slim/Alex model choice only matters for Microsoft accounts in
+     *  skin mode - they are the ones whose skin actually uploads to Mojang (see
+     *  SkinUploader). Local accounts get their model from the skin server/texture metadata
+     *  and OtherLogin accounts from their own auth server, so the row stays hidden there. */
+    private fun setupSlimModelSwitch() {
+        val isMicrosoftSkin = mode == "skin" && AccountUtils.isMicrosoftAccount(account)
+        binding.switchSlimModel.visibility = if (isMicrosoftSkin) View.VISIBLE else View.GONE
+    }
+
+    /** Runs INSIDE the background apply task: Microsoft accounts upload the just-written
+     *  skin to their Mojang profile - saving the local file alone does nothing for them
+     *  (the local skin server only feeds LOCAL accounts, see LaunchArgs.getJavaArgs).
+     *  @return null on success/skip, or an error string (possibly [SkinUploader.EXPIRED]). */
+    private fun uploadIfNeeded(destFile: File, slim: Boolean): String? {
+        if (mode != "skin") return null
+        if (!AccountUtils.isMicrosoftAccount(account)) return null
+        return SkinUploader.uploadMicrosoft(account, destFile, slim)
+    }
+
+    private fun handleApplyResult(uploadError: String?) {
+        when {
+            uploadError == null -> {
+                if (mode == "skin" && AccountUtils.isMicrosoftAccount(account)) {
+                    Toast.makeText(context, R.string.skin_cape_ms_upload_ok, Toast.LENGTH_SHORT).show()
+                } else {
+                    notifySuccess()
+                }
+                maybeShowOtherLoginHint()
+            }
+            uploadError == SkinUploader.EXPIRED ->
+                Toast.makeText(context, R.string.skin_cape_ms_upload_expired, Toast.LENGTH_LONG).show()
+            else ->
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.skin_cape_ms_upload_failed, uploadError),
+                    Toast.LENGTH_LONG
+                ).show()
+        }
+    }
+
+    /** TurtleLauncher FIX ("can't set skin on ely.by / Battly accounts"): OtherLogin
+     *  accounts launch with authlib-injector pointed at their own server, so the game
+     *  always shows the skin that server has on file - the launcher cannot inject one.
+     *  Those services have no common upload API, so after saving the skin locally, point
+     *  the user at the server's own skin website instead of silently doing nothing. */
+    private fun maybeShowOtherLoginHint() {
+        if (!AccountUtils.isOtherLoginAccount(account)) return
+        val site = SkinUploader.skinWebsiteFor(account) ?: return
+        TipDialog.Builder(activity)
+            .setTitle(R.string.skin_cape_other_login_title)
+            .setMessage(activity.getString(R.string.skin_cape_other_login_message, account.otherBaseUrl ?: ""))
+            .setConfirm(R.string.skin_cape_open_site)
+            .setWarning()
+            .setCenterMessage(false)
+            .setConfirmClickListener {
+                ZHTools.openLink(activity, site)
+            }
+            .showDialog()
     }
 
     private fun setupLanVisibilityControls() {
@@ -151,14 +215,16 @@ class SkinCapeDialog(
 
     private fun applyFromUrl(url: String, label: String = urlLabel(url)) {
         val destFile = getDestFile()
+        val slim = binding.switchSlimModel.isChecked
         showProgress(true)
         Task.runTask {
             destFile.parentFile?.mkdirs()
             DownloadUtils.downloadFile(url, destFile)
             SkinCapeHistoryStore.recordApplied(mode, destFile, label)
-        }.ended(TaskExecutors.getAndroidUI()) {
+            uploadIfNeeded(destFile, slim)
+        }.ended(TaskExecutors.getAndroidUI()) { uploadError ->
             showProgress(false)
-            notifySuccess()
+            handleApplyResult(uploadError)
             dismiss()
         }.onThrowable { e ->
             TaskExecutors.runInUIThread {
@@ -239,6 +305,7 @@ class SkinCapeDialog(
 
     private fun applyFromUri(uri: Uri) {
         val destFile = getDestFile()
+        val slim = binding.switchSlimModel.isChecked
         showProgress(true)
         Task.runTask {
             activity.contentResolver.openInputStream(uri)?.use { input ->
@@ -246,9 +313,10 @@ class SkinCapeDialog(
                 FileOutputStream(destFile).use { out -> input.copyTo(out) }
             } ?: throw RuntimeException("Cannot open image")
             SkinCapeHistoryStore.recordApplied(mode, destFile, context.getString(R.string.skin_cape_gallery_source_gallery))
-        }.ended(TaskExecutors.getAndroidUI()) {
+            uploadIfNeeded(destFile, slim)
+        }.ended(TaskExecutors.getAndroidUI()) { uploadError ->
             showProgress(false)
-            notifySuccess()
+            handleApplyResult(uploadError)
             dismiss()
         }.onThrowable { e ->
             TaskExecutors.runInUIThread {
@@ -313,6 +381,7 @@ class SkinCapeDialog(
     private fun applyGalleryItem(item: GalleryDisplayItem) {
         if (binding.progressBar.visibility == View.VISIBLE) return // an apply is already in flight
         val destFile = getDestFile()
+        val slim = binding.switchSlimModel.isChecked
         showProgress(true)
         Task.runTask {
             destFile.parentFile?.mkdirs()
@@ -326,9 +395,10 @@ class SkinCapeDialog(
                 SkinCapeHistoryStore.thumbFile(mode, entry).copyTo(destFile, overwrite = true)
                 SkinCapeHistoryStore.recordApplied(mode, destFile, item.label)
             }
-        }.ended(TaskExecutors.getAndroidUI()) {
+            uploadIfNeeded(destFile, slim)
+        }.ended(TaskExecutors.getAndroidUI()) { uploadError ->
             showProgress(false)
-            notifySuccess()
+            handleApplyResult(uploadError)
             dismiss()
         }.onThrowable { e ->
             TaskExecutors.runInUIThread {
@@ -420,6 +490,7 @@ class SkinCapeDialog(
     private fun applyLabyGallerySkin(skin: LabyModGalleryApi.GallerySkin) {
         if (binding.progressBar.visibility == View.VISIBLE) return // an apply is already in flight
         val destFile = getDestFile()
+        val slim = binding.switchSlimModel.isChecked
         showProgress(true)
         Task.runTask {
             val textureBytes = LabyModGalleryApi.resolveApplyTexture(skin.hash)
@@ -427,9 +498,10 @@ class SkinCapeDialog(
             destFile.parentFile?.mkdirs()
             destFile.writeBytes(textureBytes)
             SkinCapeHistoryStore.recordApplied(mode, destFile, context.getString(R.string.skin_cape_laby_gallery_source, skin.label))
-        }.ended(TaskExecutors.getAndroidUI()) {
+            uploadIfNeeded(destFile, slim)
+        }.ended(TaskExecutors.getAndroidUI()) { uploadError ->
             showProgress(false)
-            notifySuccess()
+            handleApplyResult(uploadError)
             dismiss()
         }.onThrowable { e ->
             TaskExecutors.runInUIThread {
@@ -512,6 +584,7 @@ class SkinCapeDialog(
     private fun applyLittleSkinGallerySkin(skin: LittleSkinGalleryApi.GallerySkin) {
         if (binding.progressBar.visibility == View.VISIBLE) return // an apply is already in flight
         val destFile = getDestFile()
+        val slim = binding.switchSlimModel.isChecked
         showProgress(true)
         Task.runTask {
             val textureBytes = LittleSkinGalleryApi.resolveApplyTexture(skin.tid)
@@ -519,9 +592,10 @@ class SkinCapeDialog(
             destFile.parentFile?.mkdirs()
             destFile.writeBytes(textureBytes)
             SkinCapeHistoryStore.recordApplied(mode, destFile, context.getString(R.string.skin_cape_littleskin_gallery_source, skin.label))
-        }.ended(TaskExecutors.getAndroidUI()) {
+            uploadIfNeeded(destFile, slim)
+        }.ended(TaskExecutors.getAndroidUI()) { uploadError ->
             showProgress(false)
-            notifySuccess()
+            handleApplyResult(uploadError)
             dismiss()
         }.onThrowable { e ->
             TaskExecutors.runInUIThread {

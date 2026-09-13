@@ -145,6 +145,15 @@ class AllSettings {
          *  that toggles the on-screen keyboard in game; -1 = unbound. Wired in
          *  MinecraftGLSurface.processKeyEvent. */
         @JvmStatic val physicalKeyImeCode       = IntSettingUnit("physicalKeyImeCode", -1)
+        /** TurtleLauncher Emotes: master toggle for the in-game menu's Emotes actions
+         *  ("Play emote" wheel button + emote-website shortcut). Wired in MainActivity's
+         *  MenuSettingsInitListener. */
+        @JvmStatic val emotesEnabled            = BooleanSettingUnit("emotesEnabled", true)
+        /** TurtleLauncher Emotes: GLFW keycode the in-game menu's "Play emote" button sends
+         *  to the game. Default 66 = GLFW_KEY_B, matching Emotecraft's default "open emote
+         *  wheel" keybind; rebindable on the Settings -> Emotes screen so it can follow the
+         *  user's own in-game Emotecraft controls. */
+        @JvmStatic val emoteWheelKeycode        = IntSettingUnit("emoteWheelKeycode", 66)
         /** Optional. CurseForge's v1 API requires a key (issued to registered apps by
          *  Overwolf/CurseForge Core) to resolve a mod's actual download URL from its
          *  project/file ID - there's no keyless path anymore, the old addons-ecs.forgesvc.net

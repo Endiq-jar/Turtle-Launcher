@@ -440,6 +440,20 @@
                 android:background="@color/turtle_highlight_subtle"
                 android:layout_marginVertical="@dimen/_8sdp"/>
 
+            <!-- TurtleLauncher: slim (Alex) model toggle - only shown for Microsoft
+                 accounts in skin mode, where the skin really uploads to Mojang
+                 (SkinUploader) and the model choice matters. -->
+            <Switch
+                android:id="@+id/switch_slim_model"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/skin_cape_slim_model"
+                android:textSize="@dimen/_12ssp"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp"
+                android:visibility="gone"
+                tools:ignore="UseSwitchCompatOrMaterialXml"/>
+
             <!-- TurtleLauncher: local skin server LAN visibility -->
             <Switch
                 android:id="@+id/switch_lan_visible"

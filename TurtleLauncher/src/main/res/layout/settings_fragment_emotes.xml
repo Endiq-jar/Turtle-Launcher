@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings -> Emotes.
+     TurtleLauncher: home of the emote feature - the official Emotecraft community library
+     (emotes.kosmx.dev) embedded in a WebView whose downloads are saved straight into the
+     current version's <gameDir>/emotes folder, plus the Emotecraft mod status, a shortcut
+     to install it from Modrinth, and the emote-wheel key picker used by the in-game menu's
+     "Play emote" button. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_app">
+
+    <LinearLayout
+        android:id="@+id/sub_settings_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/space_l"
+        android:paddingVertical="@dimen/space_m">
+
+        <ImageButton
+            android:id="@+id/sub_settings_back_button"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_chevron_down"
+            android:rotation="90"
+            android:tint="@color/turtle_text_secondary"
+            android:contentDescription="@string/generic_return"/>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="@dimen/space_s"
+            android:src="@drawable/ic_menu_emotes"
+            android:tint="@color/accent_primary"
+            tools:ignore="ContentDescription"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_s"
+            android:text="@string/emotes_screen_title"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="@color/turtle_text_primary"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/space_l"
+        android:paddingBottom="@dimen/space_s">
+
+        <TextView
+            android:id="@+id/emotes_mod_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:textColor="@color/turtle_text_secondary"
+            android:layout_marginBottom="@dimen/space_s"
+            tools:text="@string/emotes_status_missing"/>
+
+        <com.endiq.turtlelauncher.ui.view.AnimButton
+            android:id="@+id/get_emotecraft_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/emotes_get_mod"
+            android:layout_marginBottom="@dimen/space_s"/>
+
+        <!-- Emote wheel key row: tap opens the KeyboardDialog picker; the stored value is a
+             GLFW keycode (AllSettings.emoteWheelKeycode) sent by the in-game menu button. -->
+        <LinearLayout
+            android:id="@+id/emotes_wheel_key_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/background_item"
+            android:padding="@dimen/space_m"
+            android:layout_marginBottom="@dimen/space_s">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/emotes_wheel_key_title"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="@color/turtle_text_primary"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/emotes_wheel_key_summary"
+                android:textSize="11sp"
+                android:textColor="@color/turtle_text_secondary"/>
+
+            <TextView
+                android:id="@+id/emotes_wheel_key_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/accent_primary"
+                tools:text="Key: B"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/emotes_folder_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:textColor="@color/turtle_text_secondary"
+            android:layout_marginBottom="@dimen/space_s"
+            tools:text="Emotes are saved to: /storage/emulated/0/games/TurtleLauncher/.minecraft/emotes"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/space_s">
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/open_browser_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/emotes_open_browser"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/emotes_site_hint"
+            android:textSize="11sp"
+            android:textColor="@color/turtle_text_secondary"
+            android:layout_marginBottom="@dimen/space_s"/>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <WebView
+            android:id="@+id/emotes_web_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ProgressBar
+            android:id="@+id/emotes_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+    </FrameLayout>
+</LinearLayout>

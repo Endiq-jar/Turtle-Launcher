@@ -840,6 +840,9 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.disableGestures.setChecked(AllSettings.getDisableGestures().getValue());
             this.binding.disableDoubleTap.setChecked(AllSettings.getDisableDoubleTap().getValue());
             this.binding.controlSwitcher.setChecked(AllSettings.getControlSwitcherEnabled().getValue());
+            // TurtleLauncher Emotes row state.
+            this.binding.emotes.setChecked(AllSettings.getEmotesEnabled().getValue());
+            refreshEmotesRows();
             this.binding.enableGyro.setChecked(AllSettings.getEnableGyro().getValue());
             this.binding.gyroInvertX.setChecked(AllSettings.getGyroInvertX().getValue());
             this.binding.gyroInvertY.setChecked(AllSettings.getGyroInvertY().getValue());
@@ -900,6 +903,12 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.disableDoubleTapLayout.setOnClickListener(this);
             this.binding.controlSwitcher.setOnCheckedChangeListener(this);
             this.binding.controlSwitcherLayout.setOnClickListener(this);
+
+            // TurtleLauncher Emotes: toggle + wheel trigger + website shortcut.
+            this.binding.emotes.setOnCheckedChangeListener(this);
+            this.binding.emotesLayout.setOnClickListener(this);
+            this.binding.emoteWheelButton.setOnClickListener(this);
+            this.binding.emoteSiteButton.setOnClickListener(this);
 
             this.binding.timeLongPressTrigger.setOnSeekBarChangeListener(this);
             this.binding.timeLongPressTriggerRemove.setOnClickListener(this);
@@ -1020,6 +1029,9 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             else if (v == binding.disableGesturesLayout) MenuUtils.toggleSwitchState(binding.disableGestures);
             else if (v == binding.disableDoubleTapLayout) MenuUtils.toggleSwitchState(binding.disableDoubleTap);
             else if (v == binding.controlSwitcherLayout) MenuUtils.toggleSwitchState(binding.controlSwitcher);
+            else if (v == binding.emotesLayout) MenuUtils.toggleSwitchState(binding.emotes);
+            else if (v == binding.emoteWheelButton) triggerEmoteWheel();
+            else if (v == binding.emoteSiteButton) openEmoteWebsite();
             else if (v == binding.timeLongPressTriggerRemove) MenuUtils.adjustSeekbar(binding.timeLongPressTrigger, -1);
             else if (v == binding.timeLongPressTriggerAdd) MenuUtils.adjustSeekbar(binding.timeLongPressTrigger, 1);
             else if (v == binding.mouseSpeedRemove) MenuUtils.adjustSeekbar(binding.mouseSpeed, -1);
@@ -1133,6 +1145,10 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
                 AllSettings.getControlSwitcherEnabled().put(isChecked).save();
                 // Apply immediately - the in-game button appears/disappears without a restart.
                 refreshControlSwitcherButton();
+            } else if (v == binding.emotes) {
+                AllSettings.getEmotesEnabled().put(isChecked).save();
+                // Apply immediately - the emote action rows appear/disappear without a restart.
+                refreshEmotesRows();
             } else if (v == binding.enableGyro) {
                 refreshLayoutVisible(binding.gyroLayout, isChecked);
                 AllSettings.getEnableGyro().put(isChecked).save();
@@ -1155,6 +1171,41 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
          */
         private void refreshLayoutVisible(View view, boolean visible) {
             view.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+
+        /** TurtleLauncher Emotes: show/hide the emote action rows per the Emote button
+         *  toggle. The toggle row itself always stays visible - it IS the toggle. */
+        private void refreshEmotesRows() {
+            boolean on = AllSettings.getEmotesEnabled().getValue();
+            binding.emoteWheelButton.setVisibility(on ? View.VISIBLE : View.GONE);
+            binding.emoteSiteButton.setVisibility(on ? View.VISIBLE : View.GONE);
+        }
+
+        /** TurtleLauncher Emotes: send the configured emote-wheel key (default B, matching
+         *  Emotecraft's default wheel keybind) to the game. Closes the menu drawer first so
+         *  the wheel renders unobstructed. Fully guarded - a key send must never be able to
+         *  take the game process down, and without the Emotecraft mod installed the press is
+         *  simply an unused key as far as the game is concerned. */
+        private void triggerEmoteWheel() {
+            try {
+                MainActivity.binding.mainDrawerOptions.closeDrawers();
+                int key = AllSettings.getEmoteWheelKeycode().getValue();
+                if (key > 0) CallbackBridge.sendKeyPress(key);
+            } catch (Throwable t) {
+                Logging.w("MainActivity", "Emote wheel trigger failed", t);
+            }
+        }
+
+        /** TurtleLauncher Emotes: open the community emote library (the same site the
+         *  Settings -> Emotes screen embeds) in the browser, for when downloading from the
+         *  WebView or managing files is not what the player wants right now. */
+        private void openEmoteWebsite() {
+            try {
+                MainActivity.binding.mainDrawerOptions.closeDrawers();
+                ZHTools.openLink(MainActivity.this, com.endiq.turtlelauncher.feature.emotes.Emotes.EMOTE_SITE_URL);
+            } catch (Throwable t) {
+                Logging.w("MainActivity", "Could not open the emote website", t);
+            }
         }
 
         /**

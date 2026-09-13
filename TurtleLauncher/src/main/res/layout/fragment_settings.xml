@@ -982,6 +982,82 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginBottom="@dimen/space_l">
+
+                <!-- TurtleLauncher Emotes card. Its own row with an invisible spacer so the
+                     hub grid stays two-up; paired visually with the Experimental/About row. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/space_s">
+
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/emotes_settings_row"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minHeight="118dp"
+                    android:background="@drawable/background_settings_hub_card"
+                    android:padding="@dimen/space_m">
+
+                    <FrameLayout
+                        android:id="@+id/emotes_settings_row_chip"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/background_icon_chip">
+                        <ImageView
+                            android:id="@+id/emotes_icon"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_menu_emotes"
+                            android:tint="@color/accent_primary"/>
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/emotes_settings_row_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/emotes_settings_row_chip"
+                        android:layout_marginTop="@dimen/space_s"
+                        android:text="@string/settings_row_emotes_title"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:textColor="@color/turtle_text_primary"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/emotes_settings_row_title"
+                        android:layout_marginTop="2dp"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        android:text="@string/settings_row_emotes_desc"
+                        android:textSize="11sp"
+                        android:lineSpacingExtra="1dp"
+                        android:textColor="@color/turtle_text_secondary"/>
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:src="@drawable/ic_chevron_down"
+                        android:rotation="-90"
+                        android:alpha="0.6"
+                        android:tint="@color/turtle_text_secondary"/>
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                <View android:layout_width="@dimen/space_s" android:layout_height="1dp"/>
+
+                <!-- Grid spacer: keeps the Emotes card at half width like every other card. -->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
