@@ -6,6 +6,7 @@ import com.endiq.turtlelauncher.feature.log.Logging
 import okhttp3.Cache
 import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.RequestBody
 import java.io.File
@@ -42,6 +43,15 @@ class UrlManager {
                 .callTimeout(TIME_OUT.first.toLong(), TIME_OUT.second)
                 .connectionPool(ConnectionPool(8, 5, TimeUnit.MINUTES))
                 .dns(CustomDns)
+                // TurtleLauncher: force HTTP/1.1, ported from Zalith Launcher 2
+                // (ZalithLauncher2#1645: "Reverted to HTTP/1.1 to avoid silent native
+                // crashes with OkHttp engine when using Terracotta multiplayer"). The
+                // crash shows up while libterracotta.so is loaded - its tokio runtime
+                // and OkHttp's HTTP/2 stack interact badly enough to take the process
+                // down with no Java stack trace. Terracotta's node-list fetch and relay
+                // probing go through this very client while the native library is live,
+                // so the shared client pins HTTP/1.1 exactly like Zalith does.
+                .protocols(listOf(Protocol.HTTP_1_1))
 
             // PathManager.DIR_CACHE is a lateinit var; very early accesses could theoretically
             // touching an uninitialised lateinit property would throw UninitializedPropertyAccessException,

@@ -69,6 +69,11 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
     private var connectedValue: String = ""
     private var connectedIsHost: Boolean = false
 
+    /** Class of the last rendered state - distinguishes "just became HostOK" (auto-copy the
+     *  invite code once, like Zalith Launcher 2 does) from the player-profile re-emissions
+     *  of an already-live HostOK room, which must not re-fire that side effect. */
+    private var lastStateClass: Class<*>? = null
+
     /** [Terracotta] finished starting (or definitively failed). Until this flips, the screen
      *  stays on its "starting" state: rendering before the backend exists would show WAITING
      *  (renderState(null)) and hand the user live Host/Join buttons that can only throw. */
@@ -193,8 +198,20 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
 
         setupCustomNodeControls()
         refreshRelayStatus()
+        showCoreVersions()
 
         renderState(Terracotta.getState())
+    }
+
+    /** Core versions in the waiting screen - same info Zalith Launcher 2 shows in its
+     *  multiplayer dialog, so bug reports can quote the exact Terracotta/EasyTier build. */
+    private fun showCoreVersions() {
+        val metadata = Terracotta.getMetadata()
+        val terracottaVersion = metadata.terracottaVersion
+        if (terracottaVersion == null || terracottaVersion == "unknown") return
+        binding.terracottaVersionText.visibility = View.VISIBLE
+        binding.terracottaVersionText.text =
+            getString(R.string.terracotta_version_line, terracottaVersion, metadata.easyTierVersion ?: "unknown")
     }
 
     /** Probes the current relay nodes and shows the result. Also warms TerracottaNodeList's
@@ -277,18 +294,36 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
     // ============================== State rendering ==============================
 
     private fun renderState(state: TerracottaState.Ready?) {
+        val freshHostOk = state is TerracottaState.HostOK && lastStateClass != TerracottaState.HostOK::class.java
+        lastStateClass = state?.javaClass
+
         when (state) {
             null, is TerracottaState.Waiting -> showWaiting()
             is TerracottaState.HostScanning -> showLoading(getString(R.string.terracotta_status_host_scanning))
             is TerracottaState.HostStarting -> showLoading(getString(R.string.terracotta_status_host_starting))
             is TerracottaState.GuestConnecting -> showLoading(getString(R.string.terracotta_status_guest_connecting))
-            is TerracottaState.GuestStarting -> showLoading(getString(R.string.terracotta_status_guest_starting))
-            is TerracottaState.HostOK -> showConnected(
-                title = getString(R.string.terracotta_host_ok_title),
-                value = state.code,
-                players = state.profiles,
-                isHost = true
-            )
+            is TerracottaState.GuestStarting -> {
+                // Ported from Zalith Launcher 2: while joining, the native backend
+                // estimates the network difficulty from both sides' NAT types - show it so
+                // "Taking forever" is explained instead of mysterious.
+                val base = getString(R.string.terracotta_status_guest_starting)
+                val difficultyRes = state.difficulty?.textRes ?: 0
+                showLoading(if (difficultyRes != 0) "$base\n${getString(difficultyRes)}" else base)
+            }
+            is TerracottaState.HostOK -> {
+                showConnected(
+                    title = getString(R.string.terracotta_host_ok_title),
+                    value = state.code ?: "",
+                    players = state.profiles,
+                    isHost = true
+                )
+                // Zalith Launcher 2 auto-copies the invite code once, on the transition
+                // into host-ok - the host's very next action is pasting it to a friend.
+                // Profile updates of the live room (isForkOf) deliberately don't re-fire it.
+                if (freshHostOk && !state.code.isNullOrBlank()) {
+                    copyToClipboard(state.code, R.string.terracotta_code_copied)
+                }
+            }
             is TerracottaState.GuestOK -> showConnected(
                 title = getString(R.string.terracotta_guest_ok_title),
                 value = state.url ?: "",
@@ -331,6 +366,8 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
             showException(type)
             return
         }
+        // Resolved on the UI thread - the IO block below must not call getString().
+        val player = playerName()
 
         joinJob?.cancel()
         joinJob = scope.launch {
@@ -349,7 +386,7 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
                     // both devices (it has to be, or they'd never find each other), so rotating
                     // the head is the one thing we can vary between attempts.
                     val nodes = TerracottaNodeList.fetch()
-                    Terracotta.setGuesting(code, AccountsManager.currentAccount?.username, rotate(nodes, attempt - 1))
+                    Terracotta.setGuesting(code, player, rotate(nodes, attempt - 1))
                 }.onFailure { e ->
                     Logging.w(TAG, "Join retry $attempt failed", e)
                 }.getOrDefault(false)
@@ -478,7 +515,7 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
     private fun onHostClicked() {
         setButtonsEnabled(false)
         showLoading(getString(R.string.terracotta_status_default))
-        val player = AccountsManager.currentAccount?.username
+        val player = playerName()
 
         scope.launch {
             val result = withContext(Dispatchers.IO) {
@@ -543,7 +580,7 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
 
         setButtonsEnabled(false)
         showLoading(getString(R.string.terracotta_status_default))
-        val player = AccountsManager.currentAccount?.username
+        val player = playerName()
 
         joinJob?.cancel()
         joinJob = scope.launch {
@@ -564,11 +601,22 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
     }
 
     private fun copyConnectedValue() {
-        val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("terracotta", connectedValue))
         val toastRes = if (connectedIsHost) R.string.terracotta_code_copied else R.string.terracotta_address_copied
+        copyToClipboard(connectedValue, toastRes)
+    }
+
+    private fun copyToClipboard(value: String, toastRes: Int) {
+        val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboard.setPrimaryClip(ClipData.newPlainText("terracotta", value))
         Toast.makeText(requireContext(), toastRes, Toast.LENGTH_SHORT).show()
     }
+
+    /** Display name handed to the room. Zalith Launcher 2 falls back to "Anonymous
+     *  Player" when no account is selected, so the host's player list never shows a
+     *  nameless entry. */
+    private fun playerName(): String =
+        AccountsManager.currentAccount?.username?.takeIf { it.isNotBlank() }
+            ?: getString(R.string.terracotta_player_anonymous)
 
     private fun exportLogs() {
         scope.launch {

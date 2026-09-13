@@ -237,6 +237,18 @@
             android:layout_marginTop="@dimen/space_m"
             android:text="@string/terracotta_relay_status_checking"/>
 
+        <!-- Core versions (Terracotta / EasyTier), same info Zalith Launcher 2 shows in
+             its multiplayer dialog - what to quote when a connection bug is reported.
+             Filled from Terracotta.getMetadata() once the native backend is up. -->
+        <TextView
+            android:id="@+id/terracotta_version_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:textColor="@color/turtle_text_secondary"
+            android:layout_marginTop="@dimen/space_xs"
+            android:visibility="gone"/>
+
     </LinearLayout>
 
     <!-- ===================== Loading: any in-between state ===================== -->

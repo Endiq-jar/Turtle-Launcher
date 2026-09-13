@@ -13,6 +13,7 @@ import java.io.File
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.URI
+import java.util.TimeZone
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -212,7 +213,15 @@ object TerracottaNodeList {
     }.getOrDefault(emptyList())
 
     /** Tolerates both shapes: a bare JSON array, or `{"nodes": [...]}`. Entries may be
-     *  plain strings or `{"url": "..."}` objects, so the FCL list and ours both parse. */
+     *  plain strings or `{"url": "...", "region": "..."}` objects, so the FCL list, the
+     *  glavo.site list and ours all parse.
+     *
+     *  Region handling ported from Zalith Launcher 2's TerracottaNodeList (their
+     *  TerracottaNode.shouldUseNode): the public list can tag a node with a region, and
+     *  region-tagged "CN" nodes are only handed out on devices in mainland China - they
+     *  are domestic relays that are slow or unreachable from elsewhere, and EasyTier
+     *  dials every node we give it, so shipping them worldwide wastes the guest's 15s
+     *  discovery window on dead ends. Untagged nodes are for everyone. */
     private fun parseNodes(body: String): List<String> {
         if (body.isBlank()) return emptyList()
         val root = runCatching { JsonParser.parseString(body) }.getOrNull() ?: return emptyList()
@@ -226,16 +235,52 @@ object TerracottaNodeList {
 
         val out = ArrayList<String>()
         for (element: JsonElement in array) {
-            val url = when {
-                element.isJsonPrimitive && element.asJsonPrimitive.isString -> element.asString
-                element.isJsonObject -> element.asJsonObject.get("url")
-                    ?.takeIf { it.isJsonPrimitive && !it.isJsonNull && it.asJsonPrimitive.isString }
-                    ?.asString
-                else -> null
+            val url: String?
+            val region: String?
+            when {
+                element.isJsonPrimitive && element.asJsonPrimitive.isString -> {
+                    url = element.asString
+                    region = null
+                }
+                element.isJsonObject -> {
+                    val obj = element.asJsonObject
+                    url = obj.get("url")
+                        ?.takeIf { it.isJsonPrimitive && !it.isJsonNull && it.asJsonPrimitive.isString }
+                        ?.asString
+                    region = obj.get("region")
+                        ?.takeIf { it.isJsonPrimitive && !it.isJsonNull && it.asJsonPrimitive.isString }
+                        ?.asString
+                }
+                else -> continue
             }
-            if (!url.isNullOrBlank()) out.add(url.trim())
+            if (url.isNullOrBlank()) continue
+            if (!shouldUseNode(region)) continue
+            out.add(url.trim())
         }
         return out
+    }
+
+    private fun shouldUseNode(region: String?): Boolean {
+        if (region.isNullOrBlank()) return true
+        // Region-tagged nodes are restricted to devices in that region (only "CN" tags
+        // exist in the wild today).
+        return !region.equals("CN", ignoreCase = true) || isChinaMainland()
+    }
+
+    /** Ported from Zalith Launcher 2 (LocalUtils.isChinaMainland): timezone-based on
+     *  purpose - the in-app language is user-settable and says nothing about where the
+     *  device actually is. */
+    private fun isChinaMainland(): Boolean {
+        val timeZone = TimeZone.getDefault()
+        if (timeZone.id in listOf("Asia/Shanghai", "Asia/Chongqing", "Asia/Urumqi")) return true
+
+        val offsetMillis = timeZone.getOffset(System.currentTimeMillis())
+        val isUtcPlus8 = offsetMillis == 8 * 60 * 60 * 1000
+        if (!isUtcPlus8) return false
+
+        // UTC+8 alone is ambiguous (Singapore, Perth, …) and the app locale can be
+        // changed in-app, so - matching Zalith - don't claim mainland China from it.
+        return false
     }
 
     private fun cacheFile(): File? =

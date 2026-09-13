@@ -559,6 +559,24 @@
     <string name="terracotta_exception_scaffolding_invalid_response">The invite code\'s server sent back something unexpected.</string>
     <string name="terracotta_exception_unknown">Something went wrong with the connection.</string>
     <string name="terracotta_unavailable">Friends/LAN isn\'t available on this device.</string>
+    <!-- VPN foreground notification (ported from Zalith Launcher 2) -->
+    <string name="terracotta_notification_channel">Friends/LAN connection</string>
+    <string name="terracotta_notification_channel_desc">Ongoing status of the Friends/LAN P2P connection</string>
+    <string name="terracotta_notification_title">Friends/LAN · Multiplayer running</string>
+    <string name="terracotta_notification_desc">Identity: %1$s · State: %2$s</string>
+    <string name="terracotta_player_kind_host">Host</string>
+    <string name="terracotta_player_kind_guest">Guest</string>
+    <string name="terracotta_player_anonymous">Anonymous Player</string>
+    <!-- State one-liners used by the notification and the loading line -->
+    <string name="terracotta_status_host_ok">Room created</string>
+    <string name="terracotta_status_guest_ok">Room joined</string>
+    <string name="terracotta_status_exception">Connection lost</string>
+    <!-- Guest-side network difficulty estimate shown while joining -->
+    <string name="terracotta_difficulty_easiest">Excellent network: almost connected!</string>
+    <string name="terracotta_difficulty_simple">Good network: connection may take some time…</string>
+    <string name="terracotta_difficulty_medium">Average network: fallback routes enabled, connection may fail</string>
+    <string name="terracotta_difficulty_tough">Poor network: fallback routes enabled, connection may fail</string>
+    <string name="terracotta_version_line">Terracotta %1$s · EasyTier %2$s</string>
     <string name="main_section_community">Community</string>
     <string name="main_section_selected_version">Selected Version</string>
     <string name="main_welcome_back">Welcome back!</string>

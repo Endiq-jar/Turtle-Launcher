@@ -5,6 +5,7 @@ import android.net.VpnService;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
@@ -57,6 +58,12 @@ import java.util.concurrent.locks.LockSupport;
  *
  * <p>A RuntimeException will be thrown if an error occured in native level.</p>
  */
+// TurtleLauncher: @Keep here and on every member the native library touches by name
+// (upstream Zalith Launcher 2 / Terracotta ships the same annotations plus matching
+// proguard rules - see proguard-rules.pro). The release build runs R8 (isMinifyEnabled),
+// which would otherwise rename or strip the JNI entry points and silently break the
+// Friends/LAN feature only in release builds.
+@Keep
 public final class TerracottaAndroidAPI {
     /**
      * <p>Callback for receiving VpnService Requests</p>
@@ -67,6 +74,7 @@ public final class TerracottaAndroidAPI {
      *
      * @implNote The VpnServiceRequest must be fulfilled in 30 seconds, or it will be considered as timeout.
      */
+    @Keep
     public interface VpnServiceCallback {
         void onStartVpnService();
     }
@@ -74,6 +82,7 @@ public final class TerracottaAndroidAPI {
     /**
      * <p>A VpnService Request submitted by Terracotta. See {@link VpnServiceCallback}</p>
      */
+    @Keep
     public interface VpnServiceRequest {
         /**
          * Create a Vpn Connection and fulfill the VpnService Request.
@@ -95,6 +104,7 @@ public final class TerracottaAndroidAPI {
     /**
      * <p>Metadata of Terracotta Android</p>
      */
+    @Keep
     public static final class Metadata {
         private final String terracottaVersion;
 
@@ -398,6 +408,7 @@ public final class TerracottaAndroidAPI {
     private static final long FD_PENDING = ((long) Integer.MAX_VALUE) + 1;
     private static final long FD_REJECT = FD_PENDING + 1;
 
+    @Keep
     @SuppressWarnings("unused") // Native callback
     private static int onVpnServiceStateChanged(byte ip1, byte ip2, byte ip3, byte ip4, short network_length, String cidr) throws UnknownHostException {
         if (pendingRequest != null) {
@@ -484,23 +495,33 @@ public final class TerracottaAndroidAPI {
         }
     }
 
+    @Keep
     private static native int start0(String baseDir, int loggingFD);
 
+    @Keep
     private static native String getState0();
 
+    @Keep
     private static native void setWaiting0();
 
+    @Keep
     private static native void setScanning0(String room, String player, String extraNodes);
 
+    @Keep
     private static native boolean setGuesting0(String room, String player, String extraNodes);
 
+    @Keep
     private static native int verifyRoomCode0(String room);
 
+    @Keep
     private static native String getMetadata0();
 
+    @Keep
     private static native long prepareExportLogs0();
 
+    @Keep
     private static native void finishExportLogs0(long pointer);
 
+    @Keep
     private static native void panic0();
 }
