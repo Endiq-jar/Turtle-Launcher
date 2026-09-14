@@ -34,9 +34,6 @@ object Emotes {
     /** Official Emotecraft community emote library - free .emote downloads. */
     const val EMOTE_SITE_URL = "https://emotes.kosmx.dev"
 
-    /** Official Emotecraft mod page (the README lists only official download sources). */
-    const val EMOTECRAFT_MODRINTH_URL = "https://modrinth.com/mod/emotecraft"
-
     /**
      * The `emotes` folder Emotecraft reads for the currently selected version:
      * `<gameDir>/emotes`, or the shared game home when no version is selected.

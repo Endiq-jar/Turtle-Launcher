@@ -40,6 +40,39 @@
             android:maxLines="1"
             android:ellipsize="middle"
             android:textColor="@color/turtle_text_primary"/>
+
+        <ImageButton
+            android:id="@+id/log_viewer_copy_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="@dimen/space_xs"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_copy"
+            android:padding="6dp"
+            android:tint="@color/accent_primary"
+            android:contentDescription="@string/share_logs_copy_clipboard"/>
+
+        <ImageButton
+            android:id="@+id/log_viewer_share_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="@dimen/space_xs"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_share"
+            android:padding="6dp"
+            android:tint="@color/accent_primary"
+            android:contentDescription="@string/share_logs_share_log"/>
+
+        <ImageButton
+            android:id="@+id/log_viewer_upload_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="@dimen/space_xs"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_launch_link"
+            android:padding="6dp"
+            android:tint="@color/accent_primary"
+            android:contentDescription="@string/share_logs_upload_mclogs"/>
     </LinearLayout>
 
     <LinearLayout

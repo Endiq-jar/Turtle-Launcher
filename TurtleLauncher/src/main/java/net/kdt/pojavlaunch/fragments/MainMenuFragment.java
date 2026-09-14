@@ -339,10 +339,13 @@ public class MainMenuFragment extends FragmentWithAnim {
         if (binding == null) return;
         MinecraftAccount account = AccountsManager.INSTANCE.getCurrentAccount();
         if (account == null) {
+            binding.topBarAccountButton.setImageTintList(
+                ContextCompat.getColorStateList(requireContext(), R.color.turtle_text_secondary));
             binding.topBarAccountButton.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_add));
             return;
         }
         try {
+            binding.topBarAccountButton.setImageTintList(null);
             binding.topBarAccountButton.setImageDrawable(
                 SkinLoader.getAvatarDrawable(requireContext(), account, (int) Tools.dpToPx(22f))
             );

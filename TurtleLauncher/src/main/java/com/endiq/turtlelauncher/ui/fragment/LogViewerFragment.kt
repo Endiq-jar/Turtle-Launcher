@@ -1,6 +1,9 @@
 package com.endiq.turtlelauncher.ui.fragment
 import com.endiq.turtlelauncher.utils.anim.TurtleTransitions
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -11,15 +14,21 @@ import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.endiq.anim.AnimPlayer
 import com.endiq.anim.animations.Animations
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.databinding.FragmentLogViewerBinding
 import com.endiq.turtlelauncher.feature.log.CrashAnalyzer
+import com.endiq.turtlelauncher.feature.log.LatestLogResolver
+import com.endiq.turtlelauncher.feature.log.Logging
+import com.endiq.turtlelauncher.feature.log.MclogsUploader
+import com.endiq.turtlelauncher.task.Task
+import com.endiq.turtlelauncher.task.TaskExecutors
+import com.endiq.turtlelauncher.ui.dialog.TipDialog
 import com.endiq.turtlelauncher.utils.ZHTools
-import com.endiq.turtlelauncher.feature.version.VersionsManager
-import com.endiq.turtlelauncher.utils.path.PathManager
+import com.endiq.turtlelauncher.utils.file.FileTools
 import java.io.File
 
 /**
@@ -42,6 +51,7 @@ class LogViewerFragment : FragmentWithAnim(R.layout.fragment_log_viewer) {
 
     private lateinit var binding: FragmentLogViewerBinding
     private var allLines: List<String> = emptyList()
+    private var currentFile: File? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,24 +66,13 @@ class LogViewerFragment : FragmentWithAnim(R.layout.fragment_log_viewer) {
         binding.backButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
 
         val path = arguments?.getString(ARG_FILE_PATH)
-        val file = path?.let { File(it) }
-            // TurtleLauncher: check ALL log sources, not just the launcher log directory.
-            // This ensures the viewer shows the most recent log regardless of whether it
-            // came from the launcher's rolling logger, the game's stdout capture, or
-            // Minecraft's own Log4j2 output — including logs from crashed sessions.
-            ?: listOfNotNull(
-                File(PathManager.DIR_LAUNCHER_LOG).takeIf { it.isDirectory }
-                    ?.listFiles { f -> f.isFile }
-                    ?.maxByOrNull { it.lastModified() },
-                File(PathManager.DIR_GAME_HOME, "latestlog.txt").takeIf { it.isFile && it.length() > 0 },
-                VersionsManager.getCurrentVersion()?.let { v ->
-                    File(v.getGameDir(), "logs/latest.log").takeIf { it.isFile && it.length() > 0 }
-                }
-            ).maxByOrNull { it.lastModified() }
+        val file = path?.let { File(it) } ?: LatestLogResolver.resolveLatestLogFile()
+        currentFile = file
 
         if (file == null || !file.isFile) {
             binding.logViewerTitle.text = getString(R.string.log_viewer_title)
             binding.logMatchCount.text = getString(R.string.share_logs_none_found)
+            setActionButtonsEnabled(false)
             return
         }
 
@@ -88,7 +87,86 @@ class LogViewerFragment : FragmentWithAnim(R.layout.fragment_log_viewer) {
             override fun afterTextChanged(s: Editable?) = applyFilter()
         })
 
+        binding.logViewerCopyButton.setOnClickListener { copyLogToClipboard() }
+        binding.logViewerShareButton.setOnClickListener { shareLogFile() }
+        binding.logViewerUploadButton.setOnClickListener { uploadToMclogs() }
+
         applyFilter()
+    }
+
+    private fun setActionButtonsEnabled(enabled: Boolean) {
+        binding.logViewerCopyButton.isEnabled = enabled
+        binding.logViewerShareButton.isEnabled = enabled
+        binding.logViewerUploadButton.isEnabled = enabled
+        val alpha = if (enabled) 1f else 0.4f
+        binding.logViewerCopyButton.alpha = alpha
+        binding.logViewerShareButton.alpha = alpha
+        binding.logViewerUploadButton.alpha = alpha
+    }
+
+    private fun copyLogToClipboard() {
+        val file = currentFile ?: return
+        val content = runCatching { CrashAnalyzer.tailOf(file, 128 * 1024) }.getOrDefault("")
+        val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboard.setPrimaryClip(ClipData.newPlainText(file.name, content))
+        Toast.makeText(requireContext(), R.string.share_logs_copied, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun shareLogFile() {
+        val file = currentFile ?: return
+        runCatching { FileTools.shareFile(requireContext(), file) }
+    }
+
+    private fun uploadToMclogs() {
+        val file = currentFile ?: return
+        val content = runCatching { CrashAnalyzer.tailOf(file, 512 * 1024) }.getOrDefault("")
+        if (content.isBlank()) {
+            Toast.makeText(requireContext(), R.string.share_logs_none_found, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        Toast.makeText(requireContext(), R.string.mclogs_uploading, Toast.LENGTH_SHORT).show()
+        Task.runTask {
+            MclogsUploader.upload(content)
+        }.ended(TaskExecutors.getAndroidUI()) { result ->
+            if (!isAdded) return@ended
+            when (result) {
+                is MclogsUploader.Result.Success -> showMclogsResultDialog(result.url)
+                is MclogsUploader.Result.Failure -> Toast.makeText(
+                    requireContext(),
+                    getString(R.string.mclogs_upload_failed, result.message),
+                    Toast.LENGTH_LONG
+                ).show()
+                null -> Toast.makeText(
+                    requireContext(),
+                    getString(R.string.mclogs_upload_failed, ""),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }.onThrowable { e ->
+            Logging.e("LogViewerFragment", "mclo.gs upload task failed", e)
+        }.execute()
+    }
+
+    private fun showMclogsResultDialog(url: String) {
+        TipDialog.Builder(requireContext())
+            .setTitle(R.string.mclogs_upload_success_title)
+            .setMessage(url)
+            .setSelectable(true)
+            .setConfirm(R.string.mclogs_open_link)
+            .setConfirmClickListener {
+                runCatching {
+                    startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url)))
+                }
+            }
+            .setCancel(R.string.mclogs_copy_link)
+            .setCancelClickListener {
+                val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("mclo.gs", url))
+                Toast.makeText(requireContext(), R.string.mclogs_link_copied, Toast.LENGTH_SHORT).show()
+            }
+            .buildDialog()
+            .show()
     }
 
     private fun applyFilter() {

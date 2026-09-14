@@ -34,8 +34,8 @@ import java.io.File
  * reads at startup, so a download here is usable in game without any file juggling.
  *
  * Also hosts:
- *  - the Emotecraft mod status for the current version (emotes need the mod; the button
- *    opens its official Modrinth page - the mod README insists on official sources only),
+ *  - the Emotecraft mod status for the current version (emotes need the mod, installed
+ *    separately by the user),
  *  - the emote-wheel key picker (the key the in-game "Play emote" button sends; default B
  *    matches Emotecraft's own default wheel keybind), reusing KeyboardDialog so the picker
  *    offers exactly the keys the launcher can send.
@@ -63,9 +63,6 @@ class EmotesFragment : FragmentWithAnim(R.layout.settings_fragment_emotes) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.subSettingsBackButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
 
-        binding.getEmotecraftButton.setOnClickListener {
-            ZHTools.openLink(requireContext(), Emotes.EMOTECRAFT_MODRINTH_URL)
-        }
         binding.openBrowserButton.setOnClickListener {
             ZHTools.openLink(requireContext(), Emotes.EMOTE_SITE_URL)
         }

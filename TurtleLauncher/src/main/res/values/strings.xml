@@ -1353,7 +1353,6 @@
     <string name="emotes_site_hint">Community emote library below - tapping a download saves the .emote file straight into this version\'s emotes folder, ready for Emotecraft in game.</string>
     <string name="emotes_status_installed">Emotecraft mod: installed - emotes will play in game</string>
     <string name="emotes_status_missing">Emotecraft mod: not found in this version\'s mods folder - install it (Fabric, Forge, NeoForge or Quilt) to use emotes</string>
-    <string name="emotes_get_mod">Get Emotecraft (Modrinth)</string>
     <string name="emotes_open_browser">Open site in browser</string>
     <string name="emotes_folder_info">Emotes are saved to: %s</string>
     <string name="emotes_saved">Emote saved: %s</string>

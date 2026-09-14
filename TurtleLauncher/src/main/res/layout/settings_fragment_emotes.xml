@@ -49,98 +49,98 @@
             android:textColor="@color/turtle_text_primary"/>
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/space_l"
-        android:paddingBottom="@dimen/space_s">
+        android:fillViewport="false"
+        android:scrollbars="none">
 
-        <TextView
-            android:id="@+id/emotes_mod_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:textColor="@color/turtle_text_secondary"
-            android:layout_marginBottom="@dimen/space_s"
-            tools:text="@string/emotes_status_missing"/>
-
-        <com.endiq.turtlelauncher.ui.view.AnimButton
-            android:id="@+id/get_emotecraft_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/emotes_get_mod"
-            android:layout_marginBottom="@dimen/space_s"/>
-
-        <!-- Emote wheel key row: tap opens the KeyboardDialog picker; the stored value is a
-             GLFW keycode (AllSettings.emoteWheelKeycode) sent by the in-game menu button. -->
         <LinearLayout
-            android:id="@+id/emotes_wheel_key_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/background_item"
-            android:padding="@dimen/space_m"
-            android:layout_marginBottom="@dimen/space_s">
+            android:paddingHorizontal="@dimen/space_l"
+            android:paddingBottom="@dimen/space_s">
 
             <TextView
+                android:id="@+id/emotes_mod_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/emotes_wheel_key_title"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:textColor="@color/turtle_text_primary"/>
+                android:textSize="13sp"
+                android:textColor="@color/turtle_text_secondary"
+                android:layout_marginBottom="@dimen/space_s"
+                tools:text="@string/emotes_status_missing"/>
+
+            <!-- Emote wheel key row: tap opens the KeyboardDialog picker; the stored value is a
+                 GLFW keycode (AllSettings.emoteWheelKeycode) sent by the in-game menu button. -->
+            <LinearLayout
+                android:id="@+id/emotes_wheel_key_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/background_item"
+                android:padding="@dimen/space_m"
+                android:layout_marginBottom="@dimen/space_s">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/emotes_wheel_key_title"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="@color/turtle_text_primary"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/emotes_wheel_key_summary"
+                    android:textSize="11sp"
+                    android:textColor="@color/turtle_text_secondary"/>
+
+                <TextView
+                    android:id="@+id/emotes_wheel_key_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/accent_primary"
+                    tools:text="Key: B"/>
+            </LinearLayout>
 
             <TextView
+                android:id="@+id/emotes_folder_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/emotes_wheel_key_summary"
                 android:textSize="11sp"
-                android:textColor="@color/turtle_text_secondary"/>
+                android:textColor="@color/turtle_text_secondary"
+                android:layout_marginBottom="@dimen/space_s"
+                tools:text="Emotes are saved to: /storage/emulated/0/games/TurtleLauncher/.minecraft/emotes"/>
 
-            <TextView
-                android:id="@+id/emotes_wheel_key_value"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:textColor="@color/accent_primary"
-                tools:text="Key: B"/>
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/space_s">
 
-        <TextView
-            android:id="@+id/emotes_folder_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="11sp"
-            android:textColor="@color/turtle_text_secondary"
-            android:layout_marginBottom="@dimen/space_s"
-            tools:text="Emotes are saved to: /storage/emulated/0/games/TurtleLauncher/.minecraft/emotes"/>
+                <com.endiq.turtlelauncher.ui.view.AnimButton
+                    android:id="@+id/open_browser_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/emotes_open_browser"/>
+            </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="@dimen/space_s">
-
-            <com.endiq.turtlelauncher.ui.view.AnimButton
-                android:id="@+id/open_browser_button"
-                android:layout_width="0dp"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/emotes_open_browser"/>
+                android:text="@string/emotes_site_hint"
+                android:textSize="11sp"
+                android:textColor="@color/turtle_text_secondary"
+                android:layout_marginBottom="@dimen/space_s"/>
         </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/emotes_site_hint"
-            android:textSize="11sp"
-            android:textColor="@color/turtle_text_secondary"
-            android:layout_marginBottom="@dimen/space_s"/>
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <FrameLayout
         android:layout_width="match_parent"
