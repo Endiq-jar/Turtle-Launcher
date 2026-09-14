@@ -549,27 +549,33 @@ object CrashAnalyzer {
                 )
             ),
             // 18b. OpenAL sound library failed to load or initialize.
-            // On Android, OpenAL-Soft needs ALSOFT_DRIVERS=android to select the correct audio
-            // backend (AAudio/OpenSL ES). Without it, the library tries desktop backends (ALSA,
-            // PulseAudio) that don't exist on Android, resulting in complete silence — no crash,
-            // no error, just no sound at all. This rule catches the crash case (UnsatisfiedLinkError
-            // when the library can't be found) and the silent-failure case (OpenAL init warnings).
+            // The bundled libopenal.so (openal-soft-release.aar) only ships the OpenSL ES
+            // backend (\"opensl\") — no \"android\" (AudioTrack/JNI), no \"oboe\", no desktop
+            // ALSA/Pulse/JACK. Setting ALSOFT_DRIVERS to a non-existent backend (e.g. \"android\")
+            // makes OpenAL-Soft log \"No playback backend available!\" and Minecraft ends up
+            // completely silent — no crash, just no audio. This rule catches both the crash case
+            // (UnsatisfiedLinkError when the library can't be found) and the silent-failure case.
             Rule(
                 title = "openal_sound_failure",
                 matches = {
                     has(it, "Failed to pre-load libopenal.so", "Failed to load openal",
-                        "UnsatisfiedLinkError.*openal", "no openal in java.library.path") ||
-                        (has(it, "openal") && has(it, "UnsatisfiedLinkError"))
+                        "UnsatisfiedLinkError.*openal", "no openal in java.library.path",
+                        "No playback backend available", "No capture backend available",
+                        "Failed to initialize backend") ||
+                        (has(it, "openal") && has(it, "UnsatisfiedLinkError")) ||
+                        (has(it, "ALSOFT") && has(it, "backend"))
                 },
                 diagnosis = fixed(
                     "OpenAL sound library failed to load (libopenal.so)",
-                    "Minecraft's sound system (OpenAL) couldn't load libopenal.so. This can happen if the " +
-                        "native library is missing from the APK, or if the library loaded but couldn't find " +
-                        "a usable audio backend on Android (needs ALSOFT_DRIVERS=android).",
+                    "Minecraft's sound system (OpenAL) couldn't load libopenal.so, or it loaded but " +
+                        "couldn't find a usable audio backend. The bundled libopenal.so only contains the " +
+                        "OpenSL ES backend (\"opensl\"). Requesting a non-existent backend (e.g. \"android\") " +
+                        "results in \"No playback backend available!\" and complete silence on every version.",
                     listOf(
-                        "Update to the latest TurtleLauncher build — the ALSOFT_DRIVERS=android fix is now applied automatically on every launch.",
-                        "If sound is still silent (no crash, just no audio): check that your device's media volume isn't at zero and that no other app is blocking audio output.",
-                        "If the launcher log shows 'Failed to pre-load libopenal.so': reinstall the APK to ensure native libraries are present."
+                        "Update to the latest TurtleLauncher build — the ALSOFT_DRIVERS=opensl fix is now applied automatically on every launch (the previous \"android\" value requested a backend this build doesn't contain).",
+                        "If sound is still silent (no crash, just no audio): check that your device's media volume isn't at zero, that no other app is holding exclusive audio focus, and that the in-game master volume (options.txt soundCategory_master) isn't 0.0.",
+                        "If the launcher log shows 'Failed to pre-load libopenal.so': reinstall the APK to ensure native libraries are present.",
+                        "If log shows 'Failed to initialize backend \"opensl\"' or 'Failed to initialize OpenSL device': your device's OpenSL ES driver may be broken — try a different device or a newer Android version."
                     ),
                     Severity.WARNING
                 )

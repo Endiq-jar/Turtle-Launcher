@@ -218,15 +218,19 @@ public final class JREUtils {
         envMap.put("JAVA_HOME", jreHome);
 
         // TurtleLauncher: OpenAL sound fix for Android.
-        // OpenAL-Soft's built-in backend auto-detection tries ALSA/PulseAudio/JACK first
-        // (desktop Linux backends that don't exist on Android), and only falls back to the
-        // Android AAudio/OpenSL ES backend if those fail. On many Android devices (especially
-        // 1.20.x vanilla, which uses LWJGL 3.3.1's OpenAL bindings for ALL sound), the
-        // detection either hangs or silently picks a non-functional backend, resulting in
-        // complete silence — no crash, no error, just no audio at all. Setting
-        // ALSOFT_DRIVERS=android skips the desktop backends entirely and forces the Android
-        // audio backend, which is the only one that can actually produce sound on this platform.
-        envMap.put("ALSOFT_DRIVERS", "android");
+        // The bundled libopenal.so (openal-soft-release.aar) was inspected via `strings`:
+        // it only contains the OpenSL ES backend (\"opensl\"), plus null/loopback/wave —
+        // no \"android\" (AudioTrack/JNI), no \"oboe\", no \"aaudio\", no desktop ALSA/Pulse/JACK.
+        // The previous value \"android\" requested a backend that doesn't exist in this build,
+        // so OpenAL-Soft logged \"No playback backend available!\" and Minecraft ended up
+        // completely silent on every version (no crash, just no audio). Forcing \"opensl\"
+        // selects the only real playback backend this build actually ships, which is the
+        // correct OpenSL ES path on Android and matches what upstream PojavLauncher and other
+        // Android launchers use for this exact AAR.
+        // If the AAR is ever rebuilt with oboe/aaudio/android backends, extend this to a
+        // comma-separated preference list like \"opensl,oboe,opensles\" — OpenAL-Soft will skip
+        // any name that isn't present and pick the first available one.
+        envMap.put("ALSOFT_DRIVERS", "opensl");
         envMap.put("HOME", PathManager.DIR_GAME_HOME);
         envMap.put("TMPDIR", PathManager.DIR_CACHE.getAbsolutePath());
         envMap.put("LD_LIBRARY_PATH", LD_LIBRARY_PATH);
@@ -398,6 +402,17 @@ public final class JREUtils {
 
         setJavaEnv(envMap, jreHome);
         setCustomEnv(envMap);
+
+        // TurtleLauncher: sound fix hardening — custom_env.txt is user-editable and may still
+        // contain the old broken value ALSOFT_DRIVERS=android (from before this fix). If the
+        // user (or an old guide) left that in, it would silently break sound again even after
+        // we fixed setJavaEnv() above. Force-correct any known-bad value here, while still
+        // respecting a user who intentionally sets a valid driver list (e.g. \"opensl,oboe\").
+        String drivers = envMap.get("ALSOFT_DRIVERS");
+        if (drivers == null || drivers.trim().isEmpty() || drivers.trim().equalsIgnoreCase("android")) {
+            envMap.put("ALSOFT_DRIVERS", "opensl");
+            Logging.w("JREUtils", "ALSOFT_DRIVERS was '" + drivers + "' (invalid for this build) — forced to 'opensl' to restore sound");
+        }
 
         if (gameVersion != null) {
             checkAndUsedJSPH(envMap, runtime);
