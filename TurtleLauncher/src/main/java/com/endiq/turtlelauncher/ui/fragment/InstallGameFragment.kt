@@ -23,6 +23,7 @@ import com.endiq.turtlelauncher.feature.customprofilepath.ProfilePathHome
 import com.endiq.turtlelauncher.feature.version.install.Addon
 import com.endiq.turtlelauncher.feature.version.install.ExtraModInstall
 import com.endiq.turtlelauncher.feature.version.install.InstallArgsUtils
+import com.endiq.turtlelauncher.feature.mod.modloader.TurtleClientDownloadTask
 import com.endiq.turtlelauncher.feature.version.install.InstallTask
 import com.endiq.turtlelauncher.feature.version.install.InstallTaskItem
 import com.endiq.turtlelauncher.feature.version.VersionsManager
@@ -385,10 +386,22 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
                 }
             }
         }
-        // TurtleLauncher: neither extra has a real mod resource wired up yet - see
-        // ExtraModInstall. Once one does, replace this with an actual InstallTaskItem
-        // (download + move into the mods folder) the same way FABRIC_API/QSL do above.
-        if (includeTurtleClient) ExtraModInstall.logPending(ExtraModInstall.TURTLE_CLIENT)
+        // TurtleLauncher: fully automatic - no version picker shown for this extra.
+        // TurtleClientDownloadTask resolves and downloads the right Modrinth build for
+        // mcVersion by itself; the EndTask just moves the resulting jar into the mods
+        // folder, same shape as the FABRIC_API/QSL branches above. If Modrinth has no
+        // compatible build for mcVersion, the task throws and GameInstaller surfaces it
+        // as a normal install error rather than silently doing nothing.
+        if (includeTurtleClient) {
+            taskMap[Addon.TURTLE_CLIENT] = InstallTaskItem(
+                mcVersion,
+                true,
+                TurtleClientDownloadTask(mcVersion)
+            ) { _, file ->
+                moveFile(file, File(getModPath(), file.name))
+            }
+        }
+        // FPS Boost still has no real mod resource assigned yet - see ExtraModInstall.
         if (includeFpsBoost) ExtraModInstall.logPending(ExtraModInstall.FPS_BOOST)
 
         return taskMap
