@@ -131,9 +131,13 @@ Shizuku is completely optional — Turtle Launcher works fine without it.
 
 - [ ] Cloud Sync
 - [x] Skin & Cape Manager
-- [ ] Turtle Client integration
+- [x] Turtle Client integration
 - [x] Replace OSMesa with a real EGL implementation
 - [x] Shizuku Support
+- [x] Beryllium Integration
+- [x] Modpack Instance
+- [x] Animations/Transtions
+- [x] Emotes
 
 ---
 
