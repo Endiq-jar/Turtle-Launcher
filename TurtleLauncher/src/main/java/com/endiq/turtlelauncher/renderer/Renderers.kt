@@ -16,55 +16,7 @@ import net.kdt.pojavlaunch.Tools
 import java.io.File
 
 
-/**
- * Manager for every renderer: built-in renderers and those loaded from renderer plugins all
- * end up here.
- *
- * TurtleLauncher: this renderer set was originally the six renderers
- * FCL-Team/FoldCraftLauncher ships (Holy GL4ES, VirGL, VGPU, Zink, Freedreno, Krypton
- * Wrapper). Krypton Wrapper was removed as a built-in (its native libng_gl4es.so backend
- * has a real, unpatchable SIGSEGV on at least PowerVR Rogue GPUs - see
- * CrashAnalyzer.kt's krypton_libng_gl4es_sigsegv rule) and replaced with LTW and
- * MobileGlues, promoted here from the renderer-plugin-download-only list they used to
- * only be reachable through (see RendererPluginManager/PluginUpdateManager) to real
- * built-ins - see each class in renderer/renderers/ for its sourcing (FCL's
- * RendererManager.kt where it exists, otherwise upstream + real binary inspection), and
- * [RendererCatalog] for compatibility ranges/badges.
- * The registry/plugin architecture below (RendererInterface + this object) is unchanged -
- * it was already an isolated, one-class-per-renderer design, so nothing about *how*
- * renderers plug in needed to change, only *which* renderers are registered.
- *
- * POJAV_RENDERER native-string mapping (see RendererInterface.getNativeRendererId's doc
- * comment for why this exists at all): the per-ABI jniLibs libpojavexec.so is a prebuilt binary -
- * there's no source for it in this repo (jni/Android.mk lists .c files that aren't
- * present; externalNativeBuild is commented out in build.gradle.kts because of that) - and
- * its pojavInitOpenGL only recognizes six legacy POJAV_RENDERER values (confirmed by
- * disassembling it, not guessed): "opengles" (prefix match), "custom_gallium",
- * "vulkan_zink", "gallium_freedreno", "gallium_panfrost", "gallium_virgl". Anything else
- * falls through its whole strcmp chain into an unguarded call through an uninitialized
- * function pointer - guaranteed SIGSEGV at pc=0x0, every device, every time. None of the
- * six renderer classes' own getRendererId() values match any of those six strings, so
- * each one below overrides getNativeRendererId() to send the right one instead:
- *   HolyGL4ESRenderer     "GL4ES"       -> "opengles"         (plain GLESv2/EGL underneath)
- *   LTWRenderer            "LTW"        -> "opengles"         (thin interposer over a
- *                                                              dlopen'd-by-itself system
- *                                                              EGL/GLESv2 - see its own doc
- *                                                              comment)
- *   MobileGluesRenderer    "MOBILEGLUES" -> "opengles"        (self-contained GL-over-GLES,
- *                                                              same reasoning)
- *   NWRenderer              "NW"         -> "opengles"         (GL4ES-family translator,
- *                                                              dlopens system EGL itself -
- *                                                              see its own doc comment)
- *   VirGLRenderer         "VIRGL"       -> "gallium_virgl"
- *   ZinkRenderer          "ZINK"        -> "vulkan_zink"
- *   FreedrenoRenderer     "FREEDRENO"   -> "gallium_freedreno"
- *   VGPURenderer          "VGPU"        -> "opengles"         (lower confidence - no VGPU
- *                                                              launch log to confirm
- *                                                              against; see its own doc
- *                                                              comment)
- * "gallium_panfrost" and "custom_gallium" have no current owner among the six renderers -
- * leave them alone unless/until a renderer that should map to one of them shows up.
- */
+
 object Renderers {
     private val renderers: MutableList<RendererInterface> = mutableListOf()
     private var compatibleRenderers: Pair<RenderersList, MutableList<RendererInterface>>? = null
@@ -81,24 +33,11 @@ object Renderers {
             currentRenderer = null
         }
 
-        // Order here is display order in the picker, not priority - MobileGlues first since
-        // it's now both the RECOMMENDED-badged renderer (see RendererCatalog) and the default
-        // AllSettings.renderer value, so the picker opens on the renderer a fresh install
-        // actually uses. It also matters for setCurrentRenderer(retryToFirstOnFailure = true):
-        // the first *compatible* renderer is what an unknown/unavailable UUID falls back to,
-        // and that fallback should agree with the default setting rather than silently
-        // landing on a different renderer. LTW/Holy GL4ES follow, in the old slots.
         addRenderers(
             MobileGluesRenderer(),
             LTWRenderer(),
             HolyGL4ESRenderer(),
             NWRenderer(),
-            // ANGLE: the renderer class and its two .so files (libGLESv2_angle.so /
-            // libEGL_angle.so, present for all four ABIs in jniLibs) were already in the
-            // tree, and RendererCatalog already had its Badge.EXPERIMENTAL entry - but it
-            // was never passed to addRenderers(), so it could never appear in the picker or
-            // be selected. Registered here to close that gap; hasRequiredLibrary() still
-            // filters it out on any ABI where those two files aren't bundled.
             AngleRenderer(),
             VirGLRenderer(),
             ZinkRenderer(),
@@ -107,27 +46,15 @@ object Renderers {
         )
     }
 
-    /**
-     * Get every renderer compatible with this device.
-     */
+
     fun getCompatibleRenderers(context: Context): Pair<RenderersList, List<RendererInterface>> = compatibleRenderers ?: run {
         val deviceHasVulkan = Tools.checkVulkanSupport(context.packageManager)
 
         val compatibleRenderers1: MutableList<RendererInterface> = mutableListOf()
         renderers.forEach { renderer ->
-            // Zink is the only one of the six that's Vulkan-backed (see ZinkRenderer's doc
-            // comment) - gate it on actual device Vulkan support rather than string-matching
-            // the id, since "ZINK" doesn't contain "vulkan" the way the old ids did.
+         
             if (renderer.getRendererId() == ZinkRenderer.ID && !deviceHasVulkan) return@forEach
 
-            // TurtleLauncher: a built-in renderer entry represents a library shipped directly
-            // in this APK's own jniLibs (plugin-provided renderers are a separate list,
-            // resolved through RendererPluginManager). Hard-filtered out here so a renderer
-            // that can't dlopen never reaches the picker and crashes the game at
-            // OpenGL-init time - see each renderer class's doc comment for where its
-            // library came from and which ABIs it's bundled for (e.g. VirGL's
-            // libOSMesa_81.so isn't shipped for x86, so VirGL is simply absent from the
-            // picker on that ABI instead of being selectable and crashing).
             if (!hasRequiredLibrary(renderer)) {
                 Logging.w("Renderers", "${renderer.getRendererName()} (${renderer.getRendererId()}) references a library not found in this ABI's jniLibs - excluding it from the picker")
                 return@forEach
@@ -152,17 +79,13 @@ object Renderers {
             !libName.startsWith("/") && File(PathManager.DIR_NATIVE_LIB, libName).exists()
         if (!exists(renderer.getRendererLibrary())) return false
         renderer.getRendererEGL()?.let { eglName ->
-            // libEGL.so (unlike libEGL_mesa.so/libEGL_angle.so) is never bundled in jniLibs -
-            // it's the device's own system EGL, resolved through the normal linker namespace,
-            // not this app's native lib dir. Only check bundled-EGL renderers here.
+   
             if (eglName != "libEGL.so" && !exists(eglName)) return false
         }
         return true
     }
 
-    /**
-     * Add several renderers.
-     */
+
     @JvmStatic
     fun addRenderers(vararg renderers: RendererInterface) {
         renderers.forEach { renderer ->
@@ -170,9 +93,7 @@ object Renderers {
         }
     }
 
-    /**
-     * Add a single renderer.
-     */
+
     @JvmStatic
     fun addRenderer(renderer: RendererInterface): Boolean {
         return if (this.renderers.any { it.getUniqueIdentifier() == renderer.getUniqueIdentifier() }) {
@@ -186,12 +107,6 @@ object Renderers {
         }
     }
 
-    /**
-     * Set the current renderer.
-     * @param context used to initialise the renderer for this device
-     * @param uniqueIdentifier unique renderer id used to find the renderer to apply
-     * @param retryToFirstOnFailure fall back to the first renderer in the list when no match is found
-     */
     fun setCurrentRenderer(context: Context, uniqueIdentifier: String, retryToFirstOnFailure: Boolean = true) {
         if (!isInitialized) throw IllegalStateException("Uninitialized renderer!")
         val compatibleRenderers = getCompatibleRenderers(context).second
@@ -204,16 +119,10 @@ object Renderers {
         }
     }
 
-    /**
-     * Get the current renderer.
-     */
     fun getCurrentRenderer(): RendererInterface {
         if (!isInitialized) throw IllegalStateException("Uninitialized renderer!")
         return currentRenderer ?: throw IllegalStateException("Current renderer not set")
     }
 
-    /**
-     * Whether a renderer is currently configured.
-     */
     fun isCurrentRendererValid(): Boolean = isInitialized && this.currentRenderer != null
 }
