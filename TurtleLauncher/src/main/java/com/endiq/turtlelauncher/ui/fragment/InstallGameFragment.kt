@@ -384,6 +384,14 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
                         }
                     }
                 }
+                // TurtleLauncher: TURTLE_CLIENT is never a key in addonMap - it isn't
+                // selectable from the addon picker (checkIncompatible() is never called
+                // for it) and is added straight to taskMap below, from the
+                // InstallExtrasDialog toggle. This branch exists purely to keep the
+                // `when` exhaustive: adding TURTLE_CLIENT to the Addon enum made this a
+                // non-exhaustive when-statement over an enum subject, which Kotlin 1.7+
+                // rejects at compile time (KT-47709) - that is what broke the build.
+                Addon.TURTLE_CLIENT -> {}
             }
         }
         // TurtleLauncher: fully automatic - no version picker shown for this extra.
