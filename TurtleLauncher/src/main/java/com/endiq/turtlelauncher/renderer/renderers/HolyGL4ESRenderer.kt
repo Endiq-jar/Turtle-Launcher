@@ -13,7 +13,7 @@ class HolyGL4ESRenderer : RendererInterface {
 
     override fun getUniqueIdentifier(): String = "f7e985d8-6d4c-f63c-d9f1-06074dab823a"
 
-    override fun getRendererName(): String = "Holy GL4ES"
+    override fun getRendererName(): String = "Holy GL4ES (Fast, till 1.21.4)"
 
     override fun getRendererEnv(): Lazy<Map<String, String>> = lazy { emptyMap() }
 
