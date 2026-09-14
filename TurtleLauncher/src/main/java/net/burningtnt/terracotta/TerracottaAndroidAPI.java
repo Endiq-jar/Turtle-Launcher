@@ -259,14 +259,17 @@ public final class TerracottaAndroidAPI {
      *
      * @param room       the room code, which may be used if it's valid.
      * @param player     the player's name. A default value will be taken if it's null.
-     * @param extraNodes extra public server nodes for EasyTier.
+     * @param extraNodes extra public server nodes for EasyTier. NOT forwarded - see
+     *                   {@link #warnExtraNodesUnsupported}. Accepted and ignored so callers
+     *                   keep compiling; the native ABI has no such parameter.
      * @throws IllegalStateException if Terracotta Android hasn't been initialized.
      * @implNote Usually, this method doesn't take a long time to fetch states.
      * However, when initializing the EasyTier, state fetching may block for ~1 seconds.
      */
     public static void setScanning(@Nullable String room, @Nullable String player, @Nullable List<String> extraNodes) {
         assertStarted();
-        setScanning0(room, player, extraNodes == null ? null : String.join("\0", extraNodes));
+        warnExtraNodesUnsupported(extraNodes);
+        setScanning0(room, player);
     }
 
     /**
@@ -274,7 +277,8 @@ public final class TerracottaAndroidAPI {
      *
      * @param room       the room code. False will be returned if it's invalid.
      * @param player     the player's name. A default value will be taken if it's null.
-     * @param extraNodes extra public server nodes for EasyTier.
+     * @param extraNodes extra public server nodes for EasyTier. NOT forwarded - see
+     *                   {@link #warnExtraNodesUnsupported}.
      * @return True if room code is valid, false otherwise.
      * @throws IllegalStateException if Terracotta Android hasn't been initialized.
      * @throws NullPointerException  if room is null.
@@ -285,8 +289,23 @@ public final class TerracottaAndroidAPI {
         Objects.requireNonNull(room, "room");
 
         assertStarted();
-        return setGuesting0(room, player, extraNodes == null ? null : String.join("\0", extraNodes));
+        warnExtraNodesUnsupported(extraNodes);
+        return setGuesting0(room, player);
     }
+
+    /** Logged once per process, so the ignored node list is never silent: Terracotta's own
+     *  node set is compiled into libterracotta.so (src/easytier/publics.rs) and there is no
+     *  entry point for extra ones in any released version. Passing them used to be what
+     *  aborted the process at load time - see the note on the setScanning0 declaration. */
+    private static void warnExtraNodesUnsupported(@Nullable List<String> extraNodes) {
+        if (extraNodes != null && !extraNodes.isEmpty() && EXTRA_NODES_WARNING.compareAndSet(false, true)) {
+            Log.w("TerracottaAndroidAPI", "Ignoring " + extraNodes.size()
+                + " extra EasyTier node(s): libterracotta.so (Terracotta 0.4.2) has no "
+                + "extraNodes entry point, so only its built-in node set is used.");
+        }
+    }
+
+    private static final AtomicBoolean EXTRA_NODES_WARNING = new AtomicBoolean(false);
 
     /**
      * Room types supported by Terracotta Android
@@ -504,11 +523,27 @@ public final class TerracottaAndroidAPI {
     @Keep
     private static native void setWaiting0();
 
+    // CRITICAL: these two descriptors must match, character for character, what
+    // libterracotta.so hands to RegisterNatives in its JNI_OnLoad. That library registers
+    //   of!["setScanning0", "(Ljava/lang/String;Ljava/lang/String;)V", jni_set_scanning]
+    //   of!["setGuesting0", "(Ljava/lang/String;Ljava/lang/String;)Z", jni_set_guesting]
+    // (burningtnt/Terracotta src/lib.rs - identical in v0.4.2, the version shipped in
+    // src/main/jniLibs/<abi>/, and still identical on upstream main today).
+    //
+    // They previously declared a THIRD String parameter (extraNodes) that has never existed
+    // in any Terracotta release. RegisterNatives matches on name AND descriptor, so it found
+    // no such method, returned Err, and src/lib.rs's JNI_OnLoad did
+    // `registration().unwrap_or_else(|e| panic!(...))` - a Rust panic on the JVM's own thread
+    // inside JNI_OnLoad, i.e. during System.loadLibrary() below. That aborts the process and
+    // no Java catch block can intercept it, which is why opening Friends/LAN killed the
+    // launcher outright instead of showing this screen's own error state.
+    //
+    // Do not add parameters here without changing the shipped .so in the same commit.
     @Keep
-    private static native void setScanning0(String room, String player, String extraNodes);
+    private static native void setScanning0(String room, String player);
 
     @Keep
-    private static native boolean setGuesting0(String room, String player, String extraNodes);
+    private static native boolean setGuesting0(String room, String player);
 
     @Keep
     private static native int verifyRoomCode0(String room);
