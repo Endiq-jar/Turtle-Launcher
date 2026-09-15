@@ -66,10 +66,39 @@ class EmotesFragment : FragmentWithAnim(R.layout.settings_fragment_emotes) {
         binding.openBrowserButton.setOnClickListener {
             ZHTools.openLink(requireContext(), Emotes.EMOTE_SITE_URL)
         }
+        binding.installEmotecraftButton.setOnClickListener {
+            handleInstallEmotecraft()
+        }
         binding.emotesWheelKeyRow.setOnClickListener { showWheelKeyPicker() }
 
         refreshStatus()
         setupWebView()
+    }
+
+    private fun handleInstallEmotecraft() {
+        val (_, loader) = Emotes.getCurrentVersionInfo()
+        if (loader == null) {
+            Toast.makeText(requireContext(), R.string.emotes_install_no_loader, Toast.LENGTH_LONG).show()
+            return
+        }
+        Toast.makeText(requireContext(), R.string.emotes_installing, Toast.LENGTH_SHORT).show()
+        binding.installEmotecraftButton.isEnabled = false
+
+        Task.runTask {
+            Emotes.autoInstallEmotecraft()
+        }.ended(TaskExecutors.getAndroidUI()) { outcome ->
+            if (!isAdded) return@ended
+            binding.installEmotecraftButton.isEnabled = true
+            Toast.makeText(requireContext(), R.string.emotes_install_success, Toast.LENGTH_LONG).show()
+            refreshStatus()
+        }.onThrowable { error ->
+            TaskExecutors.runInUIThread {
+                if (!isAdded) return@runInUIThread
+                binding.installEmotecraftButton.isEnabled = true
+                val msg = error.message ?: error.toString()
+                Toast.makeText(requireContext(), getString(R.string.emotes_install_failed, msg), Toast.LENGTH_LONG).show()
+            }
+        }.execute()
     }
 
     override fun onResume() {
@@ -80,9 +109,11 @@ class EmotesFragment : FragmentWithAnim(R.layout.settings_fragment_emotes) {
 
     /** Mod status + save-folder caption. File scans are guarded inside Emotes. */
     private fun refreshStatus() {
-        val statusRes = if (Emotes.isEmotecraftInstalled()) R.string.emotes_status_installed
+        val installed = Emotes.isEmotecraftInstalled()
+        val statusRes = if (installed) R.string.emotes_status_installed
                         else R.string.emotes_status_missing
         binding.emotesModStatus.setText(statusRes)
+        binding.installEmotecraftButton.visibility = if (installed) View.GONE else View.VISIBLE
         val dir = runCatching { Emotes.emotesDir().absolutePath }.getOrDefault("(unavailable)")
         binding.emotesFolderInfo.text = getString(R.string.emotes_folder_info, dir)
         updateWheelKeyLabel()
