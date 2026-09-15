@@ -1354,6 +1354,11 @@
     <string name="emotes_status_installed">Emotecraft mod: installed - emotes will play in game</string>
     <string name="emotes_status_missing">Emotecraft mod: not found in this version\'s mods folder - install it (Fabric, Forge, NeoForge or Quilt) to use emotes</string>
     <string name="emotes_open_browser">Open site in browser</string>
+    <string name="emotes_install_button">Install Emotecraft mod</string>
+    <string name="emotes_installing">Downloading &amp; installing Emotecraft…</string>
+    <string name="emotes_install_success">Emotecraft installed! Restart game to use the emote wheel.</string>
+    <string name="emotes_install_failed">Could not auto-install Emotecraft: %s</string>
+    <string name="emotes_install_no_loader">Cannot auto-install: version has no supported mod loader (Fabric, Forge, NeoForge, or Quilt required).</string>
     <string name="emotes_folder_info">Emotes are saved to: %s</string>
     <string name="emotes_saved">Emote saved: %s</string>
     <string name="emotes_save_failed">Could not download emote</string>

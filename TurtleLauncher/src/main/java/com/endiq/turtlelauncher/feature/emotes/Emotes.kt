@@ -1,6 +1,9 @@
 package com.endiq.turtlelauncher.feature.emotes
 
+import com.endiq.turtlelauncher.feature.download.enums.ModLoader
+import com.endiq.turtlelauncher.feature.download.utils.ModLoaderUtils
 import com.endiq.turtlelauncher.feature.log.Logging
+import com.endiq.turtlelauncher.feature.mod.ModrinthDirectApi
 import com.endiq.turtlelauncher.feature.version.VersionsManager
 import com.endiq.turtlelauncher.utils.path.PathManager
 import java.io.File
@@ -33,6 +36,9 @@ object Emotes {
 
     /** Official Emotecraft community emote library - free .emote downloads. */
     const val EMOTE_SITE_URL = "https://emotes.kosmx.dev"
+
+    /** Modrinth project slug for Emotecraft. */
+    const val EMOTECRAFT_MODRINTH_SLUG = "emotecraft"
 
     /**
      * The `emotes` folder Emotecraft reads for the currently selected version:
@@ -76,5 +82,46 @@ object Emotes {
         }.onFailure { e ->
             Logging.w(TAG, "Could not scan the mods folder for Emotecraft", e)
         }.getOrDefault(false)
+    }
+
+    /**
+     * Resolves the Minecraft version string and [ModLoader] for the currently selected version.
+     */
+    @JvmStatic
+    fun getCurrentVersionInfo(): Pair<String?, ModLoader?> {
+        val version = VersionsManager.getCurrentVersion() ?: return null to null
+        val versionInfo = version.getVersionInfo()
+        val mcVersion = versionInfo?.minecraftVersion ?: version.getVersionName()
+        val loader = versionInfo?.loaderInfo?.firstNotNullOfOrNull { ModLoaderUtils.getModLoader(it.name) }
+        return mcVersion to loader
+    }
+
+    /**
+     * Attempts to automatically download and install Emotecraft for the current version
+     * from Modrinth. Runs synchronously (network call included) - must be called from
+     * a background thread.
+     *
+     * @return Result message or null on success, or throws Exception on failure.
+     */
+    @JvmStatic
+    fun autoInstallEmotecraft(): String {
+        val (mcVersion, loader) = getCurrentVersionInfo()
+        if (mcVersion.isNullOrBlank()) {
+            throw IllegalStateException("Minecraft version not detected.")
+        }
+        if (loader == null) {
+            throw IllegalStateException("No supported mod loader (Fabric/Forge/NeoForge/Quilt) found for this version.")
+        }
+        val targetModsDir = modsDir()
+        targetModsDir.mkdirs()
+
+        val outcome = ModrinthDirectApi.downloadBestMatch(
+            EMOTECRAFT_MODRINTH_SLUG,
+            mcVersion,
+            loader,
+            targetModsDir
+        ) ?: throw IOException("No compatible Emotecraft build found for $mcVersion on ${loader.loaderName}.")
+
+        return outcome
     }
 }

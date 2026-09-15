@@ -286,7 +286,7 @@ class AllSettings {
         @JvmStatic val dumpShaders              = BooleanSettingUnit("dump_shaders", false)
         @JvmStatic val bigCoreAffinity          = BooleanSettingUnit("bigCoreAffinity", true)
         /** Fast Boot: skips file checksum/manifest verification and the pre-launch RAM check dialog to launch faster. */
-        @JvmStatic val fastBoot                 = BooleanSettingUnit("fastBoot", false)
+        @JvmStatic val fastBoot                 = BooleanSettingUnit("fastBoot", true)
 
         // ── TurtleLauncher Phone Settings: CPU ───────────────────────────────────
         /** Detect this device's core count via Runtime.availableProcessors() each launch
@@ -307,7 +307,7 @@ class AllSettings {
         /** Hints the native side (POJAV_SCHED_TUNING) to lower the JVM/render threads' nice
          *  value for steadier frame delivery under CPU contention, same env-var-handoff
          *  pattern as bigCoreAffinity's POJAV_BIG_CORE_AFFINITY above. */
-        @JvmStatic val schedulerTuning          = BooleanSettingUnit("schedulerTuning", false)
+        @JvmStatic val schedulerTuning          = BooleanSettingUnit("schedulerTuning", true)
 
         // ── TurtleLauncher Phone Settings: Memory ────────────────────────────────
         /** Auto RAM Calculator: keep ramAllocation pinned to findBestRAMAllocation()'s pick
@@ -331,15 +331,15 @@ class AllSettings {
 
         // ── TurtleLauncher FPS Boost ──────────────────────────────────────────
         /** Remove Minecraft's 300-FPS cap; adds -XX:+DisableExplicitGC */
-        @JvmStatic val unlimitedFps             = BooleanSettingUnit("unlimitedFps", false)
+        @JvmStatic val unlimitedFps             = BooleanSettingUnit("unlimitedFps", true)
         /** Low-latency rendering: JVM string/compile optimizations */
-        @JvmStatic val lowLatencyRendering      = BooleanSettingUnit("lowLatencyRendering", false)
+        @JvmStatic val lowLatencyRendering      = BooleanSettingUnit("lowLatencyRendering", true)
         /** LWJGL frame-pacing hints for smoother mobile GPU frame delivery */
-        @JvmStatic val framePacing              = BooleanSettingUnit("framePacing", false)
+        @JvmStatic val framePacing              = BooleanSettingUnit("framePacing", true)
         /** Drop frames when overloaded instead of queuing (reduces input lag) */
         @JvmStatic val frameSkipping            = BooleanSettingUnit("frameSkipping", false)
         /** Short GC pause target to avoid mid-frame GC stops */
-        @JvmStatic val adaptiveFrameTiming      = BooleanSettingUnit("adaptiveFrameTiming", false)
+        @JvmStatic val adaptiveFrameTiming      = BooleanSettingUnit("adaptiveFrameTiming", true)
         /** Periodically trigger a G1 GC during idle stretches (menus, paused, low activity)
          *  to release memory back to the OS instead of holding onto peak usage indefinitely.
          *  Off by default since it's a real GC pause, just a scheduled/idle one rather than
