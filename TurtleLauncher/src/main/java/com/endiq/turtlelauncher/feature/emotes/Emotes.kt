@@ -7,6 +7,7 @@ import com.endiq.turtlelauncher.feature.mod.ModrinthDirectApi
 import com.endiq.turtlelauncher.feature.version.VersionsManager
 import com.endiq.turtlelauncher.utils.path.PathManager
 import java.io.File
+import java.io.IOException
 
 /**
  * TurtleLauncher Emotes: shared constants and file helpers for the emote feature.
