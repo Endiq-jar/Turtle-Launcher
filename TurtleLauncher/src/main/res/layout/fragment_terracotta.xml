@@ -147,8 +147,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minHeight="56dp"
                 android:background="@drawable/background_edit_box"
-                android:padding="@dimen/space_m"
+                android:paddingHorizontal="@dimen/space_m"
+                android:paddingVertical="@dimen/space_s"
+                android:gravity="center_vertical"
                 android:hint="@string/terracotta_join_code_hint"
                 android:textSize="14sp"
                 android:textColor="@color/turtle_text_primary"
@@ -160,8 +163,8 @@
 
             <ImageButton
                 android:id="@+id/join_code_submit"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
                 android:layout_marginStart="@dimen/space_s"
                 android:background="@drawable/background_grid_card"
                 android:src="@drawable/ic_chevron_down"
