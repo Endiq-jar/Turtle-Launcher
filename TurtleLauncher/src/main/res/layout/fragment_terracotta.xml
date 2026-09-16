@@ -46,17 +46,33 @@
     </LinearLayout>
 
     <!-- ===================== Waiting: host / join entry ===================== -->
-    <LinearLayout
-        android:id="@+id/waiting_group"
+    <!-- TurtleLauncher SCROLL FIX: this used to be a plain LinearLayout pinned between the
+         header and the bottom of the screen with android:layout_height="0dp" - a fixed-size
+         box with no way to scroll its own content. Host/Join buttons + the (sometimes
+         revealed) join-code row + the custom-node switch/field/preset + the relay-node
+         status line + the version caption easily add up to more height than a small/short
+         screen has, and none of it could ever be reached - "can't scroll here" reported
+         against exactly this screen. Wrapped in a NestedScrollView (same widget the Emotes
+         screen already uses for its own settings block) so anything that doesn't fit just
+         scrolls instead of being silently clipped off the bottom edge. -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/space_l"
-        android:paddingTop="@dimen/space_l"
+        android:fillViewport="true"
+        android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/terracotta_header"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
+    <LinearLayout
+        android:id="@+id/waiting_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/space_l"
+        android:paddingTop="@dimen/space_l"
+        android:paddingBottom="@dimen/space_l">
 
         <TextView
             android:layout_width="match_parent"
@@ -250,6 +266,7 @@
             android:visibility="gone"/>
 
     </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- ===================== Loading: any in-between state ===================== -->
     <LinearLayout

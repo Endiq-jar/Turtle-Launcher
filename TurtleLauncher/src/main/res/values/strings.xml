@@ -542,6 +542,7 @@
     <string name="terracotta_address_copied">Server address copied</string>
     <string name="terracotta_status_host_scanning">Setting up your room…</string>
     <string name="terracotta_status_host_starting">Starting…</string>
+    <string name="terracotta_host_timeout">Couldn\'t set up the room - every relay node may be unreachable. Check your connection and try again.</string>
     <string name="terracotta_status_guest_connecting">Connecting…</string>
     <string name="terracotta_status_guest_starting">Joining…</string>
     <string name="terracotta_status_default">Working…</string>

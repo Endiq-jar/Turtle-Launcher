@@ -56,6 +56,11 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
         /** How many times a join is attempted before we give up and show the error. See
          *  handleException() for the (native, unmodifiable) reason retries are needed. */
         private const val MAX_JOIN_ATTEMPTS = 3
+
+        /** How long "Setting up your room…"/"Starting…" is allowed to sit before the
+         *  hosting watchdog gives up and surfaces a real error instead of spinning
+         *  forever - see the hostWatchdogJob field below for why this exists. */
+        private const val HOST_TIMEOUT_MS = 20_000L
     }
 
     private enum class Group { WAITING, LOADING, CONNECTED, EXCEPTION }
@@ -88,6 +93,19 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
     private var joiningCode: String? = null
     private var joinAttempt = 0
     private var joinJob: Job? = null
+
+    // ── Host timeout watchdog ───────────────────────────────────────────────────────────
+    // TurtleLauncher HANG FIX: unlike the guest flow, Terracotta's native host path
+    // (`setScanning` -> HostScanning -> HostStarting) has no documented deadline of its
+    // own - see TerracottaNodeList's start_guest() doc for the guest side's real 15s
+    // native poll; nothing equivalent is described for hosting. If every relay/rendezvous
+    // node in the list is unreachable, HostScanning can sit there indefinitely with only
+    // the Cancel button to get out - reported as "setting up your room takes forever".
+    // This is a client-side watchdog only (can't touch the native deadline, if any, from
+    // Kotlin) - same lever the join-retry fix above already uses for the same class of
+    // problem.
+
+    private var hostWatchdogJob: Job? = null
 
     private val terracottaStateListener = Terracotta.StateListener { state ->
         // Already invoked on the UI thread - see Terracotta.java's poll daemon.
@@ -274,9 +292,35 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
         joiningCode = null
     }
 
+    /** No-op if already armed - renderState() calls this on every HostScanning/HostStarting
+     *  tick, and re-arming on each one would keep pushing the deadline back, defeating the
+     *  whole point of a fixed timeout. */
+    private fun armHostWatchdog() {
+        if (hostWatchdogJob?.isActive == true) return
+        hostWatchdogJob = scope.launch {
+            delay(HOST_TIMEOUT_MS)
+            if (!isAdded || view == null) return@launch
+            Logging.w(TAG, "Hosting timed out after ${HOST_TIMEOUT_MS}ms - forcing back to Waiting")
+            // setWaiting() resets the native side; renderState (via the state listener,
+            // or the explicit call below in case the daemon hasn't ticked yet) then takes
+            // the screen out of Loading on its own.
+            Terracotta.setWaiting(requireContext(), true)
+            switchGroup(Group.EXCEPTION)
+            setButtonsEnabled(true)
+            binding.exceptionText.setText(R.string.terracotta_host_timeout)
+            binding.exceptionExportLogs.visibility = View.VISIBLE
+        }
+    }
+
+    private fun cancelHostWatchdog() {
+        hostWatchdogJob?.cancel()
+        hostWatchdogJob = null
+    }
+
     override fun onDestroyView() {
-        // Never leave a retry chain running against a view that's gone.
+        // Never leave a retry chain (or the host watchdog) running against a view that's gone.
         cancelJoinRetry()
+        cancelHostWatchdog()
         super.onDestroyView()
     }
 
@@ -296,6 +340,15 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
     private fun renderState(state: TerracottaState.Ready?) {
         val freshHostOk = state is TerracottaState.HostOK && lastStateClass != TerracottaState.HostOK::class.java
         lastStateClass = state?.javaClass
+
+        // The watchdog only ever needs to be running while we're in one of the two
+        // hosting-in-progress states - start it on entry, and let armHostWatchdog's own
+        // no-op guard skip re-arming on the second (HostScanning -> HostStarting) call.
+        if (state is TerracottaState.HostScanning || state is TerracottaState.HostStarting) {
+            armHostWatchdog()
+        } else {
+            cancelHostWatchdog()
+        }
 
         when (state) {
             null, is TerracottaState.Waiting -> showWaiting()

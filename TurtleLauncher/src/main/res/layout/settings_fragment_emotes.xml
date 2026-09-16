@@ -49,10 +49,24 @@
             android:textColor="@color/turtle_text_primary"/>
     </LinearLayout>
 
+    <!-- TurtleLauncher SCROLL FIX: this NestedScrollView used to hold only the settings
+         block (wrap_content height, fillViewport=false - i.e. it never scrolled at all,
+         it just showed all of its own content), while the WebView below lived in a
+         separate sibling FrameLayout with layout_weight="1". On a short screen the
+         settings block (status line + wheel-key card + folder path + two buttons + hint)
+         plus the header could already eat most of the available height, squeezing the
+         WebView down to little or no visible space - the "community emote library"
+         appeared to not scroll because there was barely any of it on screen to scroll in
+         the first place. Fix: pull the WebView inside this same NestedScrollView (given a
+         real fixed height instead of layout_weight) so the whole screen - settings AND
+         the library - is one scrollable column. The WebView still scrolls its own page
+         internally within its fixed height via nested scrolling; the outer view takes
+         over once the WebView reaches the top/bottom of its own content. -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fillViewport="false"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
         android:scrollbars="none">
 
         <LinearLayout
@@ -148,24 +162,27 @@
                 android:textSize="11sp"
                 android:textColor="@color/turtle_text_secondary"
                 android:layout_marginBottom="@dimen/space_s"/>
+
+            <!-- Fixed height rather than match_parent/weight: inside a scrolling column a
+                 WebView needs a bounded viewport to size itself against, same reasoning as
+                 the Friends/LAN relay list gets its own bounded ScrollView above. Tall
+                 enough to actually browse the library without feeling like a letterbox. -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="480dp">
+
+                <WebView
+                    android:id="@+id/emotes_web_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+                <ProgressBar
+                    android:id="@+id/emotes_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"/>
+            </FrameLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <WebView
-            android:id="@+id/emotes_web_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <ProgressBar
-            android:id="@+id/emotes_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"/>
-    </FrameLayout>
 </LinearLayout>
