@@ -84,10 +84,10 @@
     <string name="option_start_recording">Start Recording</string>
     <string name="option_stop_recording">Stop Recording</string>
     <string name="option_category_control">Control</string>
-    <string name="option_category_hotbar">Hotbar Detection Box</string>
+    <string name="option_category_hotbar">Hotbar Detection Type</string>
     <string name="option_force_close">Force Close</string>
     <string name="option_log_out">Live Logs</string>
-    <string name="option_send_custom_key">Send Custom Key Code</string>
+    <string name="option_send_custom_key">Send Key Code</string>
     <string name="option_edit_controls">Edit Control Layout</string>
     <string name="option_hotbar_type">Hotbar Detection Mode</string>
     <string name="option_hotbar_type_auto">Adaptive (may be inaccurate)</string>
@@ -172,9 +172,9 @@
     <string name="newdl_extracting_native_libraries">Extracting native libraries (%d/%d)</string>
     <string name="log_view_button_scroll_off">Auto-scroll: Off</string>
     <string name="log_view_button_scroll_on">Auto-scroll: On</string>
-    <string name="log_view_button_output_off">Output: Off</string>
-    <string name="log_view_button_output_on">Output: On</string>
-    <string name="log_view_label_log_output">Log Output:</string>
+    <string name="log_view_button_output_off">Logs: Off</string>
+    <string name="log_view_button_output_on">Logst: On</string>
+    <string name="log_view_label_log_output">Logs:</string>
     <string name="execute_jar_failed_to_read_file">Failed to read .jar file</string>
     <string name="execute_jar_incompatible_runtime">Executing .jar feature is incompatible with Java %d</string>
     <string name="open_link">Will access this link in the browser:</string>
