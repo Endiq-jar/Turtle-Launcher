@@ -522,13 +522,13 @@
     <string name="terracotta_join_button">Join with Code</string>
     <string name="terracotta_join_code_hint">Paste invite code…</string>
     <string name="terracotta_join_code_invalid">Not a recognized invite code format.</string>
-    <string name="terracotta_join_known_issue">Joining needs a working EasyTier relay node that both players can reach. TurtleLauncher now picks one automatically and retries a few times, but if joining still fails, check the relay status below or set your own node.</string>
+    <string name="terracotta_join_known_issue">Joining depends on finding a relay node you both can reach - we pick one automatically and retry a few times. Still stuck? Check the relay status below, or add your own node.</string>
     <string name="terracotta_custom_node_list">Custom EasyTier server node</string>
     <string name="terracotta_use_easytier_node">Use EasyTier public node</string>
     <string name="terracotta_custom_node_list_hint">Leave empty to keep using the default node</string>
     <string name="terracotta_relay_status_checking">Checking relay nodes…</string>
-    <string name="terracotta_relay_status">Relay nodes: %1$d of %2$d reachable · using %3$s</string>
-    <string name="terracotta_relay_status_custom">Relay node: %1$s (custom)</string>
+    <string name="terracotta_relay_status">%1$d of %2$d relays are up right now - connected through %3$s</string>
+    <string name="terracotta_relay_status_custom">Using your own relay node: %1$s</string>
     <string name="terracotta_join_retrying">Joining… (attempt %1$d of %2$d)</string>
     <string name="terracotta_join_code_legacy">Legacy Terracotta code - should still work.</string>
     <string name="terracotta_join_code_pcl2ce">PCL CE code - should still work.</string>
@@ -542,7 +542,7 @@
     <string name="terracotta_address_copied">Server address copied</string>
     <string name="terracotta_status_host_scanning">Setting up your room…</string>
     <string name="terracotta_status_host_starting">Starting…</string>
-    <string name="terracotta_host_timeout">Couldn\'t set up the room - every relay node may be unreachable. Check your connection and try again.</string>
+    <string name="terracotta_host_timeout">Couldn\'t set up the room - none of the relay nodes seem reachable right now. Check your connection and try again.</string>
     <string name="terracotta_status_guest_connecting">Connecting…</string>
     <string name="terracotta_status_guest_starting">Joining…</string>
     <string name="terracotta_status_default">Working…</string>
@@ -564,7 +564,7 @@
     <string name="terracotta_notification_channel">Friends/LAN connection</string>
     <string name="terracotta_notification_channel_desc">Ongoing status of the Friends/LAN P2P connection</string>
     <string name="terracotta_notification_title">Friends/LAN · Multiplayer running</string>
-    <string name="terracotta_notification_desc">Identity: %1$s · State: %2$s</string>
+    <string name="terracotta_notification_desc">Playing as %1$s - %2$s</string>
     <string name="terracotta_player_kind_host">Host</string>
     <string name="terracotta_player_kind_guest">Guest</string>
     <string name="terracotta_player_anonymous">Anonymous Player</string>
@@ -573,10 +573,10 @@
     <string name="terracotta_status_guest_ok">Room joined</string>
     <string name="terracotta_status_exception">Connection lost</string>
     <!-- Guest-side network difficulty estimate shown while joining -->
-    <string name="terracotta_difficulty_easiest">Excellent network: almost connected!</string>
-    <string name="terracotta_difficulty_simple">Good network: connection may take some time…</string>
-    <string name="terracotta_difficulty_medium">Average network: fallback routes enabled, connection may fail</string>
-    <string name="terracotta_difficulty_tough">Poor network: fallback routes enabled, connection may fail</string>
+    <string name="terracotta_difficulty_easiest">Great connection - you\'re almost in!</string>
+    <string name="terracotta_difficulty_simple">Decent connection - might take a moment…</string>
+    <string name="terracotta_difficulty_medium">So-so connection - trying backup routes, but it might not go through</string>
+    <string name="terracotta_difficulty_tough">Weak connection - trying backup routes, but it might not go through</string>
     <string name="terracotta_version_line">Terracotta %1$s · EasyTier %2$s</string>
     <string name="main_section_community">Community</string>
     <string name="main_section_selected_version">Selected Version</string>
