@@ -312,24 +312,49 @@ class LaunchArgs(
          */
         @JvmStatic
         fun resolveRequiredJava(mcVersionId: String, jsonMajorVersion: Int): Int {
-            // 26.x branch (new versioning scheme, no "1." prefix) — 26.1+ needs Java 25
-            if (isMinecraftVersionAtLeast(mcVersionId, 26, 1, 0)) return 25
+            // Branch on the major-version family FIRST, using the leading numeric
+            // segment only. Snapshot/pre-release ids such as "26.3-snapshot-4" or
+            // "1.21.4-rc1" must never fall through into the wrong family's checks
+            // below — that previously happened because a failed "26.1+" check
+            // (caused by the "-snapshot-4" suffix breaking naive int parsing)
+            // would cascade into the 1.x "at least" checks, which match ANY
+            // 26.x id since 26 > 1.
+            if (leadingVersionSegmentInt(mcVersionId, 0) >= 26) {
+                // 26.x branch (new versioning scheme, no "1." prefix) — 26.1+ needs Java 25
+                if (isMinecraftVersionAtLeast(mcVersionId, 26, 1, 0)) return 25
+                // Very early 26.0.x betas that predate the 26.1 cutoff — no
+                // explicit rule for these yet, defer to Mojang's JSON value.
+                return if (jsonMajorVersion > 0) jsonMajorVersion else 25
+            }
 
             // 1.x branch
             if (isMinecraftVersionAtLeast(mcVersionId, 1, 20, 5)) return 21
             if (isMinecraftVersionAtLeast(mcVersionId, 1, 18, 0)) return 17
             if (isMinecraftVersionAtLeast(mcVersionId, 1, 0, 0)) return 8
 
-            // Unrecognised/non-numeric version id (e.g. custom modpack labels,
-            // very early 26.0.x betas) — fall back to whatever Mojang's JSON
-            // says rather than guessing.
+            // Unrecognised/non-numeric version id (e.g. custom modpack labels)
+            // — fall back to whatever Mojang's JSON says rather than guessing.
             return if (jsonMajorVersion > 0) jsonMajorVersion else 8
+        }
+
+        /**
+         * Extracts the leading run of digits from the dot-segment at [index] of
+         * [mcVersionId] (e.g. segment "3-snapshot-4" → 3, "21" → 21). Returns
+         * [default] if the segment is missing or has no leading digits.
+         */
+        private fun leadingVersionSegmentInt(mcVersionId: String, index: Int, default: Int = 0): Int {
+            val segment = mcVersionId.split(".").getOrNull(index) ?: return default
+            val digits = segment.takeWhile { it.isDigit() }
+            return digits.toIntOrNull() ?: default
         }
 
         /**
          * Returns true when [mcVersionId] is at least [major].[minor].[patch].
          *
-         * Handles both new-style "26.x.y" and legacy "1.x.y" MC version IDs.
+         * Handles both new-style "26.x.y" and legacy "1.x.y" MC version IDs, as
+         * well as snapshot/pre-release suffixes on any segment (e.g.
+         * "26.3-snapshot-4", "1.21.4-rc1") by only reading the leading digits
+         * of each dot-separated segment and ignoring everything after them.
          * Missing patch segment is treated as 0.
          */
         @JvmStatic
@@ -340,10 +365,9 @@ class LaunchArgs(
             patch: Int = 0
         ): Boolean {
             return try {
-                val parts = mcVersionId.split(".")
-                val vMajor = parts.getOrNull(0)?.toIntOrNull() ?: 0
-                val vMinor = parts.getOrNull(1)?.toIntOrNull() ?: 0
-                val vPatch = parts.getOrNull(2)?.toIntOrNull() ?: 0
+                val vMajor = leadingVersionSegmentInt(mcVersionId, 0)
+                val vMinor = leadingVersionSegmentInt(mcVersionId, 1)
+                val vPatch = leadingVersionSegmentInt(mcVersionId, 2)
                 when {
                     vMajor != major -> vMajor > major
                     vMinor != minor -> vMinor > minor
