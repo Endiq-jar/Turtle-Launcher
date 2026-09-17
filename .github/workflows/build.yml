@@ -70,9 +70,29 @@ jobs:
         working-directory: ${{ steps.locate.outputs.dir }}
         env:
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-        run: ./gradlew :TurtleLauncher:assembleDebug --no-daemon
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew :TurtleLauncher:assembleDebug --no-daemon --stacktrace 2>&1 | tee /tmp/gradle-build.log
+
+      # Temporary build-bisect helper: this environment can't download Actions logs
+      # (only api.github.com is reachable), so on failure post the tail of the Gradle
+      # output into the PR as a comment where it can be read back through the API.
+      - name: Report failure details to PR
+        if: failure() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "### Build failed - Gradle output tail"
+            echo '```'
+            tail -150 /tmp/gradle-build.log
+            echo '```'
+          } > /tmp/fail_report.md
+          gh pr comment "${{ github.event.pull_request.number }}" --repo "$GITHUB_REPOSITORY" --body-file /tmp/fail_report.md
 
       - name: Upload debug APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: TurtleLauncher-debug-apk
