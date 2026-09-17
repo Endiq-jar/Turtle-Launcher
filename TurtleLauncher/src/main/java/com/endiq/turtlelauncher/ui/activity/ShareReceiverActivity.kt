@@ -90,8 +90,9 @@ class ShareReceiverActivity : BaseActivity() {
                 val buffer = ByteArray(64 * 1024)
                 val output = java.io.ByteArrayOutputStream()
                 var total = 0
-                var read: Int
-                while (total < MAX_SHARED_BYTES && input.read(buffer).also { read = it } != -1) {
+                while (total < MAX_SHARED_BYTES) {
+                    val read = input.read(buffer)
+                    if (read == -1) break
                     output.write(buffer, 0, read)
                     total += read
                 }
