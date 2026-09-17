@@ -70,29 +70,9 @@ jobs:
         working-directory: ${{ steps.locate.outputs.dir }}
         env:
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-        shell: bash
-        run: |
-          set -o pipefail
-          ./gradlew :TurtleLauncher:assembleDebug --no-daemon --stacktrace 2>&1 | tee /tmp/gradle-build.log
-
-      # Temporary build-bisect helper: this environment can't download Actions logs
-      # (only api.github.com is reachable), so on failure surface the Gradle errors
-      # as workflow annotations, which are readable through the annotations API.
-      - name: Report failure details as annotations
-        if: failure()
-        run: |
-          if [ -f /tmp/gradle-build.log ]; then
-            grep -n -E '^e: |error:|ERROR:|FAILURE:|Caused by:|What went wrong|Execution failed|cannot find symbol|Unresolved reference' /tmp/gradle-build.log \
-              | head -40 | cut -c1-230 \
-              | while IFS= read -r line; do
-                  echo "::error title=gradle-build::${line}"
-                done
-          else
-            echo "no gradle log found"
-          fi
+        run: ./gradlew :TurtleLauncher:assembleDebug --no-daemon
 
       - name: Upload debug APK
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: TurtleLauncher-debug-apk
