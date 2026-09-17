@@ -53,11 +53,11 @@
             android:paddingVertical="@dimen/_4sdp"
             android:layout_marginBottom="@dimen/_12sdp"/>
 
-        <!-- Feature: Skin / Cape -->
+        <!-- Feature 1 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/whats_new_skin_cape"
+            android:text="@string/whats_new_feature_1"
             android:textColor="@color/turtle_success"
             android:textSize="@dimen/_14ssp"
             android:textStyle="bold"
@@ -67,16 +67,16 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/whats_new_skin_cape_desc"
+            android:text="@string/whats_new_feature_1_desc"
             android:textColor="@color/turtle_text_secondary"
             android:textSize="@dimen/_12ssp"
             android:layout_marginBottom="@dimen/_12sdp"/>
 
-        <!-- Feature: Other Login -->
+        <!-- Feature 2 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/whats_new_other_login"
+            android:text="@string/whats_new_feature_2"
             android:textColor="@color/turtle_success"
             android:textSize="@dimen/_14ssp"
             android:textStyle="bold"
@@ -85,16 +85,16 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/whats_new_other_login_desc"
+            android:text="@string/whats_new_feature_2_desc"
             android:textColor="@color/turtle_text_secondary"
             android:textSize="@dimen/_12ssp"
             android:layout_marginBottom="@dimen/_12sdp"/>
 
-        <!-- Feature: PvP / Survival Presets -->
+        <!-- Feature 3 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/whats_new_presets"
+            android:text="@string/whats_new_feature_3"
             android:textColor="@color/turtle_success"
             android:textSize="@dimen/_14ssp"
             android:textStyle="bold"
@@ -103,7 +103,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/whats_new_presets_desc"
+            android:text="@string/whats_new_feature_3_desc"
             android:textColor="@color/turtle_text_secondary"
             android:textSize="@dimen/_12ssp"
             android:layout_marginBottom="@dimen/_12sdp"/>

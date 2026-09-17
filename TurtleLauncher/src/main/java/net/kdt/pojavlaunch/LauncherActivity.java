@@ -113,6 +113,10 @@ import java.util.concurrent.Future;
 
 
 public class LauncherActivity extends BaseActivity {
+    /** Extras used by ShareReceiverActivity to open the Assistant with a shared game log. */
+    public static final String EXTRA_OPEN_ASSISTANT = "open_assistant";
+    public static final String EXTRA_SHARED_LOG_PATH = "shared_log_path";
+
     private final AnimPlayer noticeAnimPlayer = new AnimPlayer();
     public final ActivityResultLauncher<Object> modInstallerLauncher =
             registerForActivityResult(new OpenDocumentWithExtension("jar"), (uris) -> {
@@ -364,6 +368,10 @@ public class LauncherActivity extends BaseActivity {
         processFragment();
         processViews();
 
+        // TurtleLauncher: arriving via the Android share sheet with a game log? Go
+        // straight to the Assistant once the main menu Fragment is in place.
+        handleAssistantShortcut(getIntent());
+
         // Show What's New dialog on first launch of this version
         //showWhatsNewIfNeeded();
 
@@ -397,6 +405,42 @@ public class LauncherActivity extends BaseActivity {
             UpdateUtils.checkDownloadedPackage(this, false, true);
             return null;
         }).execute();
+    }
+
+    /**
+     * The launcher is Android's share target for game logs: ShareReceiverActivity
+     * (ACTION_SEND) saves the shared log and relaunches here with these extras, and this
+     * opens the built-in Assistant on top of the main menu so the log is analyzed
+     * immediately. Without an extra this is a no-op - normal launches are untouched.
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleAssistantShortcut(intent);
+    }
+
+    private void handleAssistantShortcut(Intent intent) {
+        if (intent == null || !intent.getBooleanExtra(EXTRA_OPEN_ASSISTANT, false)) return;
+        final String sharedLogPath = intent.getStringExtra(EXTRA_SHARED_LOG_PATH);
+        // Consume the flag so a configuration change/recreation can't reopen the Assistant.
+        intent.removeExtra(EXTRA_OPEN_ASSISTANT);
+        intent.removeExtra(EXTRA_SHARED_LOG_PATH);
+
+        // processFragment() only *commits* the main menu Fragment; wait a frame for it to
+        // actually be attached before swapping on top of it.
+        binding.getRoot().post(() -> {
+            Fragment currentFragment = getCurrentFragment();
+            if (currentFragment == null) return;
+            Bundle bundle = null;
+            if (sharedLogPath != null) {
+                bundle = new Bundle();
+                bundle.putString(com.endiq.turtlelauncher.ui.fragment.AiChatFragment.ARG_SHARED_LOG_PATH, sharedLogPath);
+            }
+            ZHTools.swapFragmentWithAnim(currentFragment,
+                com.endiq.turtlelauncher.ui.fragment.AiChatFragment.class,
+                com.endiq.turtlelauncher.ui.fragment.AiChatFragment.TAG, bundle);
+        });
     }
 
     private void processFragment() {
@@ -529,6 +573,12 @@ public class LauncherActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // TurtleLauncher: pick up plugin apps that were installed (or uninstalled) while we
+        // were in the background - most importantly right after the user confirms a renderer
+        // plugin APK in the Android package installer and lands back here. Cheap no-op unless
+        // the installed-app set actually changed; a change triggers a full plugin re-scan so
+        // the new renderer/driver/feature plugin is selectable immediately, no restart needed.
+        com.endiq.turtlelauncher.plugins.PluginLoader.rescanIfPluginsChanged(this);
         // TurtleLauncher: the system animation-scale / reduced-motion check is cached, so it
         // has to be invalidated here - the user may have just come back from Settings where
         // they changed it, and we'd otherwise keep using the stale answer for the whole

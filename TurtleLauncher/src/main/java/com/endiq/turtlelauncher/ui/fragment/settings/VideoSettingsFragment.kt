@@ -64,10 +64,10 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
                     dialog.show()
                 }.ended { pluginFiles ->
                     pluginFiles?.let { files ->
-                        var requiresRestart = false
+                        var importedAny = false
                         files.forEach { pluginFile ->
                             val info = if (RendererPluginManager.importLocalRendererPlugin(pluginFile)) {
-                                requiresRestart = true
+                                importedAny = true
                                 "The renderer plugin has been successfully imported!"
                             } else {
                                 "The renderer plugin import failed!"
@@ -76,12 +76,24 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
                             FileUtils.deleteQuietly(pluginFile)
                         }
                         TaskExecutors.runInUIThread {
-                            if (requiresRestart) {
+                            if (importedAny) {
+                                // TurtleLauncher: this used to demand a full launcher restart
+                                // (killProcess) before the imported renderer could load. Forced
+                                // plugin re-scans are safe now - PluginLoader replaces the
+                                // previously registered plugin renderers instead of colliding
+                                // with them - so re-scan in place and let the user pick the new
+                                // renderer immediately, exactly like an APK plugin install picked
+                                // up by LauncherActivity.onResume's change detection.
+                                runCatching {
+                                    com.endiq.turtlelauncher.plugins.PluginLoader.loadAllPlugins(
+                                        requireContext().applicationContext, force = true
+                                    )
+                                }.onFailure { e ->
+                                    Logging.e("VideoSettings", "Plugin re-scan after import failed", e)
+                                }
                                 TipDialog.Builder(requireActivity())
-                                    .setTitle(R.string.generic_warning)
+                                    .setTitle(R.string.generic_tip)
                                     .setMessage(R.string.setting_renderer_local_import_restart)
-                                    .setWarning()
-                                    .setConfirmClickListener { ZHTools.killProcess() }
                                     .showDialog()
                             } else {
                                 TipDialog.Builder(requireActivity())

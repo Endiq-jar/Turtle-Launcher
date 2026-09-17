@@ -79,11 +79,29 @@ class LaunchGame {
             // (e.g. a modpack named non-numerically) can't break launch entirely; it only
             // costs the warning.
             runCatching {
-                val rendererId = version.getRenderer()
-                val catalogEntry = com.endiq.turtlelauncher.renderer.RendererCatalog.get(rendererId)
-                val mcVersion = version.getVersionName()
+                val rendererUniqueId = version.getRenderer()
+                // RendererCatalog is keyed by renderer ID ("MOBILEGLUES", "GL4ES", ...), but
+                // versions store the renderer's unique identifier (a UUID, or a plugin app's
+                // package name) - resolve the actual renderer instance first, otherwise the
+                // lookup below would never match and this warning could never fire.
+                val rendererInstance = runCatching {
+                    com.endiq.turtlelauncher.renderer.Renderers.getCompatibleRenderers(context).second
+                        .firstOrNull { it.getUniqueIdentifier() == rendererUniqueId }
+                }.getOrNull()
+                val catalogEntry = com.endiq.turtlelauncher.renderer.RendererCatalog.get(
+                    rendererInstance?.getRendererId() ?: rendererUniqueId
+                )
+                // Renderer plugin apps ship their own supported range in their manifest
+                // meta-data (minMCVer/maxMCVer - e.g. the MobileGlues plugin declares
+                // 1.17+); honor it exactly like a catalog range so an installed plugin is
+                // treated like any first-class renderer.
+                val plugin = com.endiq.turtlelauncher.plugins.renderer.RendererPluginManager.getRendererList()
+                    .find { it.uniqueIdentifier == rendererUniqueId }
                 val maxVersion = catalogEntry?.maxMinecraftVersion
+                    ?: plugin?.maxMinecraftVersion?.takeIf { it.isNotBlank() }
                 val minVersion = catalogEntry?.minMinecraftVersion
+                    ?: plugin?.minMinecraftVersion?.takeIf { it.isNotBlank() }
+                val mcVersion = version.getVersionName()
                 val exceedsMax = maxVersion != null &&
                         org.jackhuang.hmcl.util.versioning.VersionNumber.compare(mcVersion, maxVersion) > 0
                 val belowMin = !exceedsMax && minVersion != null &&
@@ -91,9 +109,10 @@ class LaunchGame {
                 if (exceedsMax || belowMin) {
                     val boundary = if (exceedsMax) maxVersion else minVersion
                     val warningRes = if (exceedsMax) R.string.renderer_compat_launch_warning_max else R.string.renderer_compat_launch_warning_min
-                    Logging.w("LaunchGame", "Renderer $rendererId is outside its documented RendererCatalog range " +
+                    val displayName = rendererInstance?.getRendererName() ?: rendererUniqueId
+                    Logging.w("LaunchGame", "Renderer $displayName is outside its documented range " +
                             "(max=$maxVersion, min=$minVersion) for MC $mcVersion - warning shown, launch not blocked")
-                    Toast.makeText(context, context.getString(warningRes, rendererId, boundary, mcVersion), Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, context.getString(warningRes, displayName, boundary, mcVersion), Toast.LENGTH_LONG).show()
                 }
             }.onFailure { e -> Logging.e("LaunchGame", "Renderer/MC-version compatibility check failed", e) }
 

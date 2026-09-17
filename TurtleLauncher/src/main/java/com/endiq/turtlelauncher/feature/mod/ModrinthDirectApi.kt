@@ -108,10 +108,16 @@ internal object ModrinthDirectApi {
             ?: return null
         if (hits.isEmpty()) return null
 
+        // Mod IDs and Modrinth slugs freely differ in -/_ separators (Emotecraft's
+        // dependency mod ID "player_animation_library" ships as slug
+        // "player-animation-library"), so compare a normalized form too, not just the
+        // raw strings.
+        fun normalize(id: String): String = id.replace("-", "").replace("_", "")
         val exact = hits.firstOrNull { hit ->
             val slug = hit.get("slug")?.takeIf { it.isJsonPrimitive }?.asString
             val pid = hit.get("project_id")?.takeIf { it.isJsonPrimitive }?.asString
-            slug.equals(modId, ignoreCase = true) || pid.equals(modId, ignoreCase = true)
+            slug.equals(modId, ignoreCase = true) || pid.equals(modId, ignoreCase = true) ||
+                slug?.let { normalize(it).equals(normalize(modId), ignoreCase = true) } == true
         }
         val chosen = exact ?: hits.first()
         return chosen.get("slug")?.takeIf { it.isJsonPrimitive }?.asString

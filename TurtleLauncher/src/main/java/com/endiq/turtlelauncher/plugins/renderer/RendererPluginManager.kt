@@ -100,7 +100,17 @@ object RendererPluginManager {
             ) {
                 val rendererString = metaData.getString("renderer") ?: return
                 val des = metaData.getString("des") ?: return
-                val turtleEnvString = metaData.getString("turtleEnv") ?: return
+                // The env blob ships under different meta-data keys depending on the
+                // plugin's lineage: Turtle-native plugins declare "turtleEnv", but the
+                // MobileGlues app (MobileGL-Dev/MobileGlues-plugin, package
+                // com.fcl.plugin.mobileglues) only declares the PojavLauncher-era
+                // "pojavEnv" plus "boatEnv" - requiring turtleEnv alone made its renderer
+                // silently vanish from the picker (it was visible in v2), so fall back
+                // through the legacy keys before giving up on the plugin.
+                val turtleEnvString = metaData.getString("turtleEnv")
+                    ?: metaData.getString("pojavEnv")
+                    ?: metaData.getString("boatEnv")
+                    ?: return
                 val nativeLibraryDir = info.nativeLibraryDir
                 val renderer = rendererString.split(":")
 
@@ -127,6 +137,14 @@ object RendererPluginManager {
 
                 val packageName = info.packageName
 
+                // The plugin's own supported Minecraft range, declared right next to the
+                // renderer/env metadata (the MobileGlues plugin app ships minMCVer="1.17",
+                // maxMCVer="" = open-ended). Empty/absent means "no bound declared". Kept on
+                // the plugin so the launch-time compat warning and the renderer picker note
+                // can honor it exactly like a built-in RendererCatalog range.
+                val minMCVer = metaData.getString("minMCVer")?.takeIf { it.isNotBlank() }
+                val maxMCVer = metaData.getString("maxMCVer")?.takeIf { it.isNotBlank() }
+
                 val plugin = ApkRendererPlugin(
                     rendererId,
                     "$des (${
@@ -145,7 +163,9 @@ object RendererPluginManager {
                     nativeLibraryDir,
                     envList,
                     dlopenList,
-                    packageName
+                    packageName,
+                    minMCVer,
+                    maxMCVer
                 )
 
                 rendererPluginList.add(plugin)

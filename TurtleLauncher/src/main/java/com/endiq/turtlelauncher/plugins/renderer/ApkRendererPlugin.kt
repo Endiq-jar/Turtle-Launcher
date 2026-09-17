@@ -9,7 +9,10 @@ class ApkRendererPlugin(
     path: String,
     env: Map<String, String>,
     dlopen: List<String>,
-    val packageName: String
+    val packageName: String,
+    minMinecraftVersion: String? = null,
+    maxMinecraftVersion: String? = null
 ) : RendererPlugin(
-    id, displayName, uniqueIdentifier, glName, eglName, path, env, dlopen
+    id, displayName, uniqueIdentifier, glName, eglName, path, env, dlopen,
+    minMinecraftVersion, maxMinecraftVersion
 )

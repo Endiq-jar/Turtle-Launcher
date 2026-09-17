@@ -460,7 +460,11 @@ public final class JREUtils {
             // re-enabled - see that class's doc for what is and isn't actually fixed.
             String eglLibraryName = envMap.get("POJAVEXEC_EGL");
             if (eglLibraryName != null) {
-                envMap.put("SDL_EGL_LIBRARY", DIR_NATIVE_LIB + "/" + eglLibraryName);
+                // Plugin renderers (e.g. the MobileGlues app's renderer) expose their EGL
+                // library as an absolute path inside the plugin - only bare names live in
+                // the launcher's own native folder and need prefixing.
+                envMap.put("SDL_EGL_LIBRARY",
+                    eglLibraryName.startsWith("/") ? eglLibraryName : DIR_NATIVE_LIB + "/" + eglLibraryName);
             }
             String sdlGraphicsLib = loadGraphicsLibrary();
             if (sdlGraphicsLib != null) {
@@ -610,9 +614,17 @@ public final class JREUtils {
         // logcat lives in logd, not in this process, so it survives. See GameLogcat.
         com.endiq.turtlelauncher.feature.log.GameLogcat.start();
 
+        // TurtleLauncher: tee the game's own stdout/stderr into latestlog.txt for this
+        // session. Until this, `latestlog.txt` only ever held the launcher's own pre-launch
+        // dump (the "JVMArg:" lines above) - the game's actual output (Log4j2, mod loader,
+        // crash stack traces) went nowhere, which is why the crash screen / Last Game Log /
+        // Assistant had no game log to show. See GameOutputCapture.
+        com.endiq.turtlelauncher.feature.log.GameOutputCapture.install();
+
         final int exitCode = VMLauncher.launchJVM(userArgs.toArray(new String[0]));
         // Reached only on a graceful JVM exit - on a signal the process is already gone and
         // the drain dies with it, which is exactly the case the captured file exists for.
+        com.endiq.turtlelauncher.feature.log.GameOutputCapture.uninstall();
         com.endiq.turtlelauncher.feature.log.GameLogcat.stop();
         Logger.appendToLog("Java Exit code: " + exitCode);
         if (exitCode != 0) {
