@@ -18,6 +18,7 @@ import com.endiq.turtlelauncher.ui.dialog.TipDialog
 import com.endiq.turtlelauncher.ui.subassembly.aichat.ChatMessage
 import com.endiq.turtlelauncher.ui.subassembly.aichat.ChatMessageAdapter
 import com.endiq.turtlelauncher.utils.ZHTools
+import java.io.File
 
 /**
  * Built-in AI Assistant screen - the destination of the top-bar Assistant button
@@ -38,6 +39,10 @@ import com.endiq.turtlelauncher.utils.ZHTools
 class AiChatFragment : FragmentWithAnim(R.layout.fragment_ai_chat) {
     companion object {
         const val TAG = "AiChatFragment"
+
+        /** Bundle arg carrying a log file shared via the Android share sheet; the
+         *  Assistant reads and analyzes it as soon as the conversation is restored. */
+        const val ARG_SHARED_LOG_PATH = "shared_log_path"
     }
 
     private lateinit var binding: FragmentAiChatBinding
@@ -77,6 +82,14 @@ class AiChatFragment : FragmentWithAnim(R.layout.fragment_ai_chat) {
         }
 
         restoreConversation()
+
+        // Arrived here because the user shared a game log with the launcher through the
+        // Android share sheet? Analyze it right away instead of waiting to be asked.
+        val sharedLogPath = arguments?.getString(ARG_SHARED_LOG_PATH)
+        if (sharedLogPath != null) {
+            arguments?.remove(ARG_SHARED_LOG_PATH)
+            analyzeSharedLogFile(File(sharedLogPath))
+        }
     }
 
     /** Loads the saved transcript if there is one, otherwise opens with the greeting. */
@@ -91,6 +104,42 @@ class AiChatFragment : FragmentWithAnim(R.layout.fragment_ai_chat) {
         } else {
             saved.forEach { appendMessage(it) }
             setSuggestions(TurtleAssistant.startingSuggestions())
+        }
+    }
+
+    /**
+     * Reads a log file handed over via the Android share sheet and lets the Assistant
+     * analyze it on a background thread (reading + rule matching can touch the disk).
+     * The result is appended to the conversation like any normal answer.
+     */
+    private fun analyzeSharedLogFile(logFile: File) {
+        appendMessage(ChatMessage(getString(R.string.assistant_share_received), true))
+        isAnswering = true
+        binding.chatSendButton.isEnabled = false
+        setSuggestions(emptyList())
+
+        val appContext = requireContext().applicationContext
+        TaskExecutors.getDefault().execute {
+            val logText = runCatching {
+                if (logFile.isFile) logFile.readText() else ""
+            }.onFailure { e -> Logging.e(TAG, "Couldn't read the shared log file", e) }
+                .getOrDefault("")
+
+            val reply = runCatching { TurtleAssistant.analyzeSharedLog(appContext, logText) }
+                .onFailure { e -> Logging.e(TAG, "Assistant failed to analyze the shared log", e) }
+                .getOrDefault(TurtleAssistant.Reply(fallbackErrorText()))
+
+            TaskExecutors.runInUIThread {
+                if (!isAdded || view == null) return@runInUIThread
+                isAnswering = false
+                binding.chatSendButton.isEnabled = true
+                appendMessage(ChatMessage(reply.text, false))
+                setSuggestions(
+                    if (reply.suggestions.isNotEmpty()) reply.suggestions
+                    else TurtleAssistant.startingSuggestions()
+                )
+                persist()
+            }
         }
     }
 

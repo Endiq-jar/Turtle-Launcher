@@ -188,4 +188,18 @@
         <item name="android:paddingBottom">8dp</item>
         <item name="android:paddingTop">4dp</item>
     </style>
+
+    <!-- Invisible trampoline theme for the Android-share-sheet entry point
+         (ShareReceiverActivity): it never shows UI of its own, it just reads the shared
+         log and hands it to the Assistant inside LauncherActivity, so its window must be
+         transparent and animation-free or the user would see a black flash. -->
+    <style name="ShareTrampolineTheme" parent="AppTheme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@style/NoAnimations</item>
+    </style>
 </resources>

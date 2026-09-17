@@ -89,7 +89,12 @@ class EmotesFragment : FragmentWithAnim(R.layout.settings_fragment_emotes) {
         }.ended(TaskExecutors.getAndroidUI()) { outcome ->
             if (!isAdded) return@ended
             binding.installEmotecraftButton.isEnabled = true
-            Toast.makeText(requireContext(), R.string.emotes_install_success, Toast.LENGTH_LONG).show()
+            // outcome lists what actually got installed (Emotecraft + its dependencies,
+            // e.g. Player Animation Library) - show it, falling back to the generic
+            // success string only if it came back empty.
+            val message = outcome?.takeIf { it.isNotBlank() }
+                ?: getString(R.string.emotes_install_success)
+            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
             refreshStatus()
         }.onThrowable { error ->
             TaskExecutors.runInUIThread {
@@ -109,11 +114,25 @@ class EmotesFragment : FragmentWithAnim(R.layout.settings_fragment_emotes) {
 
     /** Mod status + save-folder caption. File scans are guarded inside Emotes. */
     private fun refreshStatus() {
-        val installed = Emotes.isEmotecraftInstalled()
-        val statusRes = if (installed) R.string.emotes_status_installed
-                        else R.string.emotes_status_missing
+        val emotecraftInstalled = Emotes.isEmotecraftInstalled()
+        val animatorInstalled = Emotes.isPlayerAnimatorInstalled()
+        // Three visible states: nothing installed, Emotecraft there but its mandatory
+        // Player Animation Library dependency missing (game would crash on launch), and
+        // everything in place. The install button doubles as "install the missing
+        // dependency" in the middle state - autoInstallEmotecraft() is idempotent about
+        // what's already present.
+        val statusRes = when {
+            emotecraftInstalled && animatorInstalled -> R.string.emotes_status_installed
+            emotecraftInstalled -> R.string.emotes_status_missing_animator
+            else -> R.string.emotes_status_missing
+        }
         binding.emotesModStatus.setText(statusRes)
-        binding.installEmotecraftButton.visibility = if (installed) View.GONE else View.VISIBLE
+        val complete = emotecraftInstalled && animatorInstalled
+        binding.installEmotecraftButton.visibility = if (complete) View.GONE else View.VISIBLE
+        binding.installEmotecraftButton.setText(
+            if (emotecraftInstalled) R.string.emotes_install_animator_button
+            else R.string.emotes_install_button
+        )
         val dir = runCatching { Emotes.emotesDir().absolutePath }.getOrDefault("(unavailable)")
         binding.emotesFolderInfo.text = getString(R.string.emotes_folder_info, dir)
         updateWheelKeyLabel()

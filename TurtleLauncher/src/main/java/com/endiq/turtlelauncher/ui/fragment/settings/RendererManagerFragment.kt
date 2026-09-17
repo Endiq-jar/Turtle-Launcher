@@ -129,7 +129,9 @@ class RendererManagerFragment : FragmentWithAnim(R.layout.fragment_renderer_mana
 
         val installedCards = compatibleRenderers.map { renderer ->
             val catalogEntry = RendererCatalog.get(renderer.getRendererId())
-            val compatNote = buildCompatNote(renderer, catalogEntry, hasVulkan)
+            val plugin = com.endiq.turtlelauncher.plugins.renderer.RendererPluginManager.getRendererList()
+                .find { it.uniqueIdentifier == renderer.getUniqueIdentifier() }
+            val compatNote = buildCompatNote(renderer, catalogEntry, plugin, hasVulkan)
             RendererCardAdapter.CardEntry(
                 uniqueIdentifier = renderer.getUniqueIdentifier(),
                 name = renderer.getRendererName(),
@@ -155,17 +157,29 @@ class RendererManagerFragment : FragmentWithAnim(R.layout.fragment_renderer_mana
     private fun buildCompatNote(
         renderer: com.endiq.turtlelauncher.renderer.RendererInterface,
         catalogEntry: RendererCatalog.Entry?,
+        plugin: com.endiq.turtlelauncher.plugins.renderer.RendererPlugin?,
         hasVulkan: Boolean
     ): String? {
-        val libMissing = !File(com.endiq.turtlelauncher.utils.path.PathManager.DIR_NATIVE_LIB, renderer.getRendererLibrary()).exists()
+        // Same existence rule as Renderers.hasRequiredLibrary: built-in renderers name a
+        // bare library inside the launcher's own jniLibs folder, plugin renderers bring
+        // their own library and reference it by absolute path inside the plugin.
+        val library = renderer.getRendererLibrary()
+        val libMissing = if (library.startsWith("/")) !File(library).exists()
+        else !File(com.endiq.turtlelauncher.utils.path.PathManager.DIR_NATIVE_LIB, library).exists()
         if (libMissing) return getString(R.string.renderer_compat_missing_library)
 
         if (renderer.getRendererId() == com.endiq.turtlelauncher.renderer.renderers.ZinkRenderer.ID && !hasVulkan) {
             return getString(R.string.renderer_compat_requires_vulkan)
         }
 
-        catalogEntry?.maxMinecraftVersion?.let { return getString(R.string.renderer_compat_max_version, it) }
-        catalogEntry?.minMinecraftVersion?.let { return getString(R.string.renderer_compat_min_version, it) }
+        // The version range a renderer card shows comes from the built-in RendererCatalog
+        // for first-class renderers; an installed plugin app ships its own range in its
+        // manifest (minMCVer/maxMCVer) and surfaces it the same way, so a plugin renderer
+        // documents its supported versions exactly like MobileGlues and friends do.
+        val maxVersion = catalogEntry?.maxMinecraftVersion ?: plugin?.maxMinecraftVersion
+        val minVersion = catalogEntry?.minMinecraftVersion ?: plugin?.minMinecraftVersion
+        maxVersion?.let { return getString(R.string.renderer_compat_max_version, it) }
+        minVersion?.let { return getString(R.string.renderer_compat_min_version, it) }
         return null
     }
 

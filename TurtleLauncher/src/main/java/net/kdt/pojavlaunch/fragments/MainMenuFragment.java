@@ -211,6 +211,26 @@ public class MainMenuFragment extends FragmentWithAnim {
         refreshCurrentVersion();
     }
 
+    /**
+     * TurtleLauncher: refresh the session-dependent dashboard cards every time the home
+     * screen comes back to the foreground - most importantly after returning from a game
+     * session, when a freshly-written game log must show up in the "Last Game Log" card
+     * without waiting for the fragment to be recreated.
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (binding == null) return;
+        refreshLastGameLog();
+        // TurtleLauncher: a feature-plugin app may have been installed (or uninstalled)
+        // while the launcher was in the background - LauncherActivity.onResume's plugin
+        // re-scan already refreshed FeaturePluginManager's list by this point, so rebuilding
+        // the Quick Actions rows here makes a freshly installed plugin app show up without
+        // a restart (and removes one that got uninstalled). Cheap: removeAllViews + a
+        // handful of rows.
+        populateFeaturePlugins();
+    }
+
     /** Populates the weekly playtime chart and today's total from {@link DailyPlaytimeStats}. */
     private void refreshStatistics() {
         long[] weekMs = DailyPlaytimeStats.getThisWeekMs();
@@ -220,29 +240,64 @@ public class MainMenuFragment extends FragmentWithAnim {
     }
 
     /**
-     * Populates the "Last Game Log" card from {@link CrashAnalyzer}'s own tracking of the
-     * most recent game session, and wires it to open the full log in {@link LogViewerFragment}
-     * when one is actually available.
+     * Populates the "Last Game Log" card and wires it to open the full log in
+     * {@link LogViewerFragment}.
+     *
+     * <p>TurtleLauncher fix: this used to read only {@link CrashAnalyzer#getLastLogText()} -
+     * in-memory state of the crash analysis, which (a) is only ever set in the process that
+     * ran the analysis (the :game process), and (b) dies with that process. Back on the home
+     * screen the card therefore always said "No log available yet", even though the game log
+     * itself exists on disk. It now falls back to the real saved game log files
+     * ({@link com.endiq.turtlelauncher.feature.log.LatestLogResolver#resolveLastGameLogFile()},
+     * i.e. Minecraft's own logs/latest.log and the launcher's latestlog.txt - the latter now
+     * actually contains the game's output, see GameOutputCapture), so the card keeps showing
+     * the last session's log across restarts.
      */
     private void refreshLastGameLog() {
         String lastLogText = CrashAnalyzer.INSTANCE.getLastLogText();
-        if (lastLogText == null || lastLogText.isEmpty()) {
+        File logFile = com.endiq.turtlelauncher.feature.log.LatestLogResolver.resolveLastGameLogFile();
+
+        if ((lastLogText == null || lastLogText.isEmpty()) && logFile == null) {
             binding.lastLogPreview.setText(R.string.main_last_log_none);
             binding.lastLogCard.setOnClickListener(null);
             return;
         }
 
-        String[] lines = lastLogText.split("\n");
-        String preview = lines.length > 0 ? lines[lines.length - 1] : lastLogText;
-        binding.lastLogPreview.setText(preview.trim());
+        String previewSource = (lastLogText != null && !lastLogText.isEmpty())
+                ? lastLogText
+                : CrashAnalyzer.tailOf(logFile, 8 * 1024);
+        String preview = lastNonEmptyLine(previewSource);
+        if (preview.isEmpty()) {
+            binding.lastLogPreview.setText(R.string.main_last_log_none);
+        } else {
+            binding.lastLogPreview.setText(preview);
+        }
 
+        final File targetLogFile = logFile;
         binding.lastLogCard.setOnClickListener(v -> {
-            File logFile = new File(PathManager.DIR_GAME_HOME, "latestlog.txt");
-            if (logFile.isFile()) {
+            File toOpen = targetLogFile != null
+                    ? targetLogFile
+                    : com.endiq.turtlelauncher.feature.log.LatestLogResolver.resolveLatestLogFile();
+            if (toOpen != null && toOpen.isFile()) {
                 ZHTools.swapFragmentWithAnim(this, LogViewerFragment.class, LogViewerFragment.TAG,
-                    LogViewerFragment.Companion.createArgs(logFile));
+                    LogViewerFragment.Companion.createArgs(toOpen));
             }
         });
+    }
+
+    /** Last non-empty line of [text], trimmed and capped so it fits the card preview.
+     *  Skips the launcher's own bookkeeping lines (e.g. "Java Exit code: 0") so the card
+     *  shows an actual game-output line instead. */
+    private static String lastNonEmptyLine(String text) {
+        if (text == null) return "";
+        String[] lines = text.split("\n");
+        for (int i = lines.length - 1; i >= 0; i--) {
+            String trimmed = lines[i].trim();
+            if (trimmed.isEmpty()) continue;
+            if (trimmed.startsWith("Java Exit code")) continue;
+            return trimmed.length() > 200 ? trimmed.substring(trimmed.length() - 200) : trimmed;
+        }
+        return "";
     }
 
     /**

@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.StatFs
 import com.endiq.turtlelauncher.InfoDistributor
 import com.endiq.turtlelauncher.feature.log.CrashAnalyzer
+import com.endiq.turtlelauncher.feature.log.LatestLogResolver
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.feature.version.VersionsManager
 import com.endiq.turtlelauncher.renderer.RendererCatalog
@@ -73,6 +74,9 @@ object TurtleAssistant {
                 "Ask me about renderers, crashes, memory, controls, mods, skins, accounts, " +
                 "friends/LAN play, or type /status for a summary of this device and your " +
                 "current setup.\n\n" +
+                "You can also share a game log with me: use Android's share menu on any " +
+                "log file or log text and pick this launcher - I'll read it and tell you " +
+                "what went wrong.\n\n" +
                 "I only know about this launcher, so if I can't help I'll say so rather " +
                 "than guess.",
             listOf("Status", "Best renderer?", "Why did my game crash?", "Not enough RAM?")
@@ -121,6 +125,45 @@ object TurtleAssistant {
             return Reply(unknownAnswer(raw), startingSuggestions())
         }
         return Reply(safeAnswer(context, best.first), best.first.followUps)
+    }
+
+    /**
+     * Analyzes a log the user handed to the launcher through the Android share menu
+     * (ShareReceiverActivity -> AiChatFragment). Runs the exact same [CrashAnalyzer] rule
+     * engine the post-crash screen uses over [logText] and reports what matched - this is
+     * the destination of "share your game log with the Assistant".
+     */
+    @JvmStatic
+    fun analyzeSharedLog(context: Context, logText: String): Reply {
+        if (logText.isBlank()) {
+            return Reply(
+                "The log you shared was empty, so there's nothing for me to read. " +
+                    "If the game crashed, try sharing the log again right after it happens.",
+                listOf("Help")
+            )
+        }
+        // Keep the analysis bounded - shared files can be huge and the rule engine only ever
+        // needs the tail where the actual failure sits.
+        val tail = if (logText.length > 200_000) logText.takeLast(200_000) else logText
+        val diagnoses = runCatching { CrashAnalyzer.analyze(tail) }
+            .onFailure { e -> Logging.e(TAG, "Failed to analyze a shared log", e) }
+            .getOrDefault(emptyList())
+        if (diagnoses.isEmpty()) {
+            return Reply(
+                "I read the log you shared, but it doesn't contain anything my rules can " +
+                    "explain (no crash, no error lines I recognize). If the game misbehaved, " +
+                    "share the log again right after it happens.",
+                listOf("Why did my game crash?", "Status")
+            )
+        }
+        val formatted = runCatching { CrashAnalyzer.formatForDisplay(diagnoses) }.getOrDefault("")
+        val text = if (formatted.isNotBlank()) formatted else diagnoses.joinToString("\n\n") {
+            "${it.title}\n${it.cause}"
+        }
+        return Reply(
+            "I read the log you shared. Here's what my rules found:\n\n$text",
+            listOf("Why did my game crash?", "Best renderer?", "Status")
+        )
     }
 
     private fun topicReply(context: Context, id: String): Reply {
@@ -197,9 +240,28 @@ object TurtleAssistant {
             (current?.let { " (selected: $it)" } ?: " (none selected)") + "\n")
         if (freeGb != null) sb.append("• Free storage on the game drive: ${freeGb}GB\n")
         sb.append("• Last crash: ")
-        val log = runCatching { CrashAnalyzer.getLastLogText() }.getOrNull()
+        val log = readMostRecentGameLog()
         sb.append(if (log.isNullOrBlank()) "none recorded" else "a log is available - ask me \"why did my game crash?\"")
         return sb.toString()
+    }
+
+    /**
+     * The freshest game log the assistant can get its hands on.
+     *
+     * First try [CrashAnalyzer.getLastLogText] - the in-memory tail the crash screen
+     * captured - but that only survives in the process that ran the analysis, so fall back
+     * to the newest game log file on disk (the same one the home screen's "Last Game Log"
+     * card points at, see [LatestLogResolver.resolveLastGameLogFile]). Without this fallback
+     * the assistant keeps claiming "no recent game log" in a fresh session even though the
+     * log is sitting right there - which is exactly what made log-sharing feel broken.
+     */
+    private fun readMostRecentGameLog(): String? {
+        val inMemory = runCatching { CrashAnalyzer.getLastLogText() }.getOrNull()
+        if (!inMemory.isNullOrBlank()) return inMemory
+        return runCatching {
+            val file = LatestLogResolver.resolveLastGameLogFile() ?: return@runCatching null
+            CrashAnalyzer.tailOf(file, 64 * 1024)
+        }.getOrNull()
     }
 
     /** Human-readable name of the renderer this launcher would actually use right now. */
@@ -233,7 +295,7 @@ object TurtleAssistant {
     /** Reads the most recent game log through the same [CrashAnalyzer] rules the crash
      *  screen uses, then summarizes the result in chat. No network, no key. */
     private fun crashReply(context: Context): Reply {
-        val log = runCatching { CrashAnalyzer.getLastLogText() }.getOrNull()
+        val log = readMostRecentGameLog()
         if (log.isNullOrBlank()) {
             return Reply(
                 "I don't have a recent game log to look at.\n\n" +

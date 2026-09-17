@@ -653,6 +653,10 @@
     <string name="ai_chat_clear_title">Clear conversation?</string>
     <string name="ai_chat_clear_message">This deletes the saved Assistant history on this device. It can\'t be undone.</string>
     <string name="ai_chat_error_generic">Something went wrong while answering that. Try again.</string>
+    <!-- Android share sheet -> Assistant (ShareReceiverActivity) -->
+    <string name="assistant_share_received">Here\'s the log I just received via the share menu - what does it say?</string>
+    <string name="assistant_share_nothing">Nothing readable was shared - share a game log file (.log/.txt) or its text, and I\'ll analyze it.</string>
+    <string name="assistant_share_failed">Couldn\'t save the shared log - check storage access and try again.</string>
     <string name="setting_ai_assistant_title">Show the Assistant button</string>
     <string name="setting_ai_assistant_desc">Shows the Assistant in the launcher\'s top bar. It answers questions about this launcher entirely on-device - no API key, no account and no internet connection needed.</string>
     <string name="setting_ai_assistant_history_title">Keep Assistant conversations</string>
@@ -811,7 +815,7 @@
     <string name="setting_renderer_from_plugins">From %s Plugin</string>
     <string name="setting_renderer_local_import_title">Local Renderer Import</string>
     <string name="setting_renderer_local_import_desc">In addition to installing software-rendering plugins, the launcher also supports importing renderer plugins locally. However, some devices may not be able to use local renderer plugins, so use with caution!</string>
-    <string name="setting_renderer_local_import_restart">New renderer imported. Please restart the launcher to load it!</string>
+    <string name="setting_renderer_local_import_restart">New renderer plugin imported - it\'s available in the renderer list right away, no restart needed.</string>
     <string name="setting_renderer_local_import_failed">Failed to import the renderer plugin. The file format of the compressed package might be incorrect, or the plugin may conflict with other plugins!</string>
     <string name="setting_renderer_local_manage">Manage Local Renderer Plugins</string>
     <string name="setting_renderer_local_delete">Are you sure you want to delete this renderer plugin? This action cannot be undone!</string>
@@ -1210,14 +1214,14 @@
 
     <!-- TurtleLauncher: What\'s New -->
     <string name="whats_new_title">🐢 What\'s New in TurtleLauncher</string>
-    <string name="whats_new_version">v3.0</string>
-    <string name="whats_new_skin_cape">🎨 Skin &amp; Cape Manager</string>
-    <string name="whats_new_skin_cape_desc">Change your skin or cape from a URL or pick directly from your gallery. Applies instantly to the account file — no game restart needed to switch.</string>
-    <string name="whats_new_other_login">🔑 Third-Party Login (authlib-injector / nide8auth)</string>
-    <string name="whats_new_other_login_desc">Full support for ely.by and custom Yggdrasil servers via authlib-injector, plus 32-bit server ID support (nide8auth / mc-user.com). Add servers by tapping the ⊕ button on the Accounts screen.</string>
-    <string name="whats_new_presets">⚡ PvP &amp; Survival Presets</string>
-    <string name="whats_new_presets_desc">One-tap PvP preset (low-latency, uncapped FPS, tight GC) and Survival preset (balanced RAM, smooth GC). Available in Settings → Game.</string>
-    <string name="whats_new_warning">⚠ Some presets may increase battery drain and thermal load. Monitor device temperature during extended sessions.</string>
+    <string name="whats_new_version">v3.1</string>
+    <string name="whats_new_feature_1">🎭 Emotes: dependencies install themselves</string>
+    <string name="whats_new_feature_1_desc">Installing the Emotecraft mod now automatically fetches its required Player Animation Library dependency (read straight from the mod\'s own metadata), so the game no longer crashes on launch with a missing-dependency error.</string>
+    <string name="whats_new_feature_2">📜 Game logs are finally saved</string>
+    <string name="whats_new_feature_2_desc">The game\'s own output — mod loaders, console messages, crash traces — is captured into the launcher log. The home screen\'s Last Game Log card shows the last session across restarts, and the Assistant can read it when you ask why the game crashed.</string>
+    <string name="whats_new_feature_3">📤 Share logs straight into the Assistant</string>
+    <string name="whats_new_feature_3_desc">Turtle Launcher now appears in Android\'s share menu. Share any game log (file or text) from any app and the Assistant analyzes it on the spot — no copy-paste.</string>
+    <string name="whats_new_warning">🧩 Renderer plugin apps (e.g. MobileGlues) show up in the renderer list right after you install them — no restart needed — and their supported Minecraft version range is honored like any built-in renderer.</string>
 
     <!-- TurtleLauncher: Presets -->
     <string name="preset_pvp_title">PvP Preset</string>
@@ -1352,12 +1356,14 @@
     <string name="settings_row_emotes_desc">Browse and download emotes, set the wheel key, check the Emotecraft mod</string>
     <string name="emotes_screen_title">Emotes</string>
     <string name="emotes_site_hint">Community emote library below - tapping a download saves the .emote file straight into this version\'s emotes folder, ready for Emotecraft in game.</string>
-    <string name="emotes_status_installed">Emotecraft mod: installed - emotes will play in game</string>
+    <string name="emotes_status_installed">Emotecraft mod: installed (with Player Animation Library) - emotes will play in game</string>
     <string name="emotes_status_missing">Emotecraft mod: not found in this version\'s mods folder - install it (Fabric, Forge, NeoForge or Quilt) to use emotes</string>
+    <string name="emotes_status_missing_animator">Emotecraft mod: installed, but its required Player Animation Library dependency is missing - the game will crash on launch until it is installed</string>
     <string name="emotes_open_browser">Open site in browser</string>
     <string name="emotes_install_button">Install Emotecraft mod</string>
+    <string name="emotes_install_animator_button">Install missing dependency (Player Animation Library)</string>
     <string name="emotes_installing">Downloading &amp; installing Emotecraft…</string>
-    <string name="emotes_install_success">Emotecraft installed! Restart game to use the emote wheel.</string>
+    <string name="emotes_install_success">Emotecraft installed (with its required Player Animation Library dependency)! Restart game to use the emote wheel.</string>
     <string name="emotes_install_failed">Could not auto-install Emotecraft: %s</string>
     <string name="emotes_install_no_loader">Cannot auto-install: version has no supported mod loader (Fabric, Forge, NeoForge, or Quilt required).</string>
     <string name="emotes_folder_info">Emotes are saved to: %s</string>
