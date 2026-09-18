@@ -1372,6 +1372,8 @@
     <string name="emotes_wheel_key_title">Emote wheel key</string>
     <string name="emotes_wheel_key_summary">The in-game menu\'s emote button sends this key to the game. It must match Emotecraft\'s own keybind (default: B). Tap to change.</string>
     <string name="emotes_wheel_key_value">Key: %s</string>
+    <string name="emotes_page_prev">Scroll emote library up</string>
+    <string name="emotes_page_next">Scroll emote library down</string>
     <string name="setting_emotes_enabled_title">Emote button</string>
     <string name="game_menu_emote_wheel">Play emote (open wheel)</string>
     <string name="game_menu_emote_site">Get emotes (website)</string>

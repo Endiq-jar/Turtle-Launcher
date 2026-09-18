@@ -6,6 +6,7 @@
      to install it from Modrinth, and the emote-wheel key picker used by the in-game menu's
      "Play emote" button. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -182,6 +183,41 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:visibility="gone"/>
+
+                <!-- TurtleLauncher NESTED-SCROLL FIX: this WebView sits inside the outer
+                     NestedScrollView above (see that view's own comment), and WebView does
+                     not implement NestedScrollingChild - Android's nested-scroll dispatch
+                     between it and a NestedScrollView is heuristic and unreliable, so a
+                     swipe meant to scroll further down the community library page can get
+                     stolen by the outer scroll view instead, leaving the user stuck able to
+                     see only the first row or two ("can't see more emotes"). These two
+                     mini-FABs bypass gesture scrolling entirely by paging the WebView's own
+                     content directly via View.pageUp/pageDown - reliable regardless of how
+                     nested scroll negotiation behaves. -->
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/emotes_page_prev_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:layout_margin="@dimen/space_m"
+                    android:contentDescription="@string/emotes_page_prev"
+                    android:src="@drawable/ic_chevron_right"
+                    android:rotation="180"
+                    app:backgroundTint="@color/accent_primary"
+                    app:tint="@color/background_app"
+                    app:fabSize="mini"/>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/emotes_page_next_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="@dimen/space_m"
+                    android:contentDescription="@string/emotes_page_next"
+                    android:src="@drawable/ic_chevron_right"
+                    app:backgroundTint="@color/accent_primary"
+                    app:tint="@color/background_app"
+                    app:fabSize="mini"/>
             </FrameLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

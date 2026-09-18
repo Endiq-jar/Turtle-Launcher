@@ -71,6 +71,16 @@ class EmotesFragment : FragmentWithAnim(R.layout.settings_fragment_emotes) {
         }
         binding.emotesWheelKeyRow.setOnClickListener { showWheelKeyPicker() }
 
+        // Nested-scroll workaround (see settings_fragment_emotes.xml's comment on these
+        // two FABs): page the WebView's own content directly rather than relying on swipe
+        // gestures, which the outer NestedScrollView can steal mid-scroll.
+        binding.emotesPagePrevButton.setOnClickListener {
+            runCatching { binding.emotesWebView.pageUp(false) }
+        }
+        binding.emotesPageNextButton.setOnClickListener {
+            runCatching { binding.emotesWebView.pageDown(false) }
+        }
+
         refreshStatus()
         setupWebView()
     }
