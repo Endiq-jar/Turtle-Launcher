@@ -117,6 +117,15 @@ public class Terracotta {
     public static synchronized void initialize(Activity activity) {
         if (initialized) return;
 
+        // TurtleLauncher diagnostic marker (Sept 2026, Friends/LAN SIGABRT at open): the
+        // native library loads (and can abort the process) inside
+        // TerracottaAndroidAPI.initialize() below, on THIS thread. One line naming the
+        // entry path means the next native tombstone can be matched to its trigger from
+        // logcat alone. Current wiring (verified): MainMenuFragment's Friends/LAN button
+        // -> TerracottaFragment.onViewCreated -> TaskExecutors background executor ->
+        // here. Nothing else in the app calls this.
+        Logging.i("Terracotta", "Terracotta.initialize() entered on thread " + Thread.currentThread().getName());
+
         appContext = activity.getApplicationContext();
         metadata = TerracottaAndroidAPI.initialize(activity, () ->
             TaskExecutors.runInUIThread(() -> {

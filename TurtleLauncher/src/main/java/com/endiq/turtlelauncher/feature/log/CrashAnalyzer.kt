@@ -748,6 +748,58 @@ object CrashAnalyzer {
                         severity = Severity.CRITICAL
                     )
                 }
+            ),
+            // 23. Terracotta (Friends/LAN play) native init abort. libterracotta.so's
+            // JNI_OnLoad is Rust (upstream Terracotta v0.4.2, built for this launcher), and
+            // EVERY precondition it checks is enforced by panic!-abort: GetEnv failure,
+            // FindClass("java/lang/System")/GetMethodID failure, FindClass of the
+            // net.burningtnt.terracotta.TerracottaAndroidAPI class (by the
+            // terracotta.native_location system property this launcher sets right before
+            // loadLibrary), and RegisterNatives - which aborts if ANY of the 11 native
+            // methods' name/signature pairs doesn't match the Java declarations exactly.
+            //
+            // The Sept 14 tombstone (debug build, :launcher process, SIGABRT with
+            // JNI_OnLoad's register_native_methods on the stack) is fully explained by a
+            // descriptor mismatch that existed then: setScanning0/setGuesting0 were declared
+            // ()V instead of (Z)V. That was fixed on Sept 18 (commit "fix the descriptors")
+            // and the shipped .so's embedded table now matches the Java declarations
+            // method-for-method - verified statically, both sides.
+            //
+            // What Java can and can't do about the rest: the abort is a native panic, so no
+            // Java catch can intercept it. TerracottaAndroidAPI's static initializer now
+            // logs the expected descriptor table + thread right before loadLibrary, so the
+            // NEXT tombstone comes with its own decode key in logcat (the Rust side also
+            // logs "Cannot initialize Terracotta Android: ..." under logcat tag "hello"
+            // before panicking - upstream v0.4.2 behavior). Terracotta.initialize() also
+            // refuses to re-attempt a failed start within the same process now, because a
+            // second start0() call against half-initialized native state is exactly the
+            // kind of precondition violation that aborts. This rule exists so the abort is
+            // surfaced as a diagnosis instead of a bare SIGABRT.
+            Rule(
+                title = "terracotta_native_init_abort",
+                matches = { has(it, "libterracotta.so") && has(it, "SIGABRT", "Fatal signal", "JNI_OnLoad") },
+                diagnosis = fixed(
+                    "Terracotta (Friends/LAN) native library aborted while initializing",
+                    "libterracotta.so's JNI_OnLoad aborted (SIGABRT). Its init code verifies every " +
+                        "Java-side piece it needs - the TerracottaAndroidAPI class, its 11 native method " +
+                        "name/signature pairs, and java/lang/System access - and aborts the whole process " +
+                        "if any single one doesn't match. A descriptor mismatch that would produce exactly " +
+                        "this abort was found and fixed (Sept 18), and the launcher now logs the expected " +
+                        "descriptor table right before loading the library, so a recurrence is decodable " +
+                        "from the log alone. Note: this only affects the Friends/LAN feature - game " +
+                        "launching and everything else keeps working.",
+                    listOf(
+                        "Update to the latest build - the known cause (a native-method signature mismatch) " +
+                            "is already fixed in newer builds.",
+                        "If it recurs, share the log: look for the 'TerracottaAndroidAPI' lines just before " +
+                            "the crash (they list the signatures the library expects), and any line from " +
+                            "logcat tag 'hello' saying 'Cannot initialize Terracotta Android: ...' - that " +
+                            "pair is the exact abort reason.",
+                        "Friends/LAN play just needs the app restarted to try again; if it keeps failing, " +
+                            "the feature can simply be left unused - nothing else in the launcher depends " +
+                            "on it."
+                    )
+                )
             )
         )
     }

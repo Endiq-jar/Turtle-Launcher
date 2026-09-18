@@ -140,9 +140,61 @@ public final class TerracottaAndroidAPI {
         }
     }
 
+    /**
+     * The exact name+signature pairs libterracotta.so passes to RegisterNatives in its
+     * JNI_OnLoad (verified against the shipped v0.4.2 .so's embedded table and upstream
+     * src/lib.rs). Kept here as the decode key logged before loadLibrary, so a future
+     * RegisterNatives abort can be compared against what the Java side actually declares
+     * without a repo checkout. If you change any native declaration in this class, change
+     * this table in the same commit - and the shipped .so.
+     *
+     * MUST stay textually ABOVE the static block below: Java runs field and static
+     * initializers in textual order, and that block logs this table during class init.
+     */
+    private static final String[] EXPECTED_JNI_TABLE = {
+        "start0(Ljava/lang/String;I)I",
+        "getState0()Ljava/lang/String;",
+        "setWaiting0()V",
+        "setScanning0(Ljava/lang/String;Ljava/lang/String;)V",
+        "setGuesting0(Ljava/lang/String;Ljava/lang/String;)Z",
+        "verifyRoomCode0(Ljava/lang/String;)I",
+        "getMetadata0()Ljava/lang/String;",
+        "prepareExportLogs0()J",
+        "finishExportLogs0(J)V",
+        "panic0()V",
+        "onVpnServiceStateChanged(BBBBSLjava/lang/String;)I",
+    };
+
     static {
+        // TurtleLauncher diagnostic markers (Sept 2026, Issue: Friends/LAN SIGABRT at open):
+        // libterracotta.so's JNI_OnLoad is Rust and enforces EVERY precondition by
+        // panic!-abort - GetEnv, FindClass("java/lang.System"), FindClass(this class, by the
+        // native_location property set below), and RegisterNatives, which aborts the whole
+        // process if ANY of the 11 native method name/signature pairs below doesn't match the
+        // Java declarations exactly. The Sept 14 tombstone (JNI_OnLoad's register path on the
+        // stack) was caused by exactly such a mismatch, fixed on Sept 18. A native abort can't
+        // be caught in Java, so these markers exist to make the NEXT one self-decoding from
+        // logcat: what was being loaded, on which thread, against which expected descriptor
+        // table - plus the Rust side's own "Cannot initialize Terracotta Android: ..." line
+        // under logcat tag "hello" just before it panics (upstream v0.4.2 behavior). Log
+        // failures are swallowed on purpose: diagnostics must never be what breaks class init.
+        try {
+            Log.i("TerracottaAndroidAPI", "About to load libterracotta.so (thread="
+                + Thread.currentThread().getName() + ", native_location="
+                + TerracottaAndroidAPI.class.getName().replace('.', '/') + ")");
+            Log.i("TerracottaAndroidAPI", "Expected JNI descriptors (name+signature the native side registers): "
+                + Arrays.toString(EXPECTED_JNI_TABLE));
+        } catch (Throwable ignored) {
+            // Never let logging abort class initialization.
+        }
         System.setProperty("net.burningtnt.terracotta.native_location", TerracottaAndroidAPI.class.getName().replace('.', '/'));
         System.loadLibrary("terracotta");
+        // Reached only if JNI_OnLoad completed without aborting - its own marker, so a
+        // missing line between the two above pins any crash to inside loadLibrary itself.
+        try {
+            Log.i("TerracottaAndroidAPI", "libterracotta.so loaded and JNI_OnLoad completed");
+        } catch (Throwable ignored) {
+        }
     }
 
     private static volatile VpnServiceRequest pendingRequest = null;
@@ -160,6 +212,9 @@ public final class TerracottaAndroidAPI {
 
     private static volatile RuntimeContext runtimeContext = null;
 
+    /** One-shot guard for the native start0() call - see initialize()'s doc comment. */
+    private static final AtomicBoolean START_ATTEMPTED = new AtomicBoolean(false);
+
     /**
      * <p>Get current pending VpnService Request.</p>
      *
@@ -176,6 +231,15 @@ public final class TerracottaAndroidAPI {
 
     /**
      * <p>Initialize the Terracotta Android.</p>
+     *
+     * <p>TurtleLauncher note: a native start is attempted at most ONCE per process. If
+     * {@code start0} fails (non-zero return or a thrown native error), native-side state may
+     * be half-initialized, and calling {@code start0} again against it is exactly the kind of
+     * violated-precondition that libterracotta.so aborts the process for - so a second
+     * attempt after a failed first one throws here instead. Failures BEFORE the native call
+     * (argument checks, directory/logging setup) stay retryable: the one-shot guard is only
+     * armed right before {@code start0} runs. Restart the app to retry after a real native
+     * failure.</p>
      *
      * @param context  An Android context object.
      * @param callback A callback to handle VpnService for EasyTier. See {@link VpnServiceCallback} for more information.
@@ -203,6 +267,15 @@ public final class TerracottaAndroidAPI {
             fd = ParcelFileDescriptor.dup(logging.getFD()).detachFd();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+
+        // One-shot native start guard - see the method doc. Armed only here, immediately
+        // before the call it protects, so pre-native setup failures remain retryable.
+        if (!START_ATTEMPTED.compareAndSet(false, true)) {
+            throw new IllegalStateException(
+                "Terracotta Android's native backend already had a failed start in this process; " +
+                "not calling into it again with possibly half-initialized state. Restart the app " +
+                "to retry. (The first failure's error was reported when it happened.)");
         }
 
         int code = start0(base.getAbsolutePath(), fd);
