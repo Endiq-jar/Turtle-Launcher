@@ -19,39 +19,6 @@ import java.util.Locale
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
-/**
- * TurtleLauncher: local skin/cape system.
- *
- * The problem: SkinCapeDialog/SkinLoader only ever saved a skin/cape PNG for this
- * launcher's OWN avatar UI (account picker face icon) - the actual Minecraft game
- * session never knew that file existed. For a real (Microsoft) account, Mojang's own
- * session server already supplies skin/cape data, so this only matters for LOCAL
- * (offline) accounts, which otherwise get the default Steve/Alex skin every time.
- *
- * The fix follows the same mechanism this launcher already uses for third-party
- * accounts (see BattlyAuthlibManager, and the generic authlib-injector path in
- * LaunchArgs.kt): authlib-injector is a real, widely-used, MIT-licensed Java agent
- * (yushijinhun/authlib-injector) that patches Minecraft's authlib at runtime to send
- * every session/profile lookup to a custom Yggdrasil-API-compatible server instead of
- * Mojang's. This class IS that server - a tiny embedded HTTP server, run inside this
- * launcher's own process, that answers those lookups using the skin/cape PNGs already
- * saved by SkinCapeDialog under PathManager.DIR_USER_SKIN.
- *
- * This covers "client-side" fully and unconditionally: the local player sees their own
- * skin/cape (menus, inventory, third-person, singleplayer, LAN), using the real
- * Minecraft skin/cape texture format (64x64 skin incl. modern slim/classic overlay
- * layout, 64x32 cape) - nothing about the PNGs themselves needs to change, only how
- * the game discovers their URL.
- *
- * "Server-side" (other players on a multiplayer server seeing the skin too) is only
- * possible if that server's own process *also* points authlib-injector at this same
- * API root - out of this launcher's control for any server it doesn't run. What this
- * class CAN do, honestly: bind to every network interface (not just loopback) when
- * [AllSettings.localSkinServerLanVisible] is on, so a small self-hosted server on the
- * same LAN/Wi-Fi can be pointed at this device's real address and pick up the same
- * skin data. See [lanInstructions]. Real Microsoft accounts never touch this class -
- * they already carry their skin server-side automatically through Mojang.
- */
 object TurtleSkinServer {
     private const val TAG = "TurtleSkinServer"
     private const val API_PREFIX = "/api/yggdrasil"
@@ -64,23 +31,11 @@ object TurtleSkinServer {
     @Volatile private var port: Int = -1
 
     private val keyPair by lazy {
-        // TurtleLauncher: generated once per launcher process and never persisted to
-        // disk - authlib-injector only needs the public key to be internally
-        // consistent with whatever private key actually signs each response, not to
-        // match anything external, so a fresh in-memory keypair per session is both
-        // simpler and safer than managing a long-lived private key file.
         KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.genKeyPair()
     }
     private val privateKey: PrivateKey get() = keyPair.private
     private val publicKey: PublicKey get() = keyPair.public
 
-    /**
-     * Starts the server if not already running (idempotent - safe to call on every
-     * launch). Restarts it if the LAN-visibility setting changed since it was last
-     * started, since that changes which address it needs to bind to. Returns the
-     * bound port, or -1 if the server could not start (best-effort: a failure here
-     * should never block the game from launching - see LaunchArgs.kt's call site).
-     */
     @Synchronized
     fun ensureStarted(lanVisible: Boolean): Int {
         if (running.get() && boundLan == lanVisible) return port
@@ -190,13 +145,6 @@ object TurtleSkinServer {
         return file.takeIf { it.isFile }
     }
 
-    /**
-     * The UUID authlib-injector asks about is whatever this launcher sent the game as
-     * auth_uuid, i.e. [MinecraftAccount.profileId] - NOT the separate uniqueUUID field
-     * used to key the actual skin/cape PNG filenames. Both are stable per-account (see
-     * MinecraftAccount.generateOfflineUUID for why profileId is now stable too), so
-     * this lookup just needs to match one to the other.
-     */
     private fun findLocalAccountByUuid(noDashUuid: String): MinecraftAccount? {
         return runCatching {
             com.endiq.turtlelauncher.feature.accounts.AccountsManager.allAccounts.firstOrNull { acc ->
@@ -268,13 +216,6 @@ object TurtleSkinServer {
             .put("signaturePublickey", pemPublicKey(publicKey))
     }
 
-    /**
-     * authlib-injector's metadata parser expects "signaturePublickey" as a full PEM
-     * string (BEGIN/END markers + 64-char-wrapped base64 body), not a bare base64
-     * blob - a raw blob fails with "Bad signature public key" even though the
-     * underlying X.509 bytes are perfectly valid. See real-world server responses
-     * from Blessing Skin / LittleSkin for the expected shape.
-     */
     private fun pemPublicKey(key: PublicKey): String {
         val body = Base64.encodeToString(key.encoded, Base64.NO_WRAP)
             .chunked(64)

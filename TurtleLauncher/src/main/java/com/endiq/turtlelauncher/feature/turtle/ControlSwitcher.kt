@@ -9,24 +9,6 @@ import com.endiq.turtlelauncher.utils.path.PathManager
 import net.endiq.launcher.customcontrols.ControlLayout
 import java.io.File
 
-/**
- * TurtleLauncher "Control Switcher": tap a button, get the next control layout.
- *
- * This is the same operation the in-game menu already offers under
- * Game Menu -> Control -> "Replace Control Layout" (MainActivity.replacementCustomControls(),
- * which opens SelectControlsDialog) - but with the dialog removed, for people who swap layouts
- * mid-game (e.g. a building layout and a PvP layout) and don't want to open the drawer for it.
- *
- * Layouts are the .json files in [PathManager.DIR_CTRLMAP_PATH], the same directory
- * ControlsListViewCreator lists, sorted by name so the cycle order is stable and predictable.
- * Cycling wraps: after the last layout it comes back to the first. The layout that is active
- * right now is read from [ControlLayout.mLayoutFileName], which loadLayout() sets, so the
- * switcher stays correct even if the layout was chosen through the menu or the editor instead.
- *
- * The button that calls this lives in activity_game.xml (control_switcher_button) and is
- * shown/hidden by AllSettings.controlSwitcherEnabled, toggled in the in-game menu as
- * "Control Switcher".
- */
 object ControlSwitcher {
 
     private const val TAG = "ControlSwitcher"

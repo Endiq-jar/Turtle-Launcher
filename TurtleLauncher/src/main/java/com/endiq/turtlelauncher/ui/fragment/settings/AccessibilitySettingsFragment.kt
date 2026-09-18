@@ -16,24 +16,6 @@ import com.endiq.turtlelauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapp
 import com.endiq.turtlelauncher.utils.ZHTools
 
 
-/**
- * TurtleLauncher Accessibility Settings (roadmap item 22): larger UI scaling, high-contrast
- * mode, and a font family picker.
- *
- * Scope note: these only affect the launcher's OWN screens (settings, menus, dialogs) - they
- * cannot touch Minecraft's in-game text/GUI, which is drawn natively by the game itself and
- * has no dependency on Android Resources/Configuration at all. That's an inherent boundary of
- * how this launcher (and every Turtle/Turtle-based launcher) works, not something any Android-
- * side setting can reach past.
- *
- * All three settings below change how the launcher's OWN UI is rendered (Configuration
- * fontScale + a theme overlay, both applied in BaseActivity.attachBaseContext()/onCreate() -
- * see AccessibilityHelper). That only takes effect when an Activity is (re)created, so rather
- * than a fragile manual recreate() call, these reuse the app's existing "requires reboot" flow
- * (setRequiresReboot() -> the wrapper's own checkShowRebootDialog() prompts to relaunch) - the
- * same mechanism already used for other settings that need a fresh process (e.g. renderer
- * changes), so the relaunch is guaranteed clean instead of half-applied.
- */
 class AccessibilitySettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment_accessibility, SettingCategory.ACCESSIBILITY) {
     companion object {
         const val TAG: String = "AccessibilitySettingsFragment"

@@ -27,7 +27,6 @@ class PathManager {
         lateinit var DIR_APP_CACHE: File
         lateinit var DIR_USER_SKIN: File
         lateinit var DIR_INSTALLED_RENDERER_PLUGIN: File
-        /** TurtleLauncher: local (zip-installed) driver plugins, mirrors DIR_INSTALLED_RENDERER_PLUGIN. */
         lateinit var DIR_INSTALLED_DRIVER_PLUGIN: File
 
         lateinit var FILE_SETTINGS: File

@@ -25,11 +25,6 @@ import java.text.DateFormat;
 import java.util.Date;
 
 
-
-
-
-
-
 public class TurtleApplication extends Application {
 	public static final String CRASH_REPORT_TAG = "TurtleCrashReport";
 
@@ -38,23 +33,8 @@ public class TurtleApplication extends Application {
 		ContextExecutor.setApplication(this);
 
 		Thread.setDefaultUncaughtExceptionHandler((thread, th) -> {
-			// TurtleLauncher: renamed from latestcrash.txt -> latestlog.txt, and unified into
-			// ONE folder (PathManager.DIR_LAUNCHER_LOG) instead of being split between
-			// DIR_LAUNCHER_LOG and DIR_DATA depending on storage permission. That split was a
-			// real bug: ZHTools.shareLogs() only zips DIR_LAUNCHER_LOG, so any report written
-			// to DIR_DATA was written somewhere the user could never actually share it from.
-			//
-			// Deliberately NOT pointed at the GAME log (DIR_GAME_HOME/latestlog.txt), which
-			// now shares this name: MainActivity/JavaGUILauncherActivity call Logger.begin()
-			// on that path at every game start, and Logger.begin() truncates the file. A crash
-			// report written there would be erased the next time the user launched Minecraft -
-			// losing exactly the report they were trying to keep.
 			File crashFile = new File(resolveCrashLogDir(), "latestlog.txt");
 			try {
-				// Same file NativeCrashCapture writes native/ANR deaths to - they used to have
-				// separate filenames specifically to avoid overwriting each other; now that
-				// they share one name, PREPEND (newest report first) and cap total size instead
-				// of truncating on write, so this crash doesn't erase a different-typed one.
 				FileUtils.ensureParentDirectory(crashFile);
 				StringBuilder report = new StringBuilder();
 				report.append(InfoDistributor.APP_NAME).append(" crash report\n");
@@ -109,17 +89,8 @@ public class TurtleApplication extends Application {
 			startActivity(ferrorIntent);
 		}
 
-		// TurtleLauncher: Shizuku/Sui binder tracking. Cheap and synchronous - it only
-		// registers listeners; the binder itself is delivered later by ShizukuProvider (see
-		// the manifest), and until then every caller sees "not available" and uses the
-		// normal unprivileged path. Runs in whichever process this Application instance
-		// belongs to, but only the `:launcher` process (where the UI lives, and which is
-		// also the process ShizukuProvider is instantiated in) ever queries it.
 		com.endiq.turtlelauncher.feature.shizuku.ShizukuManager.INSTANCE.init(this);
 
-		// TurtleLauncher: AnrWatchdog, dark mode, and dynamic color theming - see
-		// TurtleStartupInitializer for why this is triggered on-demand here rather than
-		// via AndroidX Startup's automatic pre-onCreate discovery.
 		androidx.startup.AppInitializer.getInstance(this)
 			.initializeComponent(com.endiq.turtlelauncher.startup.TurtleStartupInitializer.class);
 	}
@@ -133,9 +104,6 @@ public class TurtleApplication extends Application {
 	@Override
 	public void onTrimMemory(int level) {
 		super.onTrimMemory(level);
-		// Smart memory management: shrink the image cache as soon as the system
-		// reports memory pressure instead of waiting for a real OOM.
-		// Memory is precious while the game runs, so release caches the game does not need.
 		try {
 			com.bumptech.glide.Glide.get(this).trimMemory(level);
 		} catch (Throwable t) {
@@ -166,19 +134,6 @@ public class TurtleApplication extends Application {
 		LocaleHelper.Companion.setLocale(this);
     }
 
-	/**
-	 * Where every launcher crash report goes: PathManager.DIR_LAUNCHER_LOG, always - see the
-	 * comment at the uncaught-exception handler in onCreate() for why the old two-folder
-	 * split was wrong.
-	 *
-	 * The fallback matters and is not paranoia: DIR_LAUNCHER_LOG is a Kotlin `lateinit` that
-	 * is only assigned by PathManager.initContextConstants(), which runs from an Activity's
-	 * attachBaseContext(), not from Application.onCreate(). A crash before any Activity has
-	 * been created therefore sees it uninitialized and reading it throws - which would kill
-	 * the crash handler itself and lose the report. Falling back to DIR_DATA (assigned early
-	 * in onCreate above, so always present by this point) means the report is still written
-	 * somewhere rather than lost entirely.
-	 */
 	private static File resolveCrashLogDir() {
 		try {
 			File logDir = new File(PathManager.DIR_LAUNCHER_LOG);

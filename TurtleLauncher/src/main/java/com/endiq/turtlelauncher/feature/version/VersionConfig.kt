@@ -23,15 +23,6 @@ class VersionConfig(private var versionPath: File) : Parcelable {
     private var control: String = ""
     private var customPath: String = ""
     private var customInfo: String = ""
-    /** TurtleLauncher Phone Settings: per-instance -XX:ActiveProcessorCount override.
-     *  -1 = follow the global auto-detect/manual pick in Phone Settings; only consulted
-     *  by JREUtils when AllSettings.perInstanceCpuOverride is also on.
-     *  Nullable (not a plain Int defaulting to -1) on purpose: Gson deserializes this class
-     *  via an unsafe allocator rather than the constructor (same reason every other field
-     *  here is read through a getStringNotNull()-style null-coalescing getter below), so an
-     *  old VersionConfig.json saved before this field existed would leave a non-nullable Int
-     *  at Java's zero-value default (0 cores) instead of "follow global" (-1). Boxed Int?
-     *  correctly comes back null in that case instead. */
     private var cpuCoreOverride: Int? = -1
 
     constructor(

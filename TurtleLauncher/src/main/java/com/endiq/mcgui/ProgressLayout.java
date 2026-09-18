@@ -38,7 +38,6 @@ public class ProgressLayout extends ConstraintLayout implements View.OnClickList
     public static final String LOGIN_ACCOUNT = "login_account";
     public static final String INSTALL_RESOURCE = "install_resource";
     public static final String CHECKING_MODS = "checking_mods";
-    // TurtleLauncher: self-update download progress (see UpdateManager)
     public static final String DOWNLOAD_UPDATE = "download_update";
 
     public ProgressLayout(@NonNull Context context) {
@@ -68,12 +67,6 @@ public class ProgressLayout extends ConstraintLayout implements View.OnClickList
 
     /**
      * Start watching a progress key.
-     *
-     * TurtleLauncher fix: this used to do a blind mMap.put(), which dropped the previous
-     * listener for that key on the floor WITHOUT unregistering it from ProgressKeeper. Every
-     * repeated observe() (a repeated DownloadProgressKeyEvent, an Activity recreation, ...)
-     * therefore left the old listener permanently subscribed, still holding its own TextView
-     * and still adding it to this layout on every subsequent task start. Unregister first.
      */
     public void observe(String progressKey) {
         LayoutProgressListener previous = mMap.get(progressKey);
@@ -86,10 +79,6 @@ public class ProgressLayout extends ConstraintLayout implements View.OnClickList
 
     /**
      * Stop watching a progress key.
-     *
-     * TurtleLauncher fix: this used to only drop the map entry, leaving the listener
-     * registered in ProgressKeeper forever - so an un-observed key kept adding/removing
-     * progress bars for a task nobody was displaying any more.
      */
     public void unObserve(String progressKey) {
         LayoutProgressListener listener = mMap.remove(progressKey);
@@ -98,12 +87,6 @@ public class ProgressLayout extends ConstraintLayout implements View.OnClickList
         listener.removeView();
     }
 
-    /**
-     * Unregister everything this layout is watching.
-     *
-     * TurtleLauncher fix: the map is cleared too, so a second call (and any later
-     * observe()) can't re-remove or resurrect stale listeners.
-     */
     public void cleanUpObservers() {
         for (Map.Entry<String, LayoutProgressListener> entry : mMap.entrySet()) {
             ProgressKeeper.removeListener(entry.getKey(), entry.getValue());
@@ -144,25 +127,11 @@ public class ProgressLayout extends ConstraintLayout implements View.OnClickList
     @Override
     public void onUpdateTaskCount(int tc) {
         post(()->{
-            // TurtleLauncher: the bottom task bar is intentionally never shown anymore -
-            // running tasks are now surfaced through the top bar's tasks button/panel
-            // instead (see MainMenuFragment). hasProcesses()/observe()/the task-count
-            // listener wiring below are all still real and used elsewhere (e.g. the
-            // "are you sure, a task is running" exit-confirmation checks in
-            // LauncherActivity), so none of that bookkeeping was touched - only the
-            // visual reveal at the bottom of the screen was removed.
             mTaskNumberDisplayer.setText(getContext().getString(R.string.progresslayout_tasks_in_progress, tc));
             setVisibility(GONE);
         });
     }
 
-    /**
-     * TurtleLauncher: last line of defence. If this layout goes away (Activity destroyed,
-     * view swapped out) while background tasks are still posting at it, drop every progress
-     * bar we own and swallow the rest. Without this, a stray queued runnable could still
-     * touch a detached hierarchy after the Activity is gone. Re-armed from
-     * onAttachedToWindow() so a window that is legitimately re-attached keeps working.
-     */
     @Override
     protected void onDetachedFromWindow() {
         mDestroyed = true;
@@ -199,32 +168,6 @@ public class ProgressLayout extends ConstraintLayout implements View.OnClickList
         final TextProgressBar textView;
         final LinearLayout.LayoutParams params;
 
-        /**
-         * TurtleLauncher CRASH FIX - "The specified child already has a parent.
-         * You must call removeView() on the child's parent first."
-         *
-         * The reported crash was an addView() of [textView] into [mLinearLayout] while it
-         * was ALREADY a child of it, i.e. two onProgressStarted() callbacks for one task.
-         * The reason is ordering, not a missing onProgressEnded():
-         *
-         * View.post() does not have a single queue. When the view is still DETACHED (which
-         * it is for the whole of LauncherActivity.onCreate() - processViews() calls
-         * observe() right after setContentView(), long before the window is attached),
-         * post() parks the runnable in the view's HandlerActionQueue. Those are only handed
-         * to the main-thread Handler later, from dispatchAttachedToWindow(). Anything posted
-         * AFTER the attach goes straight to the Handler instead. So two events that happened
-         * in order A then B can be executed in order B then A whenever the attach point falls
-         * between them - and a start/end/start sequence becomes start/start/end. The second
-         * start then re-adds a TextView that is still attached -> IllegalStateException, on
-         * the UI thread, killing the whole app over a progress bar.
-         *
-         * Fix: the listener no longer trusts callback ORDER at all. Each callback only
-         * records the state that should be true ([mPendingVisible]) and posts a single
-         * reconcile step, which makes the view match whatever is current when it actually
-         * runs. Whichever order the runnables execute in, the last one wins and the end
-         * state is correct. attachView()/detachView() are additionally idempotent, so even a
-         * genuinely duplicate start can only ever leave one copy of the bar attached.
-         */
         private volatile boolean mPendingVisible = false;
 
         public LayoutProgressListener(String progressKey) {
@@ -274,8 +217,6 @@ public class ProgressLayout extends ConstraintLayout implements View.OnClickList
 
             ViewParent parent = textView.getParent();
             if (parent == mLinearLayout) {
-                // Already showing. Re-adding would throw "The specified child already has
-                // a parent" - the exact crash this was filed under.
                 return;
             }
             if (parent instanceof ViewGroup) {

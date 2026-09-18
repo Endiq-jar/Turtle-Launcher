@@ -7,20 +7,6 @@ import net.endiq.launcher.Tools
 import java.io.File
 import java.security.MessageDigest
 
-/**
- * Local "recently applied" history backing the tap-to-apply gallery in
- * [com.endiq.turtlelauncher.ui.dialog.SkinCapeDialog].
- *
- * There's no *documented* public API for browsing laby.net's skin gallery either - see
- * [com.endiq.turtlelauncher.feature.skin.LabyModGalleryApi]'s doc comment for what that
- * class does instead (scraping laby.net's own page data, no private/internal endpoints). That
- * covers live community browsing now, but it's still a best-effort scrape of an undocumented
- * site, not a guaranteed-stable API - and it only ever shows *other people's* skins/capes, not
- * what this user has actually applied before. This store is what actually is: a real,
- * always-available, fully offline gallery of whatever the user has applied before (from a URL,
- * the device gallery, a player lookup, or the laby.net browser above), independent of network
- * or any one third-party site's uptime.
- */
 internal object SkinCapeHistoryStore {
     private const val MAX_ENTRIES = 16
 
@@ -39,9 +25,6 @@ internal object SkinCapeHistoryStore {
 
     /** The actual applied-image file for [entry] (full res, not a downscaled thumbnail - reapplying just copies it back). */
     fun thumbFile(mode: String, entry: HistoryEntry): File {
-        // mode is unused for pathing today (thumbFileName is already content-hash-unique across
-        // both modes) but kept in the signature so a future skin/cape-specific dedupe scheme
-        // doesn't need every call site touched.
         return File(historyDir, entry.thumbFileName)
     }
 

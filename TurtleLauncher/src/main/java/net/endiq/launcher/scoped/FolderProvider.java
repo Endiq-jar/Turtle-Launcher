@@ -34,17 +34,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * A document provider for the Storage Access Framework which exposes the files in the
- * $HOME/ directory to other apps.
- * <p/>
- * Note that this replaces providing an activity matching the ACTION_GET_CONTENT intent:
- * <p/>
- * "A document provider and ACTION_GET_CONTENT should be considered mutually exclusive. If you
- * support both of them simultaneously, your app will appear twice in the system picker UI,
- * offering two different ways of accessing your stored data. This would be confusing for users."
- * - <a href="http://developer.android.com/guide/topics/providers/document-provider.html#43">...</a>
- */
 public class FolderProvider extends DocumentsProvider {
 
     private static final String ALL_MIME_TYPES = "*/*";
@@ -117,7 +106,6 @@ public class FolderProvider extends DocumentsProvider {
         for (File file : children) {
             includeFile(result, null, file);
         }
-        // Set the notification URI as that's what the "Files" app will be listening to in case of file deletion
         result.setNotificationUri(mContentResolver, createUriForDocId(parentDocumentId));
         return result;
     }
@@ -231,10 +219,6 @@ public class FolderProvider extends DocumentsProvider {
         final MatrixCursor result = new MatrixCursor(projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION);
         final File parent = getFileForDocId(rootId);
 
-        // This example implementation searches file names for the query and doesn't rank search
-        // results, so we can stop as soon as we find a sufficient number of matches.  Other
-        // implementations might rank results and use other data about files, rather than the file
-        // name, to produce a match.
         final LinkedList<File> pending = new LinkedList<>();
         pending.add(parent);
 
@@ -269,12 +253,6 @@ public class FolderProvider extends DocumentsProvider {
         return documentId.startsWith(parentDocumentId);
     }
 
-    /**
-     * Get the document id given a file. This document id must be consistent across time as other
-     * applications may save the ID and use it to reference documents later.
-     * <p/>
-     * The reverse of @{link #getFileForDocId}.
-     */
     private static String getDocIdForFile(File file) {
         return file.getAbsolutePath();
     }

@@ -30,32 +30,13 @@ class UrlManager {
         const val URL_FCL_RENDERER_PLUGIN: String = "https://github.com/ShirosakiMio/FCLRendererPlugin/releases/tag/Renderer"
         const val URL_FCL_DRIVER_PLUGIN: String = "https://github.com/FCL-Team/FCLDriverPlugin/releases/tag/Turnip"
 
-        // TurtleLauncher: the whole app shares one OkHttpClient (including its connection
-        // pool, thread pool and disk cache),
-        // instead of every call site creating its own client. The shared pool reuses TCP/TLS
-        // connections and cuts handshake overhead,
-        // Fewer idle threads, and unchanged requests (version manifests, mod info) hit the
-        // disk cache directly.
-        // instead of hitting the network every time - this is exactly what "optimized downloads"
-        // and "low battery usage" refer to.
         private val sharedClient: OkHttpClient by lazy {
             val builder = OkHttpClient.Builder()
                 .callTimeout(TIME_OUT.first.toLong(), TIME_OUT.second)
                 .connectionPool(ConnectionPool(8, 5, TimeUnit.MINUTES))
                 .dns(CustomDns)
-                // TurtleLauncher: force HTTP/1.1, ported from Zalith Launcher 2
-                // (ZalithLauncher2#1645: "Reverted to HTTP/1.1 to avoid silent native
-                // crashes with OkHttp engine when using Terracotta multiplayer"). The
-                // crash shows up while libterracotta.so is loaded - its tokio runtime
-                // and OkHttp's HTTP/2 stack interact badly enough to take the process
-                // down with no Java stack trace. Terracotta's node-list fetch and relay
-                // probing go through this very client while the native library is live,
-                // so the shared client pins HTTP/1.1 exactly like Zalith does.
                 .protocols(listOf(Protocol.HTTP_1_1))
 
-            // PathManager.DIR_CACHE is a lateinit var; very early accesses could theoretically
-            // touching an uninitialised lateinit property would throw UninitializedPropertyAccessException,
-            // On failure just skip the disk cache; the rest of the networking keeps working.
             runCatching {
                 val cacheDir = File(PathManager.DIR_CACHE, "http_cache")
                 builder.cache(Cache(cacheDir, 20L * 1024 * 1024)) // 20 MB disk cache
@@ -97,11 +78,6 @@ class UrlManager {
         @JvmStatic
         fun createOkHttpClient(): OkHttpClient = sharedClient
 
-        /**
-         * Derive a customisable Builder from the shared OkHttpClient (the underlying connection
-         * pool and disk cache are still shared),
-         * instead of creating a fully independent client from scratch.
-         */
         @JvmStatic
         fun createOkHttpClientBuilder(action: (OkHttpClient.Builder) -> Unit = { }): OkHttpClient.Builder {
             return sharedClient.newBuilder()

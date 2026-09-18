@@ -20,10 +20,6 @@ import net.endiq.launcher.customcontrols.EditorExitable;
 import java.io.IOException;
 
 
-
-
-
-
 public class CustomControlsActivity extends BaseActivity implements EditorExitable {
 	public static final String BUNDLE_CONTROL_PATH = "control_path";
 	private ActivityCustomControlsBinding binding;
@@ -40,11 +36,6 @@ public class CustomControlsActivity extends BaseActivity implements EditorExitab
 		DrawerLayout drawerLayout = binding.customctrlDrawerlayout;
 		FrameLayout drawerNavigationView = binding.customctrlNavigationView;
 
-		// TurtleLauncher: registered here (not inside ControlLayout, which is a plain
-		// ViewGroup and can't call registerForActivityResult) - must happen unconditionally
-		// during onCreate regardless of whether the button-image edit popup exists yet, per
-		// the ActivityResultLauncher contract. Handed down to ControlLayout, which forwards
-		// it to EditControlPopup the moment that popup actually gets created.
 		ActivityResultLauncher<String> imagePickerLauncher = registerForActivityResult(
 				new ActivityResultContracts.GetContent(),
 				uri -> {

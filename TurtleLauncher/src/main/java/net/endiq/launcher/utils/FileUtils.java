@@ -58,11 +58,6 @@ public class FileUtils {
         return ensureDirectorySilently(parentFile);
     }
 
-    /**
-     * Same as ensureDirectorySilently(), but throws an IOException telling why the check failed.
-     * @param targetFile the directory to check
-     * @throws IOException when the checks fail
-     */
     public static void ensureDirectory(File targetFile) throws IOException{
         if(targetFile.isFile()) throw new IOException("Target directory is a file");
         if(targetFile.exists()) {
@@ -70,11 +65,6 @@ public class FileUtils {
         }else if(!targetFile.mkdirs()) throw new IOException("Unable to create target directory");
     }
 
-    /**
-     * Same as ensureParentDirectorySilently(), but throws an IOException telling why the check failed.
-     * @param targetFile the File whose parent should be checked
-     * @throws IOException when the checks fail
-     */
     public static void ensureParentDirectory(File targetFile) throws IOException{
         File parentFile = targetFile.getParentFile();
         if(parentFile == null) throw new IOException("targetFile does not have a parent");

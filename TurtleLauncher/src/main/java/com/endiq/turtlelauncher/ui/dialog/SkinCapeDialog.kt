@@ -121,10 +121,6 @@ class SkinCapeDialog(
         DraggableDialog.initDialog(this)
     }
 
-    /** TurtleLauncher: the slim/Alex model choice only matters for Microsoft accounts in
-     *  skin mode - they are the ones whose skin actually uploads to Mojang (see
-     *  SkinUploader). Local accounts get their model from the skin server/texture metadata
-     *  and OtherLogin accounts from their own auth server, so the row stays hidden there. */
     private fun setupSlimModelSwitch() {
         val isMicrosoftSkin = mode == "skin" && AccountUtils.isMicrosoftAccount(account)
         binding.switchSlimModel.visibility = if (isMicrosoftSkin) View.VISIBLE else View.GONE
@@ -161,11 +157,6 @@ class SkinCapeDialog(
         }
     }
 
-    /** TurtleLauncher FIX ("can't set skin on ely.by / Battly accounts"): OtherLogin
-     *  accounts launch with authlib-injector pointed at their own server, so the game
-     *  always shows the skin that server has on file - the launcher cannot inject one.
-     *  Those services have no common upload API, so after saving the skin locally, point
-     *  the user at the server's own skin website instead of silently doing nothing. */
     private fun maybeShowOtherLoginHint() {
         if (!AccountUtils.isOtherLoginAccount(account)) return
         val site = SkinUploader.skinWebsiteFor(account) ?: return
@@ -471,9 +462,6 @@ class SkinCapeDialog(
     private fun renderLabyGallery(skins: List<LabyModGalleryApi.GallerySkin>) {
         binding.labyGalleryProgress.visibility = View.GONE
         val hasAny = skins.isNotEmpty()
-        // An empty page here (rather than page 1) most likely means we've paged past the end,
-        // since a genuinely broken/unreachable source fails the same way at page 1 too - either
-        // way there's nothing to show, so step back and let the user retry from there.
         if (!hasAny && labyGalleryPage > 1) {
             labyGalleryPage--
         }
@@ -565,9 +553,6 @@ class SkinCapeDialog(
     private fun renderLittleSkinGallery(skins: List<LittleSkinGalleryApi.GallerySkin>) {
         binding.littleskinGalleryProgress.visibility = View.GONE
         val hasAny = skins.isNotEmpty()
-        // littleskin.cn's `page` param is a real, confirmed Laravel paginate() page number, so
-        // (unlike laby.net) an empty non-first page unambiguously means "past the last page" -
-        // same step-back behavior as the laby.net section for a consistent feel either way.
         if (!hasAny && littleskinGalleryPage > 1) {
             littleskinGalleryPage--
         }

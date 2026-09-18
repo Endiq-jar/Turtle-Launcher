@@ -3,10 +3,6 @@
     android:height="24dp"
     android:viewportWidth="8"
     android:viewportHeight="8">
-    <!-- Traced 1:1 from skin_changer_icon.png's 8x8 pixel grid (shirt silhouette),
-         kept as blocky rectangles rather than smoothed so it stays crisp/pixel-art
-         at any size - same treatment as the app's own launcher icon. fillColor is
-         overridden at runtime by skin_button's android:tint, same as ic_cape. -->
     <path
         android:fillColor="#FF000000"
         android:pathData="M2,1h4v4h-4zM3,5h2v1h-2zM1,6h6v2h-6z" />

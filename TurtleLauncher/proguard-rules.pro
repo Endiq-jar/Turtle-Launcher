@@ -22,16 +22,9 @@
     *;
  }
 
-# TurtleLauncher: the prebuilt libpojavexec.so (all ABIs) hardcodes the JNI class
-# path com/movtery/turtlelauncher/ui/activity/ErrorActivity and calls its static
-# showExitMessage(Context, int, boolean) from the game-exit hook. Nothing in Java
-# references that trampoline class, so without this R8 strips/renames it in the
-# minified build types and every game launch SIGABRTs on the FindClass. See the
-# trampoline's own doc comment for the full story.
 -keep class com.movtery.turtlelauncher.ui.activity.ErrorActivity {
     *;
 }
-
 
 
 # ===================== Terracotta (Friends/LAN play) =====================
@@ -58,10 +51,6 @@
     *;
 }
 
-# Gson: TerracottaState.TerracottaProfile (and every other Gson model in the app) is
-# instantiated reflectively and its @SerializedName fields are read/written by name.
-# Zalith Launcher 2 protects the same classes with @Keep; this is the matching global
-# rule so the minified "proguard" build types can't strip or rename serialized fields.
 -keepclassmembers,allowobfuscation class * {
     @com.google.gson.annotations.SerializedName <fields>;
 }

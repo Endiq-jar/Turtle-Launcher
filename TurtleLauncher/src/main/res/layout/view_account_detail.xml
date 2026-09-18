@@ -96,12 +96,6 @@
         app:layout_constraintBottom_toBottomOf="@id/detail_uuid"
         tools:ignore="ContentDescription" />
 
-    <!-- 3D skin preview placeholder - the real dev.storeforminecraft SkinView3DSurfaceView
-         only has a single-arg Context constructor, not the (Context, AttributeSet) one
-         LayoutInflater requires for a view declared directly in XML, so it can't be inflated
-         here directly (NoSuchMethodException). AccountFragment.updateAccountDetail() swaps
-         this placeholder out for a real instance (built via the working Context-only
-         constructor) on every load - see SkinLoader.getSkinBitmap(). -->
     <View
         android:id="@+id/detail_skin_preview"
         android:layout_width="match_parent"

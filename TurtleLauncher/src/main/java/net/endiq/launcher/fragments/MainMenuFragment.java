@@ -67,10 +67,6 @@ public class MainMenuFragment extends FragmentWithAnim {
     public static final String TAG = "MainMenuFragment";
     private FragmentLauncherBinding binding;
     private ActivityResultLauncher<Object> modpackImportLauncher;
-    // TurtleLauncher: backs the top bar's tasks button/badge - separate listener object
-    // (not an onUpdateTaskCount() override) since BaseFragment's own TaskCountListener
-    // implementation is Kotlin-final and this fragment only needs the badge, not the
-    // isTaskRunning() gate BaseFragment already provides elsewhere.
     private final net.endiq.launcher.progresskeeper.TaskCountListener tasksBadgeListener = this::updateTasksBadge;
 
     public MainMenuFragment() {
@@ -80,11 +76,6 @@ public class MainMenuFragment extends FragmentWithAnim {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TurtleLauncher: Modpack Importer (see quick_actions_rail's modpack_import_button).
-        // OpenDocumentWithExtension(null) falls back to "*/*" since neither .mrpack nor a
-        // generic-ZIP modpack has a MIME type Android's database would recognize anyway -
-        // ModPackUtils.determineModpack() sniffs the actual content after picking, same as
-        // every other entry point into this install pipeline.
         modpackImportLauncher = registerForActivityResult(new OpenDocumentWithExtension(null), uris -> {
             if (uris == null || uris.isEmpty()) return;
             importModpackFromUri(uris.get(0));
@@ -108,9 +99,6 @@ public class MainMenuFragment extends FragmentWithAnim {
             runInstallerWithConfirmation(true);
             return true;
         });
-        // TurtleLauncher: Friends/LAN (Terracotta, which tunnels over EasyTier) was fully
-        // implemented - native lib, VPN service, host/join UI - but had NO entry point
-        // anywhere in the UI, so it was unreachable. This is it.
         binding.terracottaButton.setOnClickListener(v -> ZHTools.swapFragmentWithAnim(this,
             com.endiq.turtlelauncher.ui.fragment.TerracottaFragment.class,
             com.endiq.turtlelauncher.ui.fragment.TerracottaFragment.TAG, null));
@@ -153,20 +141,11 @@ public class MainMenuFragment extends FragmentWithAnim {
         binding.linkWebsiteButton.setOnClickListener(v -> openUrl("https://endiq-jar.github.io/endiq-shop/"));
         binding.linkYoutubeButton.setOnClickListener(v -> openUrl("https://youtube.com/@endiq-jar?si=9sb9OnKDJG2kUnO1"));
 
-        // TurtleLauncher: launcher_nav_bar (home/storage/download/setting_button tab strip)
-        // was removed from fragment_launcher.xml - the equivalent topBarStorageButton/
-        // topBarDownloadButton/topBarSettingsButton listeners further below already cover
-        // the same navigation, so no functionality is lost.
-
         binding.versionName.setSelected(true);
         binding.versionInfo.setSelected(true);
 
         // Top app bar: title/subtitle + quick-action icon row
         binding.homeTopBarTitle.setText(com.endiq.turtlelauncher.InfoDistributor.LAUNCHER_NAME);
-        // TurtleLauncher: account manager moved here from the view_account card that used to
-        // sit above the play panel - same destination (AccountFragment), just reachable from
-        // the top bar now like the other quick actions. refreshAccountButton() keeps the icon
-        // in sync with whichever account is currently selected.
         binding.topBarAccountButton.setOnClickListener(v ->
             ZHTools.swapFragmentWithAnim(this, AccountFragment.class, AccountFragment.TAG, null));
         refreshAccountButton();
@@ -178,28 +157,18 @@ public class MainMenuFragment extends FragmentWithAnim {
         binding.topBarDownloadButton.setOnClickListener(v -> ZHTools.swapFragmentWithAnim(this,
             com.endiq.turtlelauncher.ui.fragment.DownloadFragment.class,
             com.endiq.turtlelauncher.ui.fragment.DownloadFragment.TAG, null));
-        // TurtleLauncher: top-bar shortcut straight to the cursor manager/editor - previously
-        // only reachable via Settings -> Control Settings -> Custom Mouse, several taps deep.
         binding.topBarCursorButton.setOnClickListener(v -> ZHTools.swapFragmentWithAnim(this,
             com.endiq.turtlelauncher.ui.fragment.CustomMouseFragment.class,
             com.endiq.turtlelauncher.ui.fragment.CustomMouseFragment.TAG, null));
         binding.topBarSettingsButton.setOnClickListener(v -> ZHTools.swapFragmentWithAnim(this,
             com.endiq.turtlelauncher.ui.fragment.settings.SettingsFragment.class,
             com.endiq.turtlelauncher.ui.fragment.settings.SettingsFragment.TAG, null));
-        // TurtleLauncher: built-in AI Assistant. Runs entirely on-device - no API key, no
-        // account, no network (see feature/ai/TurtleAssistant.kt) - so unlike the optional
-        // AI crash help / skin filter in Settings -> Experimental there's nothing for the
-        // player to configure before it works. The button is only hidden when the player
-        // turns AllSettings.aiAssistantEnabled off.
         binding.topBarAiButton.setVisibility(
             com.endiq.turtlelauncher.setting.AllSettings.getAiAssistantEnabled().getValue()
                 ? View.VISIBLE : View.GONE);
         binding.topBarAiButton.setOnClickListener(v -> ZHTools.swapFragmentWithAnim(this,
             com.endiq.turtlelauncher.ui.fragment.AiChatFragment.class,
             com.endiq.turtlelauncher.ui.fragment.AiChatFragment.TAG, null));
-        // TurtleLauncher: replaces the old always-visible bottom ProgressLayout bar - tasks
-        // (downloads, login, mod checks, etc, anything routed through ProgressKeeper) are
-        // now checked on demand via this button instead of a permanent bar at the bottom.
         binding.topBarTasksButton.setOnClickListener(v -> showRunningTasksDialog());
         updateTasksBadge(ProgressKeeper.getTaskCount());
 
@@ -211,23 +180,11 @@ public class MainMenuFragment extends FragmentWithAnim {
         refreshCurrentVersion();
     }
 
-    /**
-     * TurtleLauncher: refresh the session-dependent dashboard cards every time the home
-     * screen comes back to the foreground - most importantly after returning from a game
-     * session, when a freshly-written game log must show up in the "Last Game Log" card
-     * without waiting for the fragment to be recreated.
-     */
     @Override
     public void onResume() {
         super.onResume();
         if (binding == null) return;
         refreshLastGameLog();
-        // TurtleLauncher: a feature-plugin app may have been installed (or uninstalled)
-        // while the launcher was in the background - LauncherActivity.onResume's plugin
-        // re-scan already refreshed FeaturePluginManager's list by this point, so rebuilding
-        // the Quick Actions rows here makes a freshly installed plugin app show up without
-        // a restart (and removes one that got uninstalled). Cheap: removeAllViews + a
-        // handful of rows.
         populateFeaturePlugins();
     }
 
@@ -239,20 +196,6 @@ public class MainMenuFragment extends FragmentWithAnim {
         binding.statsChart.setData(weekHours);
     }
 
-    /**
-     * Populates the "Last Game Log" card and wires it to open the full log in
-     * {@link LogViewerFragment}.
-     *
-     * <p>TurtleLauncher fix: this used to read only {@link CrashAnalyzer#getLastLogText()} -
-     * in-memory state of the crash analysis, which (a) is only ever set in the process that
-     * ran the analysis (the :game process), and (b) dies with that process. Back on the home
-     * screen the card therefore always said "No log available yet", even though the game log
-     * itself exists on disk. It now falls back to the real saved game log files
-     * ({@link com.endiq.turtlelauncher.feature.log.LatestLogResolver#resolveLastGameLogFile()},
-     * i.e. Minecraft's own logs/latest.log and the launcher's latestlog.txt - the latter now
-     * actually contains the game's output, see GameOutputCapture), so the card keeps showing
-     * the last session's log across restarts.
-     */
     private void refreshLastGameLog() {
         String lastLogText = CrashAnalyzer.INSTANCE.getLastLogText();
         File logFile = com.endiq.turtlelauncher.feature.log.LatestLogResolver.resolveLastGameLogFile();
@@ -285,9 +228,6 @@ public class MainMenuFragment extends FragmentWithAnim {
         });
     }
 
-    /** Last non-empty line of [text], trimmed and capped so it fits the card preview.
-     *  Skips the launcher's own bookkeeping lines (e.g. "Java Exit code: 0") so the card
-     *  shows an actual game-output line instead. */
     private static String lastNonEmptyLine(String text) {
         if (text == null) return "";
         String[] lines = text.split("\n");
@@ -300,13 +240,6 @@ public class MainMenuFragment extends FragmentWithAnim {
         return "";
     }
 
-    /**
-     * Adds one Quick Actions row per discovered {@link com.endiq.turtlelauncher.plugins.feature.FeaturePlugin}
-     * (see {@link com.endiq.turtlelauncher.plugins.feature.FeaturePluginManager} for the discovery
-     * contract). This is the whole point of the feature-plugin architecture: a new launcher feature
-     * shipped as a separate installed app shows up here automatically, without this Fragment/the
-     * launcher APK needing to change at all.
-     */
     private void populateFeaturePlugins() {
         java.util.List<com.endiq.turtlelauncher.plugins.feature.FeaturePlugin> plugins =
                 com.endiq.turtlelauncher.plugins.feature.FeaturePluginManager.getFeaturePluginList();
@@ -423,22 +356,6 @@ public class MainMenuFragment extends FragmentWithAnim {
         ProgressKeeper.removeTaskCountListener(tasksBadgeListener);
     }
 
-    /**
-     * Updates the small count badge on the top bar's tasks button. Purely visual -
-     * BaseFragment's own isTaskRunning() gate (used by e.g. runInstallerWithConfirmation
-     * below) is unaffected by this.
-     *
-     * TurtleLauncher CRASH FIX - CalledFromWrongThreadException. This is registered as a
-     * TaskCountListener on ProgressKeeper, which calls it synchronously from whatever
-     * thread reported the progress change (see ProgressKeeper.waitUntilDone()'s own
-     * javadoc warning about this). ModParser's mod-scan finishing on its background
-     * executor and calling ProgressLayout.clearProgress() is one such caller. Every other
-     * TaskCountListener in the app already hops to the UI thread before touching anything
-     * (ProgressLayout.onUpdateTaskCount() posts, ProgressService.onUpdateTaskCount() uses
-     * this same TaskExecutors.runInUIThread()) - this one touched the TextView directly
-     * and was the odd one out. binding is re-checked inside the posted runnable since the
-     * fragment's view can be destroyed between the post and it actually running.
-     */
     private void updateTasksBadge(int taskCount) {
         TaskExecutors.runInUIThread(() -> {
             if (binding == null) return;
@@ -462,13 +379,6 @@ public class MainMenuFragment extends FragmentWithAnim {
         com.endiq.turtlelauncher.databinding.DialogRunningTasksBinding dialogBinding =
                 com.endiq.turtlelauncher.databinding.DialogRunningTasksBinding.inflate(getLayoutInflater());
 
-        // TurtleLauncher fix: this used to render one point-in-time snapshot when the dialog
-        // opened and never touch it again, so a download that kept progressing while the
-        // dialog stayed open just sat frozen at whatever percentage it was at open time.
-        // Now it polls ProgressKeeper every 400ms for as long as the dialog is showing and
-        // patches progress/text on existing rows in place (keyed by progressKey), adds rows
-        // for tasks that start after the dialog opened, and removes rows for tasks that
-        // finish - so the list tracks reality instead of a snapshot.
         java.util.Map<String, com.endiq.mcgui.TextProgressBar> rowsByKey = new java.util.HashMap<>();
         android.os.Handler refreshHandler = TaskExecutors.getUIHandler();
         Runnable[] refreshRunnableHolder = new Runnable[1];
@@ -517,10 +427,6 @@ public class MainMenuFragment extends FragmentWithAnim {
                 .show();
     }
 
-    /**
-     * Same text-resolution logic as ProgressLayout.LayoutProgressListener.onProgressUpdated -
-     * kept in sync deliberately since both read the exact same ProgressState shape.
-     */
     private String describeSnapshot(ProgressKeeper.Snapshot snapshot) {
         try {
             if (snapshot.resid != -1) return getString(snapshot.resid, snapshot.varArg);
@@ -545,16 +451,6 @@ public class MainMenuFragment extends FragmentWithAnim {
             Toast.makeText(requireContext(), R.string.tasks_ongoing, Toast.LENGTH_LONG).show();
     }
 
-    /**
-     * TurtleLauncher: Modpack Importer. Copies whatever was picked (a content:// URI, since
-     * it came from the system file picker) into DIR_CACHE as a real file - everything past
-     * this point (format detection, name prompt, download, loader install) is the exact same
-     * pipeline ModPackDownloadFragment already uses for modpacks downloaded in-app, just
-     * triggered by an EventBus event instead of a direct call. See LauncherActivity's
-     * InstallLocalModpackEvent subscriber and ModPackUtils.determineModpack for what happens
-     * next - format is sniffed from content, not the picked file's name, so it doesn't matter
-     * what extension (if any) the person's file manager shows it with.
-     */
     private void importModpackFromUri(Uri uri) {
         // Snapshot the context up front: requireContext() from the worker thread -
         // or from the error toast posted after it - crashes if the user navigated
@@ -571,10 +467,6 @@ public class MainMenuFragment extends FragmentWithAnim {
         });
     }
 
-    // TurtleLauncher: the home page is built from distinct panels stacked down the screen, so
-    // they now arrive one after another instead of all at once - staggering them is what makes
-    // the screen feel assembled rather than just switched on. The play button still gets its
-    // pop, which is a scale effect rather than an entrance, so it runs alongside the stagger.
     @Override
     public void slideIn(AnimPlayer animPlayer) {
         com.endiq.turtlelauncher.utils.anim.TurtleTransitions.stagger(

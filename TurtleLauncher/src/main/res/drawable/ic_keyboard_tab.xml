@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: the Control Switcher button's icon.
-     Drawn to match the Tab key on the launcher's own on-screen keyboard, whose label is
-     "Tab ⇄" (EfficientAndroidLWJGLKeycode.java, add(KeyEvent.KEYCODE_TAB, ..., "Tab ⇄")) -
-     a keycap outline with the ⇄ (opposing arrows) glyph inside it. Stroke-only like the
-     rest of this repo's icons, so it picks up turtle_primary_text / black_or_white and
-     stays legible in both themes. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

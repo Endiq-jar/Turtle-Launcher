@@ -7,24 +7,6 @@ import android.os.Looper
 import com.endiq.turtlelauncher.feature.log.Logging
 import rikka.shizuku.Shizuku
 
-/**
- * TurtleLauncher: central Shizuku/Sui availability tracking.
- *
- * Shizuku lets a normal app run code with ADB-shell or root privilege without the app itself
- * being rooted. The binder that carries that privilege is handed over asynchronously (through
- * ShizukuProvider, declared in the manifest), and it can come and go at any time - the user
- * can stop the Shizuku service, or it can die with the Shizuku app. So nothing in the launcher
- * may cache "Shizuku is available" once and trust it: everything reads the current
- * [status] instead, and UI registers a listener through [addListener].
- *
- * Call [init] once during app startup (see TurtleApplication). Until ShizukuProvider has
- * delivered the binder, [status] simply reports NOT_INSTALLED/NOT_RUNNING and every caller
- * falls back to the unprivileged path - Shizuku is strictly additive, never a dependency.
- *
- * This app runs its UI in the `:launcher` process (see `android:process` on `<application>`),
- * which is also the process ShizukuProvider is instantiated in, so no multi-process Shizuku
- * setup is needed. The `:game` process never touches Shizuku.
- */
 object ShizukuManager {
     private const val TAG = "ShizukuManager"
 
@@ -62,9 +44,6 @@ object ShizukuManager {
         if (initialized) return
         initialized = true
         runCatching {
-            // Sticky: if the binder already arrived before we got here (likely, since
-            // ShizukuProvider runs before Application.onCreate finishes), call us now
-            // instead of waiting for the next binder event that may never come.
             Shizuku.addBinderReceivedListenerSticky(binderReceivedListener)
             Shizuku.addBinderDeadListener(binderDeadListener)
             Shizuku.addRequestPermissionResultListener(permissionResultListener)
@@ -149,12 +128,6 @@ object ShizukuManager {
         }.getOrDefault(ShizukuStatus(detail = "Shizuku is not available on this device"))
     }
 
-    /**
-     * Only used to tell "not installed" from "installed but stopped" in the setup UI.
-     * Sui has no package (it is a Magisk module), so a device with only Sui reports
-     * NOT_INSTALLED here - harmless, because when Sui is present the binder is alive and
-     * [Shizuku.pingBinder] short-circuits before this is ever consulted.
-     */
     private fun isShizukuInstalled(): Boolean {
         val context = appContext ?: return false
         return runCatching {

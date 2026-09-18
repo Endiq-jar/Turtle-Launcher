@@ -31,12 +31,6 @@ import net.endiq.launcher.multirt.MultiRTConfigDialog
 import kotlin.math.min
 
 
-/**
- * TurtleLauncher: everything Java-runtime-related (install/select a JRE, JVM args, RAM
- * allocation, the JRE sandbox toggle), split out of GameSettingsFragment into its own page
- * so "Java" isn't mixed in with language/HUD/preset settings anymore - same idea as Recording
- * and Phone already being their own dedicated, single-purpose pages.
- */
 class JavaSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment_java, SettingCategory.JAVA) {
     companion object {
         const val TAG: String = "JavaSettingsFragment"

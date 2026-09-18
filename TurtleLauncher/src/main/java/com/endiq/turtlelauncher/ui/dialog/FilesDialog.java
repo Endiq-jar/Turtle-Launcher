@@ -105,9 +105,6 @@ public class FilesDialog extends FullScreenDialog implements DraggableDialog.Dia
             dismiss();
         });
 
-        // A selected "file" can legitimately be null (e.g. CustomMouseFragment's
-        // synthetic default-mouse entry, which has a label/icon but no backing File).
-        // Guard every File method call below instead of assuming a real file.
         File firstFile = mSelectedFiles.size() == 1 ? mSelectedFiles.get(0) : null;
 
         // Extract — only enabled for single .zip file

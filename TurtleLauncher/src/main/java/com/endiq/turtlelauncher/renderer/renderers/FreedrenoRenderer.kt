@@ -14,10 +14,6 @@ class FreedrenoRenderer : RendererInterface {
 
     override fun getRendererId(): String = ID
 
-    // See RendererInterface.getNativeRendererId's doc comment - the native dispatch
-    // recognizes "gallium_freedreno" exactly (confirmed by disassembling
-    // pojavInitOpenGL); "FREEDRENO" alone matches nothing and falls through to the
-    // crashing default case.
     override fun getNativeRendererId(): String = "gallium_freedreno"
 
     override fun getUniqueIdentifier(): String = "8d427e6c-9d22-2d19-db0c-3b9ac2c1543f"

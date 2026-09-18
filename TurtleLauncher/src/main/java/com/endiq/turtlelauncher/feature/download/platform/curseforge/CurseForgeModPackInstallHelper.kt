@@ -18,16 +18,6 @@ import net.endiq.launcher.utils.ZipUtils
 import java.io.File
 import java.util.zip.ZipFile
 
-/**
- * CurseForge modpack (manifest.json) installer - same overall shape as
- * ModrinthModPackInstallHelper, with one real difference: manifest.json only carries a
- * (projectID, fileID) pair per mod, not a direct download URL, and resolving that pair to
- * an actual URL requires CurseForge's keyed v1 API (see CurseForgeApi.kt). Overrides and
- * the mod loader install either way; mod-jar downloads only happen if
- * AllSettings.curseForgeApiKey is set. Whatever couldn't be resolved is reported back via
- * a dialog rather than failing the whole import - a modpack with configs/resourcepacks and
- * the right loader in place is still a big head start even without every mod fetched yet.
- */
 class CurseForgeModPackInstallHelper {
     companion object {
         private const val TAG = "CurseForgeModPackInstallHelper"

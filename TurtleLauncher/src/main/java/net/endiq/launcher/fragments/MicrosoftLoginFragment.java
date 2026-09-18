@@ -42,9 +42,6 @@ public class MicrosoftLoginFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        // TurtleLauncher: this screen had no entry animation at all (it's a plain
-        // BaseFragment, not a FragmentWithAnim), so it appeared instantly while every
-        // other page in the launcher animated.
         com.endiq.turtlelauncher.utils.anim.TurtleTransitions.animateView(view, true);
         binding.returnButton.setOnClickListener(v -> forceBack());
 
@@ -110,9 +107,6 @@ public class MicrosoftLoginFragment extends BaseFragment {
         // Since the value cannot be null, just create a "blank" client. This is done to not let Android
         // kill us if something happens after the state gets saved, when we can't do fragment transitions
         binding.webView.setWebViewClient(new WebViewClient());
-        // For some dumb reason state is saved even when Android won't actually destroy the activity.
-        // Let the fragment know that the client is blank so that we can restore it in onStart()
-        // (it was the earliest lifecycle call actually invoked in this case)
         mBlankClient = true;
         super.onSaveInstanceState(outState);
         binding.webView.saveState(outState);

@@ -11,16 +11,6 @@ import org.json.JSONObject
 import java.io.File
 import java.io.IOException
 
-/**
- * TurtleLauncher: Battly Launcher account login support.
- *
- * Battly ships its own authlib-injector build rather than using a generic one, and
- * fetches it from their file manifest before attaching it as a javaagent. This is
- * adapted directly from Battly's own official open-source Android launcher
- * (BattlyMobile, net.endiq.launcher.authenticator.BattlyAuthlibManager) so the exact
- * same endpoint, manifest format, and verification logic are used here — nothing
- * about the auth server itself was guessed.
- */
 object BattlyAuthlibManager {
     private const val TAG = "BattlyAuthlib"
     private const val FILES_URL = "https://api.battlylauncher.com/battlylauncher/files"

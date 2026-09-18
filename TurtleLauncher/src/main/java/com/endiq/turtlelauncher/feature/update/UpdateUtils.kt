@@ -133,17 +133,6 @@ class UpdateUtils {
             }, RELEASES_API_URL, null).enqueue()
         }
 
-        /**
-         * Walks Endiq's real releases list (GitHub already returns it newest-first) and
-         * returns the first one that's actually installable: a well-formed vX.Y.Z.W tag
-         * (skips legacy tags like "Release"/"26.2support" that predate that scheme),
-         * accepted by the current pre-release policy, genuinely newer than the installed
-         * version, and carrying a usable .apk or .zip asset. A release can be newer but
-         * have nothing to install (v1.0.0.1 shipped with zero assets) - that's skipped in
-         * favor of the next real candidate rather than failing the whole check. Returns
-         * null once we reach a release that isn't newer (everything after it, being
-         * older still, can't be either) - which also covers "already on the latest".
-         */
         private fun pickLatestRelease(releases: JSONArray): LauncherVersion? {
             val currentVersionName = ZHTools.getVersionName()
             for (i in 0 until releases.length()) {

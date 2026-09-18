@@ -17,31 +17,6 @@ import java.util.TimeZone
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-/**
- * The EasyTier rendezvous/relay nodes Terracotta is told to use when hosting or joining a
- * room. **This is the fix for the "Cannot find scaffolding server" / PingHostFail join
- * failure** - see the long comment on [PINNED_FALLBACK] for why the list matters at all.
- *
- * How Terracotta actually uses these, established by reading the native library we ship
- * (arm64-v8a/libterracotta.so, "Terracotta 0.4.2, EasyTier v2.5.0-terracotta.2") and its
- * upstream source (github.com/burningtnt/Terracotta):
- *
- * - `src/easytier/publics.rs` -> `fetch_public_nodes()` takes whatever we pass in and
- *   **appends** four hardcoded nodes to it. So these are extra nodes, not a replacement:
- *   the built-in dead ones are always there, and ours are the only healthy ones we control.
- * - `src/controller/rooms/scaffolding/room.rs` -> `start_guest()` starts EasyTier, then
- *   polls `easytier.get_players()` **5 times, 3 seconds apart (15s total)** looking for a
- *   peer whose hostname starts with `scaffolding-mc-server-`. If it doesn't see one in time
- *   it logs "Cannot find scaffolding server" and raises `ExceptionType::PingHostFail`.
- *
- * So joining has exactly two failure modes we can act on from Kotlin:
- *   1. the two sides never land in a common EasyTier network (no working shared node), or
- *   2. they do, but not within the native 15-second discovery window.
- *
- * This file addresses (1); TerracottaFragment's join-retry addresses (2).
- *
- * Blocking - call from a background thread.
- */
 object TerracottaNodeList {
     private const val TAG = "TerracottaNodeList"
 
@@ -63,31 +38,6 @@ object TerracottaNodeList {
         "https://terracotta.glavo.site/nodes",
     )
 
-    /**
-     * Always present, in this exact order, on every device - even with no network at all.
-     *
-     * Two peers only discover each other if their node lists share a node that actually
-     * works. If the host's list and the guest's list are both "whatever the network gave us
-     * just now", they can easily end up disjoint, and then no amount of retrying helps. This
-     * fixed baseline is the overlap we can always guarantee.
-     *
-     * Why these particular addresses, and why they are here rather than trusting the native
-     * library's own defaults (`src/easytier/publics.rs`):
-     *   tcp://public.easytier.top:11010  - CNAMEs to public.easytier.cn, which currently has
-     *                                      no A record. Dead.
-     *   tcp://public2.easytier.cn:54321  - no A record. Dead.
-     *   https://etnode.zkitefly.eu.org/node1 and /node2 - unresolved, assumed dead.
-     *                                     (spelled out rather than globbed: Kotlin's block
-     *                                     comments nest, so writing the wildcard here opened
-     *                                     a comment that swallowed the rest of this file.)
-     * i.e. most of the built-in bootstrap set is gone, which is the actual root cause: host
-     * and guest never meet, the 15s window expires, PingHostFail.
-     *
-     * Everything below is a *guess that will rot* - public EasyTier nodes are donated by
-     * volunteers and come and go. That is precisely why the app probes them at runtime and
-     * re-ranks live-first, and why the remote file above exists: a dead entry degrades to
-     * "sorted last", not "feature broken".
-     */
     private val PINNED_FALLBACK = listOf(
         "tcp://public.easytier.cn:11010",   // EasyTier's own documented shared node
         "tcp://161.33.207.13:51010",        // community public relay (EasyTier discussion #2429)
@@ -138,8 +88,6 @@ object TerracottaNodeList {
         synchronized(this) {
             cached?.takeIf { it.isNotEmpty() }?.let { return it }
 
-            // A user-supplied node is used exclusively, matching upstream: if you've got your
-            // own EasyTier server you don't want us silently joining public networks too.
             val custom = customOverride()
             if (custom != null) {
                 cached = custom
@@ -154,18 +102,12 @@ object TerracottaNodeList {
                     break
                 }
             }
-            // Network down (or every source dead): fall back to the last list we managed to
-            // fetch, so a transient outage doesn't silently downgrade to baseline-only.
             if (canonical.isEmpty()) canonical.addAll(readCache())
             PINNED_FALLBACK.forEach { canonical.add(it) }
 
             val ordered = canonical.toList()
             persist(ordered)
 
-            // TurtleLauncher: the old code cached whatever came back - including the
-            // emptyList() every network failure produces - for the entire process lifetime.
-            // One dead fetch therefore poisoned every later host/join in that session, which
-            // is a big part of why joining "just never works". Never cache empty.
             val resolved = probeAll(ordered).take(MAX_NODES)
             if (resolved.isNotEmpty()) cached = resolved
             return resolved
@@ -212,16 +154,6 @@ object TerracottaNodeList {
         Logging.w(TAG, "Failed to fetch node list from $url", e)
     }.getOrDefault(emptyList())
 
-    /** Tolerates both shapes: a bare JSON array, or `{"nodes": [...]}`. Entries may be
-     *  plain strings or `{"url": "...", "region": "..."}` objects, so the FCL list, the
-     *  glavo.site list and ours all parse.
-     *
-     *  Region handling ported from Zalith Launcher 2's TerracottaNodeList (their
-     *  TerracottaNode.shouldUseNode): the public list can tag a node with a region, and
-     *  region-tagged "CN" nodes are only handed out on devices in mainland China - they
-     *  are domestic relays that are slow or unreachable from elsewhere, and EasyTier
-     *  dials every node we give it, so shipping them worldwide wastes the guest's 15s
-     *  discovery window on dead ends. Untagged nodes are for everyone. */
     private fun parseNodes(body: String): List<String> {
         if (body.isBlank()) return emptyList()
         val root = runCatching { JsonParser.parseString(body) }.getOrNull() ?: return emptyList()
@@ -331,9 +263,6 @@ object TerracottaNodeList {
                 results[index] = runCatching { probeOne(nodes[index]) }.getOrDefault(Reach.UNKNOWN)
             }
         }
-        // Bounded and short: this runs on the caller's thread immediately before host/join,
-        // so it must never be able to hang the screen. All probes go out in parallel, and the
-        // get() timeout is only a safety net over the per-probe socket timeout.
         futures.forEach { runCatching { it.get(4, TimeUnit.SECONDS) } }
         return nodes.indices.map { results[it] ?: Reach.UNKNOWN }
     }
@@ -347,10 +276,6 @@ object TerracottaNodeList {
         return when (scheme) {
             "tcp" -> if (tcpOpen(host, port)) Reach.YES else Reach.NO
             "http", "https" -> if (httpAlive(node)) Reach.YES else Reach.NO
-            // udp/ws/wss/quic/wg/faketcp can't be cheaply probed from Java without speaking
-            // the protocol - a UDP "connect" always succeeds and proves nothing, and opening
-            // a WebSocket by hand proves little about EasyTier's. Rank them below proven ones
-            // rather than claiming they're down.
             else -> Reach.UNKNOWN
         }
     }

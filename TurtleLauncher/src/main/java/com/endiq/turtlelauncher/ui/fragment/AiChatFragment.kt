@@ -20,22 +20,6 @@ import com.endiq.turtlelauncher.ui.subassembly.aichat.ChatMessageAdapter
 import com.endiq.turtlelauncher.utils.ZHTools
 import java.io.File
 
-/**
- * Built-in AI Assistant screen - the destination of the top-bar Assistant button
- * (MainMenuFragment's topBarAiButton).
- *
- * Everything the assistant says is produced on-device by [TurtleAssistant]: no API key, no
- * account, no network call. That's a deliberate product decision (see TurtleAssistant's own
- * class doc for why, and how it relates to the two optional key-gated AI features in
- * Settings → Experimental), and it means this screen works in airplane mode and costs
- * nothing to run.
- *
- * Structure mirrors [TerracottaFragment]'s chat half on purpose - same
- * [ChatMessageAdapter]/item_chat_message.xml rows, same input row - so it looks like the
- * rest of the launcher instead of a bolted-on webview. Answering happens on
- * TaskExecutors.getDefault() because [TurtleAssistant.respond] can read the last game log,
- * the version list and storage stats; only adapter/UI updates run on the UI thread.
- */
 class AiChatFragment : FragmentWithAnim(R.layout.fragment_ai_chat) {
     companion object {
         const val TAG = "AiChatFragment"
@@ -48,12 +32,6 @@ class AiChatFragment : FragmentWithAnim(R.layout.fragment_ai_chat) {
     private lateinit var binding: FragmentAiChatBinding
     private lateinit var chatAdapter: ChatMessageAdapter
 
-    /**
-     * The transcript, kept alongside the adapter. [ChatMessageAdapter] doesn't expose its
-     * backing list, and reading rows back out of the RecyclerView only works for the ones
-     * currently bound - so the list that gets persisted lives here instead. Every path that
-     * shows a message goes through [appendMessage], which is what keeps the two in step.
-     */
     private val transcript = mutableListOf<ChatMessage>()
 
     /** Guards against a second question being fired while one is still being answered -
@@ -187,11 +165,6 @@ class AiChatFragment : FragmentWithAnim(R.layout.fragment_ai_chat) {
         if (last >= 0) binding.chatMessageList.scrollToPosition(last)
     }
 
-    /**
-     * Rebuilds the suggestion chip row. Chips are plain TextViews rather than a second
-     * adapter: there are never more than a handful, they're rebuilt wholesale on every
-     * answer, and tapping one is exactly the same as typing its label and hitting send.
-     */
     private fun setSuggestions(suggestions: List<String>) {
         val row = binding.suggestionRow
         row.removeAllViews()

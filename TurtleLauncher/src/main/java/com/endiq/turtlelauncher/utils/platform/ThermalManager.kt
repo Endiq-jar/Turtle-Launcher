@@ -5,17 +5,6 @@ import android.os.Build
 import android.os.PowerManager
 import com.endiq.turtlelauncher.feature.log.Logging
 
-/**
- * TurtleLauncher thermal awareness.
- *
- * Android exposes the device's actual thermal state via PowerManager since API 29
- * (Build.VERSION_CODES.Q) - this is the OS telling you it is *already* about to
- * throttle clocks, rather than something inferred indirectly after the fact from
- * dropped frames. [AutoSettingsOptimizer] reads this before picking a performance
- * profile so it doesn't hand an already-warm device a profile (RAM/FPS boost
- * flags/resolution) that immediately drives it into aggressive OS throttling,
- * which would erase the profile's own benefit within minutes of play.
- */
 object ThermalManager {
     private const val TAG = "ThermalManager"
 

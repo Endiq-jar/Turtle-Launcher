@@ -293,7 +293,6 @@
                         android:layout_centerVertical="true" />
                 </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-                <!-- TurtleLauncher: Advanced Renderer Settings - Shader Cache -->
                 <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/rendererShaderCache_layout"
                     android:layout_width="match_parent"
@@ -329,7 +328,6 @@
                         android:layout_centerVertical="true" />
                 </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-                <!-- TurtleLauncher: Advanced Renderer Settings - Debug Logging -->
                 <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/rendererDebugLogging_layout"
                     android:layout_width="match_parent"

@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: reuses the existing background_item_selected/unselected card
-     drawables (already shipped for this exact selected/unselected pairing) as a
-     toggle background - state_selected is driven manually by the option row's
-     onClick handler in InstallExtrasDialog, there's no CheckBox/RadioButton involved. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/background_item_selected" android:state_selected="true" />
     <item android:drawable="@drawable/background_item_unselected" />

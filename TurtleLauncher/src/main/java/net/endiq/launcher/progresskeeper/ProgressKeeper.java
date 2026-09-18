@@ -30,11 +30,6 @@ public class ProgressKeeper {
 
         List<ProgressListener> progressListeners = sProgressListeners.get(progressRecord);
         if(progressListeners != null)
-            // TurtleLauncher fix: iterate a snapshot. A listener's callback is allowed to
-            // register/unregister listeners (ProgressLayout.observe() does exactly that),
-            // and doing that to the live list mid-iteration is a
-            // ConcurrentModificationException - another way for a progress update to take
-            // the whole app down.
             for(ProgressListener listener : new ArrayList<>(progressListeners)) {
                     if(shouldCallStarted) listener.onProgressStarted();
                     else if(shouldCallEnded) listener.onProgressEnded();
@@ -58,10 +53,6 @@ public class ProgressKeeper {
             listener.onProgressEnded();
         }
         List<ProgressListener> listenerWeakReferenceList = sProgressListeners.computeIfAbsent(progressRecord, k -> new ArrayList<>());
-        // TurtleLauncher fix: never register the same listener twice. A duplicated entry
-        // means submitProgress() calls onProgressStarted() on it twice for one task, which
-        // is one of the two ways ProgressLayout could end up adding the same TextView to its
-        // layout twice (the reported "specified child already has a parent" crash).
         if(!listenerWeakReferenceList.contains(listener)) listenerWeakReferenceList.add(listener);
     }
 
@@ -139,11 +130,6 @@ public class ProgressKeeper {
         }
     }
 
-    /**
-     * @return a point-in-time snapshot of every currently-running task, in no
-     * particular guaranteed order. Used by the top-bar tasks panel so it doesn't
-     * need a hardcoded list of progress keys the way ProgressLayout.observe() does.
-     */
     public static synchronized List<Snapshot> getSnapshots() {
         List<Snapshot> snapshots = new ArrayList<>(sProgressStates.size());
         for (Map.Entry<String, ProgressState> entry : sProgressStates.entrySet()) {

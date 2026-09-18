@@ -9,10 +9,6 @@ import java.io.File
 
 @SuppressLint("CheckResult")
 class DeleteDialog(private val context: Context, endTask: Task<*>, files: List<File>) {
-    // Defensive guard: files[0] used to be read unconditionally below, so if this
-    // dialog was ever constructed with an empty selection (e.g. a race between a
-    // list refresh and a queued delete action) it crashed immediately with an
-    // IndexOutOfBoundsException before the dialog even appeared.
     private val isValid: Boolean = files.isNotEmpty()
 
     private val mDialog: TipDialog? = if (!isValid) null else TipDialog.Builder(context).apply {

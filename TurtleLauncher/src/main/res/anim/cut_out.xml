@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: counterpart to cut_into - the outgoing page keeps going left rather than
-     just fading where it stands. Faster than the entrance: a page leaving shouldn't hold up
-     the one arriving. -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@android:interpolator/fast_out_linear_in">
 

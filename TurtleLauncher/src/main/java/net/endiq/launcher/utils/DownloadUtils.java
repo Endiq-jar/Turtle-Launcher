@@ -32,28 +32,6 @@ import okhttp3.ResponseBody;
 @SuppressWarnings("IOStreamConstructor")
 public class DownloadUtils {
 
-    /**
-     * Shared OkHttp client used for all file/string downloads in this class.
-     *
-     * TurtleLauncher CRASH FIX: this class used to open raw {@link HttpURLConnection}s via
-     * {@code URL.openConnection()} / {@link UrlManager#createHttpConnection(URL)}. On Android,
-     * that's backed by the old, largely unmaintained "com.android.okhttp" platform stack — which
-     * has a long-standing bug where it reuses a pooled keep-alive connection the server (or a
-     * carrier/proxy in between) already silently closed, producing:
-     *   java.io.IOException: unexpected end of stream on com.android.okhttp.Address@...
-     *   Caused by: java.io.EOFException: \n not found: size=0 content=...
-     * right when reading response headers, with zero bytes ever received — completely unrelated
-     * to file corruption or a bad URL. This happens most on flaky/mobile networks during large
-     * file downloads (libraries, the Minecraft client jar, etc.).
-     *
-     * The fix is to route every download through the app's real, modern OkHttp 4.x client
-     * (already a dependency, already used elsewhere via UrlManager) with
-     * retryOnConnectionFailure(true): OkHttp's own RetryAndFollowUpInterceptor specifically
-     * detects this "stale pooled connection" class of IOException and transparently retries once
-     * with a brand-new connection before ever surfacing an error — which the legacy
-     * HttpURLConnection path never did. The outer 5-attempt retry loop in {@link #ensureSha1}
-     * is kept as an additional safety net for genuinely unstable connections.
-     */
     private static final OkHttpClient DOWNLOAD_CLIENT = new OkHttpClient.Builder()
             .retryOnConnectionFailure(true)
             .connectTimeout(UrlManager.TIME_OUT.getFirst(), (TimeUnit) UrlManager.TIME_OUT.getSecond())
@@ -194,14 +172,8 @@ public class DownloadUtils {
                 downloadFile(downloadFunction);
                 lastError = null;
             } catch (IOException e) {
-                // TurtleLauncher: keep retrying through transient network errors (stale
-                // connections, dropped sockets, etc.) instead of aborting on the very first
-                // one — but remember the last error in case every attempt fails, so the user
-                // gets a meaningful message instead of just "SHA1 verification failed".
                 lastError = e;
                 Logging.i("DownloadUtils", "Download attempt " + attempts + "/5 failed for " + outputFile.getName(), e);
-                // TurtleLauncher: back off before retrying instead of hammering a CDN that
-                // just timed out — gives transient congestion/throttling a chance to clear.
                 if (attempts < 5) {
                     try {
                         Thread.sleep(Math.min(500L * attempts, 2000L));

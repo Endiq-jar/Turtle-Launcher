@@ -24,14 +24,6 @@ import com.endiq.turtlelauncher.utils.ZHTools
 import net.endiq.launcher.Tools
 import java.io.File
 
-/**
- * Material-styled renderer picker: one card per renderer with a stability badge
- * (Recommended/Stable/Experimental) and a compatibility note - version range, missing
- * bundled library, or a Vulkan requirement - plus a checkmark on the current selection
- * and a reset-to-defaults action. Complements rather than replaces the existing quick-pick
- * list in Video settings; that one's still there for a fast switch, this one's for
- * actually deciding what to pick.
- */
 class RendererManagerFragment : FragmentWithAnim(R.layout.fragment_renderer_manager) {
     companion object {
         const val TAG: String = "RendererManagerFragment"
@@ -67,14 +59,6 @@ class RendererManagerFragment : FragmentWithAnim(R.layout.fragment_renderer_mana
         binding.rendererManagerReturn.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
     }
 
-    /**
-     * TurtleLauncher: LTW and MobileGlues already had a real, working download+install
-     * path via PluginUpdateManager, it just wasn't reachable from this screen at all.
-     * Rather than bolt on a separate "browse plugins" button/dialog, fetch them the
-     * moment this screen opens and fold them straight into the same grid every other
-     * renderer lives in - if not installed yet they simply show up here already,
-     * badged "tap to download", right next to the ones that are ready to use.
-     */
     private fun fetchAlwaysOfferedRenderers() {
         val context = requireContext()
         PluginUpdateManager.checkForUpdates(context, force = true) { updates, _ ->
@@ -172,10 +156,6 @@ class RendererManagerFragment : FragmentWithAnim(R.layout.fragment_renderer_mana
             return getString(R.string.renderer_compat_requires_vulkan)
         }
 
-        // The version range a renderer card shows comes from the built-in RendererCatalog
-        // for first-class renderers; an installed plugin app ships its own range in its
-        // manifest (minMCVer/maxMCVer) and surfaces it the same way, so a plugin renderer
-        // documents its supported versions exactly like MobileGlues and friends do.
         val maxVersion = catalogEntry?.maxMinecraftVersion ?: plugin?.maxMinecraftVersion
         val minVersion = catalogEntry?.minMinecraftVersion ?: plugin?.minMinecraftVersion
         maxVersion?.let { return getString(R.string.renderer_compat_max_version, it) }

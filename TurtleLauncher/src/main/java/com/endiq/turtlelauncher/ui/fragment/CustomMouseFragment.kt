@@ -92,10 +92,6 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
 
         binding.actionBar.apply {
             returnButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
-            // TurtleLauncher: broadened from "image/*" so .cur/.ani cursor files show up too -
-            // neither has a standard registered MIME type, so most document providers would
-            // otherwise filter them out of the picker entirely. CustomCursorLoader validates
-            // (and safely falls back to the default pointer for) whatever actually gets picked.
             addFileButton.setOnClickListener { openDocumentLauncher.launch(arrayOf("*/*")) }
             refreshButton.setOnClickListener { loadData() }
         }
@@ -146,12 +142,6 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
         return path
     }
 
-    /**
-     * TurtleLauncher: opens the same pixel-art editor used for custom control-button icons,
-     * pre-loading the currently active cursor if it happens to be a plain raster (.cur/.ani
-     * frames aren't decodable by BitmapFactory, so those just open the editor blank - same
-     * null-safe pattern EditControlPopup uses for its own "Draw" entry point).
-     */
     private fun openPixelEditor() {
         val dialog = PixelEditorDialog(requireContext())
             .setOnSaveListener { bitmap -> saveCursorBitmap(bitmap) }

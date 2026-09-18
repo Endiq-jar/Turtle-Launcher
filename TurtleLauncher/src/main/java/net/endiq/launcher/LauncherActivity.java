@@ -106,12 +106,6 @@ import java.util.Random;
 import java.util.concurrent.Future;
 
 
-
-
-
-
-
-
 public class LauncherActivity extends BaseActivity {
     /** Extras used by ShareReceiverActivity to open the Assistant with a shared game log. */
     public static final String EXTRA_OPEN_ASSISTANT = "open_assistant";
@@ -243,10 +237,6 @@ public class LauncherActivity extends BaseActivity {
         MinecraftAccount localAccount = new MinecraftAccount();
         localAccount.username = userName;
         localAccount.accountType = AccountType.LOCAL.getType();
-        // TurtleLauncher CRASH/BUG FIX: give local accounts a real, stable, unique
-        // UUID (vanilla offline-mode scheme) instead of leaving profileId at
-        // "00000000-0000-0000-0000-000000000000" for every local account — see
-        // MinecraftAccount.generateOfflineUUID() for the full explanation.
         localAccount.profileId = MinecraftAccount.generateOfflineUUID(userName).toString();
         try {
             localAccount.save();
@@ -368,8 +358,6 @@ public class LauncherActivity extends BaseActivity {
         processFragment();
         processViews();
 
-        // TurtleLauncher: arriving via the Android share sheet with a game log? Go
-        // straight to the Assistant once the main menu Fragment is in place.
         handleAssistantShortcut(getIntent());
 
         // Show What's New dialog on first launch of this version
@@ -407,12 +395,6 @@ public class LauncherActivity extends BaseActivity {
         }).execute();
     }
 
-    /**
-     * The launcher is Android's share target for game logs: ShareReceiverActivity
-     * (ACTION_SEND) saves the shared log and relaunches here with these extras, and this
-     * opens the built-in Assistant on top of the main menu so the log is analyzed
-     * immediately. Without an extra this is a no-op - normal launches are untouched.
-     */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -573,16 +555,7 @@ public class LauncherActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // TurtleLauncher: pick up plugin apps that were installed (or uninstalled) while we
-        // were in the background - most importantly right after the user confirms a renderer
-        // plugin APK in the Android package installer and lands back here. Cheap no-op unless
-        // the installed-app set actually changed; a change triggers a full plugin re-scan so
-        // the new renderer/driver/feature plugin is selectable immediately, no restart needed.
         com.endiq.turtlelauncher.plugins.PluginLoader.rescanIfPluginsChanged(this);
-        // TurtleLauncher: the system animation-scale / reduced-motion check is cached, so it
-        // has to be invalidated here - the user may have just come back from Settings where
-        // they changed it, and we'd otherwise keep using the stale answer for the whole
-        // process lifetime.
         com.endiq.turtlelauncher.utils.anim.TurtleTransitions.onResume();
         com.endiq.turtlelauncher.task.TaskExecutors.setGameSessionActive(false);
         com.endiq.turtlelauncher.feature.turtle.BackgroundServiceManager.onGameSessionEnd();
@@ -592,14 +565,6 @@ public class LauncherActivity extends BaseActivity {
         com.endiq.turtlelauncher.feature.turtle.LauncherWarmStart.warmStart(this);
         com.endiq.turtlelauncher.feature.maintenance.AutoCleanup.runIfDue();
 
-        //TurtleLauncher: onCreate's check only ever fires once at cold start. This activity
-        //stays alive in the background for the whole length of a Minecraft session (MainActivity
-        //is the one actually running the game), so onResume is what actually fires every time
-        //the user lands back on the home screen not playing - right after this method's own
-        //setGameSessionActive(false)/onGameSessionEnd() calls above mark that a session just
-        //ended, and also on every other return to the home screen. Same quiet, non-forced,
-        //cooldown-gated check as onCreate (checkCooling()'s 5-minute gate still applies), so
-        //this can't spam GitHub's API just from switching apps back and forth.
         Task.runTask(() -> {
             UpdateUtils.checkDownloadedPackage(this, false, true);
             return null;

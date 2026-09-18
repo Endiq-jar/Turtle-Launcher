@@ -58,11 +58,6 @@ import java.util.concurrent.locks.LockSupport;
  *
  * <p>A RuntimeException will be thrown if an error occured in native level.</p>
  */
-// TurtleLauncher: @Keep here and on every member the native library touches by name
-// (upstream Zalith Launcher 2 / Terracotta ships the same annotations plus matching
-// proguard rules - see proguard-rules.pro). The release build runs R8 (isMinifyEnabled),
-// which would otherwise rename or strip the JNI entry points and silently break the
-// Friends/LAN feature only in release builds.
 @Keep
 public final class TerracottaAndroidAPI {
     /**
@@ -140,17 +135,6 @@ public final class TerracottaAndroidAPI {
         }
     }
 
-    /**
-     * The exact name+signature pairs libterracotta.so passes to RegisterNatives in its
-     * JNI_OnLoad (verified against the shipped v0.4.2 .so's embedded table and upstream
-     * src/lib.rs). Kept here as the decode key logged before loadLibrary, so a future
-     * RegisterNatives abort can be compared against what the Java side actually declares
-     * without a repo checkout. If you change any native declaration in this class, change
-     * this table in the same commit - and the shipped .so.
-     *
-     * MUST stay textually ABOVE the static block below: Java runs field and static
-     * initializers in textual order, and that block logs this table during class init.
-     */
     private static final String[] EXPECTED_JNI_TABLE = {
         "start0(Ljava/lang/String;I)I",
         "getState0()Ljava/lang/String;",
@@ -166,18 +150,6 @@ public final class TerracottaAndroidAPI {
     };
 
     static {
-        // TurtleLauncher diagnostic markers (Sept 2026, Issue: Friends/LAN SIGABRT at open):
-        // libterracotta.so's JNI_OnLoad is Rust and enforces EVERY precondition by
-        // panic!-abort - GetEnv, FindClass("java/lang.System"), FindClass(this class, by the
-        // native_location property set below), and RegisterNatives, which aborts the whole
-        // process if ANY of the 11 native method name/signature pairs below doesn't match the
-        // Java declarations exactly. The Sept 14 tombstone (JNI_OnLoad's register path on the
-        // stack) was caused by exactly such a mismatch, fixed on Sept 18. A native abort can't
-        // be caught in Java, so these markers exist to make the NEXT one self-decoding from
-        // logcat: what was being loaded, on which thread, against which expected descriptor
-        // table - plus the Rust side's own "Cannot initialize Terracotta Android: ..." line
-        // under logcat tag "hello" just before it panics (upstream v0.4.2 behavior). Log
-        // failures are swallowed on purpose: diagnostics must never be what breaks class init.
         try {
             Log.i("TerracottaAndroidAPI", "About to load libterracotta.so (thread="
                 + Thread.currentThread().getName() + ", native_location="
@@ -231,15 +203,6 @@ public final class TerracottaAndroidAPI {
 
     /**
      * <p>Initialize the Terracotta Android.</p>
-     *
-     * <p>TurtleLauncher note: a native start is attempted at most ONCE per process. If
-     * {@code start0} fails (non-zero return or a thrown native error), native-side state may
-     * be half-initialized, and calling {@code start0} again against it is exactly the kind of
-     * violated-precondition that libterracotta.so aborts the process for - so a second
-     * attempt after a failed first one throws here instead. Failures BEFORE the native call
-     * (argument checks, directory/logging setup) stay retryable: the one-shot guard is only
-     * armed right before {@code start0} runs. Restart the app to retry after a real native
-     * failure.</p>
      *
      * @param context  An Android context object.
      * @param callback A callback to handle VpnService for EasyTier. See {@link VpnServiceCallback} for more information.
@@ -366,10 +329,6 @@ public final class TerracottaAndroidAPI {
         return setGuesting0(room, player);
     }
 
-    /** Logged once per process, so the ignored node list is never silent: Terracotta's own
-     *  node set is compiled into libterracotta.so (src/easytier/publics.rs) and there is no
-     *  entry point for extra ones in any released version. Passing them used to be what
-     *  aborted the process at load time - see the note on the setScanning0 declaration. */
     private static void warnExtraNodesUnsupported(@Nullable List<String> extraNodes) {
         if (extraNodes != null && !extraNodes.isEmpty() && EXTRA_NODES_WARNING.compareAndSet(false, true)) {
             Log.w("TerracottaAndroidAPI", "Ignoring " + extraNodes.size()
@@ -560,12 +519,6 @@ public final class TerracottaAndroidAPI {
                     Log.wtf("TerracottaAndroidAPI", "VpnService Request hasn't been fulfilled in 30s.");
                     throw new IllegalStateException();
                 }
-                // TurtleLauncher: was Thread.yield() - a yield in a tight loop is still a
-                // 100%-CPU spin, and this loop runs on the native callback thread for as long
-                // as the VPN permission prompt is on screen (up to 30s). On a phone that is a
-                // full core burnt for the whole prompt, competing with the very UI thread that
-                // has to render it. Parking for 20ms keeps the wait latency imperceptible
-                // while dropping the cost to nothing; the 30s timeout above is unchanged.
                 LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(20));
             } else if (value == FD_REJECT) {
                 pendingRequest = null;
@@ -596,22 +549,6 @@ public final class TerracottaAndroidAPI {
     @Keep
     private static native void setWaiting0();
 
-    // CRITICAL: these two descriptors must match, character for character, what
-    // libterracotta.so hands to RegisterNatives in its JNI_OnLoad. That library registers
-    //   of!["setScanning0", "(Ljava/lang/String;Ljava/lang/String;)V", jni_set_scanning]
-    //   of!["setGuesting0", "(Ljava/lang/String;Ljava/lang/String;)Z", jni_set_guesting]
-    // (burningtnt/Terracotta src/lib.rs - identical in v0.4.2, the version shipped in
-    // src/main/jniLibs/<abi>/, and still identical on upstream main today).
-    //
-    // They previously declared a THIRD String parameter (extraNodes) that has never existed
-    // in any Terracotta release. RegisterNatives matches on name AND descriptor, so it found
-    // no such method, returned Err, and src/lib.rs's JNI_OnLoad did
-    // `registration().unwrap_or_else(|e| panic!(...))` - a Rust panic on the JVM's own thread
-    // inside JNI_OnLoad, i.e. during System.loadLibrary() below. That aborts the process and
-    // no Java catch block can intercept it, which is why opening Friends/LAN killed the
-    // launcher outright instead of showing this screen's own error state.
-    //
-    // Do not add parameters here without changing the shipped .so in the same commit.
     @Keep
     private static native void setScanning0(String room, String player);
 

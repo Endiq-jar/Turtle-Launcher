@@ -16,9 +16,7 @@ class FileItemBean(
     @JvmField var file: File? = null
     @JvmField var isHighlighted: Boolean = false
     @JvmField var isCanCheck: Boolean = true
-    /** TurtleLauncher: true once ModUpdateChecker confirms a newer Modrinth version exists. */
     @JvmField var hasUpdate: Boolean = false
-    /** TurtleLauncher: set once HeatmapAnalyzer finishes for this mod/resource pack/shader pack. */
     @JvmField var perfEstimate: PerfEstimate? = null
 
     constructor(file: File) : this(

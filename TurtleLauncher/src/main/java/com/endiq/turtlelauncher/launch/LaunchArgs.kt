@@ -36,63 +36,23 @@ class LaunchArgs(
         argsList.addAll(getMinecraftJVMArgs())
         argsList.addAll(getCdsArgs())
 
-        // ── TurtleLauncher CRASH FIX ────────────────────────────────────────
-        // Minecraft's own version JSON (since ~1.19, and especially MC 26.x's
-        // NativeLibrariesBootstrap) ships its own "-Djava.library.path=${natives_directory}"
-        // / "-Djna.boot.library.path=${natives_directory}" JVM args. Those get appended
-        // AFTER the correct ones we add in getJavaArgs(), and since the JVM applies -D
-        // system properties strictly in argument order (last one for a given key wins),
-        // Mojang's incomplete path — which only contains the writable natives cache dir,
-        // NOT PathManager.DIR_NATIVE_LIB where liblwjgl.so / libpojavexec.so / libopenal.so
-        // etc. actually live on disk (the app's /lib/arm64 folder) — silently overrides ours.
-        // This was the root cause of:
-        //   java.lang.UnsatisfiedLinkError: no pojavexec in java.library.path
-        //   java.lang.UnsatisfiedLinkError: Failed to locate library: liblwjgl.so
-        // on every Minecraft version we tested (1.21.5, 26.1.2, 26.2).
-        // Fix: strip every occurrence of these two properties (ours AND Mojang's) from
-        // the combined arg list, then re-add our corrected, complete value LAST so it is
-        // always the one that wins, regardless of where Mojang's JSON places its own copy.
         argsList.removeAll { it.startsWith("-Djava.library.path=") || it.startsWith("-Djna.boot.library.path=") }
         val nativeLibraryPath = resolveNativeLibraryPath()
         argsList.add("-Djava.library.path=$nativeLibraryPath")
         argsList.add("-Djna.boot.library.path=$nativeLibraryPath")
 
-        // ── TurtleLauncher CRASH FIX (MC 26.3+) ─────────────────────────────
-        // The bundled lwjgl3 classpath below ships this launcher's own hand-
-        // maintained replacement of org.lwjgl's Java classes, built for Android.
-        // Since MC 26.3 migrated from GLFW to org.lwjgl:lwjgl-sdl, Tools now lets
-        // that module (and the matching org.lwjgl:lwjgl core module it depends
-        // on) through as Mojang's own real downloaded jars instead of silently
-        // dropping them. Because classpath lookup is first-match-wins, those two
-        // real jars must come BEFORE the bundled replacement here, or the bundled
-        // jar's own (older, ABI-mismatched) copy of shared classes like
-        // org.lwjgl.system.Callback$Descriptor would always shadow them and the
-        // game would still crash with NoSuchMethodError on startup. On versions
-        // that don't use lwjgl-sdl this returns "", so it's a no-op there.
         val lwjglAbiOverrideClasspath = Tools.getLwjglAbiOverrideClasspath(versionInfo)
         val lwjglClasspathPrefix = if (lwjglAbiOverrideClasspath.isNotEmpty()) "$lwjglAbiOverrideClasspath:" else ""
 
         argsList.add("-cp")
         argsList.add("$lwjglClasspathPrefix${Tools.getLWJGL3ClassPath()}:$launchClassPath")
 
-        // ── TurtleLauncher CRASH FIX (native/version mismatch) ──────────────
-        // liblwjgl.so is one shared file for every MC version in this launcher
-        // (no per-version selection) and is now built to match LWJGL 3.4.2 for
-        // 26.3+. Older versions (26.2 and earlier) need the original native
-        // this launcher shipped before that rebuild - using the new one there
-        // caused a GL context-tracking abort (SIGSEGV) on 26.2. The original is
-        // kept side by side as liblwjgl-legacy.so specifically for this. Only
-        // non-SDL versions get this property; SDL versions fall through to the
-        // default "lwjgl" -> liblwjgl.so (the new 3.4.2 build) with no override.
         val lwjglNativeOverride = Tools.getLwjglNativeLibraryOverride(versionInfo)
         if (lwjglNativeOverride != null) {
             argsList.add("-Dorg.lwjgl.libname=$lwjglNativeOverride")
         }
 
         if (runtime.javaVersion > 8) {
-            // A hand-edited version json can leave mainClass null or dot-less, and
-            // substring(0, -1) would crash the launch - skip the export instead of
-            // passing a bogus package the JVM would reject at startup anyway.
             val mainClass = versionInfo.mainClass ?: ""
             val lastDot = mainClass.lastIndexOf(".")
             if (lastDot > 0) {
@@ -102,45 +62,7 @@ class LaunchArgs(
             }
         }
 
-        // ── TurtleLauncher CRASH FIX (SDL_Init on Android) ───────────────────
-        // SDL's Android init path refuses to start unless SDL_SetMainReady()
-        // was called first (see SdlMainReadyBootstrap for the full story -
-        // this is SDL's own documented workaround for embedding it as a
-        // library rather than owning main()). Minecraft's own main class
-        // calls SDL_Init() itself with no chance for us to call that first,
-        // so for SDL versions we launch our small wrapper class instead and
-        // let it call SDL_SetMainReady() before handing off to the real one.
-        // Every other version launches directly as before, unchanged.
         if (Tools.resolveLwjglMode(versionInfo) == Tools.LwjglMode.NEW_SDL) {
-            // ── TurtleLauncher CRASH FIX (SDL3 two-instance crash, defense layer 2) ──
-            // Pin WHICH libSDL3.so file LWJGL's SDL binding loads. LWJGL's generated
-            // org.lwjgl.sdl.SDL resolves its library through
-            // Library.loadNative(SDL.class, "org.lwjgl.sdl",
-            //     Configuration.SDL_LIBRARY_NAME.get(Platform.mapLibraryNameBundled("SDL3")), true)
-            // (verified against LWJGL's source), and Library.loadNative's METHOD 1 short-circuits
-            // on an absolute path: it dlopens exactly that file, skipping the classpath-natives
-            // extraction, org.lwjgl.librarypath and java.library.path searches entirely. Without
-            // this pin, LWJGL walks those paths in order and the per-version natives cache dir
-            // (FIRST on java.library.path) can shadow us with a foreign libSDL3.so - a different
-            // file, so bionic's same-inode dlopen dedupe can't unify it with the instance
-            // SdlAndroidJniPrep.setup() already initialized on the ART side. The game would then
-            // dlopen a second SDL3 whose JNI_OnLoad never ran (plain dlopen never runs
-            // JNI_OnLoad), its mJavaVM stays NULL, and SDL's Android backend crashes in
-            // Android_JNI_InitTouch with a NULL JNIEnv - the confirmed MC 26.3 tombstone crash;
-            // full decode in SdlAndroidJniPrep's class doc.
-            //
-            // Pinning to this exact APK file is what maximizes the chance both sides end up on
-            // ONE instance: the ART side's System.loadLibrary("SDL3") maps this same file, and
-            // bionic dedupes dlopens of the same inode within a linker-namespace chain
-            // (linker.cpp find_loaded_library_by_inode), so the pinned dlopen should return the
-            // already-initialized soinfo. What this can NOT fix is an OEM linker-namespace
-            // topology that splits the namespaces to begin with (the OPPO/ColorOS device in the
-            // crash log shows vendor-injection dlopen noise consistent with that) - Java has no
-            // lever over namespace layout; that is what Amethyst's native sdl_hook.c is for.
-            // Best-effort/unverified on a real device - see the "TurtleSDL3:" log lines
-            // SdlAndroidJniPrep logs alongside this.
-            // (Guarded on the file existing so a broken/split APK install degrades to LWJGL's
-            // default search instead of pinning to a nonexistent path.)
             val pinnedSdl3 = File(PathManager.DIR_NATIVE_LIB, "libSDL3.so")
             if (pinnedSdl3.isFile) {
                 argsList.add("-Dorg.lwjgl.sdl.libname=${pinnedSdl3.absolutePath}")
@@ -175,10 +97,6 @@ class LaunchArgs(
         } else if (account.accountType == com.endiq.turtlelauncher.feature.accounts.AccountType.LOCAL.type &&
             com.endiq.turtlelauncher.setting.AllSettings.localSkinServerEnabled.getValue()
         ) {
-            // TurtleLauncher: local skin/cape system - see TurtleSkinServer's own doc
-            // comment for the full explanation. Only local/offline accounts need this;
-            // Microsoft accounts already carry real skin data through Mojang, and
-            // OtherLogin accounts are handled by the branch above.
             val port = com.endiq.turtlelauncher.feature.skin.TurtleSkinServer.ensureStarted(
                 com.endiq.turtlelauncher.setting.AllSettings.localSkinServerLanVisible.getValue()
             )
@@ -196,38 +114,15 @@ class LaunchArgs(
         val configFilePath = if (is7) LibPath.LOG4J_XML_1_7 else LibPath.LOG4J_XML_1_12
         argsList.add("-Dlog4j.configurationFile=${configFilePath.absolutePath}")
 
-        // Native library path is no longer added here — see resolveNativeLibraryPath(),
-        // which is applied once, last, in getAllArgs() so it can never be silently
-        // overridden by Minecraft's own version JSON JVM args.
-
         return argsList
     }
 
-    /**
-     * Builds the corrected, complete `java.library.path` value:
-     * the writable per-version natives cache dir (used by LWJGL/JNA/Netty as their
-     * extraction/scratch dir) PLUS [PathManager.DIR_NATIVE_LIB] — the app's actual
-     * APK native library folder where liblwjgl.so, libpojavexec.so, libopenal.so,
-     * libfreetype.so etc. are installed. Both must be present for the game to find
-     * every native library it needs.
-     */
     private fun resolveNativeLibraryPath(): String {
         val versionSpecificNativesDir = File(PathManager.DIR_CACHE, "natives/${minecraftVersion.getVersionName()}")
         if (!versionSpecificNativesDir.exists()) versionSpecificNativesDir.mkdirs()
         return "${versionSpecificNativesDir.absolutePath}:${PathManager.DIR_NATIVE_LIB}"
     }
 
-    /**
-     * TurtleLauncher: DISABLED. A real device log showed the JVM hang (no "Java Exit code"
-     * ever logged - every other launch, successful or crashed, logs that line; this one
-     * just stopped) right after "Error occurred during CDS dumping", using
-     * -XX:+AutoCreateSharedArchive on this project's custom embedded Android JDK 21 build.
-     * CDS depends on specific low-level JVM behavior that may not be fully ported in a
-     * stripped/cross-compiled embedded JDK, and it isn't safe to keep risking every launch
-     * on a startup-speed optimization that can't be verified on-device. See
-     * [CdsArchiveManager]'s own doc comment for the original design if this gets revisited
-     * with a way to actually test it first.
-     */
     private fun getCdsArgs(): List<String> {
         return emptyList()
     }
@@ -239,13 +134,6 @@ class LaunchArgs(
         varArgMap["classpath_separator"] = ":"
         varArgMap["library_directory"] = getLibrariesHome()
         varArgMap["version_name"] = versionInfo.id
-        // TurtleLauncher fix: MC 26.x's NativeLibrariesBootstrap calls
-        // Files.createDirectories() on subfolders of natives_directory
-        // (used for SharedLibraryExtractPath / jna.tmpdir / netty.native.workdir).
-        // PathManager.DIR_NATIVE_LIB is the app's read-only APK lib directory
-        // (/data/app/.../lib/arm64) — mkdir there throws AccessDeniedException.
-        // Use the writable per-version natives cache dir instead, falling back
-        // to DIR_NATIVE_LIB only if that cache dir doesn't exist yet.
         val writableNativesDir = File(PathManager.DIR_CACHE, "natives/${versionInfo.id}").apply {
             if (!exists()) mkdirs()
         }
@@ -281,15 +169,6 @@ class LaunchArgs(
         verArgMap["game_assets"] = ProfilePathHome.getAssetsHome()
         verArgMap["game_directory"] = gameDirPath.absolutePath
         verArgMap["user_properties"] = "{}"
-        // TurtleLauncher fix: this was hardcoded "msa" for every account, Microsoft or not.
-        // user_type is what Minecraft's own client uses internally to decide whether it's
-        // holding a real Microsoft-authenticated session - a Local/offline or Other Login
-        // (authlib-injector) account isn't one (accessToken is just the "0" placeholder, no
-        // real Mojang session behind it), so telling the game it's "msa" anyway makes the
-        // client itself believe it should behave like a premium account - matches the exact
-        // "every server treats it as premium" symptom this was reported as. AccountType only
-        // has MICROSOFT/LOCAL (see AccountType.kt) - Other Login accounts are stored as LOCAL
-        // with otherBaseUrl set, so this same branch correctly covers both as "legacy".
         verArgMap["user_type"] = if (account.accountType == AccountType.MICROSOFT.type) "msa" else "legacy"
         verArgMap["version_name"] = versionInfo.inheritsFrom ?: versionInfo.id ?: "unknown"
 
@@ -326,18 +205,6 @@ class LaunchArgs(
 
     companion object {
 
-        // ── Java version requirement map ─────────────────────────────────────
-        // Strict 4-tier mapping, exactly as specified:
-        //
-        //   JRE 8   → MC 1.16.5 and below
-        //   JRE 17  → MC 1.18 – 1.20.4
-        //   JRE 21  → MC 1.20.5 – 1.21.11
-        //   JRE 25  → MC 26.1 and later
-        //
-        // We fully own this mapping instead of trusting Mojang's JSON
-        // majorVersion field, since it isn't reliable across the whole
-        // version range (26.x still reports 21 even though Java 25 is
-        // actually required).
         /**
          * Returns the actual Java major version required for [mcVersionId],
          * fully overriding Mojang's JSON value since it isn't reliable across
@@ -346,13 +213,6 @@ class LaunchArgs(
          */
         @JvmStatic
         fun resolveRequiredJava(mcVersionId: String, jsonMajorVersion: Int): Int {
-            // Branch on the major-version family FIRST, using the leading numeric
-            // segment only. Snapshot/pre-release ids such as "26.3-snapshot-4" or
-            // "1.21.4-rc1" must never fall through into the wrong family's checks
-            // below — that previously happened because a failed "26.1+" check
-            // (caused by the "-snapshot-4" suffix breaking naive int parsing)
-            // would cascade into the 1.x "at least" checks, which match ANY
-            // 26.x id since 26 > 1.
             if (leadingVersionSegmentInt(mcVersionId, 0) >= 26) {
                 // 26.x branch (new versioning scheme, no "1." prefix) — 26.1+ needs Java 25
                 if (isMinecraftVersionAtLeast(mcVersionId, 26, 1, 0)) return 25

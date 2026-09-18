@@ -442,9 +442,6 @@
                         android:checked="true" />
                 </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
     
-                <!-- TurtleLauncher: the two transition pickers. Every screen and every
-                     show/hide that goes through TurtleTransitions uses these, so they apply
-                     app-wide instead of being hardcoded per fragment. -->
                 <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/animationEnter_layout"
                     android:layout_width="match_parent"
@@ -828,9 +825,6 @@
                         android:layout_centerVertical="true" />
                 </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-                <!-- TurtleLauncher: built-in AI Assistant. Both switches only control the
-                     on-device assistant (top bar -> Assistant); the optional AI crash help /
-                     skin filter in Experimental are separate and need the user's own API key. -->
                 <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/aiAssistantEnabled_layout"
                     android:layout_width="match_parent"

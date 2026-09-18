@@ -5,21 +5,6 @@ import android.graphics.BitmapFactory
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-/**
- * TurtleLauncher: decodes a single Windows ICO/CUR-format byte buffer into a [CursorFrame].
- *
- * This handles two very different payload shapes that can both legally sit behind an
- * ICONDIRENTRY, since Windows Vista added PNG support to the format without changing the
- * container:
- *  - a plain embedded PNG (Android's own BitmapFactory decodes this directly), or
- *  - a classic BITMAPINFOHEADER-style DIB: a XOR color layer + a 1bpp AND transparency
- *    mask, bottom-up, at 1/4/8/24 or 32 bits per pixel. Nothing in the Android SDK can
- *    read this, so it's decoded by hand below.
- *
- * Used both for standalone .cur files and for each "icon" sub-chunk found inside a .ani's
- * LIST 'fram' chunk (see [AniDecoder]) - both are complete, self-contained ICO/CUR byte
- * streams with the same ICONDIR/ICONDIRENTRY header.
- */
 object CurIcoDecoder {
     private const val MAX_DIMENSION = 512 // sanity bound - real cursors are never larger
 

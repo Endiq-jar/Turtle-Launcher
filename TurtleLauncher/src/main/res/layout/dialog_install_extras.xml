@@ -48,8 +48,6 @@
             android:orientation="vertical"
             android:paddingHorizontal="@dimen/_4sdp">
 
-            <!-- TurtleLauncher: Turtle Client toggle - resource to bundle isn't wired
-                 up yet, see ExtraModInstall. -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/turtle_client_option"
                 android:layout_width="match_parent"
@@ -108,8 +106,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- TurtleLauncher: FPS Boost toggle - resource to bundle isn't wired up
-                 yet, see ExtraModInstall. -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/fps_boost_option"
                 android:layout_width="match_parent"

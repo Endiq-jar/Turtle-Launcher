@@ -189,9 +189,6 @@ abstract class AbstractResourceDownloadFragment(
             returnButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
         }
 
-        // TurtleLauncher: lets a subclass (e.g. ModPackDownloadFragment, opened from a
-        // "featured modpack" shortcut) pre-fill the search box before the automatic
-        // first search fires, instead of always starting from an empty query.
         initialSearchQuery()?.let { query ->
             binding.nameEdit.setText(query)
         }

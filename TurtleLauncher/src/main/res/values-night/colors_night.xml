@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Same "Sage" palette as values/colors.xml — the app is dark-only,
-         so night mode intentionally matches day mode exactly instead of using
-         a second, different dark theme. Only names present in the base file
-         plus this file's own legacy extras are kept, all remapped onto the
-         given hex list. -->
-
     <!-- Core -->
     <color name="black_or_white">#F2F5F0</color>
 

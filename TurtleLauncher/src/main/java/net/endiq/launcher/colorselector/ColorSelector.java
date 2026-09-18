@@ -58,7 +58,6 @@ public class ColorSelector implements HueSelectionListener, RectangleSelectionLi
         parent.addView(mRootView);
     }
 
-    /** @return The root view, mainly for position manipulation purposes */
     public View getRootView(){
         return mRootView;
     }

@@ -14,13 +14,6 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 
-/**
- * TurtleLauncher: a small pixel-art canvas for drawing custom control-button icons directly
- * in-app, as an alternative to picking an existing image file. Fixed at a modest GRID_SIZE -
- * this is meant for small button icons (in the same spirit as the turtle launcher icon itself,
- * a 32x32-ish sprite scaled up), not a general-purpose art tool, so there's no zoom/pan/layer
- * system here - just a flat grid of ARGB pixels, a handful of tools, and bounded undo.
- */
 public class PixelCanvasView extends View {
     public static final int GRID_SIZE = 32;
     private static final int MAX_UNDO_DEPTH = 20;
@@ -112,10 +105,6 @@ public class PixelCanvasView extends View {
         return false;
     }
 
-    /** Exports the current grid at its native resolution (GRID_SIZE x GRID_SIZE) - deliberately
-     *  not upscaled here, ControlButton already scales any custom image to fit the button, and
-     *  scaling a crisp small grid up preserves the pixel-art look far better than shipping a
-     *  pre-blurred/upscaled bitmap would. */
     public Bitmap exportBitmap() {
         return Bitmap.createBitmap(mPixels, GRID_SIZE, GRID_SIZE, Bitmap.Config.ARGB_8888);
     }
@@ -201,8 +190,6 @@ public class PixelCanvasView extends View {
     }
 
     private void applyToolAt(int row, int col, int cellIndex) {
-        // Fill is a single flood-fill operation per gesture, not a continuous paint - re-running
-        // it on every ACTION_MOVE cell would be both pointless (same result) and wasteful.
         if (mCurrentTool == Tool.FILL) {
             if (!mGestureSnapshotTaken) {
                 pushUndoSnapshot();

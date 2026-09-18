@@ -5,11 +5,6 @@ import android.animation.ObjectAnimator
 import android.view.View
 import com.endiq.anim.animations.BaseAnimator
 
-/**
- * TurtleLauncher: was driven by `target.width / 100` - i.e. **0** until the view has been laid
- * out, so the wobble silently did nothing in the exact place it was used (a screen entering).
- * Now scaled off screen density, which is always available.
- */
 class WobbleAnimator : BaseAnimator() {
     override fun getAnimators(target: View): Array<Animator> {
         val unit = dp(target, 3f)

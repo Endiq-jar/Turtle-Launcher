@@ -44,22 +44,12 @@ import com.endiq.turtlelauncher.utils.anim.TurtleTransitions
 class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
     companion object {
         const val TAG = "TerracottaFragment"
-        /** EasyTier's own official public shared node - see https://easytier.rs.
-         *
-         *  TurtleLauncher: was tcp://public.easytier.top:11010, which is what Terracotta's
-         *  native library hardcodes. That hostname CNAMEs to public.easytier.cn, which
-         *  currently has no A record - so the built-in default simply doesn't resolve, and
-         *  "Use EasyTier public node" used to fill in an address that was guaranteed dead.
-         *  Switched to the .cn name EasyTier's own README documents. */
         private const val EASYTIER_PUBLIC_NODE = "tcp://public.easytier.cn:11010"
 
         /** How many times a join is attempted before we give up and show the error. See
          *  handleException() for the (native, unmodifiable) reason retries are needed. */
         private const val MAX_JOIN_ATTEMPTS = 3
 
-        /** How long "Setting up your room…"/"Starting…" is allowed to sit before the
-         *  hosting watchdog gives up and surfaces a real error instead of spinning
-         *  forever - see the hostWatchdogJob field below for why this exists. */
         private const val HOST_TIMEOUT_MS = 20_000L
     }
 
@@ -79,14 +69,7 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
      *  of an already-live HostOK room, which must not re-fire that side effect. */
     private var lastStateClass: Class<*>? = null
 
-    /** [Terracotta] finished starting (or definitively failed). Until this flips, the screen
-     *  stays on its "starting" state: rendering before the backend exists would show WAITING
-     *  (renderState(null)) and hand the user live Host/Join buttons that can only throw. */
     private var terracottaReady = false
-
-    // ── Join retry ──────────────────────────────────────────────────────────────────────
-    // See handleException() for why this exists: the native guest flow is on a hardcoded
-    // 15-second deadline that P2P setup regularly overruns.
 
     /** Non-null only while a join attempt chain is live - cleared on success, on cancel, and
      *  when the view goes away, so navigating off the screen never triggers a background retry. */
@@ -95,15 +78,6 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
     private var joinJob: Job? = null
 
     // ── Host timeout watchdog ───────────────────────────────────────────────────────────
-    // TurtleLauncher HANG FIX: unlike the guest flow, Terracotta's native host path
-    // (`setScanning` -> HostScanning -> HostStarting) has no documented deadline of its
-    // own - see TerracottaNodeList's start_guest() doc for the guest side's real 15s
-    // native poll; nothing equivalent is described for hosting. If every relay/rendezvous
-    // node in the list is unreachable, HostScanning can sit there indefinitely with only
-    // the Cancel button to get out - reported as "setting up your room takes forever".
-    // This is a client-side watchdog only (can't touch the native deadline, if any, from
-    // Kotlin) - same lever the join-retry fix above already uses for the same class of
-    // problem.
 
     private var hostWatchdogJob: Job? = null
 
@@ -135,20 +109,6 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
         // must always be able to get back out without the app appearing to hang or crash.
         binding.backButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
 
-        // TurtleLauncher HANG FIX: Terracotta.initialize() used to be called straight from
-        // onViewCreated, i.e. on the UI thread. It is not a cheap call - it does mkdirs,
-        // System.loadLibrary("terracotta"), opens a log RandomAccessFile and then runs the
-        // native start0() that boots the whole EasyTier backend. On a slow device that
-        // blocks long enough for the system to declare an ANR and kill the launcher, which
-        // is precisely the reported "I press the button, the launcher freezes, then it
-        // closes". It now runs on the background pool and the screen shows a loading state
-        // until it comes back; the rest of the screen is wired up in onTerracottaReady().
-        //
-        // Still catches Throwable, not just Exception: a native-library load failure
-        // surfaces as UnsatisfiedLinkError/ExceptionInInitializerError, which are Errors,
-        // not Exceptions - letting either escape uncaught took the whole app down instead of
-        // just this screen, since nothing after the throwing line (including every other
-        // click listener below) ever got the chance to run.
         switchGroup(Group.LOADING)
         binding.loadingText.setText(R.string.terracotta_status_starting)
         setButtonsEnabled(false)
@@ -246,7 +206,7 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
         }
     }
 
-    /** Custom EasyTier server node override (TurtleLauncher PR #1496 port) - see
+    /** Custom EasyTier server node override - see
      *  AllSettings.enableTerracottaNodes/terracottaNodes and TerracottaNodeList. */
     private fun setupCustomNodeControls() {
         val enabled = com.endiq.turtlelauncher.setting.AllSettings.enableTerracottaNodes.getValue()
@@ -292,9 +252,6 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
         joiningCode = null
     }
 
-    /** No-op if already armed - renderState() calls this on every HostScanning/HostStarting
-     *  tick, and re-arming on each one would keep pushing the deadline back, defeating the
-     *  whole point of a fixed timeout. */
     private fun armHostWatchdog() {
         if (hostWatchdogJob?.isActive == true) return
         hostWatchdogJob = scope.launch {
@@ -356,9 +313,6 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
             is TerracottaState.HostStarting -> showLoading(getString(R.string.terracotta_status_host_starting))
             is TerracottaState.GuestConnecting -> showLoading(getString(R.string.terracotta_status_guest_connecting))
             is TerracottaState.GuestStarting -> {
-                // Ported from Zalith Launcher 2: while joining, the native backend
-                // estimates the network difficulty from both sides' NAT types - show it so
-                // "Taking forever" is explained instead of mysterious.
                 val base = getString(R.string.terracotta_status_guest_starting)
                 val difficultyRes = state.difficulty?.textRes ?: 0
                 showLoading(if (difficultyRes != 0) "$base\n${getString(difficultyRes)}" else base)
@@ -370,9 +324,6 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
                     players = state.profiles,
                     isHost = true
                 )
-                // Zalith Launcher 2 auto-copies the invite code once, on the transition
-                // into host-ok - the host's very next action is pasting it to a friend.
-                // Profile updates of the live room (isForkOf) deliberately don't re-fire it.
                 if (freshHostOk && !state.code.isNullOrBlank()) {
                     copyToClipboard(state.code, R.string.terracotta_code_copied)
                 }
@@ -388,21 +339,6 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
         }
     }
 
-    /**
-     * Guest-side failures get retried automatically instead of going straight to the error
-     * screen.
-     *
-     * Why: Terracotta's native guest flow (`start_guest` in the upstream Rust) gives up on a
-     * fixed schedule - it polls the EasyTier peer list **5 times, 3 seconds apart**, and if it
-     * hasn't seen a peer whose hostname starts with `scaffolding-mc-server-` by then it logs
-     * "Cannot find scaffolding server" and raises PingHostFail. Fifteen seconds is plenty once
-     * the tunnel is up and nowhere near enough when EasyTier still has to bootstrap a relay,
-     * exchange routes and punch through NAT; the connection very often lands at 20-40 seconds.
-     *
-     * That deadline is inside a prebuilt .so we can't rebuild, so the only lever from Kotlin is
-     * to start the attempt over - and a second attempt usually succeeds, because EasyTier
-     * reuses the peer/route information it discovered the first time instead of starting cold.
-     */
     private fun handleException(type: TerracottaState.ExceptionState.Type) {
         val code = joiningCode
         if (code == null || joinAttempt >= MAX_JOIN_ATTEMPTS || !type.isRetryable()) {
@@ -435,9 +371,6 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
                     // (500ms tick), so wait for it rather than racing it.
                     waitForWaiting()
 
-                    // Lead with a different node each time - the list is otherwise identical on
-                    // both devices (it has to be, or they'd never find each other), so rotating
-                    // the head is the one thing we can vary between attempts.
                     val nodes = TerracottaNodeList.fetch()
                     Terracotta.setGuesting(code, player, rotate(nodes, attempt - 1))
                 }.onFailure { e ->
@@ -488,9 +421,6 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
         binding.connectedGroup.visibility = if (group == Group.CONNECTED) View.VISIBLE else View.GONE
         binding.exceptionGroup.visibility = if (group == Group.EXCEPTION) View.VISIBLE else View.GONE
 
-        // Whatever just became visible arrives with the launcher's configured transition,
-        // same as a screen swap - so a group change feels like part of the app rather than
-        // an instant jump.
         val incoming = when (group) {
             Group.WAITING -> binding.waitingGroup
             Group.LOADING -> binding.loadingGroup
@@ -591,12 +521,6 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
         binding.joinCodeRow.visibility = if (show) View.VISIBLE else View.GONE
         if (show) {
             binding.joinCodeInput.requestFocus()
-            // TurtleLauncher: joining (not hosting) is a documented, currently-unresolved
-            // upstream issue - see TurtleLauncher#1486 ("Cannot find scaffolding server" /
-            // PingHostFail), reproduced across multiple devices and Terracotta integrations,
-            // not something fixable from this fork's code since it's the shared EasyTier
-            // rendezvous/relay layer failing, not app logic. Surfaced once per screen visit
-            // so people aren't left thinking a failed join means their setup is broken.
             if (!hasShownJoinNotice) {
                 hasShownJoinNotice = true
                 Toast.makeText(requireContext(), R.string.terracotta_join_known_issue, Toast.LENGTH_LONG).show()
@@ -664,9 +588,6 @@ class TerracottaFragment : FragmentWithAnim(R.layout.fragment_terracotta) {
         Toast.makeText(requireContext(), toastRes, Toast.LENGTH_SHORT).show()
     }
 
-    /** Display name handed to the room. Zalith Launcher 2 falls back to "Anonymous
-     *  Player" when no account is selected, so the host's player list never shows a
-     *  nameless entry. */
     private fun playerName(): String =
         AccountsManager.currentAccount?.username?.takeIf { it.isNotBlank() }
             ?: getString(R.string.terracotta_player_anonymous)

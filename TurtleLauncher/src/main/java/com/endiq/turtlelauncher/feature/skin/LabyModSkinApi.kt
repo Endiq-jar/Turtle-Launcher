@@ -8,22 +8,6 @@ import com.endiq.turtlelauncher.utils.stringutils.StringUtils
 import net.endiq.launcher.Tools
 import net.endiq.launcher.utils.DownloadUtils
 
-/**
- * Looks up a player's current Mojang skin and LabyMod cape by username, for the
- * "Browse Skin/Cape" flow in [com.endiq.turtlelauncher.ui.dialog.SkinCapeDialog].
- *
- * LabyMod doesn't host alternate/browsable skins of its own - a player's skin is
- * always just their regular Mojang skin. What LabyMod *does* provide is a public,
- * no-auth-required cape lookup (the same one CustomSkinLoader/OptiFine-adjacent
- * tools have used for years): http://capes.labymod.net/capes/<uuid-with-dashes>.png,
- * which returns a non-2xx response if the player has no LabyMod cape. So "browsing
- * LabyMod" in practice means: resolve the username to a UUID via Mojang, then check
- * that one cape URL - there's no gallery of alternate skins the way a site like
- * NameMC has, just "this player's current skin" + "this player's LabyMod cape".
- *
- * Every function here is best-effort and does blocking network calls - callers
- * must invoke off the main thread (see SkinCapeDialog's use of Task.runTask).
- */
 internal object LabyModSkinApi {
     private const val MOJANG_UUID_LOOKUP = "https://api.mojang.com/users/profiles/minecraft/"
     private const val MOJANG_SESSION_PROFILE = "https://sessionserver.mojang.com/session/minecraft/profile/"

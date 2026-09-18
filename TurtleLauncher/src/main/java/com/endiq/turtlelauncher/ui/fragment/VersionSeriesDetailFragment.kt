@@ -74,16 +74,9 @@ class VersionSeriesDetailFragment : FragmentWithAnim(R.layout.fragment_version_s
             bundle.putString(InstallGameFragment.BUNDLE_MC_VERSION, versionId)
             ZHTools.swapFragmentWithAnim(this, InstallGameFragment::class.java, InstallGameFragment.TAG, bundle)
         }
-        // TurtleLauncher: this list had no entry animation at all. post{} so the children
-        // exist before we animate them.
         binding.versionDetailList.post { TurtleTransitions.animateList(binding.versionDetailList) }
     }
 
-    /**
-     * Beta/Alpha cards land here with every version already of that one type - still run
-     * through the same release/snapshot bucketing so the fixed Beta/Alpha "series" get a
-     * single matching header instead of a hardcoded one.
-     */
     private fun buildRows(seriesLabel: String): List<SeriesVersionAdapter.Row> {
         val allVersions = VersionSeriesUtils.fetchAllVersions()
         val grouped = VersionSeriesUtils.group(allVersions)

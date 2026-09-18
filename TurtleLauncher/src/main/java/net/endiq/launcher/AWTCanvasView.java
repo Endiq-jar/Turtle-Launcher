@@ -15,13 +15,7 @@ import net.endiq.launcher.utils.JREUtils;
 import java.util.LinkedList;
 
 
-
-
 public class AWTCanvasView extends TextureView implements TextureView.SurfaceTextureListener, Runnable {
-    // TurtleLauncher: capped near a typical installer window's own size (see AllSettings.
-    // awtCanvasSizeCap) so a small fixed-pixel Swing window fills most of this canvas instead
-    // of a small corner of it - min() so this never asks for MORE canvas than 80% of the real
-    // screen on a small device, only ever less.
     public static final int AWT_CANVAS_WIDTH = Math.min(
             (int) (Tools.currentDisplayMetrics.widthPixels * 0.8),
             com.endiq.turtlelauncher.setting.AllSettings.getAwtCanvasSizeCap().getValue());

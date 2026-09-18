@@ -217,19 +217,6 @@ public final class JREUtils {
         envMap.put("DRIVER_PATH", DriverPluginManager.getDriver().getPath());
         envMap.put("JAVA_HOME", jreHome);
 
-        // TurtleLauncher: OpenAL sound fix for Android.
-        // The bundled libopenal.so (openal-soft-release.aar) was inspected via `strings`:
-        // it only contains the OpenSL ES backend (\"opensl\"), plus null/loopback/wave —
-        // no \"android\" (AudioTrack/JNI), no \"oboe\", no \"aaudio\", no desktop ALSA/Pulse/JACK.
-        // The previous value \"android\" requested a backend that doesn't exist in this build,
-        // so OpenAL-Soft logged \"No playback backend available!\" and Minecraft ended up
-        // completely silent on every version (no crash, just no audio). Forcing \"opensl\"
-        // selects the only real playback backend this build actually ships, which is the
-        // correct OpenSL ES path on Android and matches what upstream PojavLauncher and other
-        // Android launchers use for this exact AAR.
-        // If the AAR is ever rebuilt with oboe/aaudio/android backends, extend this to a
-        // comma-separated preference list like \"opensl,oboe,opensles\" — OpenAL-Soft will skip
-        // any name that isn't present and pick the first available one.
         envMap.put("ALSOFT_DRIVERS", "opensl");
         envMap.put("HOME", PathManager.DIR_GAME_HOME);
         envMap.put("TMPDIR", PathManager.DIR_CACHE.getAbsolutePath());
@@ -279,12 +266,6 @@ public final class JREUtils {
         RendererInterface currentRenderer = Renderers.INSTANCE.getCurrentRenderer();
         String rendererId = currentRenderer.getRendererId();
 
-        // TurtleLauncher: Holy GL4ES is the only remaining renderer that speaks through the
-        // GL4ES translation layer and needs its LIBGL_ES/mipmap/compat flags. Krypton
-        // Wrapper (the other former GL4ES-family renderer) was removed as a built-in; LTW
-        // and MobileGlues aren't GL4ES-based (see their own doc comments) so neither
-        // belongs in this check. VirGL, VGPU, Zink and Freedreno are all Mesa-gallium-based
-        // and never touch these either.
         boolean isGl4esRenderer = rendererId.equals(HolyGL4ESRenderer.ID);
 
         if (isGl4esRenderer) {
@@ -294,12 +275,6 @@ public final class JREUtils {
             envMap.put("LIBGL_NOINTOVLHACK", "1");
             envMap.put("LIBGL_NORMALIZE", "1");
 
-            // TurtleLauncher Phone Settings: JNI Optimization - reduces libgl4es's own
-            // per-call/per-upload overhead. Each of these four is a real env var in the
-            // bundled libgl4es_114/115.so, confirmed via `strings` rather than assumed;
-            // previously one combined toggle (gl4esPerformanceTweaks), now four granular
-            // switches so a specific device/driver combo that regresses under one of them
-            // can disable just that one instead of all four.
             if (com.endiq.turtlelauncher.setting.AllSettings.getJniBatching().getValue())
                 envMap.put("LIBGL_BATCH", "1"); // batch GL calls instead of dispatching each one immediately
             if (com.endiq.turtlelauncher.setting.AllSettings.getJniCachedReferences().getValue())
@@ -403,11 +378,6 @@ public final class JREUtils {
         setJavaEnv(envMap, jreHome);
         setCustomEnv(envMap);
 
-        // TurtleLauncher: sound fix hardening — custom_env.txt is user-editable and may still
-        // contain the old broken value ALSOFT_DRIVERS=android (from before this fix). If the
-        // user (or an old guide) left that in, it would silently break sound again even after
-        // we fixed setJavaEnv() above. Force-correct any known-bad value here, while still
-        // respecting a user who intentionally sets a valid driver list (e.g. \"opensl,oboe\").
         String drivers = envMap.get("ALSOFT_DRIVERS");
         if (drivers == null || drivers.trim().isEmpty() || drivers.trim().equalsIgnoreCase("android")) {
             envMap.put("ALSOFT_DRIVERS", "opensl");
@@ -430,34 +400,6 @@ public final class JREUtils {
                 setRendererEnv(envMap);
             }
 
-            // ── TurtleLauncher CRASH FIX (MC 26.3+ SDL SIGSEGV) ─────────────────
-            // Root-caused by comparing our own bundled libSDL3.so against the real,
-            // working reference it (and the rest of this launcher's lwjgl/liblwjgl.so
-            // build) actually came from: Amethyst-Android's app_pojavlauncher module
-            // (confirmed via embedded build-path strings inside our own libSDL3.so).
-            // That project's JREUtils sets exactly these two env vars, and its own
-            // comment there is explicit: "Has to run after SDL env vars are set" /
-            // POJAVEXEC_EGL. Without them, SDL3 tries to dlopen the *system* EGL/GL
-            // libraries directly instead of going through this launcher's own
-            // POJAVEXEC EGL bridge (the same native shim GLFW/GL4ES/Zink already
-            // depend on) - which lines up with the SIGSEGV happening immediately
-            // after SDL's own system/driver-info logging step, i.e. right as it
-            // tries to actually open a GL/EGL library that was never routed through
-            // our bridge. This is a real, confirmed-in-code fix.
-            //
-            // UPDATE (Aug 2026): the "second line of defense" that runs alongside this -
-            // SdlAndroidJniPrep.setup(), called below via the NEW_SDL branch - was
-            // disabled for a while after a real native crash report showed it aborting
-            // the whole process with a JNI-checked SIGABRT ("no static or non-static
-            // method Lorg/libsdl/app/SDLActivity;.nativeSetupJNI()I") before the game
-            // even got as far as the EGL fix above. Root cause: the old bundled
-            // libs/sdl3-android-classes.jar's SDLActivity.class declared nativeSetupJNI
-            // as `()V` (void-returning) while our bundled libSDL3.so's own JNI_OnLoad
-            // looks up an `()I` (int-returning) overload - the two bundled artifacts
-            // were from different SDL3 revisions and were never a matched pair. That
-            // jar has since been replaced with real matching-signature source (see
-            // org.libsdl.app package + SdlAndroidJniPrep's class doc) and the call
-            // re-enabled - see that class's doc for what is and isn't actually fixed.
             String eglLibraryName = envMap.get("POJAVEXEC_EGL");
             if (eglLibraryName != null) {
                 // Plugin renderers (e.g. the MobileGlues app's renderer) expose their EGL
@@ -485,9 +427,6 @@ public final class JREUtils {
     }
 
     private static void initGraphicAndSoundEngine(boolean renderer) {
-        // TurtleLauncher: pre-load OpenAL with error reporting. If this fails, Minecraft's
-        // LWJGL OpenAL bindings will throw UnsatisfiedLinkError later when trying to play
-        // any sound — better to log it here where it's immediately visible.
         if (!dlopen(DIR_NATIVE_LIB + "/libopenal.so")) {
             Logging.e("SOUND_LIBRARY", "Failed to pre-load libopenal.so from " + DIR_NATIVE_LIB
                 + " — sound will not work in-game. Check that the APK includes the native library.");
@@ -549,18 +488,6 @@ public final class JREUtils {
         // that we ship with Java (since it may be older than what's needed)
         userArgs.add("-Dorg.lwjgl.freetype.libname="+ DIR_NATIVE_LIB +"/libfreetype.so");
 
-        // ── TurtleLauncher Phone Settings: ActiveProcessorCount Fix ─────────────
-        // Some phones misreport their own core count to the JVM (or report something the
-        // JVM chokes on), so this is always explicitly set rather than left to the JVM's
-        // own (frequently wrong) auto-detection. Resolution order:
-        //   1. Per-instance override (this version's own VersionConfig), if
-        //      perInstanceCpuOverride is on and the version set one (>0).
-        //   2. Global manual override, if manualCoreOverride is on.
-        //   3. Auto-detect via Runtime.availableProcessors(), clamped to a sane 1-16
-        //      range and falling back to 8 if the platform reports something bogus
-        //      (<=0, or >16 - no real phone has more than 16 logical cores, so a bigger
-        //      number here means the query itself is unreliable, not that the device
-        //      genuinely has that many).
         int coreCount;
         int perInstanceCores = (gameVersion != null && com.endiq.turtlelauncher.setting.AllSettings.getPerInstanceCpuOverride().getValue())
                 ? gameVersion.getVersionConfig().getCpuCoreOverride() : -1;
@@ -594,41 +521,14 @@ public final class JREUtils {
         setupExitMethod(activity.getApplication());
         initializeGameExitHook();
         chdir(gameVersion == null ? ProfilePathHome.getGameHome() : gameVersion.getGameDir().getAbsolutePath());
-        userArgs.add(0,"java"); //argv[0] is the program name according to C standard.
-
-        // TurtleLauncher CRASH FIX (MC 26.3+ SDL native crash): RE-ENABLED Aug 2026.
-        // The abort that got this disabled (a real Java/native ABI mismatch in the old
-        // bundled sdl3-android-classes.jar + libSDL3.so pairing) is fixed - see
-        // SdlAndroidJniPrep's class doc for exactly what's fixed and what still isn't
-        // (the ABI mismatch is confirmed fixed; the original SIGSEGV is not confirmed
-        // fixed, only improved-odds - this has not been tested on a real device).
-        // TurtleLauncher CRASH FIX (MC 26.3+ SDL3 two-instance crash): before the ART-side
-        // SDL prep below, remove any libSDL3*.so that Minecraft's own natives bootstrap may
-        // have left in the per-version natives cache dir - that dir is FIRST on
-        // java.library.path, so a copy there would shadow this launcher's APK-installed
-        // Android SDL3 build and load a second, uninitialized instance (the confirmed
-        // Android_JNI_InitTouch NULL-env SIGSEGV - full decode in SdlAndroidJniPrep's class
-        // doc). LaunchArgs additionally pins -Dorg.lwjgl.sdl.libname to the same APK file.
-        // Java-only, best-effort: no device here to verify on, but each step logs the
-        // "TurtleSDL3:" lines a crash report needs to confirm or refute it.
+        userArgs.add(0,"java");
         if (gameVersion != null && Tools.resolveLwjglMode(Tools.getVersionInfo(gameVersion)) == Tools.LwjglMode.NEW_SDL) {
             com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.ensureSingleSdl3Source(gameVersion.getVersionName());
             com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.setup(activity);
         }
 
-        // TurtleLauncher: start draining system logcat into a rolling file for this session
-        // BEFORE the JVM starts. Everything below this point can be wiped out instantly by a
-        // signal (renderer SIGSEGV, OOM kill, ANR kill), and when that happens the native
-        // logger's buffered `latestlog.txt` dies with the process - leaving the crash screen
-        // with an empty log, which is the "logs didn't appear" half of the support reports.
-        // logcat lives in logd, not in this process, so it survives. See GameLogcat.
         com.endiq.turtlelauncher.feature.log.GameLogcat.start();
 
-        // TurtleLauncher: tee the game's own stdout/stderr into latestlog.txt for this
-        // session. Until this, `latestlog.txt` only ever held the launcher's own pre-launch
-        // dump (the "JVMArg:" lines above) - the game's actual output (Log4j2, mod loader,
-        // crash stack traces) went nowhere, which is why the crash screen / Last Game Log /
-        // Assistant had no game log to show. See GameOutputCapture.
         com.endiq.turtlelauncher.feature.log.GameOutputCapture.install();
 
         final int exitCode = VMLauncher.launchJVM(userArgs.toArray(new String[0]));
@@ -638,9 +538,6 @@ public final class JREUtils {
         com.endiq.turtlelauncher.feature.log.GameLogcat.stop();
         Logger.appendToLog("Java Exit code: " + exitCode);
         if (exitCode != 0) {
-            // TurtleLauncher Fast Boot auto-recovery: if Fast Boot was on for this crashed
-            // launch, turn it off automatically so the *next* launch attempt runs with full
-            // checksum verification — in case a skipped check let a corrupt file through.
             if (com.endiq.turtlelauncher.setting.AllSettings.getFastBoot().getValue()) {
                 com.endiq.turtlelauncher.setting.AllSettings.getFastBoot().put(false).save();
                 Logger.appendToLog("Fast Boot auto-disabled after a crash, so the next launch re-verifies files.");
@@ -690,11 +587,6 @@ public final class JREUtils {
                 "-Duser.home=" + ProfilePathManager.INSTANCE.getCurrentPath(),
                 "-Duser.language=" + System.getProperty("user.language"),
                 "-Dos.name=Linux",
-                // Some mods (Dawn-Loader is the one that surfaced this) do their own native
-                // platform detection off os.name+os.arch and don't recognize whatever this
-                // custom Android JRE build reports natively - manifesting as "Unsupported
-                // platform: linux-arm". TurtleLauncher only ships arm64 natives (32-bit arm
-                // support was dropped project-wide), so this is always safe to force.
                 "-Dos.arch=aarch64",
                 "-Dos.version=Android-" + Build.VERSION.RELEASE,
                 "-Dturtle.path.minecraft=" + ProfilePathHome.getGameHome(),
@@ -738,24 +630,6 @@ public final class JREUtils {
 
         //Add all the arguments
         userArguments.addAll(additionalArguments);
-
-        // TurtleLauncher: the "FPS Boost Args" block that used to live here was a second,
-        // independently-drifted copy of the exact same logic as
-        // LaunchGame.buildFpsBoostArgs() - it read the same AllSettings toggles and appended
-        // its own (older, buggier) set of flags unconditionally, on top of whatever
-        // buildFpsBoostArgs() already put into userArgumentsString above. Two real bugs came
-        // out of that duplication:
-        //   1. This copy still had "-XX:+OptimizeStringConcat" under Low Latency Rendering -
-        //      a HotSpot flag obsoleted by JEP 280 that modern JDKs reject outright
-        //      ("Unrecognized VM option... Could not create the Java Virtual Machine").
-        //      Fixing only the LaunchGame.kt copy wouldn't have stopped the crash, since this
-        //      copy ran unconditionally regardless of what buildFpsBoostArgs() produced.
-        //   2. "-XX:G1PeriodicGCInterval" (Auto Memory Cleanup) was added ungated, with no
-        //      Java-12+ check, on every Java version this launcher supports.
-        // buildFpsBoostArgs() is now the single source of truth for these flags (it's
-        // properly Java-version-gated - see its doc comment) and its output already reaches
-        // userArguments via userArgumentsString → parseJavaArguments() at the top of this
-        // function, so this block was fully redundant even before accounting for its bugs.
 
         return userArguments;
     }

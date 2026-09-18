@@ -5,25 +5,6 @@ import android.content.res.Configuration
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.setting.AllSettings
 
-/**
- * TurtleLauncher: Accessibility (roadmap item 22) - larger UI scaling, high-contrast mode, and
- * a font family override.
- *
- * Two independent mechanisms, both applied from BaseActivity:
- *  - wrapContext(): wraps the base Context with a Configuration whose fontScale reflects
- *    AllSettings.fontScale (a percentage, 50-200, default 100 - a setting that already existed
- *    with no UI or consumer before this). Deliberately only touches fontScale, not densityDpi -
- *    scaling density as well would also resize icons/touch targets/layout dimensions app-wide,
- *    a much bigger and riskier change than what "larger UI scaling" for readability needs.
- *    fontScale alone affects sp-based text sizes only, the same mechanism Android's own
- *    Settings > Display > Font size uses.
- *  - applyHighContrastOverlay()/applyFontFamilyOverride(): applied to the Activity's theme /
- *    default font family in onCreate(), see BaseActivity.
- *
- * Note: none of this reaches Minecraft's own in-game GUI, which is rendered natively and has
- * no dependency on Android Resources/Configuration - see AccessibilitySettingsFragment's doc
- * comment for the full explanation of that boundary.
- */
 object AccessibilityHelper {
     @JvmStatic
     fun wrapContext(context: Context): Context {

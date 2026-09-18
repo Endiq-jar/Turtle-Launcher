@@ -38,11 +38,6 @@ class MemoryUtils {
             return memInfo.availMem
         }
 
-        /** TurtleLauncher: process-wide native heap currently allocated (android.os.Debug),
-         *  not device-wide like the other stats here. Since this launcher runs the JVM in
-         *  the same process via JNI rather than a separate one, this reflects native memory
-         *  from both the launcher's own UI and, once running, the game/renderer libraries
-         *  combined - there's no way to separate the two from this API. */
         @JvmStatic
         fun getNativeHeapAllocated(): Long = android.os.Debug.getNativeHeapAllocatedSize()
     }

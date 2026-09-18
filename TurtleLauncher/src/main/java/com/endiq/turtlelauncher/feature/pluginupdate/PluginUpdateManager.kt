@@ -20,29 +20,6 @@ import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-/**
- * Checks TurtleLauncher's real upstream renderer/driver plugin sources
- * directly — no custom manifest of our own — and offers to download +
- * install whichever assets are newer than what's currently installed.
- *
- *  - Renderer plugins (ANGLE/LTW, GL4ES, Mesa driver builds): github.com/ShirosakiMio/FCLRendererPlugin (release tag "Renderer")
- *  - MobileGlues (official upstream, not the older FCL-bundled copy): github.com/MobileGL-Dev/MobileGlues-release (latest release)
- *  - Krypton Wrapper / NG-GL4ES: github.com/BZLZHH/NGG-FCLRendererPlugin (latest release)
- *  - Vulkan driver plugins (Turnip etc.): github.com/FCL-Team/FCLDriverPlugin (release tag "Turnip")
- *
- * FCLDriverPlugin publishes its builds as .zip assets attached to one rolling release
- * tag, which RendererPluginManager/DriverPluginManager's local-plugin importer can
- * extract directly. The three renderer sources above, however, actually distribute
- * *.apk* files — each one a small standalone companion app that installs itself and
- * that TurtleLauncher then detects via PackageManager (see
- * RendererPluginManager.parseApkPlugin) — not zips. Installing one of those means
- * downloading it and handing it to the real Android package installer, the same way
- * TurtleLauncher's own self-update does (see [UpdateUtils.installApk]), not extracting
- * it as a local plugin. Note there's no dedicated "VirGL" asset anywhere upstream —
- * on Android that support rides on a Mesa driver build having the virpipe/virgl gallium
- * driver compiled in plus a running vtest server process, not a standalone plugin, so
- * it isn't listed as its own catalog entry here.
- */
 object PluginUpdateManager {
     private const val TAG = "PluginUpdateManager"
 
@@ -66,13 +43,6 @@ object PluginUpdateManager {
     private val fingerprintFile: File
         get() = File(PathManager.DIR_FILE, "plugin_update_fingerprints.json")
 
-    /**
-     * Checks both upstream sources and reports back any assets that differ
-     * from what's currently installed. Safe to call from a button click —
-     * respects a 5-minute cooldown unless [force] is set (e.g. from a
-     * manual "Check now" tap), exactly like the launcher's own self-update
-     * check.
-     */
     @JvmStatic
     fun checkForUpdates(
         context: Context,
@@ -136,14 +106,6 @@ object PluginUpdateManager {
         }.start()
     }
 
-    /**
-     * Downloads one asset and installs it. A .zip is imported as a local plugin and usable
-     * immediately (no restart, no extra user step). A .apk is a standalone companion app —
-     * it can only be installed through the real Android package installer, so this hands it
-     * to [UpdateUtils.installApk] (same flow as TurtleLauncher's own self-update) and returns
-     * once that confirmation dialog is showing; the actual install happens after the user
-     * taps confirm, so the downloaded file is deliberately NOT deleted here.
-     */
     @JvmStatic
     fun downloadAndInstall(
         context: Context,
@@ -209,11 +171,6 @@ object PluginUpdateManager {
             val release = Tools.GLOBAL_GSON.fromJson(bodyString, GithubRelease::class.java)
                 ?: throw IOException("Malformed release JSON")
 
-            // TurtleLauncher: this used to filter for ".zip" only. That matched
-            // FCLDriverPlugin's Turnip builds, but the renderer sources here (FCLRendererPlugin,
-            // MobileGlues-release, NGG-FCLRendererPlugin) all publish their current releases as
-            // standalone .apk companion apps instead — the .zip filter meant this returned
-            // nothing for any of them.
             return release.assets
                 .filter { it.name.endsWith(".zip", ignoreCase = true) || it.name.endsWith(".apk", ignoreCase = true) }
                 .map { asset ->

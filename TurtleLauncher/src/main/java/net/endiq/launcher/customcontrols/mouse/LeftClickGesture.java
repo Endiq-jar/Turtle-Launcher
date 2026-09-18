@@ -37,9 +37,6 @@ public class LeftClickGesture extends ValidatorGesture {
         boolean fingerStill = LeftClickGesture.isFingerStill(mGestureStartX, mGestureStartY, mGestureEndX, mGestureEndY, FINGER_STILL_THRESHOLD);
         // If the finger is still, fire the gesture.
         if(fingerStill) {
-            // TurtleLauncher (Zalith Launcher 2 gestureLongPressMouseAction port): which
-            // mouse button the long-press gesture holds is user-configurable; upstream
-            // hardcodes LEFT.
             sendMouseButton(GestureButtons.longPressButton(), true);
             mMouseActivated = true;
         }

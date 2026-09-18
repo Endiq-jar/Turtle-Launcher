@@ -87,9 +87,6 @@
             app:layout_constraintStart_toEndOf="@id/editSize_editTextX"
             app:layout_constraintTop_toTopOf="@+id/editSize_editTextX" />
 
-        <!-- TurtleLauncher: touch-friendly SeekBars for width/height, synced bidirectionally
-             with the precise EditTexts above - the EditTexts stay for power users who want an
-             exact value, these are for quick one-finger resizing. -->
         <SeekBar
             android:id="@+id/editSize_seekbarX"
             android:layout_width="0dp"

@@ -3,18 +3,6 @@ package com.endiq.turtlelauncher.feature.inputstats
 import net.endiq.launcher.LwjglGlfwKeycode
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * Tracks raw input events forwarded to the Minecraft process — every
- * keypress and mouse click, regardless of whether it came from a touch
- * control, a physical keyboard/mouse, or a mapped gamepad button — since
- * everything funnels through CallbackBridge.sendKeycode /
- * CallbackBridge.sendMouseKeycode before reaching the game.
- *
- * This is genuinely launcher-visible info (unlike health/armor/coordinates,
- * which live inside the Minecraft process the launcher can't see into), so
- * CPS, Keystrokes, and Mousestrokes can be built here instead of needing a
- * Fabric mod.
- */
 object InputStatsTracker {
     // Rolling 1-second window of left-click-down timestamps, for CPS.
     private val leftClickTimestamps = ArrayDeque<Long>()

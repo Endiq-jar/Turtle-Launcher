@@ -347,9 +347,6 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
                 }
                 runtimeNames.add(getString(R.string.install_auto_select))
                 var jvmIndex = runtimeNames.size - 1
-                // A javaDir that doesn't carry the "turtle://" prefix (legacy config,
-                // hand edit) is shorter than it - substring() would throw
-                // StringIndexOutOfBounds. Only strip the prefix when it's there.
                 val javaDir = config.getJavaDir()
                 if (javaDir.startsWith(Tools.LAUNCHERPROFILES_RTPREFIX)) {
                     val selectedRuntime = javaDir.substring(Tools.LAUNCHERPROFILES_RTPREFIX.length)

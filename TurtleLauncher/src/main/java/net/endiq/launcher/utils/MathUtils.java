@@ -56,15 +56,6 @@ public class MathUtils {
         }
     }
 
-    /**
-     * Out of two objects, select one with the lowest value.
-     * @param object1 Object 1 for comparsion
-     * @param object2 Object 2 for comparsion
-     * @param valueProvider Value provider for the objects
-     * @return If value of object 1 is lower than or equal to object 2, returns object 1
-     *         Otherwise, returns object 2
-     * @param <T> Type of objects
-     */
     public static <T> T objectMin(T object1, T object2, ValueProvider<T> valueProvider) {
         if(object1 == null) return object2;
         if(object2 == null) return object1;

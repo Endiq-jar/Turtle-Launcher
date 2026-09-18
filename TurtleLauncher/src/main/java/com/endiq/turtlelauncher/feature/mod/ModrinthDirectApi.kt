@@ -13,18 +13,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URLEncoder
 
-/**
- * Small, self-contained client for the handful of public Modrinth v2 API endpoints
- * needed by [ModDependencyResolver] and [ModUpdateChecker]. Deliberately bypasses the
- * heavier platform-helper/ApiHandler abstraction used by the mod browser UI — this is
- * just a few stateless GET/POST calls and a file download, used from background
- * maintenance tasks where simplicity and predictable failure handling matter more
- * than feature parity with the full download browser.
- *
- * Every public function is best-effort: network/parse failures are caught and turned
- * into null/empty results rather than thrown, so callers never need defensive
- * try/catch of their own.
- */
 internal object ModrinthDirectApi {
     private const val BASE = "https://api.modrinth.com/v2"
     private val client by lazy { UrlManager.createOkHttpClient() }
@@ -56,27 +44,12 @@ internal object ModrinthDirectApi {
         }.onFailure { e -> Logging.e("ModrinthDirectApi", "GET (array) failed: $url", e) }.getOrNull()
     }
 
-    /**
-     * Finds the newest version of [projectIdOrSlug] compatible with [mcVersion] + [loader].
-     * Modrinth returns versions newest-first, so the first entry (if any) is what we want.
-     *
-     * A mod's own metadata ID (fabric.mod.json "id", mods.toml "modId", etc.) frequently does
-     * NOT match its actual Modrinth project slug (e.g. "cloth-config" ships as modid
-     * "cloth-config2"). Previously this call failed outright (404) whenever that happened,
-     * which was the main reason the dependency installer silently resolved almost nothing.
-     * Now: try the id/slug directly first (fast path, works for the majority of mods), and
-     * if that 404s, fall back to Modrinth's search endpoint to locate the real project slug.
-     */
     fun findCompatibleVersion(projectIdOrSlug: String, mcVersion: String, loader: ModLoader?): JsonObject? {
         val loaders = loader?.let { encodeJsonStringArray(listOf(it.modrinthName)) }
         val gameVersions = encodeJsonStringArray(listOf(mcVersion))
 
         versionsFor(projectIdOrSlug, loaders, gameVersions)?.let { return it }
 
-        // The slug-guessing fallback is mod-specific (searches project_type:mod), so it
-        // only makes sense — and is only needed — when we actually have a loader to go
-        // with it. Resource packs/shader packs always call this with a project_id we
-        // already got from a hash lookup, so the direct versionsFor() above is enough.
         val resolvedSlug = loader?.let { searchForProjectSlug(projectIdOrSlug, it) } ?: return null
         if (resolvedSlug == projectIdOrSlug) return null // already tried, genuinely not found
         return versionsFor(resolvedSlug, loaders, gameVersions)
@@ -90,13 +63,6 @@ internal object ModrinthDirectApi {
         return versions.firstOrNull { it.isJsonObject }?.asJsonObject
     }
 
-    /**
-     * Best-effort lookup of a project's real slug by its mod-loader ID via Modrinth's search
-     * endpoint, restricted to the "mod" project type and the given loader. Picks the result
-     * whose slug or project_id case-insensitively equals [modId] if present, otherwise the
-     * top search hit (Modrinth's relevance ranking for an exact-id query is reliable enough
-     * for this best-effort resolution).
-     */
     private fun searchForProjectSlug(modId: String, loader: ModLoader): String? {
         val query = URLEncoder.encode(modId, "UTF-8")
         val facets = URLEncoder.encode(

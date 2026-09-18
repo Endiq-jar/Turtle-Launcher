@@ -179,16 +179,6 @@ public interface ControlInterface extends View.OnLongClickListener, GrabListener
         updateProperties();
     }
 
-    /**
-     * Do a pre-conversion of an equation using values from a button,
-     * so the variables can be used for another button
-     * <p>
-     * Internal use only.
-     *
-     * @param equation The dynamic position as a String
-     * @param button   The button to get the values from.
-     * @return The pre-processed equation as a String.
-     */
     default String applySize(String equation, ControlInterface button) {
         return equation
                 .replace("${right}", "(${screen_width} - ${width})")

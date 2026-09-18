@@ -15,13 +15,6 @@ public class FFmpegPlugin {
     public static void discover(Context context) {
         PackageManager manager = context.getPackageManager();
         try {
-            // "net.kdt.pojavlaunch.ffmpeg" is NOT our package - it is the applicationId
-            // hardwired into the external FFmpeg plugin APK this launcher tells ReplayMod
-            // users to install (Pojav.FFmpeg.Plugin, distributed via the FCL-Team release
-            // URL in ModChecker). Renaming it here to match this launcher's own packages
-            // would make getPackageInfo() look for an app that can never exist, silently
-            // disabling ReplayMod rendering. Same for the matching <queries> entry in
-            // AndroidManifest.xml. Deliberately kept as the external APK's true id.
             PackageInfo ffmpegPluginInfo = manager.getPackageInfo("net.kdt.pojavlaunch.ffmpeg", PackageManager.GET_SHARED_LIBRARY_FILES);
             libraryPath = ffmpegPluginInfo.applicationInfo.nativeLibraryDir;
             File ffmpegExecutable = new File(libraryPath, "libffmpeg.so");

@@ -141,9 +141,6 @@
                         android:layout_toStartOf="@id/renderer_manager_button"
                         android:text="@string/generic_default" />
 
-                    <!-- TurtleLauncher: opens the new card-based Renderer Manager screen
-                         (badges, compatibility notes, reset to defaults) - complements the
-                         quick-pick list this row already opens, doesn't replace it. -->
                     <ImageButton
                         android:id="@+id/renderer_manager_button"
                         android:layout_width="@dimen/_32sdp"
@@ -609,14 +606,6 @@
                 </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
                 <!-- Low-Latency (Front-Buffer) Rendering -->
-                <!-- TurtleLauncher bugfix: ids renamed from low_latency_rendering_* to
-                     low_latency_front_buffer_* - the old ids View-Binding-converted to the
-                     exact same field names (lowLatencyRenderingLayout/lowLatencyRendering) as
-                     the unrelated "Low Latency Rendering" FPS Boost switch further down this
-                     same layout (id lowLatencyRendering_layout/lowLatencyRendering), which is
-                     not something View Binding can resolve from two different source ids.
-                     Matches AllSettings.lowLatencyFrontBuffer's name (see its own bugfix
-                     comment) now that this is unambiguous. -->
                 <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/low_latency_front_buffer_layout"
                     android:layout_width="match_parent"

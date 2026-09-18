@@ -6,15 +6,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-/**
- * TurtleLauncher: buckets [com.endiq.turtlelauncher.feature.inputstats.SessionStatsTracker]'s
- * per-session elapsed time by calendar day, so the home screen can show a real "today" total
- * and a real Mon..Sun weekly chart instead of only the lifetime total that tracker already kept.
- *
- * Backed by a small JSON object ("yyyy-MM-dd" -> milliseconds) persisted through the same
- * settings-properties mechanism as everything else in [AllSettings] - entries older than
- * [RETAIN_DAYS] are dropped on every write so this never grows without bound.
- */
 object DailyPlaytimeStats {
     private const val RETAIN_DAYS = 14L
     private val DAY_FORMAT: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE

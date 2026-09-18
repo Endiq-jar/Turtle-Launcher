@@ -4,11 +4,6 @@ import com.google.gson.JsonParser
 import com.endiq.turtlelauncher.utils.path.UrlManager
 import okhttp3.FormBody
 
-/**
- * Small, self-contained client for the mclo.gs log-hosting API (https://api.mclo.gs/), used by
- * ShareLogsFragment's "Upload to mclo.gs" action. Mirrors [com.endiq.turtlelauncher.feature.mod.ModrinthDirectApi]'s
- * shape: a stateless object, the app's shared OkHttpClient, best-effort/never-throwing calls.
- */
 object MclogsUploader {
     private const val UPLOAD_URL = "https://api.mclo.gs/1/log"
     // mclo.gs caps stored logs at 10MB; trim well below that so the request body itself

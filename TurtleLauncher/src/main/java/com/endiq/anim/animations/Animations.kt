@@ -89,9 +89,6 @@ enum class Animations(val animator: BaseAnimator) {
     ZoomOutLeft(ZoomOutLeftAnimator()),
     ZoomOutRight(ZoomOutRightAnimator()),
     ZoomOutUp(ZoomOutUpAnimator()),
-    //Sheet - enters from below the screen edge and settles with a bounce. This is what a
-    // settings-style panel opened from the home screen should feel like: it comes up off the
-    // bottom of the display rather than sliding a fixed distance from somewhere mid-screen.
     SheetIn(SheetInAnimator()),
     SheetOut(SheetOutAnimator()),
 

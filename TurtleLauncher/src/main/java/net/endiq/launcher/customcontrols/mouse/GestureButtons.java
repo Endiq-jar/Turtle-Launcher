@@ -4,17 +4,6 @@ import com.endiq.turtlelauncher.setting.AllSettings;
 
 import net.endiq.launcher.LwjglGlfwKeycode;
 
-/**
- * Resolves the mouse buttons fired by the in-game touch gestures.
- *
- * TurtleLauncher, ported from Zalith Launcher 2's GestureActionType + its
- * gestureTapMouseAction / gestureLongPressMouseAction settings: upstream Pojav hardcodes
- * "quick tap = right button" (RightClickGesture) and "long press = hold left button"
- * (LeftClickGesture). Zalith made both user-configurable with the same defaults, and this
- * is that mapping. Values are the strings stored by the Settings -> Mouse & Keyboard list
- * rows ("left"/"right"); anything unrecognized falls back to the upstream default so a
- * corrupted preference can never send a garbage button code to GLFW.
- */
 public final class GestureButtons {
     private GestureButtons() {}
 

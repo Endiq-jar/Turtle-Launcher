@@ -31,17 +31,6 @@ void gl_swap_interval(int swapInterval);
  */
 void gl_log_egl_info();
 
-/**
- * TurtleLauncher: front-buffer / low-latency rendering. When enabled (and the
- * device actually supports EGL_KHR_mutable_render_buffer), window surfaces are
- * switched to EGL_SINGLE_BUFFER right after creation, and
- * EGL_ANDROID_front_buffer_auto_refresh is enabled on top of it if that
- * extension is also present. Silently no-ops back to normal double-buffered
- * rendering on devices/drivers that don't support it - this is a latency
- * trade-off (skips waiting on the swap chain), not something to force blindly.
- * Reads POJAV_LOW_LATENCY_RENDERING once, same convention as the other
- * env-var-driven toggles in this codebase (see JREUtils.setJavaEnv/setRendererEnv).
- */
 bool gl_low_latency_requested();
 
 #endif //TURTLELAUNCHER_GL_BRIDGE_H

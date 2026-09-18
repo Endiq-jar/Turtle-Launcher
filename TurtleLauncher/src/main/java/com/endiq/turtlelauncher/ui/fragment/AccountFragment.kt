@@ -67,7 +67,6 @@ import java.io.File
 import java.util.regex.Pattern
 
 
-
 class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClickListener {
     companion object {
         const val TAG = "AccountFragment"
@@ -77,12 +76,6 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
     private val mAccountsData: MutableList<MinecraftAccount> = AccountsManager.allAccounts.toMutableList()
     private val mAccountAdapter = AccountAdapter(mAccountsData)
 
-    // The currently-live 3D skin preview instance. GLSurfaceView.setRenderer() (which
-    // SkinView3DSurfaceView.render() calls internally) can only be called ONCE per instance -
-    // calling it a second time throws IllegalStateException. Since updateAccountDetail() runs
-    // every time the selected account changes, each render swaps in a fresh
-    // SkinView3DSurfaceView (same id/layoutParams, so ConstraintLayout's existing constraints
-    // against @id/detail_skin_preview keep resolving correctly) rather than reusing one.
     private var skinPreviewView: dev.storeforminecraft.skinviewandroid.library.threedimension.ui.SkinView3DSurfaceView? = null
 
     private val selectAccountListener = object : SelectAccountListener {
@@ -341,9 +334,6 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
 
             runCatching {
                 val bitmap = com.endiq.turtlelauncher.utils.skin.SkinLoader.getSkinBitmap(requireContext(), account)
-                // See the skinPreviewView field comment: swap in a fresh instance every time
-                // rather than reusing detailSkinPreview.render() directly, since GLSurfaceView
-                // only allows setRenderer() to be called once per instance ever.
                 val current = skinPreviewView ?: detailSkinPreview
                 val container = current.parent as android.view.ViewGroup
                 val index = container.indexOfChild(current)
@@ -468,9 +458,6 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                 }
             }
         }.ended(TaskExecutors.getAndroidUI()) {
-            // The server scan runs in the background - bail out if the user
-            // navigated away while it was running (requireActivity()/binding
-            // access would crash with "not attached" otherwise).
             if (!isAdded) return@ended
             // Add the external server to the account category bar.
             mOtherServerViewList.forEach { view ->
@@ -526,11 +513,6 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
             }.showDialog()
     }
 
-    /**
-     * TurtleLauncher: one-tap server registration (skips the manual URL text dialog).
-     * Used for the ely.by quick-add button — reuses the same authlib-injector
-     * discovery + registration flow as [addOtherServer], just with a fixed URL.
-     */
     private fun addOtherServerDirect(rawUrl: String, type: Int) {
         Task.runTask {
             val serverUrl =
@@ -598,7 +580,7 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                 JSONObject(data).optJSONObject("meta")?.let { meta ->
                     server.serverName = meta.optString("serverName")
                     server.baseUrl = serverUrl
-                    server.serverType = type  // TurtleLauncher: 0=authlib-injector, 1=nide8auth
+                    server.serverType = type
                     if (type == 0) {
                         server.register =
                             meta.optJSONObject("links")?.optString("register") ?: ""

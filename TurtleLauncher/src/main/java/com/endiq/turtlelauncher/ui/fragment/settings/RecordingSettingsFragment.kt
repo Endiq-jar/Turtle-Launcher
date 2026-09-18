@@ -15,14 +15,6 @@ import com.endiq.turtlelauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapp
 import com.endiq.turtlelauncher.utils.ZHTools
 
 
-/**
- * TurtleLauncher Settings -> Recording (roadmap item 22): the customization screen for
- * ScreenRecorder - HUD button visibility, live timer, frame rate, bitrate, resolution scale,
- * and an optional auto-stop duration. None of these need a relaunch (ScreenRecorder reads
- * them fresh from AllSettings every time a recording starts), so unlike Accessibility's
- * settings, plain SwitchSettingsWrapper/SeekBarSettingsWrapper defaults (no reboot) are correct
- * here.
- */
 class RecordingSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment_recording, SettingCategory.RECORDING) {
     companion object {
         const val TAG: String = "RecordingSettingsFragment"

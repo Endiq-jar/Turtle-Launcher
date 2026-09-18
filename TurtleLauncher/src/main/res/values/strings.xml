@@ -643,9 +643,6 @@
     <string name="share_logs_cleared">Logs cleared</string>
     <string name="chat_send">Send</string>
 
-    <!-- TurtleLauncher: built-in AI Assistant (top bar -> Assistant). Runs fully on-device:
-         no API key, no account, no network - see feature/ai/TurtleAssistant.kt. English only
-         for now; other locales fall back to these strings. -->
     <string name="ai_chat_title">Assistant</string>
     <string name="ai_chat_subtitle">On-device</string>
     <string name="ai_chat_input_hint">Ask about renderers, crashes, mods…</string>
@@ -719,7 +716,6 @@
     <string name="setting_category_phone">Phone Settings</string>
     <string name="setting_category_accessibility">Accessibility</string>
 
-    <!-- TurtleLauncher: Accessibility settings (roadmap item 22) -->
     <string name="setting_high_contrast_title">High Contrast Mode</string>
     <string name="setting_high_contrast_desc">Brighter borders and dividers for better readability</string>
     <string name="setting_font_scale_title">UI Text Size</string>
@@ -731,7 +727,6 @@
     <string name="setting_font_family_serif">Serif</string>
     <string name="setting_font_family_monospace">Monospace</string>
 
-    <!-- TurtleLauncher: Settings -> Recording (roadmap item 22) -->
     <string name="setting_category_recording">Recording</string>
     <string name="settings_row_recording_title">Recording</string>
     <string name="settings_row_recording_desc">In-game screen recording and video settings</string>
@@ -1096,7 +1091,6 @@
     <string name="other_login_select_role_message">Multiple roles exist for the current account, please select the role you want to use</string>
     <string name="other_login_registry_now">No account? Click here to register one!</string>
     <string name="other_login_role_not_found">Role matching the current account not found, please check if this role exists on the server you are using!</string>
-    <!-- TurtleLauncher: login type badge labels -->
     <string name="other_login_type_authlib">authlib-injector (Yggdrasil)</string>
     <string name="other_login_type_nide8">nide8auth · 32-bit server</string>
     <string name="other_login_elyby_hint">⚠ ely.by: use your ely.by email and password</string>
@@ -1164,12 +1158,10 @@
     <string name="copy">Copy</string>
     <string name="ok">OK</string>
     <string name="storageProviderAuthorities">com.endiq.turtlelauncher.storageprovider</string>
-    <!-- TurtleLauncher: Java auto-install progress strings -->
     <string name="downloading_java_runtime_uni">Downloading Java runtime (universal)…</string>
     <string name="downloading_java_runtime_platform">Downloading Java runtime (platform binaries)…</string>
     <string name="turtle_java_autoinstall_start">Auto-installing Java %d, please wait…</string>
 
-    <!-- TurtleLauncher: Skin / Cape -->
     <string name="skin_cape_change_skin">Change Skin</string>
     <string name="skin_cape_change_cape">Change Cape</string>
     <string name="skin_cape_url_label">Enter image URL (PNG):</string>
@@ -1212,7 +1204,6 @@
     <string name="account_skin_button">Skin</string>
     <string name="account_cape_button">Cape</string>
 
-    <!-- TurtleLauncher: What\'s New -->
     <string name="whats_new_title">🐢 What\'s New in TurtleLauncher</string>
     <string name="whats_new_version">v3.1</string>
     <string name="whats_new_feature_1">🎭 Emotes: dependencies install themselves</string>
@@ -1223,7 +1214,6 @@
     <string name="whats_new_feature_3_desc">Turtle Launcher now appears in Android\'s share menu. Share any game log (file or text) from any app and the Assistant analyzes it on the spot — no copy-paste.</string>
     <string name="whats_new_warning">🧩 Renderer plugin apps (e.g. MobileGlues) show up in the renderer list right after you install them — no restart needed — and their supported Minecraft version range is honored like any built-in renderer.</string>
 
-    <!-- TurtleLauncher: Presets -->
     <string name="preset_pvp_title">PvP Preset</string>
     <string name="preset_survival_title">Survival Preset</string>
     <string name="preset_apply_confirm">Apply \"%s\" preset? This will overwrite your current Java args and FPS settings.</string>
@@ -1351,7 +1341,6 @@
     <string name="shizuku_result_count">%1$d/%2$d ok</string>
     <string name="shizuku_result_working">…</string>
 
-    <!-- TurtleLauncher: Emotes (Emotecraft integration - in-game menu row, Settings hub screen) -->
     <string name="settings_row_emotes_title">Emotes</string>
     <string name="settings_row_emotes_desc">Browse and download emotes, set the wheel key, check the Emotecraft mod</string>
     <string name="emotes_screen_title">Emotes</string>
@@ -1378,7 +1367,6 @@
     <string name="game_menu_emote_wheel">Play emote (open wheel)</string>
     <string name="game_menu_emote_site">Get emotes (website)</string>
 
-    <!-- TurtleLauncher: skin setting on Microsoft / third-party (ely.by, Battly, ...) accounts -->
     <string name="skin_cape_slim_model">Slim (Alex) model - Microsoft upload</string>
     <string name="skin_cape_ms_upload_ok">Skin uploaded to your Microsoft profile</string>
     <string name="skin_cape_ms_upload_failed">Microsoft skin upload failed: %s</string>

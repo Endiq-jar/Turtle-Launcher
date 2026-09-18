@@ -112,9 +112,6 @@ class VersionManagerFragment : FragmentWithAnim(R.layout.fragment_version_manage
                                 Task.runTask {
                                     VersionsManager.refresh("VersionManagerFragment:versionDelete")
                                 }.ended(TaskExecutors.getAndroidUI()) {
-                                    // Deletion takes a while - the user may have navigated
-                                    // away, and popping the back stack of a dead Activity
-                                    // would crash. Nothing to go back to when detached.
                                     if (!isAdded) return@ended
                                     Tools.backToMainMenu(activity)
                                 }

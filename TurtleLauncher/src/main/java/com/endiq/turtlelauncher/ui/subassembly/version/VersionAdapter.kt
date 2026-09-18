@@ -103,7 +103,6 @@ class VersionAdapter(
             }.showDialog()
     }
 
-    // TurtleLauncher: one-click modpack export (mods/config/options.txt/servers.dat into one zip).
     private fun exportModpack(context: Context, version: Version) {
         Task.runTask {
             ModpackExporter.export(version)
@@ -316,13 +315,6 @@ class VersionAdapter(
                 viewBinding.root.measure(0, 0)
                 this.contentView = viewBinding.root
 
-                // TurtleLauncher: don't blindly use the full unbounded measured height - on a
-                // version card near the bottom of the list, that can be taller than the space
-                // actually available below the anchor, pushing the popup (and its lowest rows,
-                // e.g. delete) off the bottom of the screen with no way to reach them. Cap it to
-                // whichever of "space below anchor" / "space above anchor" is bigger, and let
-                // the ScrollView in view_version_manager.xml handle the rest if content still
-                // doesn't fit even in that larger space.
                 val anchorLocation = IntArray(2)
                 anchorView.getLocationOnScreen(anchorLocation)
                 val screenHeight = context.resources.displayMetrics.heightPixels

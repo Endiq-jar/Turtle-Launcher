@@ -7,12 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
 
-/**
- * TurtleLauncher v10: background TCP-connect latency probe for the "Ping" HUD module.
- * Minecraft doesn't expose a raw ICMP ping on Android without root, so this measures
- * TCP handshake time against the current server's host:port instead — a good proxy for
- * in-game latency and requires no special permissions.
- */
 object PingTracker {
     private const val TAG = "PingTracker"
     private const val TIMEOUT_MS = 1500

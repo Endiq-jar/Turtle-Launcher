@@ -118,10 +118,6 @@ class Version(
         override fun createFromParcel(parcel: Parcel): Version {
             val stringList = ArrayList<String>()
             parcel.readStringList(stringList)
-            // A corrupt/truncated Parcel used to crash here twice over: readParcelable()
-            // can return null (non-null assertion -> NPE) and stringList[] throws
-            // IndexOutOfBounds when short. Fall back to defaults so a bad Intent
-            // extra can't kill the app.
             val versionsFolder = stringList.getOrElse(0) { "" }
             val versionPath = stringList.getOrElse(1) { "" }
             val versionConfig = parcel.readParcelable<VersionConfig>(VersionConfig::class.java.classLoader)

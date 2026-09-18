@@ -9,14 +9,6 @@ import org.apache.commons.io.FileUtils
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-/**
- * TurtleLauncher: unattended, age-based deletion of old Minecraft crash reports (per installed
- * version), old launcher logs, and stale/orphaned native-library extraction temp dirs.
- *
- * Distinct from CleanUpCache.kt, which is a manual full-wipe the user triggers from Settings -
- * this runs on its own, only touches files past the retention window, and rate-limits itself to
- * once a day so it doesn't add a filesystem scan to every single launch.
- */
 object AutoCleanup {
     private const val RETENTION_DAYS = 14L
     private const val MIN_RUN_INTERVAL_MS = 24L * 60 * 60 * 1000
@@ -40,9 +32,6 @@ object AutoCleanup {
         var deletedCount = 0
         var freedBytes = 0L
 
-        // Old Minecraft crash reports. Several installed versions can share the same game dir
-        // when version isolation is off, so dedupe the resolved directories first rather than
-        // rescanning the same folder once per version pointing at it.
         val crashDirs = VersionsManager.getVersions()
             .map { File(it.getGameDir(), "crash-reports") }
             .distinct()

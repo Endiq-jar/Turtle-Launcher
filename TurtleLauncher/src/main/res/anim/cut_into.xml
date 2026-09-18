@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: fragment-transaction animation (ZHTools.setCustomAnimations). Was a bare
-     300ms cross-fade with no movement at all, so pushing a page felt like a dissolve rather
-     than like going somewhere. Now the incoming page drifts in from the right and settles. -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@android:interpolator/fast_out_slow_in">
 

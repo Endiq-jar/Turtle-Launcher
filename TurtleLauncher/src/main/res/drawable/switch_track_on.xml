@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: pixel-art switch track, "on" state - drawn as vector paths
-     instead of a raw pixel-art bitmap (switch_on_raw.png, now removed). Same
-     blocky/no-antialiasing look since vector paths render with hard edges at
-     these dimensions, matching the turtle mascot's pixel-art style. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="48dp"
     android:height="24dp"

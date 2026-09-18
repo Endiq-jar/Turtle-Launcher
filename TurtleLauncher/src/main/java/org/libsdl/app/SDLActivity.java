@@ -55,14 +55,6 @@ import android.widget.Toast;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-// TurtleLauncher: this file is adapted from Turtle Launcher's public source
-// (ca.dnamobile.turtlelauncher.runtime.SDLActivity fork of SDL's own Android
-// glue, itself LGPL-3.0/zlib-licensed - see the project's GitHub for the original).
-// The "Turtle*" field/method names below are kept as-is from that source rather
-// than renamed, to avoid touching 40+ call sites by hand with no compiler available
-// in this environment to check the result. Two of Turtle's own classes are NOT
-// included here because they require a native library this codebase doesn't have -
-// see the stubbed call sites below and SdlAndroidJniPrep's class doc.
 
 import java.util.Hashtable;
 import java.util.Locale;
@@ -241,16 +233,8 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     protected static SDLGenericMotionListener_API14 mMotionListener;
     protected static HIDDeviceManager mHIDDeviceManager;
 
-    // Turtle embeds the JVM in GameActivity instead of launching SDLActivity.
-    // Keep the official SDL JNI callback class, but allow it to use Turtle's
-    // existing Activity and Minecraft Surface. This path is enabled only for
-    // Minecraft versions that actually use the SDL3 backend.
     private static volatile Activity mTurtleHostActivity;
     private static volatile Surface mTurtleNativeSurface;
-    // TurtleLauncher: the token-Surface fields Turtle needed here
-    // (mTurtleTokenSurfaceTexture/mTurtleTokenSurface) are gone - they only made
-    // sense behind Turtle's native ANativeWindow hook, which isn't ported, and the code
-    // that "returned" them was unreachable anyway. See getNativeSurface() below.
     private static volatile View mTurtleInputView;
     private static volatile boolean mTurtleExternalSurfaceMode;
 
@@ -261,11 +245,6 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
     public static void setTurtleNativeSurface(Surface surface) {
         mTurtleNativeSurface = surface;
-        // TurtleLauncher: upstream calls TurtleSDL3NativeWindowBridge.publish()/
-        // clear() here - the native cross-VM ANativeWindow hook (see SDL.java's
-        // loadLibrary() for why it isn't ported). This still records the Surface in
-        // mTurtleNativeSurface for getNativeSurface() below, best-effort, but
-        // without that native hook there's no cross-VM publication happening.
     }
 
     public static void setTurtleInputView(View view) {
@@ -278,12 +257,6 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         return getContentView();
     }
 
-    /**
-     * Turtle provides an already-oriented Android Surface instead of using
-     * SDLActivity's own SDLSurface. In this mode SurfaceFlinger has already
-     * applied the device rotation, so reporting the physical display rotation to
-     * SDL would rotate Vulkan/OpenGL output a second time.
-     */
     public static void setTurtleExternalSurfaceMode(boolean enabled) {
         mTurtleExternalSurfaceMode = enabled;
     }
@@ -425,8 +398,6 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     }
 
     public static void initialize() {
-        // The static nature of the singleton and Android quirkyness force us to initialize everything here
-        // Otherwise, when exiting the app and returning to it, these variables *keep* their pre exit values
         mSingleton = null;
         mSurface = null;
         mTextEdit = null;
@@ -441,33 +412,9 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         mCurrentNativeState = NativeState.INIT;
     }
 
-    /**
-     * TurtleLauncher CRASH FIX (MC 26.3+ SDL), ported from Amethyst-Android's own
-     * SDLActivity.externalInitialize() - the piece this launcher was missing.
-     *
-     * Why it's needed: SDLActivity is never started as a real Activity here (Minecraft runs
-     * in an embedded JVM and renders through MinecraftGLSurface), so onCreate() never runs
-     * and the statics SDL's native Android backend depends on - mSingleton, mSurface,
-     * mLayout, the clipboard handler - are all left null by initialize() above. SDL's Java
-     * glue then has nothing to hand back to libSDL3.so when it asks for the window, which
-     * is the shape of the SDL_Init null-pointer SIGSEGV CrashAnalyzer's
-     * sdl3_android_init_sigsegv rule describes.
-     *
-     * This fills those statics in from the launcher's real Activity instead, and installs
-     * [nativeSurface] (the launcher's own render Surface, or a placeholder until
-     * MinecraftGLSurface has a real one) as the surface SDL should report. Amethyst calls
-     * this from MinecraftGLSurface.setupSDL(); this launcher calls it from
-     * SdlAndroidJniPrep.setup() before the game JVM starts, since there is no native
-     * SDL_InitSubSystem hook here to be called back from (see SdlAndroidJniPrep's class doc).
-     */
     public static void externalInitialize(SDLSurface surface, ViewGroup layout, Surface nativeSurface) {
         Context context = SDL.getContext();
         Activity activity = context instanceof Activity ? (Activity) context : null;
-        // Deliberately NOT mSingleton: that field is typed SDLActivity and the rest of this
-        // class calls SDLActivity-only methods on it (sendCommand, main(), getLibraries...).
-        // Amethyst retyped theirs to plain Activity; here the same need is met by the
-        // existing host-Activity field, and getHostActivity() below is the one accessor
-        // SDLSurface's lifecycle forwarding goes through.
         mTurtleHostActivity = activity;
         // Must be set before SDLSurface.setNativeSurface: that records the Surface SDL will
         // report, and SDLActivity.getNativeSurface() below reads it back through mSurface.
@@ -493,13 +440,6 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         return mSurface;
     }
 
-    /**
-     * The Activity behind this SDL session, whether SDL is running inside a real
-     * SDLActivity (mSingleton) or embedded in another app's Activity via
-     * [externalInitialize]/[setTurtleHostActivity]. SDLSurface's surface lifecycle
-     * forwarding needs an Activity for getRequestedOrientation() and previously bailed out
-     * whenever mSingleton was null - i.e. always, in the embedded case this launcher runs.
-     */
     public static Activity getHostActivity() {
         if (mSingleton != null) return mSingleton;
         return mTurtleHostActivity;
@@ -864,10 +804,6 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
             // Wait for "SDLThread" thread to end
             try {
-                // Use a timeout because:
-                // C SDLmain() thread might have started (mSDLThread.start() called)
-                // while the SDL_Init() might not have been called yet,
-                // and so the previous QUIT event will be discarded by SDL_Init() and app is running, not exiting.
                 SDLActivity.mSDLThread.join(1000);
             } catch(Exception e) {
                 Log.v(TAG, "Problem stopping SDLThread: " + e);
@@ -881,11 +817,6 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
     @Override
     public void onBackPressed() {
-        // Check if we want to block the back button in case of mouse right click.
-        //
-        // If we do, the normal hardware back button will no longer work and people have to use home,
-        // but the mouse right click will work.
-        //
         boolean trapBack = SDLActivity.nativeGetHintBoolean("SDL_ANDROID_TRAP_BACK_BUTTON", false);
         if (trapBack) {
             // Exit and let the mouse handler handle this button (if appropriate)
@@ -1020,9 +951,6 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         if (mNextNativeState == NativeState.RESUMED) {
             if (mSurface.mIsSurfaceReady && (mHasFocus || mHasMultiWindow) && mIsResumedCalled) {
                 if (mSDLThread == null) {
-                    // This is the entry point to the C app.
-                    // Start up the C app thread and enable sensor input for the first time
-                    // FIXME: Why aren't we enabling sensor input at start?
 
                     mSDLThread = new Thread(new SDLMain(), "SDLThread");
                     mSurface.enableSensor(Sensor.TYPE_ACCELEROMETER, true);
@@ -1181,30 +1109,13 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                             (realMetrics.heightPixels == mSurface.getHeight()));
 
                     if ((Integer) data == 1) {
-                        // If we aren't laid out fullscreen or actively in fullscreen mode already, we're going
-                        // to change size and should wait for surfaceChanged() before we return, so the size
-                        // is right back in native code.  If we're already laid out fullscreen, though, we're
-                        // not going to change size even if we change decor modes, so we shouldn't wait for
-                        // surfaceChanged() -- which may not even happen -- and should return immediately.
                         bShouldWait = !bFullscreenLayout;
                     } else {
-                        // If we're laid out fullscreen (even if the status bar and nav bar are present),
-                        // or are actively in fullscreen, we're going to change size and should wait for
-                        // surfaceChanged before we return, so the size is right back in native code.
                         bShouldWait = bFullscreenLayout;
                     }
                 }
 
                 if (bShouldWait && (SDLActivity.getContext() != null)) {
-                    // We'll wait for the surfaceChanged() method, which will notify us
-                    // when called.  That way, we know our current size is really the
-                    // size we need, instead of grabbing a size that's still got
-                    // the navigation and/or status bars before they're hidden.
-                    //
-                    // We'll wait for up to half a second, because some devices
-                    // take a surprisingly long time for the surface resize, but
-                    // then we'll just give up and return.
-                    //
                     synchronized (SDLActivity.getContext()) {
                         try {
                             SDLActivity.getContext().wait(500);
@@ -1441,13 +1352,6 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     public static boolean setRelativeMouseEnabled(boolean enabled)
     {
         if (mTurtleExternalSurfaceMode) {
-            // Treat SDL's relative-mode request as the authoritative GUI/gameplay
-            // grab state. Best-effort pointer capture still benefits a real mouse,
-            // but failure must not block controller camera/WASD mode.
-            // TurtleLauncher: upstream notifies its own TurtleSDL3Bootstrap here
-            // (not ported - that class's ~2000 lines of platform-bootstrap logic are
-            // Turtle-specific and weren't part of this port's scope). Whatever
-            // TurtleLauncher code needs to react to this should hook in here instead.
             try {
                 SDLActivity.getMotionListener().setRelativeMouseEnabled(enabled);
             } catch (Throwable ignored) {
@@ -1756,21 +1660,6 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         Surface surface = mTurtleNativeSurface;
         boolean valid = surface != null && surface.isValid();
 
-        // TurtleLauncher: this used to contain an unreachable branch - `boolean
-        // nativeWindowReady = false;` followed by `if (!valid && nativeWindowReady) { ... }`
-        // - which built a SurfaceTexture-backed token Surface that could never be returned,
-        // plus a return of `valid || nativeWindowReady ? surface : null` whose second
-        // operand was always false. The token only ever made sense behind Turtle's
-        // native ANativeWindow hook (see SDL.java's loadLibrary() and
-        // setTurtleNativeSurface() for why that hook isn't ported here), so the dead
-        // code is gone rather than kept as decoration. What's left is honest: report the
-        // real Surface this launcher published, or null, and say which in the log.
-        //
-        // With externalInitialize()/SDLSurface.setNativeSurface() now in place, the normal
-        // path is the mSurface branch above - MinecraftGLSurface hands its live Surface over
-        // through SdlAndroidJniPrep/MinecraftGLSurface.publishSurfaceToSdl(). Returning null
-        // here is still possible (SDL asking before the launcher's Surface exists), which is
-        // why the log line stays: it's the difference between "no Surface yet" and "crashed".
         System.out.println("TurtleSDL3: getNativeSurface external=" + surface + " valid=" + valid);
         return valid ? surface : null;
     }

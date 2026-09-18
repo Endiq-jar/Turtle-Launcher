@@ -51,9 +51,6 @@ class Settings {
              * Read the value of a key from the launcher settings.
              */
             fun <T> getValue(key: String, defaultValue: T, parser: (String) -> T?): T {
-                // A corrupt settings file must never crash the app: an unparseable
-                // value falls back to the default instead of throwing out of every
-                // getValue() call site.
                 return settingsMap[key]?.value?.let { runCatching { parser(it) }.getOrNull() } ?: defaultValue
             }
 

@@ -93,12 +93,6 @@ import java.io.File;
 import java.io.IOException;
 
 
-
-
-
-
-
-
 public class MainActivity extends BaseActivity implements ControlButtonMenuListener, EditorExitable, ServiceConnection {
     public static volatile ClipboardManager GLOBAL_CLIPBOARD;
     public static final String INTENT_VERSION = "intent_version";
@@ -123,10 +117,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     private final AnimPlayer mInputPreviewAnim = new AnimPlayer();
     boolean isKeyboardVisible = false;
 
-    /* TurtleLauncher: current animated IME slide-up offset (px) applied to the game surface
-     * and the input preview box. Tracked separately from the raw inset value so mid-flight
-     * ValueAnimator updates always animate from where the view actually is, not from a stale
-     * target - see applyKeyboardOffset()/animateKeyboardOffset(). */
     private int mKeyboardOffsetPx = 0;
     private android.animation.ValueAnimator mKeyboardOffsetAnimator;
 
@@ -149,16 +139,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         CallbackBridge.addGrabListener(binding.mainGameRenderView);
         mGyroControl = new GyroControl(this);
 
-        /* TurtleLauncher: dispatchKeyEvent()'s KEYCODE_BACK handling below only ever runs for
-         * a legacy hardware KeyEvent. Now that the manifest opts this app into predictive back
-         * (android:enableOnBackInvokedCallback="true"), both the gesture *and* the physical
-         * back button on Android 13+ are delivered exclusively through OnBackPressedDispatcher
-         * instead - dispatchKeyEvent is never even called for them. Without a callback
-         * registered here, that leaves the system's default behaviour (finish the Activity) as
-         * the only thing that runs, which is why back used to close the whole game instead of
-         * just dismissing whatever's open (chat input, control editor). This callback mirrors
-         * dispatchKeyEvent's priority (editor > chat > forward Escape to the game) so behaviour
-         * is consistent whichever path actually ends up handling a given back press. */
         getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -216,21 +196,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         setupKeyboardInsetsListener();
     }
 
-    /**
-     * TurtleLauncher: replaces the old ViewTreeObserver.OnGlobalLayoutListener +
-     * getWindowVisibleDisplayFrame() heuristic for detecting the soft keyboard. That approach
-     * is well known to misbehave once a window is laid out edge-to-edge / immersive (exactly
-     * what this fullscreen game Activity does) - the decor's "visible display frame" often
-     * doesn't shrink the way the heuristic expects, so isKeyboardVisible could silently never
-     * flip to true and the input preview never showed, leaving the player typing chat blind
-     * with the keyboard covering the game.
-     *
-     * WindowInsetsCompat's IME type is the modern, reliable replacement: it's driven directly
-     * by the actual IME inset the system is applying to this window, independent of fullscreen/
-     * edge-to-edge state. It also hands back the *exact* keyboard height in px, which the old
-     * heuristic never had - that's what lets us slide the game surface and the preview box up
-     * by precisely the right amount instead of guessing.
-     */
     private void setupKeyboardInsetsListener() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (view, insets) -> {
             boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
@@ -243,18 +208,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         ViewCompat.requestApplyInsets(binding.getRoot());
     }
 
-    /**
-     * TurtleLauncher: called whenever the IME's visibility or height changes. Drives three
-     * things off the one reliable signal:
-     *  1. The input-preview text box (shows what's actually being typed, since Minecraft's
-     *     own in-game chat text is drawn inside the GL surface and is tiny/hard to read on
-     *     mobile even once it's no longer covered).
-     *  2. The character-input text watcher (unchanged from the old logic, just re-triggered
-     *     off the new detection).
-     *  3. animateKeyboardOffset() - actually slides the game surface + preview box up by the
-     *     keyboard's height, see that method's doc comment for why a real resize (not just a
-     *     visual translation) is what makes Minecraft's own chat GUI reflow above the keyboard.
-     */
     private void onKeyboardVisibilityChanged(boolean imeVisible, int imeHeightPx) {
         if (imeVisible && !isKeyboardVisible) {
             binding.mainTouchCharInput.addTextChangedListener(mInputWatcher);
@@ -268,11 +221,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         animateKeyboardOffset(imeVisible ? imeHeightPx : 0);
     }
 
-    /**
-     * TurtleLauncher: smoothly animates the actual offset applied by applyKeyboardOffset()
-     * from wherever it currently sits to the new target, rather than snapping instantly - the
-     * "slide up" the roadmap asked for, not just an instant jump.
-     */
     private void animateKeyboardOffset(int targetPx) {
         if (mKeyboardOffsetPx == targetPx) return;
         if (mKeyboardOffsetAnimator != null) mKeyboardOffsetAnimator.cancel();
@@ -284,24 +232,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         mKeyboardOffsetAnimator.start();
     }
 
-    /**
-     * TurtleLauncher: applies the current keyboard offset in two ways at once:
-     *
-     *  - Bottom padding on main_control_layout (the ControlLayout hosting
-     *    MinecraftGLSurface + the touch controls). MinecraftGLSurface is match_parent inside
-     *    it, so padding shrinks the actual Surface/SurfaceTexture Android hands to the native
-     *    renderer - which already has a robust resize pipeline for exactly this (see
-     *    MinecraftGLSurface.refreshSize(), also used for multi-window/split-screen resizes).
-     *    Shrinking the real render surface means Minecraft's own GLFW resize callback fires
-     *    and its GUI (chat box included, normally anchored to the bottom of its window) lays
-     *    itself out again within the smaller visible area - it ends up genuinely above the
-     *    keyboard instead of hidden behind it, the same way it would if you resized the
-     *    desktop Minecraft window. This is the real "Minecraft slides up" fix, not a workaround
-     *    layered on top of it.
-     *  - Bottom margin on the input preview box, so it continues to track just above the
-     *    keyboard (it's a supplementary readable readout of what's being typed - MC's own
-     *    chat text is still quite small on a phone screen even once it's visible again).
-     */
     private void applyKeyboardOffset(int offsetPx) {
         mKeyboardOffsetPx = offsetPx;
         if (binding == null) return;
@@ -388,7 +318,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
                 Logging.i("Rendering Game", "The game rendering has started, " +
                         "and the background image has been cleared to prevent certain issues from occurring.");
 
-                // TurtleLauncher: start timing this game session (Stopwatch / playtime HUD).
                 com.endiq.turtlelauncher.feature.inputstats.SessionStatsTracker.start();
             });
 
@@ -418,11 +347,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         }
     }
 
-    /**
-     * TurtleLauncher: lets the player drag the in-game menu panel around by its
-     * title bar, independent of the DrawerLayout's own open/close slide animation
-     * (which animates main_navigation_view itself, not its child root view).
-     */
     private float mMenuDragLastX, mMenuDragLastY;
     private void setupMenuDragHandle() {
         View dragHandle = mGameMenuBinding.menuDragHandle;
@@ -463,11 +387,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         });
     }
 
-    /**
-     * TurtleLauncher Control Switcher: shows/hides the in-game layout-swap button.
-     * Called once from onCreate and again whenever the in-game menu's "Control Switcher"
-     * switch changes, so the button follows the setting without restarting the game.
-     */
     private void refreshControlSwitcherButton() {
         binding.controlSwitcherButton.setVisibility(
                 AllSettings.getControlSwitcherEnabled().getValue() ? View.VISIBLE : View.GONE);
@@ -529,21 +448,14 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // TurtleLauncher: settle the session stopwatch and clear the key state.
         com.endiq.turtlelauncher.feature.inputstats.SessionStatsTracker.stop();
         com.endiq.turtlelauncher.feature.inputstats.InputStatsTracker.reset();
-        // TurtleLauncher CRASH FIX: when initLayout()/onCreate aborts partway (the
-        // showError-and-finish path), onDestroy still runs on a half-initialized
-        // activity - mMenuSettingsInitListener/binding can be null and an unguarded
-        // deref here turned a diagnosable startup error into a crash-on-teardown.
         if (mMenuSettingsInitListener != null) mMenuSettingsInitListener.closeSpinner();
         if (binding != null) {
             CallbackBridge.removeGrabListener(binding.mainTouchpad);
             CallbackBridge.removeGrabListener(binding.mainGameRenderView);
         }
         if (mKeyboardOffsetAnimator != null) mKeyboardOffsetAnimator.cancel();
-        // TurtleLauncher: don't leave an encoder/muxer running (and the output file
-        // unfinalized/unplayable) if the game exits mid-recording.
         if (com.endiq.turtlelauncher.feature.turtle.ScreenRecorder.INSTANCE.isRecording()) {
             com.endiq.turtlelauncher.feature.turtle.ScreenRecorder.INSTANCE.stop(null);
         }
@@ -563,9 +475,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        // TurtleLauncher CRASH FIX: if initLayout() aborted before the render view was
-        // wired up (showError-and-finish path), the delayed refreshSize() below could
-        // still fire against a null static binding and NPE on the UI thread.
         TaskExecutors.getUIHandler().postDelayed(() -> {
             ActivityGameBinding b = binding;
             if (b != null) b.mainGameRenderView.refreshSize();
@@ -592,10 +501,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         return AllSettings.getIgnoreNotch().getValue();
     }
 
-    // Use an input preview box to show what the user typed.
-    //TurtleLauncher: detection moved to setupKeyboardInsetsListener()/onKeyboardVisibilityChanged()
-    //above (WindowInsetsCompat IME type) - see that method's doc comment for why the old
-    //getWindowVisibleDisplayFrame() heuristic this used to live in was unreliable here.
     private void setInputPreview(boolean show) {
         mInputPreviewAnim.clearEntries();
         mInputPreviewAnim.apply(new AnimPlayer.Entry(binding.inputPreviewLayout, show ? Animations.FadeIn : Animations.FadeOut))
@@ -627,10 +532,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         if(!(handleEvent = binding.mainGameRenderView.processKeyEvent(event))) {
             if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
                 if (binding.mainTouchCharInput.isEnabled()) {
-                    // Chat input is open - consume the press and just close it here.
-                    // Previously this case fell through unconsumed, which on some
-                    // versions let the system's default back handling close the whole
-                    // Activity instead of just dismissing the chat box.
                     if (event.getAction() == KeyEvent.ACTION_UP) {
                         binding.mainTouchCharInput.disable();
                     }
@@ -664,11 +565,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     }
 
     public static void openLink(String link) {
-        // TurtleLauncher CRASH FIX: reachable from the JVM through JNI (CallbackBridge
-        // CLIPBOARD_OPEN). binding is a static that is null before onCreate and after
-        // the game tears down - dereferencing it on the JNI thread aborted the whole
-        // process when the game fired a link open late in shutdown. Everything is
-        // guarded now; a link that can't be opened is logged, not fatal.
         try {
             ActivityGameBinding currentBinding = binding;
             if (currentBinding == null) {
@@ -690,11 +586,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     }
 
     public static void querySystemClipboard() {
-        // TurtleLauncher CRASH FIX: runs on the UI thread of the game process (an
-        // uncaught exception here kills the running game) and is fed by the AWT/JNI
-        // clipboard path. GLOBAL_CLIPBOARD is null outside the activity lifetime,
-        // getPrimaryClip() can return null on Android 10+ even with focus races, and
-        // getItemAt(0) can be null or URI-only - all previously unguarded NPEs.
         TaskExecutors.runInUIThread(()->{
             try {
                 ClipboardManager clipboard = GLOBAL_CLIPBOARD;
@@ -723,9 +614,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     }
 
     public static void putClipboardData(String data, String mimeType) {
-        // TurtleLauncher CRASH FIX: same JNI/UI-thread exposure as querySystemClipboard -
-        // switch(null) NPEs, GLOBAL_CLIPBOARD can be null during teardown, and either
-        // exception on the UI thread takes the game process with it.
         TaskExecutors.runInUIThread(()-> {
             try {
                 if (data == null || mimeType == null) return;
@@ -850,9 +738,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             refreshLayoutVisible(this.binding.timeLongPressTriggerLayout, !AllSettings.getDisableGestures().getValue());
             refreshLayoutVisible(this.binding.gyroLayout, AllSettings.getEnableGyro().getValue());
 
-            //TurtleLauncher: tab bar - each button shows its own tab_page_* group and hides the
-            //other three. tab_page_debug starts visible (matches the XML default), so select
-            //that tab's button to match on open.
             this.binding.tabBtnDebug.setOnClickListener(v -> selectTab(this.binding.tabBtnDebug));
             this.binding.tabBtnRecording.setOnClickListener(v -> selectTab(this.binding.tabBtnRecording));
             this.binding.tabBtnControl.setOnClickListener(v -> selectTab(this.binding.tabBtnControl));
@@ -1181,11 +1066,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             binding.emoteSiteButton.setVisibility(on ? View.VISIBLE : View.GONE);
         }
 
-        /** TurtleLauncher Emotes: send the configured emote-wheel key (default B, matching
-         *  Emotecraft's default wheel keybind) to the game. Closes the menu drawer first so
-         *  the wheel renders unobstructed. Fully guarded - a key send must never be able to
-         *  take the game process down, and without the Emotecraft mod installed the press is
-         *  simply an unused key as far as the game is concerned. */
         private void triggerEmoteWheel() {
             try {
                 MainActivity.binding.mainDrawerOptions.closeDrawers();
@@ -1208,11 +1088,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             }
         }
 
-        /**
-         * TurtleLauncher: tab bar - shows the tapped tab's tab_page_* group, hides the other
-         * three, and bolds the active button (matching tab_btn_debug's default-selected style
-         * in the XML) so it's clear which tab is open.
-         */
         private void selectTab(TextView selected) {
             TextView[] buttons = { binding.tabBtnDebug, binding.tabBtnRecording, binding.tabBtnControl, binding.tabBtnHotbar };
             View[] pages = { binding.tabPageDebug, binding.tabPageRecording, binding.tabPageControl, binding.tabPageHotbar };
@@ -1239,17 +1114,10 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         }
         @Override public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {}
         @Override public void onDrawerOpened(@NonNull View drawerView) {
-            // TurtleLauncher: only one of start/stop is ever shown, reflecting whether a
-            // recording is currently in progress - refreshed every time the menu opens since
-            // recording can also be started/stopped from the floating HUD button, not just
-            // from here.
             refreshRecordingButtons();
         }
         @Override public void onDrawerClosed(@NonNull View drawerView) {}
         @Override public void onDrawerStateChanged(int newState) {
-            // The hotbar spinner has to be closed manually when the menu state changes, because
-            // the library never dismisses it on its own.
-            // Turn it off! Off! It really must be turned off!
             closeSpinner();
         }
 
@@ -1257,8 +1125,6 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             binding.hotbarType.dismiss();
         }
 
-        /** TurtleLauncher: shared by onDrawerOpened() and onClick() (start/stop recording) -
-         * see onDrawerOpened()'s doc comment for why this needs refreshing from two places. */
         public void refreshRecordingButtons() {
             boolean recording = com.endiq.turtlelauncher.feature.turtle.ScreenRecorder.INSTANCE.isRecording();
             binding.startRecording.setVisibility(recording ? View.GONE : View.VISIBLE);

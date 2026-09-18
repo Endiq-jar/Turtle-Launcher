@@ -17,12 +17,6 @@ import net.endiq.launcher.modloaders.CleanroomUtils
 import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.Future
 
-/**
- * Cleanroom only ever targets Minecraft 1.12.2 (see CleanroomUtils for the source of
- * that fact) - for every other version this screen shows a specific "Incompatible
- * with <version>" message instead of the generic "no versions available" one, per
- * Endiq's explicit request, rather than looking like a loading/network failure.
- */
 class DownloadCleanroomFragment : ModListFragment() {
     companion object {
         const val TAG: String = "DownloadCleanroomFragment"

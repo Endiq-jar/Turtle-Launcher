@@ -57,11 +57,6 @@ public abstract class ValidatorGesture implements Runnable{
      */
     protected abstract int getGestureDelay();
 
-    /**
-     * This method will be called after getGestureDelay() milliseconds, if the gesture was not cancelled.
-     * @return false if you want to mark this gesture as "inactive"
-     *         true otherwise
-     */
     public abstract boolean checkAndTrigger();
 
     /**

@@ -34,11 +34,6 @@ public class CleanroomUtils {
         return CLEANROOM_ONLY_MC_VERSION.equals(mcVersion);
     }
 
-    /**
-     * Returns Cleanroom release tags (e.g. "0.6.7-alpha"), newest first, matching
-     * GitHub's own release list order. Empty for any mcVersion other than 1.12.2 -
-     * callers should check isCompatible() first for a clearer "why" than an empty list.
-     */
     public static List<String> downloadCleanroomVersions(String mcVersion, boolean force) throws Exception {
         if (!isCompatible(mcVersion)) return new ArrayList<>();
 

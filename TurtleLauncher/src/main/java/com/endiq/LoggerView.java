@@ -133,10 +133,6 @@ public class LoggerView extends ConstraintLayout {
             }
         });
 
-        // Cache the last N raw lines so a filter change doesn't need to re-read from disk.
-        // (rawLogBuffer is capped in the log listener below.)
-
-        // Remove the loggerView from the user View
         binding.cancel.setOnClickListener(view -> setVisibilityWithAnim(false));
 
         // Set the scroll view

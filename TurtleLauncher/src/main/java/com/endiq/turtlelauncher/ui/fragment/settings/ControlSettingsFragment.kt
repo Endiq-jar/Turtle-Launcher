@@ -47,10 +47,6 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = requireContext()
         binding.subSettingsBackButton.setOnClickListener { com.endiq.turtlelauncher.utils.ZHTools.onBackPressed(requireActivity()) }
-        // TurtleLauncher: the touch-gesture rows (disable gestures / double tap / long-press
-        // delay) and all mouse rows moved to the new Mouse & Keyboard screen
-        // (MouseKeyboardSettingsFragment), ported from Zalith Launcher 2's grouping. This
-        // screen keeps button appearance, gyro and gamepad settings.
 
         SeekBarSettingsWrapper(
             context,

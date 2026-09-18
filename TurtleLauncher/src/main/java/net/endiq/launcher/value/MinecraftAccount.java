@@ -37,20 +37,6 @@ public class MinecraftAccount {
     public String accountType;
     private final String uniqueUUID = UUID.randomUUID().toString().toLowerCase(Locale.ROOT);
 
-    /**
-     * TurtleLauncher CRASH/BUG FIX: LOCAL (offline) accounts were being created with
-     * profileId left at its default "00000000-0000-0000-0000-000000000000" (see
-     * MinecraftAccount field default above) — every single local account launched
-     * Minecraft with the exact same all-zero --uuid, since getMinecraftClientArgs()
-     * in LaunchArgs.kt sends `account.profileId` as auth_uuid. That collides player
-     * save data across every local account, and many servers/anti-cheat systems
-     * reject the null UUID outright. It also meant TurtleSkinServer had no stable
-     * per-account identity to key local skin/cape textures against.
-     * Fix: derive the same deterministic offline UUID vanilla Minecraft itself uses
-     * for offline-mode play (UUID v3 from "OfflinePlayer:<username>", the exact
-     * algorithm Mojang's own LoginManager uses), so each local account gets a
-     * real, stable, unique, vanilla-consistent identity instead of all zeros.
-     */
     public static java.util.UUID generateOfflineUUID(String username) {
         return java.util.UUID.nameUUIDFromBytes(
             ("OfflinePlayer:" + username).getBytes(java.nio.charset.StandardCharsets.UTF_8)

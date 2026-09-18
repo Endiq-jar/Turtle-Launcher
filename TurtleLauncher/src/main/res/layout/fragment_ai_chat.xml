@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  TurtleLauncher: built-in AI Assistant screen (AiChatFragment).
-  Same visual language as fragment_terracotta.xml's chat: header row on top, scrolling
-  message list in the middle (item_chat_message.xml rows, reused from the Terracotta chat
-  via ChatMessageAdapter), suggestion chips + input row at the bottom. The
-  "works offline" line under the title is deliberate - the assistant needs no API key, no
-  account and no network (see feature/ai/TurtleAssistant.kt), and that's worth stating where
-  the user can see it rather than only in a settings summary.
--->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"

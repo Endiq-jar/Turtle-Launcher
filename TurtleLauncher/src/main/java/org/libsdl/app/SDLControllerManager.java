@@ -51,12 +51,6 @@ public class SDLControllerManager
 
     private static final String TAG = "SDLControllerManager";
 
-    /*
-     * Some Android controller stacks expose R2 both as an axis and as
-     * KEYCODE_BUTTON_R2.  Keep the key edge here so the joystick axis filter can
-     * guard the following MotionEvent even when the OEM sends the mirrored
-     * right-stick spike one event later than the trigger axis update.
-     */
     private static final Object RIGHT_TRIGGER_KEY_LOCK = new Object();
     private static final HashMap<Integer, RightTriggerKeyState> RIGHT_TRIGGER_KEYS =
             new HashMap<Integer, RightTriggerKeyState>();
@@ -77,16 +71,13 @@ public class SDLControllerManager
      * attack mouse button instead and de-duplicate the key/axis copies here.
      */
     static boolean routeRightTriggerAsMouse(int deviceId, boolean down, String origin) {
-        // Controlify, forced-SDL Controllable/Legacy4J and other controller mods
-        // must receive the physical trigger as an SDL gamepad axis. The mouse-only
-        // route is strictly a vanilla Snapshot 4/5 camera-fling workaround.
-        if (false /* TurtleLauncher: Turtle controller-mod-owns-SDL detection not ported, see SDLControllerManager port notes */) {
+        if (false) {
             return false;
         }
         synchronized (RIGHT_TRIGGER_KEY_LOCK) {
             boolean previous = Boolean.TRUE.equals(RIGHT_TRIGGER_MOUSE_STATES.get(deviceId));
             if (previous == down) return true;
-            if (true) return false; // TurtleLauncher: Turtle's virtual-mouse route wasn't ported, feature disabled
+            if (true) return false;
             RIGHT_TRIGGER_MOUSE_STATES.put(deviceId, down);
         }
         System.out.println("TurtleSDL3Controller: R2 mouse-only route deviceId="
@@ -143,7 +134,7 @@ public class SDLControllerManager
             // Some Android handheld/controller drivers expose L2/R2 as key edges
             // without a matching final MotionEvent. When a controller mod owns SDL,
             // mirror that edge into SDL's canonical trigger axis slots as well.
-            if (false /* TurtleLauncher: see port notes above */) {
+            if (false) {
                 handler.onTriggerKeyAxisChanged(deviceId, leftTrigger, down);
             }
         }
@@ -767,10 +758,6 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
                     }
                 }
 
-                // Read R2 by its Android axis identity instead of assuming it landed
-                // in SDL axis slot 5. This is the critical difference from v20: on
-                // the Odin/Xbox path the bad pitch sample can occupy the right-stick
-                // slot while the real trigger lives elsewhere in the range list.
                 float directTriggerAmount = directRightTriggerAmount(
                         event, actionPointerIndex);
                 float routeTriggerAmount = Math.max(
@@ -781,7 +768,7 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
                         : routeTriggerAmount > 0.18f;
                 boolean directTriggerEdge = directTriggerPressed
                         && !joystick.directRightTriggerPressed;
-                boolean controllerModOwnsSdl = false; // TurtleLauncher: see port notes above
+                boolean controllerModOwnsSdl = false;
                 if (!controllerModOwnsSdl
                         && directTriggerPressed != joystick.directRightTriggerPressed) {
                     SDLControllerManager.routeRightTriggerAsMouse(
@@ -811,14 +798,6 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
                     }
                 }
 
-                // Defend against Android/OEM drivers that mirror R2 onto a
-                // right-stick component. On the Odin/Xbox path the trigger edge
-                // and the bad stick sample are not guaranteed to be in the same
-                // MotionEvent, so keep a short guard window after either the axis
-                // edge or KEYCODE_BUTTON_R2. Clamp only sudden trigger-correlated
-                // stick jumps, then release as soon as the raw stick returns to its
-                // real baseline or the player deliberately moves it. This shared
-                // SDL path covers both Vulkan and wrapped OpenGL.
                 if (!controllerModOwnsSdl && values.length >= 4) {
                     long eventTimeMs = event.getEventTime();
                     float rightX = values[2];
@@ -862,11 +841,6 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
                     float rawXJump = Math.abs(rightX - joystick.lastRawRightX);
                     float rawYJump = Math.abs(rightY - joystick.lastRawRightY);
 
-                    // The video shows a pure pitch snap completed in roughly one tenth
-                    // of a second. Hold both right-stick components at their pre-R2
-                    // baseline for the first 180 ms of each press. This blocks the
-                    // delayed SDL3 alias even when it ramps over several small samples
-                    // instead of appearing as one full-scale spike.
                     if (directTriggerPressed
                             && eventTimeMs <= joystick.hardTriggerGuardUntilMs) {
                         values[2] = joystick.triggerGuardBaselineX;
@@ -1270,9 +1244,6 @@ class SDLHapticHandler {
     }
 
     public void pollHapticDevices() {
-        // Same cross-JVM TLS collision issue as pollInputDevices: skip native JNI
-        // callbacks when called from a Minecraft/HotSpot JVM thread (no Android Looper).
-        // SDL.getContext() would also return null on a non-Android thread.
         if (Looper.myLooper() == null) {
             return;
         }

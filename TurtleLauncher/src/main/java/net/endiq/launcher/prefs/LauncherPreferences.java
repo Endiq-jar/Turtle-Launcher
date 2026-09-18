@@ -53,13 +53,6 @@ public class LauncherPreferences {
     public static int findBestRAMAllocation(Context ctx){
         int deviceRam = Tools.getTotalDeviceMemory(ctx);
 
-        // TurtleLauncher: the 32-bit cap below used to sit after the <8192 branches,
-        // so it only ever fired for a 32-bit device with 8GB+ RAM (rare) - any 32-bit
-        // device with 4-8GB RAM fell through to the 2058MB branch instead, which is
-        // well past what's safe for a 32-bit process's address space. Moved to the
-        // top so "limit the max for 32-bit devices more harshly" actually applies to
-        // the devices it's meant for; a 32-bit process's addressable space is the
-        // real constraint here, not installed RAM.
         if (is32BitsDevice()) {
             if (deviceRam < 1024) return 384;
             if (deviceRam < 1536) return 512;
@@ -71,14 +64,6 @@ public class LauncherPreferences {
         if (deviceRam < 2048) return 768;
         if (deviceRam < 4096) return 1536;
         if (deviceRam < 8192) return 2058;
-        // TurtleLauncher: everything below here used to be dead code - every branch
-        // above already returns for anything under 8192MB, so a 64-bit device with
-        // 8GB+ RAM always got a flat 2048MB recommendation no matter how much more
-        // RAM it actually had. Added real tiers instead of leaving that headroom
-        // unused; these are a judgment call, not restored original values, since the
-        // dead tiers below this point (936/1144/1536/2048 for <3064/<4096/<6144/else)
-        // were self-contradictory - a 64-bit-only path recommending less RAM (1144)
-        // than the 32-bit-reachable path above it (1536) at the same RAM tier.
         if (deviceRam < 12288) return 3072; // 8-12GB devices
         if (deviceRam < 16384) return 4096; // 12-16GB devices
         return 6144;                        // 16GB+ devices

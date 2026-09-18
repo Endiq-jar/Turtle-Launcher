@@ -350,13 +350,6 @@ public class MinecraftDownloader {
         Tools.preProcessLibraries(dependentLibraries);
         growDownloadList(dependentLibraries.length);
         for(DependentLibrary dependentLibrary : dependentLibraries) {
-            // Don't download lwjgl, we have our own bundled in.
-            // Only the GLFW Java classes need replacing with our Android-compatible
-            // stub (real native GLFW windowing doesn't exist on Android). Every other
-            // org.lwjgl artifact (core, opengl, vulkan, vma, openal, stb, tinyfd, etc.)
-            // works fine on Android via the renderer's native .so, so let Mojang's own
-            // version manifest download those normally instead of relying on our
-            // hand-bundled lwjgl3 component to cover every class for every MC version.
             if(dependentLibrary.name.startsWith("org.lwjgl:lwjgl-glfw")) continue;
             // Special handling for JNA Android natives
             if(dependentLibrary.name.startsWith("net.java.dev.jna:jna:")) {
@@ -368,16 +361,6 @@ public class MinecraftDownloader {
 
             String sha1 = null, url = null;
             long size = 0;
-            // TurtleLauncher fix: this used to default to false here, so a single stale/
-            // moved libraries.minecraft.net URL (common for the dozens of dependencies an
-            // *old* version pulls in - the further back a version is, the more years its
-            // library URLs have had to rot or move) aborted the entire install via
-            // mDownloaderThreadException, even though every other library and the actual
-            // game jar downloaded fine. Recently-played versions like 1.21 don't hit this
-            // because their handful of current libraries are all still live. Same reasoning
-            // already applied to assets below (scheduleAssetDownloads) - a missing optional
-            // dependency shouldn't block an otherwise-successful install; skip it and let
-            // the game start, same as a missing sound/lang asset.
             boolean skipIfFailed = true;
             if(dependentLibrary.downloads != null) {
                 if(dependentLibrary.downloads.artifact != null) {
@@ -434,9 +417,6 @@ public class MinecraftDownloader {
                     MINECRAFT_RES + hashedPath,
                     sha1,
                     assetInfo.size,
-                    // TurtleLauncher: a single unreachable/timed-out asset (often just one
-                    // sound/lang file on a flaky CDN) shouldn't abort the entire launch —
-                    // skip it and let the game start; Minecraft tolerates missing assets.
                     true);
         }
     }
@@ -528,18 +508,6 @@ public class MinecraftDownloader {
         }
 
         private void runCatching() throws Exception {
-            // TurtleLauncher: scheduleGameJarDownload()/scheduleLibraryDownload() deliberately
-            // null the sha1 (and the client jar is itself scheduled as DOWNLOAD_CLASS_LIBRARIES)
-            // when Fast Boot is on or "check libraries" is off, to skip hash verification for
-            // speed. Without this guard, tryGetLibrarySha1() ran anyway and threw a network
-            // round trip at every such download - for the client jar that's always a guaranteed
-            // 404, since Mojang's piston-data URLs are already content-addressed by hash
-            // (".../objects/<sha1>/client.jar") and have no ".sha1" sidecar file, unlike a
-            // library's Maven layout. That silently-caught 404 ("Failed to download hash") was
-            // pure wasted latency directly defeating Fast Boot's purpose. Only bother with the
-            // opportunistic fetch when hash checking is actually wanted and the metadata simply
-            // didn't have one - matching the condition scheduleLibraryDownload()/
-            // scheduleGameJarDownload() use to decide whether to null the hash in the first place.
             boolean hashCheckingWanted = AllSettings.getCheckLibraries().getValue() && !AllSettings.getFastBoot().getValue();
             if(mDownloadClass == DownloadMirror.DOWNLOAD_CLASS_LIBRARIES && !Tools.isValidString(mTargetSha1) && hashCheckingWanted) {
                 // If we're downloading a library, try to get sha1 since it might be available as a file

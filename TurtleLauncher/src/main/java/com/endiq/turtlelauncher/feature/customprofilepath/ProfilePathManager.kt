@@ -30,8 +30,6 @@ object ProfilePathManager {
     }
 
     private fun parseProfileData(json: String): MutableList<ProfileItem> {
-        // A corrupt profile_path.json used to crash startup outright (JsonSyntax
-        // here was uncaught) - keep the previous data and start with defaults.
         val jsonObject = runCatching { JsonParser.parseString(json).asJsonObject }.getOrElse { e ->
             Logging.e("parseProfileData", "Corrupt profile path config, ignoring it", e)
             return mutableListOf()

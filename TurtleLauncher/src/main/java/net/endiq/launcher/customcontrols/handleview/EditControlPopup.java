@@ -92,15 +92,10 @@ public class EditControlPopup {
     protected Spinner mOrientationSpinner;
     protected TextView[] mKeycodeTextviews = new TextView[4];
     protected SeekBar mStrokeWidthSeekbar, mCornerRadiusSeekbar, mAlphaSeekbar;
-    // TurtleLauncher: touch-friendly width/height SeekBars, synced bidirectionally with
-    // mWidthEditText/mHeightEditText (see setupRealTimeListeners()). Range is capped at
-    // SIZE_SEEKBAR_MAX_DP purely for a sane drag range - the EditTexts remain the source of
-    // truth and still accept any value, including ones the SeekBar can't reach.
     protected SeekBar mWidthSeekbar, mHeightSeekbar;
     private static final int SIZE_SEEKBAR_MAX_DP = 400;
     protected TextView mStrokePercentTextView, mCornerRadiusPercentTextView, mAlphaPercentTextView;
     protected TextView mSelectBackgroundColor, mSelectStrokeColor;
-    // TurtleLauncher: custom per-button image picker row + its "clear" action.
     protected TextView mButtonImageTextView, mButtonImageSelectTextView, mButtonImageDrawTextView, mButtonImageClearTextView;
     private ActivityResultLauncher<String> mImagePickerLauncher;
     protected ArrayAdapter<String> mAdapter;
@@ -152,12 +147,6 @@ public class EditControlPopup {
         return (int) Math.max(0, Math.min(SIZE_SEEKBAR_MAX_DP, Math.round(dpValue)));
     }
 
-    /**
-     * TurtleLauncher: registers the image-picker launcher handed down from
-     * CustomControlsActivity (via ControlLayout - see ControlLayout.setImagePickerLauncher()
-     * for why it has to be routed through there rather than created here). Safe to call with
-     * a stale/rebuilt popup since it's just stored for the next click.
-     */
     public void setImagePickerLauncher(ActivityResultLauncher<String> launcher) {
         mImagePickerLauncher = launcher;
     }
@@ -168,13 +157,6 @@ public class EditControlPopup {
         mButtonImageClearTextView.setVisibility(hasImage ? VISIBLE : GONE);
     }
 
-    /**
-     * TurtleLauncher: called once the user has picked an image via mImagePickerLauncher.
-     * Copies the picked content into app-owned storage rather than keeping the content:// Uri
-     * directly - GetContent doesn't grant a persistable permission, so that Uri would silently
-     * stop resolving the next time the app (or even just this process) restarts, quietly
-     * breaking the button's look.
-     */
     public void onCustomImagePicked(Uri uri) {
         if (mCurrentlyEditedButton == null) return;
         File dest = newCustomImageFile();
@@ -193,12 +175,6 @@ public class EditControlPopup {
         applyNewCustomImage(dest);
     }
 
-    /**
-     * TurtleLauncher: called from the "Draw" entry point once PixelEditorDialog's Save is
-     * pressed. Encoded as a PNG (unlike the picker path's raw byte copy, this one only ever
-     * has an in-memory Bitmap to work with, so it has to pick some format - PNG for the
-     * lossless flat-color pixel art the editor produces).
-     */
     public void onPixelImageDrawn(Bitmap bitmap) {
         if (mCurrentlyEditedButton == null || bitmap == null) return;
         File dest = newCustomImageFile();
@@ -211,12 +187,6 @@ public class EditControlPopup {
         applyNewCustomImage(dest);
     }
 
-    /**
-     * TurtleLauncher: opens the pixel-art editor for the "Draw" entry point, pre-loading
-     * whatever custom image is already set (if it's actually decodable - a picked photo, say,
-     * still opens into the editor, just heavily downsampled by the 32x32 grid) so re-opening
-     * the editor continues from the current icon instead of starting blank every time.
-     */
     private void openPixelEditor() {
         if (mCurrentlyEditedButton == null) return;
         PixelEditorDialog dialog = new PixelEditorDialog(context)
@@ -258,9 +228,6 @@ public class EditControlPopup {
         File dir = new File(PathManager.DIR_FILE, "custom_control_images");
         //noinspection ResultOfMethodCallIgnored
         dir.mkdirs();
-        // Extension deliberately generic (.img) since ControlButton decodes by content via
-        // BitmapFactory, not by file extension - this stays true for both the raw picker copy
-        // and the PNG the pixel editor writes out.
         return new File(dir, UUID.randomUUID() + ".img");
     }
 
@@ -453,13 +420,6 @@ public class EditControlPopup {
         mDisplayInGameCheckbox.setChecked(data.displayInGame);
         mDisplayInMenuCheckbox.setChecked(data.displayInMenu);
 
-        // TurtleLauncher: mKeycodeSpinners/mKeycodeTextviews are fixed at 4 slots, but
-        // data.keycodes can legitimately have more entries than that - legacy saved
-        // control-layout JSON is deserialized straight into ControlData.keycodes via Gson,
-        // bypassing the constructor's 4-slot inflateKeycodeArray() that normally pads/guards
-        // it. A 5+-key entry from an older save format used to walk past the end of the
-        // spinner array here (ArrayIndexOutOfBoundsException: length=4; index=4). Bound the
-        // loop to whichever array is smaller instead of trusting data.keycodes.length.
         int keycodeCount = Math.min(data.keycodes.length, mKeycodeSpinners.length);
         for (int i = 0; i < keycodeCount; i++) {
             if (data.keycodes[i] < 0) {
@@ -720,11 +680,6 @@ public class EditControlPopup {
             }
         });
 
-        // TurtleLauncher: width/height SeekBars - only react to fromUser==true (a real drag).
-        // Programmatic setProgress() calls, like the ones the width/height TextWatchers above
-        // make to keep these SeekBars in sync, fire this same callback with fromUser==false,
-        // so this guard is what stops that sync from turning into a feedback loop back into
-        // the EditTexts, on top of the existing internalChanges guard used during loadValues().
         mWidthSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

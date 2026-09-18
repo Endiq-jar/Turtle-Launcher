@@ -38,10 +38,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Everything the old per-component list used to show now happens silently in the
-         background (see SplashActivity.checkEnd/initItems) - this screen only ever shows
-         a single "Setup Launcher" action and, while it's running, a spinner. -->
-
     <ProgressBar
         android:id="@+id/setup_progress"
         style="?android:attr/progressBarStyleLarge"
@@ -71,9 +67,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/setup_progress"/>
 
-    <!-- Kept in the tree (invisible) so the existing per-component task runner
-         (InstallableAdapter / checkAllTask / startAllTasks) keeps working exactly as
-         before without touching SplashActivity's task logic - it just never renders. -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="0dp"

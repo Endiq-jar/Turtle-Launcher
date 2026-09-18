@@ -40,12 +40,6 @@ class GameInstaller(
                 override fun onDownloadDone() {
                     Task.runTask {
                         if (taskMap.isEmpty()) {
-                            // Empty addons mean a vanilla-only install, so make sure the custom
-							// version folder always contains the vanilla .json file.
-                            // Check for a custom version name: if the real version and the custom name
-							// are equal the user never renamed it, so this install is plain vanilla.
-                            // Without a custom version name there is nothing to copy: the vanilla
-							// file and the target file are already the same file.
                             if (realVersion != customVersionName && VersionsManager.isVersionExists(realVersion)) {
                                 // Locate the vanilla .json file; MinecraftDownloader already fetched it.
                                 val vanillaJsonFile = File(vanillaVersionFolder, "${vanillaVersionFolder.name}.json")

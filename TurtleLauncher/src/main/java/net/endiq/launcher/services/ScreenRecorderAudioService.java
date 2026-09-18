@@ -17,17 +17,6 @@ import com.endiq.turtlelauncher.R;
 import net.endiq.launcher.Tools;
 import net.endiq.launcher.utils.NotificationUtils;
 
-/**
- * TurtleLauncher: minimal foreground service whose only job is satisfying Android's
- * requirement (enforced since targetSdk 34 / Android 14 - see
- * developer.android.com/about/versions/14/changes/fgs-types-required#media-projection) that any
- * use of a MediaProjection instance happen while a foregroundServiceType="mediaProjection"
- * service is running for this app. ScreenRecorder's audio capture (AudioPlaybackCaptureConfiguration,
- * built from a MediaProjection obtained purely to authorize that capture - no display is ever
- * mirrored) is exactly that kind of use, even though nothing here touches the screen. No
- * capture logic lives in this class; ScreenRecorder starts/stops it around the lifetime of the
- * MediaProjection it holds.
- */
 public class ScreenRecorderAudioService extends Service {
 
     public static void start(Context context) {

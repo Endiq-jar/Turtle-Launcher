@@ -88,19 +88,8 @@ public class ContextAwareDoneListener implements AsyncMinecraftDownloader.DoneLi
     public void executeWithActivity(Activity activity) {
         try {
             Intent gameStartIntent = createGameStartIntent(activity);
-            // TurtleLauncher: deprioritize (not cancel) the shared launcher task pool so it
-            // stops competing with Minecraft for CPU. No-op if getQuitLauncher() then kills
-            // this process right after - nothing left running to deprioritize at that point.
             com.endiq.turtlelauncher.task.TaskExecutors.setGameSessionActive(true);
-            // TurtleLauncher: Background Services (item 20) - same hook point, handles
-            // everything setGameSessionActive(true) above doesn't (animation pausing,
-            // update-checker pausing, indexing pausing, RAM trim). See its class doc.
             com.endiq.turtlelauncher.feature.turtle.BackgroundServiceManager.onGameSessionStart(activity);
-            // TurtleLauncher: Shizuku - apply the privileged keep-alive tweaks (Android 14's
-            // phantom-process limit above all) BEFORE the game process is forked, since the
-            // limit applies to processes forked by this app and killing the game mid-session
-            // is exactly what it does. Fire-and-forget on its own thread: Shizuku is
-            // optional, so this must never delay or block the launch. See ShizukuActions.
             com.endiq.turtlelauncher.feature.shizuku.ShizukuActions.applyBeforeLaunchIfEnabled();
             activity.startActivity(gameStartIntent);
             if (AllSettings.getQuitLauncher().getValue()) {

@@ -43,14 +43,6 @@ import fr.spse.gamepad_remapper.RemapperManager;
 import fr.spse.gamepad_remapper.RemapperView;
 
 
-
-
-
-
-
-
-
-
 /**
  * Class dealing with showing minecraft surface and taking inputs to dispatch them to minecraft
  */
@@ -92,10 +84,6 @@ public class MinecraftGLSurface extends View implements GrabListener {
     private OnRenderingStartedListener mOnRenderingStartedListener = null;
     private boolean mIsRenderingStarted = false;
 
-    /* TurtleLauncher: true only while the native side actually has a live EGL binding to
-     * mSurface's underlying Android Surface/SurfaceTexture. Guards refreshSize() (and the
-     * destroy callbacks) against touching a surface Android has already torn down - see
-     * markSurfaceDestroyed() below for why that matters. */
     private volatile boolean mSurfaceValid = false;
 
     public MinecraftGLSurface(Context context) {
@@ -112,36 +100,10 @@ public class MinecraftGLSurface extends View implements GrabListener {
         mPointerCapture = new AndroidPointerCapture(touchpad, this);
     }
 
-    /**
-     * TurtleLauncher: called once from a real (non-rebind) surfaceCreated/onSurfaceTextureAvailable
-     * and again every time the surface is torn down and recreated without the JVM/native
-     * renderer restarting (multi-window resize, split-screen entry/exit, some OEMs' aggressive
-     * backgrounding). Marks the surface live so refreshSize() and friends are allowed to touch it.
-     */
     private void markSurfaceValid() {
         mSurfaceValid = true;
     }
 
-    /**
-     * TurtleLauncher CRASH FIX (MC 26.3+ SDL): hand this view's real Android Surface to
-     * SDL's Java glue, and tell SDL about surface lifecycle changes - the launcher-side half
-     * of Amethyst-Android's SDL integration (their MinecraftGLSurface.setupSDL()/
-     * surfaceChanged()/surfaceDestroyed() forwarding, see SdlAndroidJniPrep's class doc for
-     * what is and isn't ported).
-     *
-     * Two things happen, and both are needed:
-     *  - SDLSurface.setNativeSurface(): this is what SDLActivity.getNativeSurface() reports
-     *    when SDL asks for a window, so it must be the Surface that is actually presented.
-     *  - surfaceChanged()/surfaceDestroyed(): without these, SDL's idea of the window size
-     *    and validity never updates after init.
-     *
-     * Size note, straight from Amethyst's own comment on the same call: forward the real
-     * display metrics, NOT the resolution-scaled size this launcher renders at - "SDL doesn't
-     * work like that, it'll render offscreen instead".
-     *
-     * No-op (SdlAndroidJniPrep.isActive stays false) for GLFW versions, so this never runs
-     * for anything except the SDL launch path it exists for.
-     */
     private void publishSurfaceToSdl(Surface surface) {
         if (!SdlAndroidJniPrep.isActive()) return;
         try {
@@ -163,20 +125,6 @@ public class MinecraftGLSurface extends View implements GrabListener {
         }
     }
 
-    /**
-     * TurtleLauncher: tells the native side to drop its EGL binding to this Android Surface
-     * *before* Android finishes tearing it down, instead of never telling it at all -
-     * JREUtils.releaseBridgeWindow() was declared as a native method but was dead code
-     * everywhere in this codebase prior to this change, nothing ever called it. Without this,
-     * a still-running render thread can end up calling eglSwapBuffers/eglMakeCurrent against a
-     * Surface object Android has already destroyed (happens on multi-window resize,
-     * split-screen entry, or just backgrounding for long enough that the window manager
-     * reclaims the buffer) - exactly the class of native SIGSEGV/EGL_BAD_SURFACE crash this
-     * project's crash analyzer exists to diagnose after the fact. Guarded on mSurfaceValid so
-     * it only actually calls into native code once per real setup (never before the first
-     * setup, never twice in a row), and wrapped in try/catch since it's a JNI call into a
-     * prebuilt .so this module doesn't have source for.
-     */
     private void markSurfaceDestroyed() {
         if (!mSurfaceValid) return;
         mSurfaceValid = false;
@@ -324,10 +272,6 @@ public class MinecraftGLSurface extends View implements GrabListener {
         int mouseCursorIndex = -1;
 
         if(Gamepad.isGamepadEvent(event)){
-            // TurtleLauncher CRASH FIX: isGamepadEvent() can pass on the source bits of an
-            // injected event whose getDevice() is null; Gamepad/GamepadJoystick would then
-            // NPE later inside a Choreographer tick on the UI thread. Real gamepads always
-            // carry a device - ignore the ones that don't.
             if(event.getDevice() == null) return false;
             if(mGamepad == null) createGamepad(this, event.getDevice());
 
@@ -382,11 +326,6 @@ public class MinecraftGLSurface extends View implements GrabListener {
         if(eventKeycode == KeyEvent.KEYCODE_VOLUME_DOWN) return false;
         if(eventKeycode == KeyEvent.KEYCODE_VOLUME_UP) return false;
 
-        // TurtleLauncher (Zalith Launcher 2 physicalKeyImeCode port): a user-bound
-        // hardware-keyboard key toggles the on-screen keyboard, for chat/sign/book entry
-        // when typing on the physical keyboard is awkward (or the game swallows the keys).
-        // Checked before the key reaches the game so the binding works even for keys the
-        // game would otherwise consume. -1 = unbound = zero cost here.
         int imeKeyCode = AllSettings.getPhysicalKeyImeCode().getValue();
         if (imeKeyCode != -1 && eventKeycode == imeKeyCode && touchCharInput != null
                 && event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
@@ -405,10 +344,7 @@ public class MinecraftGLSurface extends View implements GrabListener {
         //Sometimes, key events comes from SOME keys of the software keyboard
         //Even weirder, is is unknown why a key or another is selected to trigger a keyEvent
         if((event.getFlags() & KeyEvent.FLAG_SOFT_KEYBOARD) == KeyEvent.FLAG_SOFT_KEYBOARD){
-            if(eventKeycode == KeyEvent.KEYCODE_ENTER) return true; //We already listen to it.
-            // TurtleLauncher CRASH FIX: touchCharInput is a static assigned in
-            // MainActivity.onCreate - guard the deref so an early/late soft-keyboard
-            // event can never NPE on the game process's UI thread.
+            if(eventKeycode == KeyEvent.KEYCODE_ENTER) return true;
             if (touchCharInput != null) touchCharInput.dispatchKeyEvent(event);
             return true;
         }
@@ -425,7 +361,6 @@ public class MinecraftGLSurface extends View implements GrabListener {
         }
 
         if(Gamepad.isGamepadEvent(event)){
-            // TurtleLauncher CRASH FIX: same null-device guard as dispatchGenericMotionEvent.
             if(event.getDevice() == null) return false;
             if(mGamepad == null) createGamepad(this, event.getDevice());
 
@@ -465,18 +400,9 @@ public class MinecraftGLSurface extends View implements GrabListener {
     }
 
 
-
-
-
     /** Called when the size need to be set at any point during the surface lifecycle **/
     public void refreshSize() {
         if (!mSurfaceValid) {
-            //TurtleLauncher: surface has been torn down (or never bound yet) - touching
-            //mSurface's SurfaceTexture/SurfaceHolder here would either NPE or hand a stale
-            //buffer size to a surface Android is about to discard anyway. The pending resize
-            //isn't lost: markSurfaceValid() runs from the next onSurfaceTextureAvailable/
-            //surfaceCreated, and MainActivity.onConfigurationChanged / onPostResume already
-            //call refreshSize() again once things settle.
             Logging.w("MGLSurface", "Skipped refreshSize() while the surface is not valid");
             return;
         }
@@ -509,17 +435,6 @@ public class MinecraftGLSurface extends View implements GrabListener {
         EventBus.getDefault().post(new RefreshHotbarEvent());
     }
 
-    /**
-     * TurtleLauncher CRASH FIX (MC 26.3+ SDL): keep SDL's own idea of the window size in step
-     * with a resize (multi-window, split screen, rotation). This launcher's SDL integration
-     * has no nativeResize() to call - the bundled libSDL3.so doesn't export one (checked: no
-     * "nativeResize" string in the binary, unlike Amethyst's own SDL build) - so the size is
-     * pushed through SDLSurface.surfaceChanged(), which is plain Java and ends up in
-     * SDLActivity.nativeSetScreenResolution()/onNativeResize().
-     *
-     * Unscaled metrics on purpose, per Amethyst's comment on the same call: the resolution
-     * scale this launcher renders at would make SDL "render offscreen instead".
-     */
     private void notifySdlOfSurfaceSize() {
         // isActive is false for every non-SDL (GLFW) launch, so this is a no-op there.
         if (!SdlAndroidJniPrep.isActive()) return;

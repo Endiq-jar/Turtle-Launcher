@@ -62,11 +62,6 @@ class ModPackUtils {
                             }
                         }
 
-                        // Doesn't match a known modpack manifest, but it's still a real zip -
-                        // treat it as a plain folder-structure import (mods/, config/,
-                        // resourcepacks/, etc. at the zip root, extracted as-is). No loader
-                        // detection possible without a manifest, so the person picks one
-                        // afterward same as any manually-created instance.
                         return ModPackInfo(null, ModPackEnum.GENERIC_ZIP)
                     } else if (suffix == ".mrpack") {
                         val entry = modpackZipFile.getEntry("modrinth.index.json")

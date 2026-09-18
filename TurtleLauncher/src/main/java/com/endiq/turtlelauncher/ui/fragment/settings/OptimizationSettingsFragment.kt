@@ -14,13 +14,6 @@ import com.endiq.turtlelauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapp
 import com.endiq.turtlelauncher.utils.ZHTools
 
 
-/**
- * TurtleLauncher: the "FPS Boost (Game Performance)" card was duplicated verbatim in both
- * VideoSettingsFragment and ExperimentalSettingsFragment (same AllSettings keys wired twice).
- * Pulled out into its own page here - the fuller Video copy (which also had Auto Memory
- * Cleanup and two renderer-advanced toggles the Experimental copy didn't) is what moved;
- * the Experimental duplicate was removed outright rather than also kept.
- */
 class OptimizationSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment_optimization, SettingCategory.OPTIMIZATION) {
     companion object {
         const val TAG: String = "OptimizationSettingsFragment"

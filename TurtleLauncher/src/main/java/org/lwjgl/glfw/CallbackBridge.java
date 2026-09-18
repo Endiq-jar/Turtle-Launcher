@@ -110,14 +110,6 @@ public class CallbackBridge {
     // Called from JRE side
     @SuppressWarnings("unused")
     public static @Nullable String accessAndroidClipboard(int type, String copy) {
-        // TurtleLauncher CRASH FIX: this method is invoked from the JVM through JNI. Any
-        // exception escaping it unwinds into native code and aborts the whole game
-        // process - a paste with an empty/racing clipboard used to be able to kill the
-        // running game. Every branch is null-guarded now (Android 10+ can return null
-        // from getPrimaryClip() even when hasPrimaryClip() just said true, clip items
-        // can be URI-only with getText() == null, and GLOBAL_CLIPBOARD is a static that
-        // is null outside the game activity's lifetime), and the whole body is wrapped
-        // so an unexpected SecurityException/NPE degrades to "paste returned nothing".
         try {
             switch (type) {
                 case CLIPBOARD_COPY:
@@ -170,10 +162,6 @@ public class CallbackBridge {
     public static void setModifiers(int keyCode, boolean isDown){
         switch (keyCode){
             case LwjglGlfwKeycode.GLFW_KEY_LEFT_SHIFT:
-            // TurtleLauncher FIX: real GLFW sets MOD_SHIFT/MOD_CONTROL/MOD_ALT for EITHER
-            // side's key, but only the left ones were tracked here - so a control button
-            // (or physical key) mapped to Right Shift/Ctrl/Alt never raised the modifier
-            // bits and the game saw the press as the bare key. Handle both sides.
             case LwjglGlfwKeycode.GLFW_KEY_RIGHT_SHIFT:
                 CallbackBridge.holdingShift = isDown;
                 return;
@@ -208,10 +196,6 @@ public class CallbackBridge {
             System.out.println("Grab changed : " + grabbing);
             synchronized (grabListeners) {
                 for (GrabListener g : grabListeners) {
-                    // TurtleLauncher CRASH FIX: this runs inside a Choreographer frame
-                    // callback - one listener throwing (view torn down mid-frame, OEM
-                    // quirk) used to take the whole game process down. A missed grab
-                    // notification is recoverable; a dead game is not.
                     try {
                         g.onGrabState(grabbing);
                     } catch (Throwable t) {

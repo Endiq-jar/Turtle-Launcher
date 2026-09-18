@@ -13,29 +13,8 @@ import com.endiq.turtlelauncher.ui.dialog.TipDialog
 import java.io.File
 
 
-/**
- * Runs TurtleLauncher's automatic mod maintenance (dependency installer + update
- * checker) once per launch, right after mods have been parsed and before the
- * existing [com.endiq.turtlelauncher.feature.mod.parser.ModChecker] step.
- *
- * Both features are best-effort and network-bound, so all work happens on a
- * background task; [onComplete] is invoked back on whatever the caller needs
- * (always called exactly once, never throws). Any dialogs this shows are purely
- * informational/optional and do NOT block [onComplete] — launch is never held up
- * waiting for the player to tap a button.
- */
 object ModAutoMaintenance {
 
-    // TurtleLauncher: minimum time between real (network-bound) dependency/update checks for
-    // the same version. Root cause of "launch takes a while with mods": dependencyEnabled and
-    // updateCheckEnabled both make real Modrinth API calls (one lookup per mod that needs a
-    // compatible-version check, sequentially) on every single launch by default - for a 30-40
-    // mod pack that's 30-40 network round-trips gating the game actually starting, every time,
-    // even though this runs off the UI thread (never freezes the launcher, but the player is
-    // still standing there watching a progress bar). Fast Boot already exists to skip this
-    // entirely; this is the middle ground for everyone else - skip the network calls on a
-    // launch that happens shortly after one that already checked, reuse-nothing-stale since we
-    // don't persist the actual results, just skip re-asking Modrinth so soon.
     private val MIN_RECHECK_INTERVAL_MS = java.util.concurrent.TimeUnit.HOURS.toMillis(6)
 
     private fun maintenanceMarkerFile(version: Version): File =
@@ -68,9 +47,6 @@ object ModAutoMaintenance {
                 !runCatching { AllSettings.fastBoot.getValue() }.getOrDefault(false) && !skipNetworkChecks
         val updateCheckEnabled = runCatching { AllSettings.autoModUpdateCheck.getValue() }.getOrDefault(true) &&
                 !runCatching { AllSettings.fastBoot.getValue() }.getOrDefault(false) && !skipNetworkChecks
-        // Conflict detection is cheap (static jar/bytecode scan, no network) so it still runs
-        // every launch regardless - it's exactly the kind of check that helps when something's
-        // wrong, and doesn't contribute to the network-bound delay this is working around.
         val conflictCheckEnabled = runCatching { AllSettings.modConflictDetection.getValue() }.getOrDefault(true)
 
         if (!dependencyEnabled && !updateCheckEnabled && !conflictCheckEnabled) {

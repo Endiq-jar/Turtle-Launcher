@@ -15,18 +15,9 @@ import com.endiq.turtlelauncher.databinding.DialogPixelEditorBinding;
 
 import net.endiq.launcher.customcontrols.handleview.PixelCanvasView;
 
-/**
- * TurtleLauncher: a small pixel-art editor for drawing a custom control-button icon in-app,
- * as a complement to (not a replacement for) picking an existing image file - see
- * EditControlPopup's "Draw Image" entry point next to "Custom Button Image". Follows
- * KeyboardDialog's pattern (also opened from EditControlPopup) for consistency: a
- * FullScreenDialog wrapping a view-binding-inflated layout.
- */
 public class PixelEditorDialog extends FullScreenDialog implements View.OnClickListener {
     private final DialogPixelEditorBinding binding = DialogPixelEditorBinding.inflate(getLayoutInflater());
 
-    // A small, deliberately limited palette - this is for quick button-icon sprites, not a
-    // full art tool, so a curated set beats a giant grid the user has to scroll through.
     private static final int[] PALETTE = {
             Color.BLACK, Color.WHITE, 0xFF808080, 0xFFC0C0C0,
             0xFFE53935, 0xFFFB8C00, 0xFFFDD835, 0xFF43A047,
@@ -67,9 +58,6 @@ public class PixelEditorDialog extends FullScreenDialog implements View.OnClickL
 
     private void init() {
         mSelectedToolView = binding.pixelEditorToolPencil;
-        // Pencil is the default tool - highlighted here in code rather than via
-        // android:selected="true" in the layout (that attribute tripped up resource linking
-        // in CI's build environment), functionally identical either way.
         mSelectedToolView.setSelected(true);
 
         binding.pixelEditorClose.setOnClickListener(this);

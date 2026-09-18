@@ -209,7 +209,6 @@ Java_org_lwjgl_glfw_GLFW_glfwSetCursorPos(__attribute__((unused)) JNIEnv *env, _
 }
 
 
-
 void sendData(int type, int i1, int i2, int i3, int i4) {
     GLFWInputEvent *event = &pojav_environ->events[pojav_environ->inEventIndex];
     event->type = type;
@@ -224,13 +223,6 @@ void sendData(int type, int i1, int i2, int i3, int i4) {
     atomic_fetch_add_explicit(&pojav_environ->eventCounter, 1, memory_order_acquire);
 }
 
-/**
- * This function is meant as a substitute for SharedLibraryUtil.getLibraryPath() that just returns 0
- * (thus making the parent Java function return null). This is done to avoid using the LWJGL's default function,
- * which will hang the crappy EMUI linker by dlopen()ing inside of dl_iterate_phdr().
- * @return 0, to make the parent Java function return null immediately.
- * For reference: https://github.com/PojavLauncherTeam/lwjgl3/blob/fix_huawei_hang/modules/lwjgl/core/src/main/java/org/lwjgl/system/SharedLibraryUtil.java
- */
 jint getLibraryPath_fix(__attribute__((unused)) JNIEnv *env,
                         __attribute__((unused)) jclass class,
                         __attribute__((unused)) jlong pLibAddress,
@@ -482,12 +474,6 @@ JNIEXPORT void JNICALL Java_org_lwjgl_glfw_CallbackBridge_nativeSetWindowAttrib(
         return;
     }
 
-    // We cannot use pojav_environ->runtimeJNIEnvPtr_JRE here because that environment is attached
-    // on the thread that loaded pojavexec (which is the thread that first references the GLFW class)
-    // But this method is only called from the Android UI thread
-    // Technically the better solution would be to have a permanently attached env pointer stored
-    // in environ for the Android UI thread but this is the only place that uses it
-    // (very rarely, only in lifecycle callbacks) so i dont care
     JavaVM* jvm = pojav_environ->runtimeJavaVMPtr;
     JNIEnv *jvm_env = NULL;
     jint env_result = (*jvm)->GetEnv(jvm, (void**)&jvm_env, JNI_VERSION_1_4);

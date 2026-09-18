@@ -21,13 +21,6 @@ import com.endiq.turtlelauncher.utils.ZHTools
 import net.endiq.launcher.prefs.LauncherPreferences
 
 
-/**
- * TurtleLauncher Phone Settings: device-tuning controls that used to be scattered across
- * Experimental (Thread Affinity) and Video (the old combined GL4ES toggle) settings, plus a
- * bunch of settings that never had a home at all (RAM/core auto-tuning, per-instance CPU
- * override, memory pressure monitoring, GC statistics). Grouped here since they're all "how
- * hard should this specific phone be pushed" controls rather than gameplay/video preferences.
- */
 class PhoneSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment_phone, SettingCategory.PHONE) {
     companion object {
         const val TAG: String = "PhoneSettingsFragment"

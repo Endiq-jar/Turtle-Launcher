@@ -25,11 +25,6 @@ public class NativesExtractor {
         this.mLibraryLocation = "jni/"+getAarArchitectureName()+"/";
     }
 
-    /**
-     * Create a library blacklist so that downloaded natives are not able to
-     * override built-in libraries.
-     * @return the resulting blacklist of library file names
-     */
     private static ArrayList<String> createLibraryBlacklist() {
         String[] includedLibraryNames = new File(PathManager.DIR_NATIVE_LIB).list();
         ArrayList<String> blacklist = new ArrayList<>(includedLibraryNames.length);

@@ -37,11 +37,6 @@ public class AndroidPointerCapture implements ViewTreeObserver.OnWindowFocusChan
     }
 
     public void handleAutomaticCapture() {
-        // TurtleLauncher (Zalith Launcher 2 physicalMouseMode port): with physical mouse
-        // mode ON, the mouse deliberately stays a normal Android pointer - the absolute
-        // hover/button path in MinecraftGLSurface.dispatchGenericMotionEvent drives the
-        // game cursor. Capturing it here would rip the system pointer away, which is
-        // exactly what that setting exists to prevent.
         if (AllSettings.getPhysicalMouseMode().getValue()) return;
         if(!mHostView.hasWindowFocus()) {
             mHostView.requestFocus();
@@ -136,8 +131,6 @@ public class AndroidPointerCapture implements ViewTreeObserver.OnWindowFocusChan
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-        // Same physicalMouseMode guard as handleAutomaticCapture() - regaining window focus
-        // must not silently re-capture a mouse the user asked to keep as a normal pointer.
         if(hasFocus && !AllSettings.getPhysicalMouseMode().getValue()) mHostView.requestPointerCapture();
     }
 

@@ -17,13 +17,6 @@ import com.endiq.turtlelauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapp
 import com.endiq.turtlelauncher.utils.ZHTools
 
 
-/**
- * TurtleLauncher: the in-game menu overlay settings (previously "setting_category_game_menu")
- * and the in-game HUD module toggles (previously "setting_category_hud_modules") were both
- * really about the same thing - what's drawn on top of the game while playing - just under two
- * different names, both mixed into GameSettingsFragment alongside language/version/presets.
- * Split out into their own page here, same reasoning as JavaSettingsFragment.
- */
 class HudSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment_hud, SettingCategory.HUD) {
     companion object {
         const val TAG: String = "HudSettingsFragment"

@@ -13,16 +13,6 @@ import java.io.FileOutputStream
 class SkinFileDownloader {
     private val mClient = UrlManager.createOkHttpClient()
 
-    /**
-     * Try to download the yggdrasil skin.
-     *
-     * TurtleLauncher: an account with no skin set (freshly created ely.by/authlib-injector
-     * accounts, or a cape-only profile) has no "properties" entry, or a "textures" object with
-     * no "SKIN" key at all - Gson's JsonObject.get() returns null (not JsonNull) for a missing
-     * key, and .asJsonObject on that null crashed with an NPE ("Could not update skin" in the
-     * logs). That is a normal, common profile shape, not an error - treat it as "nothing to
-     * download" instead of throwing.
-     */
     @Throws(Exception::class)
     fun yggdrasil(url: String, skinFile: File, uuid: String) {
         val profileJson = DownloadUtils.downloadString("${url.removeSuffix("/")}/session/minecraft/profile/$uuid")

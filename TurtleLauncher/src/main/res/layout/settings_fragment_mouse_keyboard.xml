@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Settings -> Mouse & Keyboard.
-     TurtleLauncher: new category screen ported from Zalith Launcher 2's control settings
-     (ZalithLauncher2 ControlSettingsScreen: physicalMouseMode, hideMouse,
-     mouseCaptureSensitivity, gesture tap/long-press mouse-button actions, physical-key
-     IME binding), merged with this project's existing virtual-mouse and touch-gesture
-     rows relocated here from settings_fragment_control.xml so every mouse/keyboard
-     control lives in one place. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"

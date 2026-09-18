@@ -9,22 +9,6 @@ import android.graphics.drawable.Drawable
 import android.os.SystemClock
 import android.view.Choreographer
 
-/**
- * TurtleLauncher: real-time playback engine for a decoded cursor frame sequence
- * (produced by [AniDecoder] for .ani files, or a single-frame list from [CurIcoDecoder]
- * for plain .cur files).
- *
- * Frame advancement is driven by [Choreographer.postFrameCallback], i.e. the display's
- * own vsync signal, rather than a fixed postDelayed() poll - each vsync tick checks how
- * much real time has elapsed and advances however many frames are actually due (catching
- * up in one step after a jank instead of drifting), then calls [invalidateSelf] only when
- * the visible frame actually changed. Because this is a normal [Drawable], every host that
- * assigns it the standard way (ImageView.setImageDrawable, View.setBackground) gets a
- * working [Drawable.Callback] for free and redraws automatically - this is what gives the
- * settings-card preview and the touchpad test view smooth animation with no per-call-site
- * work. [net.endiq.launcher.customcontrols.mouse.Touchpad] draws its pointer manually in
- * onDraw() instead of through those APIs, so it wires the callback itself.
- */
 class AnimatedCursorDrawable(
     private val frames: List<CursorFrame>
 ) : Drawable(), Animatable, CursorHotspotProvider, Choreographer.FrameCallback {

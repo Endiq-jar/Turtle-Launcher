@@ -22,13 +22,6 @@ enum class ShizukuState {
     READY
 }
 
-/**
- * A point-in-time snapshot of Shizuku availability.
- *
- * @param uid privilege level the remote service runs as: 0 for root, 2000 for the ADB shell
- *            user, -1 when unknown. ADB can do less than root (it cannot read another app's
- *            private data, for example), so callers should treat some commands as best-effort.
- */
 data class ShizukuStatus(
     val state: ShizukuState = ShizukuState.NOT_INSTALLED,
     val version: Int = -1,

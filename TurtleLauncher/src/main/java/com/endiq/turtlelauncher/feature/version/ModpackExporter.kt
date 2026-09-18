@@ -12,13 +12,6 @@ import java.security.MessageDigest
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-/**
- * TurtleLauncher: one-tap modpack export. Zips up everything someone would need to
- * reproduce a modded setup elsewhere — mods/, config/, options.txt, servers.dat — mirroring
- * the same set of files CurseForge/Modrinth-style installers expect on import. Deliberately
- * excludes saves/, screenshots/, logs/, and crash-reports/ since those bloat the archive and
- * aren't part of "the modpack" in any meaningful sense.
- */
 object ModpackExporter {
 
     private val INCLUDED_TOP_LEVEL = setOf("mods", "config", "resourcepacks", "shaderpacks")
@@ -38,7 +31,6 @@ object ModpackExporter {
         val outputDir = File(PathManager.DIR_GAME_HOME, "exported_modpacks").apply { mkdirs() }
         val safeName = version.getVersionName().replace(Regex("[^A-Za-z0-9._-]"), "_")
         val outputFile = File(outputDir, "${safeName}_modpack.zip")
-        // Don't silently append to/overwrite a stale half-written zip from a previous failed export.
         if (outputFile.exists()) outputFile.delete()
 
         try {

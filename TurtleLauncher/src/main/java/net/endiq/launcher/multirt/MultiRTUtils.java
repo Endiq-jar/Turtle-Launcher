@@ -199,11 +199,6 @@ public class MultiRTUtils {
             String javaVersion = Tools.extractUntilCharacter(content, JAVA_VERSION_STR, '"');
             String osArch = Tools.extractUntilCharacter(content, OS_ARCH_STR, '"');
             if(javaVersion != null && osArch != null) {
-                // JAVA_VERSION from a runtime's release file is free-form text: "1" alone
-                // crashed the old code with ArrayIndexOutOfBounds ([1] missing), and
-                // early-access builds ("21-ea", "25+36") crashed it with
-                // NumberFormatException. Fall back to an unknown-version Runtime so a
-                // weird release file can't kill the launcher.
                 int javaVersionInt = parseJavaMajorVersion(javaVersion);
                 if (javaVersionInt > 0) {
                     returnRuntime = new Runtime(name, javaVersion, osArch, javaVersionInt);
@@ -324,12 +319,6 @@ public class MultiRTUtils {
                 FileOutputStream os = new FileOutputStream(destPath);
                 IOUtils.copyLarge(tarIn, os, buffer);
                 os.close();
-                // Runtime tarballs mark bin/java and friends executable (unix mode bits),
-                // but this extraction never propagated that - every extracted file landed
-                // non-executable. Invisible until something actually tries to *exec* one of
-                // these as a subprocess (the embedded-JVM launch path only dlopen()s the
-                // .so libs in-process, so it never hit this). Fabric Loader's splash screen
-                // spawning bin/java directly is what surfaced it: "Permission denied".
                 int mode = tarEntry.getMode();
                 if ((mode & 0111) != 0) {
                     destPath.setExecutable(true, false);

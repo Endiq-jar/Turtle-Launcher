@@ -5,12 +5,6 @@ import java.util.List;
 
 public class LayoutSanitizer {
 
-    // TurtleLauncher CRASH FIX: this whole class runs on hand-edited/converted user JSON
-    // during game startup. Every check is null-tolerant now and unknown entry types are
-    // dropped instead of throwing - a corrupt control file must cost the user a button,
-    // never the game process.
-
-    // Maybe add more conditions here later?
     private static boolean isInvalidFormula(String formula) {
         return formula == null || formula.contains("Infinity");
     }
@@ -28,9 +22,6 @@ public class LayoutSanitizer {
         }else if(dataEntry instanceof ControlDrawerData) {
             return ((ControlDrawerData) dataEntry).properties;
         }
-        // Previously threw RuntimeException("Encountered wrong type...") which escaped
-        // loadLayout() on several call sites that only catch IOException -> crash.
-        // Returning null makes isSaneData() reject the entry so it gets removed instead.
         return null;
     }
 

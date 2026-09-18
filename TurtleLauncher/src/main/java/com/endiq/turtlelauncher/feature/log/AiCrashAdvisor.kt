@@ -8,23 +8,6 @@ import com.endiq.turtlelauncher.utils.path.UrlManager
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
-/**
- * Last-resort crash-fix helper: only consulted by [CrashAnalyzer] when NONE of its
- * local rules (built-in or user-added custom rules) recognised the crash. Calls OpenAI's
- * Chat Completions API with the crash log tail so far and asks for a short, concrete
- * "how to fix" suggestion in the same style as the rest of CrashAnalyzer's output.
- *
- * Fully opt-in and local-first:
- *  - Disabled unless the user turns on Settings → Diagnostics → "AI crash help", AND
- *    supplies their own API key (see AllSettings.aiApiKey) - no key is bundled by
- *    default (a previous hardcoded default Gemini key got flagged as leaked and revoked
- *    by Google's secret-scanning; any real key committed to this public repo would fail
- *    the same way, whichever provider it's for, so there's nothing to hardcode here).
- *  - Only ever called for the *generic fallback* case — every crash a local rule
- *    already explains is answered locally, with no network call at all.
- *  - Best-effort: any failure (no key, no network, bad response, timeout) just
- *    results in null, and the existing generic fix-steps are shown as before.
- */
 object AiCrashAdvisor {
 
     private const val ENDPOINT = "https://api.openai.com/v1/chat/completions"

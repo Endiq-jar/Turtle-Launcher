@@ -19,19 +19,6 @@ import com.endiq.turtlelauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapp
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.anim.TurtleTransitions
 
-/**
- * Settings -> Mouse & Keyboard.
- *
- * TurtleLauncher: dedicated home for every mouse/keyboard control, ported from Zalith
- * Launcher 2's control settings (ZalithLauncher2 ControlSettingsScreen.kt + AllSettings):
- * physical mouse mode, mouse capture sensitivity, hide-cursor, configurable tap /
- * long-press gesture mouse buttons and a bindable physical key that opens the on-screen
- * keyboard - merged with this project's existing virtual-mouse and touch-gesture rows
- * relocated here from the Controls screen (which keeps buttons, gyro and gamepad).
- * Every row is wired to real runtime behaviour: AndroidPointerCapture,
- * InGameEventProcessor, LeftClickGesture/RightClickGesture, Touchpad and
- * MinecraftGLSurface.processKeyEvent.
- */
 class MouseKeyboardSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fragment_mouse_keyboard, SettingCategory.MOUSE_KEYBOARD) {
     companion object {
         const val TAG: String = "MouseKeyboardSettingsFragment"
@@ -220,10 +207,6 @@ class MouseKeyboardSettingsFragment() : AbstractSettingsFragment(R.layout.settin
     }
 
     private fun updateImeKeyLabel() {
-        // TurtleLauncher CRASH FIX: also invoked from the key-bind dialog's listeners,
-        // which are not lifecycle-aware - Fragment.getString() throws
-        // IllegalStateException once the fragment detaches, so resolve strings through
-        // the context and bail out quietly if it is already gone.
         val ctx = context ?: return
         val code = AllSettings.physicalKeyImeCode.getValue()
         binding.physicalKeyImeValue.text = if (code == -1) {

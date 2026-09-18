@@ -72,12 +72,6 @@ import java.util.Arrays;
 import java.util.List;
 
 
-
-
-
-
-
-
 @SuppressWarnings("IOStreamConstructor")
 public final class Tools {
     public static final String NOTIFICATION_CHANNEL_DEFAULT = "channel_id";
@@ -230,18 +224,6 @@ public final class Tools {
         return displayMetrics;
     }
 
-    /**
-     * TurtleLauncher: entry point kept unchanged so every existing call site (BaseActivity,
-     * MainActivity, onResume/onPostResume/onConfigurationChanged, etc.) keeps working as-is.
-     * Internally this now branches: API 30+ (Android 11+, covers 13/14/15) drives immersive
-     * mode through WindowInsetsControllerCompat, which is the API Google actually keeps
-     * maintained - the old View.SYSTEM_UI_FLAG_* / OnSystemUiVisibilityChangeListener path
-     * is deprecated since API 30 and increasingly unreliable under Android 15's edge-to-edge
-     * enforcement (targetSdk 35 makes Window#setDecorFitsSystemWindows(true) a no-op, so an
-     * app that only ever spoke the old flag language would silently stop being able to hide
-     * the system bars at all). Below API 30 the legacy flag path is kept verbatim since it's
-     * still the only API that exists there (minSdk is 26).
-     */
     public static void setFullscreen(Activity activity) {
         if (SDK_INT >= Build.VERSION_CODES.R) {
             setFullscreenModern(activity);
@@ -253,10 +235,6 @@ public final class Tools {
     @RequiresApi(Build.VERSION_CODES.R)
     private static void setFullscreenModern(Activity activity) {
         Window window = activity.getWindow();
-        // Lets our own layouts draw behind the system bars instead of being resized around
-        // them - required for WindowInsetsControllerCompat.hide() to actually remove the
-        // bars rather than just dim them, and matches how this app already behaves under
-        // the legacy path (SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN/LAYOUT_HIDE_NAVIGATION).
         WindowCompat.setDecorFitsSystemWindows(window, false);
         WindowInsetsControllerCompat controller =
                 WindowCompat.getInsetsController(window, window.getDecorView());
@@ -266,9 +244,6 @@ public final class Tools {
     @RequiresApi(Build.VERSION_CODES.R)
     private static void applyImmersiveState(Activity activity, WindowInsetsControllerCompat controller) {
         if (controller == null) return;
-        // Same reasoning the legacy path used: fullscreen makes no sense while the activity
-        // is sharing the screen in a multi-window/split-screen/freeform window, so show the
-        // system bars normally there instead of trying to hide them.
         if (activity.isInMultiWindowMode()) {
             controller.show(WindowInsetsCompat.Type.systemBars());
         } else {
@@ -427,11 +402,6 @@ public final class Tools {
         showErrorRemote(context.getString(rolledMessage), e);
     }
     public static void showErrorRemote(String rolledMessage, Throwable e) {
-        // I WILL embrace layer violations because Android's concept of layers is STUPID
-        // We live in the same process anyway, why make it any more harder with this needless
-        // abstraction?
-
-        // Add your Context-related rage here
         ContextExecutor.executeTask(new ShowErrorActivity.RemoteErrorTask(e, rolledMessage));
     }
 
@@ -449,8 +419,6 @@ public final class Tools {
         if (libraries == null) return;
         for (DependentLibrary libItem : libraries) {
             if (libItem == null || libItem.name == null) continue;
-            // A malformed library name (fewer than 3 colon segments, e.g. from a
-            // hand-edited version json) used to crash here with ArrayIndexOutOfBounds.
             String[] nameParts = libItem.name.split(":");
             if (nameParts.length < 3) continue;
             String[] version = nameParts[2].split("\\.");
@@ -493,12 +461,6 @@ public final class Tools {
         }
     }
 
-    /**
-     * Parses one numeric segment of a dotted version string, tolerating the
-     * non-numeric suffixes Maven versions routinely carry ("13-SNAPSHOT",
-     * "5_1", ...). Returns -1 when there is no leading number at all, so
-     * callers can skip the rewrite instead of crashing on NumberFormatException.
-     */
     private static int parseVersionPart(String part) {
         if (part == null) return -1;
         int end = 0;
@@ -511,11 +473,6 @@ public final class Tools {
         }
     }
 
-    /**
-     * "group:artifact:version" -&gt; "group:artifact" for override comparison.
-     * Null/colon-less names (malformed version json) yield "" / the full name
-     * instead of crashing the caller.
-     */
     private static String stripLibraryVersion(String name) {
         if (name == null) return "";
         int lastColon = name.lastIndexOf(':');
@@ -527,14 +484,6 @@ public final class Tools {
             library.downloads = new DependentLibrary.LibraryDownloads(new MinecraftLibraryArtifact());
     }
 
-    // TurtleLauncher: this override must NOT apply to every Minecraft version -
-    // only to versions that actually ship org.lwjgl:lwjgl-sdl (26.3+). Every
-    // version's manifest lists a plain "org.lwjgl:lwjgl:" core artifact, SDL or
-    // not, so without this guard the override silently applied to ALL versions
-    // and paired them with whatever liblwjgl.so happens to be bundled right now
-    // - which broke 26.2 (needs the older/matching native) once liblwjgl.so was
-    // rebuilt to match 26.3's newer LWJGL. See getLwjglNativeLibraryOverride()
-    // below for the native-side half of this same fix.
     public static boolean versionUsesLwjglSdl(JMinecraftVersionList.Version info) {
         for (DependentLibrary libItem : info.libraries) {
             if (libItem.name != null && libItem.name.startsWith("org.lwjgl:lwjgl-sdl:")) return true;
@@ -542,21 +491,6 @@ public final class Tools {
         return false;
     }
 
-    // TurtleLauncher: "Add Multiple LWJGL versions" (Compatibility Improvements, item 16).
-    // Everything below versionUsesLwjglSdl() used to call it directly and independently -
-    // the classpath logic (isLwjglAbiCriticalModule/generateLibClasspath/
-    // getLwjglAbiOverrideClasspath) in one place, the native-library choice
-    // (getLwjglNativeLibraryOverride) in another, SDL Java-glue prep in a third. That's
-    // fine for pure auto-detection since they'd always agree, but a *manual* override has
-    // to flip all three together or you get exactly the broken half-and-half pairing the
-    // comments above already warn about (real native paired with the wrong classpath, or
-    // vice versa). resolveLwjglMode() is now the single source of truth every caller goes
-    // through - AllSettings.lwjglCompatMode "auto" defers to versionUsesLwjglSdl() same as
-    // always, "new"/"legacy" force one side regardless of what this version's manifest
-    // says, for versions whose manifest doesn't accurately reflect which native they
-    // actually need. There is still only ever ONE real native file per side (liblwjgl.so /
-    // liblwjgl-legacy.so, no toolchain here to build a third) - this doesn't add new
-    // native builds, it makes the existing two independently selectable per launch.
     public enum LwjglMode { NEW_SDL, LEGACY }
 
     public static LwjglMode resolveLwjglMode(JMinecraftVersionList.Version info) {
@@ -566,26 +500,6 @@ public final class Tools {
         return versionUsesLwjglSdl(info) ? LwjglMode.NEW_SDL : LwjglMode.LEGACY;
     }
 
-    // TurtleLauncher: MC 26.3+ added org.lwjgl:lwjgl-sdl (GLFW -> SDL windowing
-    // migration). This launcher's own hand-bundled lwjgl3 native/class set (see
-    // getLWJGL3ClassPath()) predates it, so lwjgl-sdl isn't one of the modules we
-    // replace - it must use Mojang's own downloaded jar instead of silently
-    // vanishing (blanket-excluding all "org.lwjgl" caused a ClassNotFoundException).
-    // That real lwjgl-sdl jar is compiled against a specific build of org.lwjgl's
-    // core classes (org.lwjgl.system.Callback$Descriptor etc.), and our bundled
-    // replacement jar's copy of those same core classes is a stale/older build -
-    // even though both self-report as "3.4.1", the bundled one is missing a
-    // constructor overload lwjgl-sdl's generated callback classes need, which
-    // surfaced as:
-    //   NoSuchMethodError: void org.lwjgl.system.Callback$Descriptor.<init>
-    //     (Class, MethodHandles$Lookup, org.lwjgl.system.libffi.FFICIF)
-    // Fix: let the plain (unclassified) org.lwjgl:lwjgl core artifact through
-    // alongside lwjgl-sdl, so both come from the same matched Mojang download
-    // instead of mixing our stale bundled core classes with Mojang's newer
-    // lwjgl-sdl. Every other org.lwjgl module (glfw, opengl, openal, stb, ...)
-    // still uses this launcher's bundled Android-native replacement, unchanged.
-    // versionUsesSdl scopes the core-artifact branch to SDL versions only - see
-    // versionUsesLwjglSdl() above for why that guard exists.
     private static boolean isLwjglAbiCriticalModule(String libName, boolean versionUsesSdl) {
         if (libName.startsWith("org.lwjgl:lwjgl-sdl:")) return true;
         return versionUsesSdl && libName.startsWith("org.lwjgl:lwjgl:");
@@ -600,15 +514,6 @@ public final class Tools {
             String libName = libItem.name;
             if (libName == null) continue;
 
-            // TurtleLauncher FIX: was libName.contains("org.lwjgl"), which also matched the
-            // OLD LWJGL 2 group id "org.lwjgl.lwjgl:" (e.g. legacy MC 1.8.9's
-            // org.lwjgl.lwjgl:lwjgl:2.9.4 / lwjgl_util / lwjgl-platform). The bundled
-            // Android-native replacement in assets/components/lwjgl3/ only contains
-            // lwjgl-glfw-classes.jar - it does NOT reimplement the old LWJGL2 API - so
-            // stripping those real jars left nothing providing org.lwjgl.LWJGLException,
-            // causing "NoClassDefFoundError: org/lwjgl/LWJGLException" on every legacy
-            // (pre-1.13-ish) version launch. startsWith("org.lwjgl:") only matches the
-            // NEW LWJGL3 namespace this bundled shim is actually meant to replace.
             if ((libName.startsWith("org.lwjgl:") && !isLwjglAbiCriticalModule(libName, versionUsesSdl)) ||
                 libName.contains("jinput-platform") ||
                 libName.contains("twitch-platform")
@@ -624,16 +529,6 @@ public final class Tools {
         return libDir.toArray(new String[0]);
     }
 
-    // TurtleLauncher: the bundled lwjgl3 classpath (getLWJGL3ClassPath()) is placed
-    // FIRST on the final -cp string, so on plain classpath precedence its stale
-    // org.lwjgl.system.Callback$Descriptor would always shadow the real, matching
-    // one from Mojang's org.lwjgl:lwjgl/lwjgl-sdl download let through above -
-    // regardless of that download succeeding. This returns just those two ABI-
-    // critical jars' resolved paths so callers can place them ahead of the bundled
-    // classpath, guaranteeing Mojang's matched pair wins for the classes they both
-    // define, while every bundled-only class (org.lwjgl.glfw.*, etc.) still
-    // resolves fine from the bundled jar later in the classpath. Returns "" when
-    // the version doesn't use lwjgl-sdl (pre-26.3), making this a no-op elsewhere.
     public static String getLwjglAbiOverrideClasspath(JMinecraftVersionList.Version info) {
         List<String> paths = new ArrayList<>();
         boolean versionUsesSdl = resolveLwjglMode(info) == LwjglMode.NEW_SDL;
@@ -650,16 +545,6 @@ public final class Tools {
         return String.join(":", paths);
     }
 
-    // TurtleLauncher: native-side half of the same fix. liblwjgl.so is one
-    // shared file for every MC version (no per-version selection in this
-    // launcher), and it's now built to match LWJGL 3.4.2 for 26.3+. Versions
-    // that don't use lwjgl-sdl (26.2 and earlier, needing ~3.4.1) must NOT get
-    // that native file - it caused a GL context-tracking abort (SIGSEGV) on
-    // 26.2 the first time this was tried. liblwjgl-legacy.so is the original,
-    // pre-3.4.2-rebuild native, kept side by side in jniLibs specifically for
-    // this. Returns the org.lwjgl.libname override value to pass as a JVM
-    // property for non-SDL versions, or null when no override is needed (SDL
-    // versions just use the default "liblwjgl.so" = the new 3.4.2 build).
     public static String getLwjglNativeLibraryOverride(JMinecraftVersionList.Version info) {
         return resolveLwjglMode(info) == LwjglMode.NEW_SDL ? null : "lwjgl-legacy";
     }
@@ -672,9 +557,6 @@ public final class Tools {
     public static JMinecraftVersionList.Version getVersionInfo(Version version, boolean skipInheriting) {
         try {
             JMinecraftVersionList.Version customVer = Tools.GLOBAL_GSON.fromJson(read(new File(version.getVersionPath(), version.getVersionName() + ".json")), JMinecraftVersionList.Version.class);
-            // An empty/corrupt version json parses to null or an object with null
-            // libraries - every dereference below would NPE. Fail here with a message
-            // that names the actual problem instead.
             if (customVer == null) {
                 throw new RuntimeException("Corrupt version json for " + version.getVersionName() + " (parsed to null)");
             }
@@ -779,17 +661,6 @@ public final class Tools {
                 customVer.javaVersion.majorVersion = customVer.javaVersion.version;
             }
 
-            // TurtleLauncher: Java version resolution for all MC versions including 26.x.
-            // Mojang's component string is the most reliable indicator:
-            //   java-alpha   → Java 8  (ancient MC ≤ 1.16.x)
-            //   java-beta    → Java 8  (MC 1.16.x era)
-            //   java-gamma   → Java 17 (MC 1.18 – 1.20.x)
-            //   java-gamma-snapshot → Java 17
-            //   java-delta   → Java 21 (MC 1.21.x – 1.21.x)
-            //   java-epsilon → Java 25 (MC 26.1 / 26.2 and later)
-            //
-            // If component is present, derive majorVersion from it so that
-            // TurtleJREAutoInstaller always receives the correct requirement.
             if (customVer.javaVersion != null && customVer.javaVersion.component != null) {
                 String comp = customVer.javaVersion.component.toLowerCase(java.util.Locale.ROOT);
                 int derivedMaj = -1;
@@ -835,17 +706,6 @@ public final class Tools {
         }
     }
 
-    // Prevent NullPointerException
-    // TurtleLauncher FIX: was getClass().getDeclaredField(key), which only looks at a
-    // class's OWN declared fields, not inherited ones. "id" (plus sha1/url/size) is
-    // declared on JMinecraftVersionList.FileProperties, the superclass of Version, not
-    // on Version itself - so every call with "id" in keyArr (the version-inheritance
-    // path in getVersionInfo()) always threw NoSuchFieldException here, silently caught
-    // below and logged as "Unable to insert id=null", meaning a custom/modded version
-    // that inherits from a vanilla one never actually got the parent's id copied over.
-    // getField() walks up the class hierarchy for public fields (all of these model
-    // fields are public, per the @Keep/JSON-model classes above), so it finds
-    // superclass-declared fields too.
     private static void insertSafety(JMinecraftVersionList.Version targetVer, JMinecraftVersionList.Version fromVer, String... keyArr) {
         for (String key : keyArr) {
             Object value = null;
@@ -1057,8 +917,6 @@ public final class Tools {
         return weakReference.get();
     }
 
-    // ── Ported from Copper Launcher: Turnip/UBWC render-quality fix for
-    //    Samsung OneUI devices with an Adreno 740, used by the Zink+Kopper renderer. ──
     private static String systemPropertiesGet(String systemProperty) throws Exception {
         Class<?> cSystemProperties = Class.forName("android.os.SystemProperties");
         java.lang.reflect.Method get = cSystemProperties.getMethod("get", String.class);

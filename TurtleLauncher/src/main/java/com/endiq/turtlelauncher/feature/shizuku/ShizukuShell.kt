@@ -5,26 +5,6 @@ import rikka.shizuku.Shizuku
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-/**
- * TurtleLauncher: runs a shell command with Shizuku's privilege (root, or the ADB shell user).
- *
- * ### Why the reflection
- * `Shizuku.newProcess(String[], String[], String)` is the only part of the Shizuku API that
- * spawns a shell process, and in Shizuku-API 13.1.5 (the version this integrates against) it
- * is **private** - it was hidden ahead of its planned removal in API v14, while the returned
- * [rikka.shizuku.ShizukuRemoteProcess] type stayed public. It is therefore not reachable at
- * compile time, so it is called reflectively here and typed as a plain [Process].
- *
- * That is deliberate rather than a shortcut: the documented, future-proof route is a Shizuku
- * "user service" (bindUserService + a generated AIDL Stub), which is a much larger surface -
- * an .aidl source set, a generated interface, a manifest entry and asynchronous bind
- * lifecycle - for what is here a handful of short-lived commands. Keeping the risky part in
- * one small, loudly-commented function means that if Shizuku removes the method outright,
- * the failure is contained to this file (every caller degrades to "unavailable" instead of
- * crashing), and the swap to a user service is a single-function change.
- *
- * Nothing here throws: a failed command is reported through [ShizukuShell.Result].
- */
 object ShizukuShell {
     private const val TAG = "ShizukuShell"
 
@@ -47,12 +27,6 @@ object ShizukuShell {
 
     private val UNAVAILABLE = Result("", "Shizuku is not available", -1, ran = false)
 
-    /**
-     * Runs [command] through `sh -c` with Shizuku's privilege and waits up to
-     * [timeoutSeconds] for it to finish.
-     *
-     * Must be called off the main thread (it blocks).
-     */
     @JvmOverloads
     fun run(command: String, timeoutSeconds: Long = 15): Result {
         if (!ShizukuManager.isReady) return UNAVAILABLE

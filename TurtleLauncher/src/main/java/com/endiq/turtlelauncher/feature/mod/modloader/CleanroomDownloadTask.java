@@ -14,12 +14,6 @@ import net.endiq.launcher.utils.DownloadUtils;
 
 import java.io.File;
 
-/**
- * Downloads Cleanroom's real installer.jar - mirrors ForgeDownloadTask exactly, since
- * it's the same kind of file (a self-contained installer jar), just from GitHub
- * Releases instead of Forge's Maven repo. See CleanroomUtils for the version-fetch
- * side and the important caveat about launcher support.
- */
 public class CleanroomDownloadTask implements InstallTask, Tools.DownloaderFeedback {
     private final String mVersion;
     private final String mDownloadUrl;

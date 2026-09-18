@@ -44,10 +44,6 @@ public class ControlButton extends TextView implements ControlInterface {
     /* Cache value from the ControlData radius for drawing purposes */
     private float mComputedRadius;
 
-    /* TurtleLauncher: decoded custom button image, cached across onDraw() calls - only
-     * re-decoded when setProperties() runs with a changed customImagePath, not on every
-     * frame/draw pass. Null when no custom image is set (the common case), in which case
-     * onDraw() falls straight through to the pre-existing background/text rendering. */
     private Bitmap mCustomImage;
     private String mCustomImagePathLoaded;
     private final RectF mImageDrawRect = new RectF();
@@ -101,12 +97,6 @@ public class ControlButton extends TextView implements ControlInterface {
         loadCustomImageIfNeeded();
     }
 
-    /**
-     * TurtleLauncher: (re)decodes the custom button image only when the path actually
-     * changed since last time - setProperties() can be called far more often than the image
-     * itself changes (any property edit re-runs it), so this avoids a BitmapFactory.decodeFile
-     * disk hit on every keystroke in, say, the name EditText.
-     */
     private void loadCustomImageIfNeeded() {
         String path = mProperties.customImagePath;
         if (path != null && path.equals(mCustomImagePathLoaded) && mCustomImage != null) return;
@@ -118,9 +108,6 @@ public class ControlButton extends TextView implements ControlInterface {
         if (path == null || path.isEmpty()) return;
         File file = new File(path);
         if (!file.isFile()) return;
-        // Decoded at draw-time size, not full resolution - these are small UI buttons, and
-        // a full-resolution user-picked photo decoded straight in would be wasteful (both
-        // memory and, since this runs on the main thread, a real chance of jank).
         BitmapFactory.Options bounds = new BitmapFactory.Options();
         bounds.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(path, bounds);
@@ -136,11 +123,6 @@ public class ControlButton extends TextView implements ControlInterface {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        // TurtleLauncher: custom button image draws first, as a background/icon layer -
-        // super.onDraw() (which renders this TextView's text) still runs after it, so the
-        // existing text/keycode label rendering keeps working unmodified on top. Clipped to
-        // the same rounded-rect shape as the toggle overlay below so a custom image respects
-        // the button's corner radius instead of covering it with hard square corners.
         if (mCustomImage != null && !mCustomImage.isRecycled()) {
             mImageDrawRect.set(0, 0, getWidth(), getHeight());
             int save = canvas.save();
@@ -246,7 +228,6 @@ public class ControlButton extends TextView implements ControlInterface {
     }
 
 
-
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean triggerToggle(){
         //returns true a the toggle system is triggered
@@ -308,23 +289,10 @@ public class ControlButton extends TextView implements ControlInterface {
                 mControlLayout.notifyAppMenu();
                 break;
 
-            // TurtleLauncher: Cancel - same mechanism MainActivity.dispatchKeyEvent already
-            // uses for the hardware/predictive back path (sendKeyPress(GLFW_KEY_ESCAPE)) -
-            // just exposed as a virtual control button too, fired on press-down like the
-            // other momentary special buttons above (MOUSEPRI/MOUSEMID/MOUSESEC) rather than
-            // on release, so it feels like a normal button tap.
             case ControlData.SPECIALBTN_CANCEL:
                 if (isDown) sendKeyPress(LwjglGlfwKeycode.GLFW_KEY_ESCAPE);
                 break;
 
-            // TurtleLauncher: Exit - cleanly ends the current game session and returns to the
-            // launcher's home screen. Deliberately NOT the app-wide "Force Close" panic
-            // button's ZHTools.killProcess() (Process.killProcess on the whole app process) -
-            // that would also tear down GameService/notifications/any other launcher state
-            // that has nothing to do with this one game session. Instead: stop the game's own
-            // foreground service, then replace the task with a fresh LauncherActivity and
-            // finish this Activity, the same graceful shutdown+navigate pattern used
-            // elsewhere in this app rather than a hard kill.
             case ControlData.SPECIALBTN_EXIT:
                 if (isDown) {
                     Context context = getContext();

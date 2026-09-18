@@ -21,12 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 
-
-
-
-
-
-
 @Keep
 public class ControlData {
 
@@ -54,13 +48,6 @@ public class ControlData {
 
     // Internal usage only
     public transient boolean isHideable;
-    /**
-     * Both fields below are dynamic position data, auto updates
-     * X and Y position, unlike the original one which uses fixed
-     * position, so it does not provide auto-location when a control
-     * is made on a small device, then import the control to a
-     * bigger device or vice versa.
-     */
     public String dynamicX, dynamicY;
     public boolean isToggle, passThruEnabled;
     public String name;
@@ -73,19 +60,6 @@ public class ControlData {
     public boolean isSwipeable;
     public boolean displayInGame;
     public boolean displayInMenu;
-    /**
-     * TurtleLauncher: optional per-button custom image/texture, drawn as the button's
-     * background/icon in ControlButton.onDraw() underneath the existing text/keycode label
-     * rendering (that system is untouched - this is purely an extra draw layer). Null/absent
-     * means "no custom image", i.e. the existing bgColor/stroke rendering is used exactly as
-     * before - so this field is fully backward compatible with control layouts saved before
-     * this feature existed (Gson just leaves it null on those).
-     * Stored as an absolute path into PathManager's custom-control-image directory (see
-     * CustomControlsActivity's image picker wiring), not a content:// URI - URIs from
-     * ACTION_GET_CONTENT/OpenDocument aren't guaranteed to remain valid/grantable across app
-     * restarts, so the picked image is copied into app-owned storage once and referenced by
-     * path from then on, the same durability tradeoff FilesDialog already makes for cursors.
-     */
     public String customImagePath;
     private float width;         //Dp instead of Px now
     private float height;        //Dp instead of Px now

@@ -17,14 +17,6 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Terracotta connection state hierarchy - adapted from FoldCraftLauncher's
- * TerracottaState.java (net.burningtnt.terracotta / FCL-Team/FoldCraftLauncher,
- * GPLv3), simplified to use a plain Gson JsonDeserializer instead of FCL's own
- * JsonType/JsonSubtype polymorphic-deserialization framework, which this project
- * doesn't have. Field names and state semantics are unchanged from the original -
- * only the deserialization mechanism differs.
- */
 @Keep
 public abstract class TerracottaState {
     protected TerracottaState() {
@@ -55,13 +47,6 @@ public abstract class TerracottaState {
         @StringRes
         public abstract int localStringRes();
 
-        /**
-         * True when this state is just a player-profile update of the same live room,
-         * rather than a genuine state transition - ported from Zalith Launcher 2. The
-         * native backend re-emits host-ok/guest-ok with a bumped index whenever somebody
-         * joins or leaves; UI layers use this to refresh the player list without re-running
-         * "just connected" side effects (like copying the invite code again).
-         */
         public boolean isForkOf(Ready state) {
             return false;
         }
@@ -280,13 +265,6 @@ public abstract class TerracottaState {
                 case "host-starting":
                     return new HostStarting(index, state);
                 case "host-ok": {
-                    // TurtleLauncher: these used to be bare obj.get("room").getAsString()
-                    // calls - a native backend that emits host-ok before the room code is
-                    // assigned (or an older/newer .so with shifted fields) NPE'd deep inside
-                    // Gson. Zalith Launcher 2 validates the same invariants after parsing
-                    // (TerracottaStateTypeAdapterFactory.validateResult); we enforce them
-                    // during parsing, as a JsonParseException the poll daemon already
-                    // catches, logs and backs off from.
                     String code = requireMember(obj, "room", state).getAsString();
                     int profileIndex = requireMember(obj, "profile_index", state).getAsInt();
                     List<TerracottaProfile> profiles = deserializeProfiles(obj, context, state);

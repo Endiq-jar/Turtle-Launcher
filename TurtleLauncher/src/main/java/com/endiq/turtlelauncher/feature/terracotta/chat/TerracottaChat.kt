@@ -124,10 +124,6 @@ object TerracottaChat {
                     handleHostClient(client)
                 }
             } catch (t: Throwable) {
-                // TurtleLauncher: was catch (Exception) - same Error-vs-Exception gap as
-                // Terracotta.java's poll daemon (see its comment). This thread pool has no
-                // custom UncaughtExceptionHandler, so anything that slips past a narrower
-                // catch here still takes the whole app down, not just this connection.
                 Logging.w("TerracottaChat", "Failed to start chat host server", t)
                 running = false
             }

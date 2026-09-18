@@ -36,56 +36,6 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
-/**
- * TurtleLauncher: in-game screen recording (roadmap item 22 - "controls shown live, hidden in
- * the final video").
- *
- * How the "hidden in the video" part actually works: this records ONLY the Minecraft render
- * surface (the SurfaceView or TextureView MinecraftGLSurface hands off to the native
- * renderer - see that class's start()), never the Activity's full window. The touch
- * controls/HUD/record button are separate sibling Views layered on top of that surface in the
- * same window, added by ControlLayout/GameMenuViewWrapper. PixelCopy(SurfaceView) and
- * TextureView.getBitmap() each only ever read the buffer belonging to that one View - they
- * have no way to see sibling views even if they wanted to. So "controls visible on screen, gone
- * from the recording" isn't a filter being applied - it's a direct consequence of which View's
- * pixels are being read, the same property ScreenshotHelper already relies on for the SurfaceView
- * case. This is a real, standard Android technique (not MediaProjection, which mirrors the whole
- * physical display compositor output including overlay windows and can't selectively exclude a
- * View - there's no public API for that).
- *
- * Frame delivery: a background thread requests a frame (PixelCopy or getBitmap) on a timer at
- * the configured frame rate, draws each bitmap onto the MediaCodec encoder's input Surface via
- * Canvas, and periodically drains encoder output into a MediaMuxer writing an .mp4. This is a
- * software blit per frame rather than a zero-copy GPU path (which would mean hooking into
- * MinecraftGLSurface's native EGL rendering directly - a much larger, riskier change to code
- * this project can't rebuild/test on real hardware from here) - fine for a gameplay-recording
- * feature at moderate resolutions/frame rates, not intended to compete with a dedicated
- * screen-recorder app's encoding pipeline.
- *
- * Audio: captured via AudioPlaybackCaptureConfiguration (Android 10+), which requires a
- * MediaProjection token - NOT used to mirror the display (this class still never does that, see
- * above), only to authorize reading this app's own game/media-usage audio output. Getting that
- * token means showing Android's system screen-capture consent dialog once per recording (no way
- * around that - it's the same underlying API screen recorders use, and it's the only public,
- * non-root way to capture another app's audio output without recording the microphone). If the
- * user declines, or capture setup fails for any reason, recording proceeds video-only exactly as
- * before this existed - audio is strictly best-effort and never blocks the video path. Turning
- * off Settings -> Recording -> Capture Audio skips the consent prompt entirely.
- *
- * Caveat worth remembering: AudioPlaybackCaptureConfiguration only captures audio actually
- * tagged with a matching AudioAttributes usage (here: USAGE_GAME, USAGE_MEDIA, USAGE_UNKNOWN -
- * matched broadly since which usage OpenAL-soft's Android AudioTrack backend tags its output
- * with isn't something this sandbox can verify without a real device/build). If the bundled
- * OpenAL-soft ends up using a usage outside that set, or an app is inside a DRM/opt-out
- * capture-policy boundary (not applicable to MC's own audio), the recorded video could still
- * come out silent even with permission granted and no error reported - that's a capture-source
- * question, not a bug in the plumbing here, and would need an on-device recording to confirm.
- *
- * Also requires running net.endiq.launcher.services.ScreenRecorderAudioService as a
- * foregroundServiceType="mediaProjection" service for the lifetime of the MediaProjection -
- * mandatory since targetSdk 34/Android 14 for any use of a MediaProjection instance, audio-only
- * or not. See that class's doc for details.
- */
 object ScreenRecorder {
     private const val TAG = "ScreenRecorder"
     private const val MIME_TYPE = "video/avc" // H.264 - broadest device/player compatibility
@@ -174,12 +124,6 @@ object ScreenRecorder {
         startInternal(activity, null)
     }
 
-    /**
-     * Must be called from the host Activity's onActivityResult() for REQUEST_CODE_AUDIO_CAPTURE.
-     * Resolves the consent result and starts recording either way - with audio on RESULT_OK, or
-     * video-only on denial/failure. Best-effort throughout: a problem obtaining the
-     * MediaProjection never blocks the recording itself from starting.
-     */
     fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode != REQUEST_CODE_AUDIO_CAPTURE) return
 
@@ -528,14 +472,6 @@ object ScreenRecorder {
 
     // ---- Shared encoder draining ----
 
-    /**
-     * Shared by both the video and audio encoders. Each keeps its own MediaCodec.BufferInfo
-     * (the two run on separate HandlerThreads and would otherwise race on a shared one) and its
-     * own track-index slot, but they share one MediaMuxer - addTrack()/start()/writeSampleData()
-     * calls are serialized via muxerLock since MediaMuxer itself isn't thread-safe for
-     * concurrent use from two threads. muxer.start() only fires once every expected track (1 for
-     * video-only, 2 once audio capture is active) has been added.
-     */
     private fun drainEncoderCommon(
         codec: MediaCodec,
         info: MediaCodec.BufferInfo,

@@ -53,9 +53,6 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
     companion object {
         const val TAG = "InstallGameFragment"
         const val BUNDLE_MC_VERSION = "bundle_mc_version"
-        // TurtleLauncher: this is now a real download+create-instance flow (opens the
-        // Download screen's ModPack tab, pre-searched) instead of a browser link - see
-        // the modpackLayout click handler below.
         const val FEATURED_MODPACK_QUERY = "Simply Optimized Reloaded"
     }
     private lateinit var binding: FragmentInstallGameBinding
@@ -205,11 +202,6 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
         checkIncompatible()
     }
 
-    /**
-     * TurtleLauncher: the install action always opens this popup first, regardless of
-     * what's already selected above, so the user gets one last chance to add the
-     * Turtle Client / FPS Boost extras before anything is written to disk.
-     */
     private fun showInstallExtrasDialog(activity: FragmentActivity, customVersionName: String) {
         InstallExtrasDialog(activity) { includeTurtleClient, includeFpsBoost ->
             proceedWithInstall(activity, customVersionName, includeTurtleClient, includeFpsBoost)
@@ -217,10 +209,6 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
     }
 
     private fun proceedWithInstall(
-        // FragmentActivity, not plain Activity: Tools.backToMainMenu(...) needs the
-        // support FragmentManager. Type the parameter rather than calling
-        // requireActivity() inside install(), which would run from the TipDialog
-        // confirm callback where the fragment may already be detached.
         activity: FragmentActivity,
         customVersionName: String,
         includeTurtleClient: Boolean,
@@ -371,35 +359,15 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
                     moveFile(file, File(getModPath(), "${taskPair.first}.jar"))
                 }
                 Addon.CLEANROOM -> {
-                    // Cleanroom's installer.jar is built from "the MinecraftForge
-                    // implementation for installer" (their own words) - same format
-                    // setForge() already knows how to run via the bundled Forge
-                    // installer java agent, so it's reused directly here rather than
-                    // writing a new, unverified Cleanroom-specific path. This is a
-                    // well-evidenced bet, not a confirmed-working one - flag any
-                    // install failures here first if Cleanroom doesn't come up.
                     taskMap[addon] = InstallTaskItem(taskPair.first, false, taskPair.second) { activity, file ->
                         installInGUITask(activity, addon.addonName, taskPair.first) { intent, argUtils ->
                             argUtils.setForge(intent, file, customVersionName)
                         }
                     }
                 }
-                // TurtleLauncher: TURTLE_CLIENT is never a key in addonMap - it isn't
-                // selectable from the addon picker (checkIncompatible() is never called
-                // for it) and is added straight to taskMap below, from the
-                // InstallExtrasDialog toggle. This branch exists purely to keep the
-                // `when` exhaustive: adding TURTLE_CLIENT to the Addon enum made this a
-                // non-exhaustive when-statement over an enum subject, which Kotlin 1.7+
-                // rejects at compile time (KT-47709) - that is what broke the build.
                 Addon.TURTLE_CLIENT -> {}
             }
         }
-        // TurtleLauncher: fully automatic - no version picker shown for this extra.
-        // TurtleClientDownloadTask resolves and downloads the right Modrinth build for
-        // mcVersion by itself; the EndTask just moves the resulting jar into the mods
-        // folder, same shape as the FABRIC_API/QSL branches above. If Modrinth has no
-        // compatible build for mcVersion, the task throws and GameInstaller surfaces it
-        // as a normal install error rather than silently doing nothing.
         if (includeTurtleClient) {
             taskMap[Addon.TURTLE_CLIENT] = InstallTaskItem(
                 mcVersion,

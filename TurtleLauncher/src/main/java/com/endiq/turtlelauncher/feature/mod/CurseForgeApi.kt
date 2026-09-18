@@ -28,8 +28,6 @@ internal object CurseForgeApi {
         val fileLength: Long
     )
 
-    /** Null on any failure - missing key, network error, file no longer exists, etc. All
-     *  best-effort by design, same as the rest of this package's *DirectApi and *Api helpers. */
     fun resolveFile(modId: Long, fileId: Long, apiKey: String): ResolvedFile? {
         if (apiKey.isBlank()) return null
 

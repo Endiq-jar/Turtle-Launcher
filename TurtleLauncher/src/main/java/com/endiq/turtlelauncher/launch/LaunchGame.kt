@@ -52,10 +52,6 @@ class LaunchGame {
          */
         @JvmStatic
         fun preLaunch(context: Context, version: Version) {
-            // TurtleLauncher: silently ensure the nanovg natives compatibility fix is present
-            // for Fabric/Quilt instances before every launch - see NanoVGNativesFix for why.
-            // Local file copy only, no network, so this is safe to run unconditionally and
-            // before the network-dependent branches below.
             runCatching {
                 val loader = version.getVersionInfo()?.loaderInfo?.firstNotNullOfOrNull {
                     com.endiq.turtlelauncher.feature.download.utils.ModLoaderUtils.getModLoader(it.name)
@@ -63,27 +59,8 @@ class LaunchGame {
                 NanoVGNativesFix.ensureInstalled(context, loader, File(version.getGameDir(), "mods"))
             }.onFailure { e -> Logging.e("LaunchGame", "NanoVGNativesFix check failed", e) }
 
-            // TurtleLauncher: renderer/MC-version compatibility warning. RendererCatalog's
-            // minMinecraftVersion/maxMinecraftVersion (see that class) were, until now, only
-            // ever read by RendererManagerFragment to print a caption in the renderer picker -
-            // Renderers.getCompatibleRenderers() doesn't consult them, so nothing actually
-            // stopped a renderer from being selected and launched well outside its documented
-            // range. Real-world hit: a submitted crash log (OPPO CPH2285, PowerVR Rogue,
-            // Holy GL4ES - documented max 1.21.4) launching MC 1.21.11 and dying ~9s into game
-            // startup with "Can't map buffer, opengl error 0" (glMapBufferRange support
-            // Holy GL4ES 1.1.5 doesn't have) - a renderer chosen before the range existed, or
-            // just never revisited after an MC version bump, with zero warning either way.
-            // Not turned into a hard block: EXPERIMENTAL/STABLE badges are hints, not
-            // guarantees, and some device/version combos outside the documented range may
-            // still work - runCatching so a parsing hiccup on some odd version-folder name
-            // (e.g. a modpack named non-numerically) can't break launch entirely; it only
-            // costs the warning.
             runCatching {
                 val rendererUniqueId = version.getRenderer()
-                // RendererCatalog is keyed by renderer ID ("MOBILEGLUES", "GL4ES", ...), but
-                // versions store the renderer's unique identifier (a UUID, or a plugin app's
-                // package name) - resolve the actual renderer instance first, otherwise the
-                // lookup below would never match and this warning could never fire.
                 val rendererInstance = runCatching {
                     com.endiq.turtlelauncher.renderer.Renderers.getCompatibleRenderers(context).second
                         .firstOrNull { it.getUniqueIdentifier() == rendererUniqueId }
@@ -198,9 +175,6 @@ class LaunchGame {
                 Renderers.setCurrentRenderer(activity, AllSettings.renderer.getValue())
             }
 
-            // currentAccount is null when the user never added any account - launching
-                // then used to NPE here. Fall back to a throwaway offline account so the
-                // game still starts instead of crashing the launcher.
                 var account = AccountsManager.currentAccount
                 if (account == null) {
                     Logging.w("LaunchGame", "No account set, launching with a throwaway offline account")
@@ -211,12 +185,6 @@ class LaunchGame {
                     }
                 }
                 if (minecraftVersion.offlineAccountLogin) {
-                // TurtleLauncher CRASH/BUG FIX: this throwaway offline account used to
-                // keep profileId at the all-zero default (same bug as LauncherActivity's
-                // LocalLoginEvent, see MinecraftAccount.generateOfflineUUID()) - fixed the
-                // same way here so this path also gets a stable per-username identity
-                // (needed for TurtleSkinServer to key skin/cape textures correctly, and
-                // to avoid every no-network-fallback launch colliding on one UUID).
                 val offlineUsername = account.username
                 account = MinecraftAccount().apply {
                     this.username = offlineUsername
@@ -234,13 +202,6 @@ class LaunchGame {
             val requiredJava = LaunchArgs.resolveRequiredJava(mcId, jsonJavaVersion)
             val javaRuntime = getRuntime(activity, minecraftVersion, requiredJava)
 
-            // TurtleLauncher: FPS Boost flags must be built AFTER the runtime is resolved, not
-            // before - some of them are only valid on specific Java versions (e.g.
-            // G1PeriodicGCInterval needs 12+) and passing an invalid -XX flag makes the JVM
-            // refuse to start entirely ("Unrecognized VM option", instant close), not just
-            // silently skip that one flag. Reading back the ACTUAL picked runtime's version
-            // here (rather than reusing requiredJava) covers the fallback path in getRuntime()
-            // where the picked runtime can end up older than what was actually requested.
             val actualJavaVersion = runCatching { MultiRTUtils.read(javaRuntime).javaVersion }
                 .getOrDefault(requiredJava)
                 .let { if (it <= 0) requiredJava else it }
@@ -283,8 +244,6 @@ class LaunchGame {
 
             if (versionRuntime.isNotEmpty()) return versionRuntime
 
-            // TurtleLauncher: auto-download the required Java if not installed (like Mojo Launcher).
-            // This runs on a background thread (called from runGame which is already off-UI).
             var autoInstalled = TurtleJREAutoInstaller.ensureJavaInstalled(activity, targetJavaVersion)
             if (autoInstalled != null) {
                 val rt = MultiRTUtils.read(autoInstalled)
@@ -292,13 +251,6 @@ class LaunchGame {
                     Logging.i("LaunchGame", "Auto-installed Java runtime: $autoInstalled")
                     return autoInstalled
                 }
-                // TurtleLauncher CRASH FIX: a real device log showed this exact scenario
-                // silently falling through to Internal-8, which then crashed deep inside
-                // the JVM bootstrap with UnsupportedClassVersionError instead of failing
-                // clearly here where the problem is actually known. The auto-installer
-                // reported success but the installed runtime doesn't actually satisfy the
-                // requested Java version (corrupt/partial install) — log it loudly and
-                // retry once before falling through, instead of failing silently.
                 Logging.e("LaunchGame", "Auto-installed runtime '$autoInstalled' reports javaVersion=${rt.javaVersion} but $targetJavaVersion was required - retrying auto-install once")
                 autoInstalled = TurtleJREAutoInstaller.ensureJavaInstalled(activity, targetJavaVersion)
                 if (autoInstalled != null) {
@@ -317,13 +269,6 @@ class LaunchGame {
             val pickedRuntime = MultiRTUtils.read(runtime)
             if (pickedRuntime.javaVersion == 0 || pickedRuntime.javaVersion < targetJavaVersion) {
                 runtime = MultiRTUtils.getNearestJreName(targetJavaVersion) ?: run {
-                    // TurtleLauncher CRASH FIX: previously returned the insufficient
-                    // `runtime` here regardless, guaranteeing a deep JVM-bootstrap crash
-                    // (UnsupportedClassVersionError) a few seconds later with no clear
-                    // explanation. Surface the real problem clearly instead - the game
-                    // will still attempt to launch (unchanged behavior, in case the
-                    // version check itself is overly strict for some edge case) but the
-                    // person now gets an explanation that matches what's about to happen.
                     Logging.e("LaunchGame", "No installed runtime satisfies Java $targetJavaVersion (installed: '$runtime' is Java ${pickedRuntime.javaVersion}) and auto-install failed - launch will very likely crash with UnsupportedClassVersionError")
                     activity.runOnUiThread {
                         Toast.makeText(
@@ -428,47 +373,9 @@ class LaunchGame {
          * Builds extra JVM args from TurtleLauncher's FPS Boost toggles.
          * Appended to the per-version custom args string before launch.
          */
-        /**
-         * TurtleLauncher: FPS Boost JVM flags - audited and rewritten (roadmap: "optimise
-         * Minecraft"). The previous version of this function had two real problems, not just
-         * suboptimal choices:
-         *
-         * 1. `-XX:+OptimizeStringConcat` under lowLatencyRendering was a real HotSpot flag on
-         *    JDK 6/7/8, but it's since been obsoleted (JEP 280's invokedynamic-based string
-         *    concatenation made it meaningless) and modern JDKs reject it outright:
-         *    "Unrecognized VM option 'OptimizeStringConcat'; Error: Could not create the Java
-         *    Virtual Machine." That's not a degraded launch, it's the JVM refusing to start at
-         *    all - i.e. exactly "app closes instantly" for anyone running Minecraft on Java 9+
-         *    (which is every modern version) with Low Latency Rendering enabled.
-         * 2. `-Dorg.lwjgl.opengl.Display.noinput=false` and `-Dorg.lwjgl.opengl.frameskip=true`
-         *    aren't real controls for this project: `Display.noinput` is a genuine LWJGL *2*
-         *    system property (confirmed against LWJGL's own source), but this project runs
-         *    LWJGL 3 / GLFW, which has no such class or property at all - and even on LWJGL2,
-         *    "noinput" only ever meant "skip mouse/keyboard device init," nothing to do with
-         *    frame pacing. `frameskip` doesn't appear anywhere in LWJGL's source in either
-         *    generation. Both were inert placebos - accepted by the JVM (unknown `-D`
-         *    properties are never rejected, unlike `-XX` flags), read by nothing.
-         *
-         * `-XX:G1PeriodicGCInterval` (autoMemoryCleanup) has the same class of problem as
-         * OptimizeStringConcat but in the other direction - it needs Java 12+, so it's gated
-         * on [javaMajorVersion] instead of being dropped, since this launcher does run older
-         * Minecraft versions on Java 8.
-         *
-         * frameSkipping intentionally contributes no flags: "drop frames under overload
-         * instead of queuing" has no legitimate JVM-flag or system-property equivalent - it's
-         * a render-loop-level concern that would need actual code in the renderer bridge, not
-         * a command-line switch. Leaving it a no-op is the honest option; the alternative is
-         * exactly the kind of placebo flag this pass just removed two of.
-         */
         private fun buildFpsBoostArgs(javaMajorVersion: Int): String {
             val args = mutableListOf<String>()
 
-            // TurtleLauncher baseline: default to G1 with a sane pause target regardless of
-            // which FPS Boost toggles are on - G1 only became the JVM's own default in JDK 9,
-            // so on the Java 8 runtimes this launcher still uses for older Minecraft versions
-            // the default would otherwise be Parallel GC, which is worse for pause-time
-            // consistency. lowLatencyRendering below re-adds "-XX:+UseG1GC" too when it's on;
-            // repeating a valid flag is harmless, so no special-casing needed to avoid it.
             args += "-XX:+UseG1GC"
             args += "-XX:MaxGCPauseMillis=50"
 
@@ -478,10 +385,6 @@ class LaunchGame {
             }
 
             if (AllSettings.lowLatencyRendering.getValue()) {
-                // Force G1 explicitly rather than relying on the JVM's default (G1 only
-                // became the default in JDK 9 - on the Java 8 runtimes this launcher still
-                // uses for older Minecraft versions, the default is Parallel GC, which is
-                // notably worse for pause-time consistency).
                 args += "-XX:+UseG1GC"
                 args += "-XX:+UseStringDeduplication"
                 // Skips attaching the JVM's perfdata file to shared memory - removes a real
@@ -491,9 +394,6 @@ class LaunchGame {
             }
 
             if (AllSettings.framePacing.getValue()) {
-                // Pre-commits/zeroes heap pages at JVM startup instead of on first touch
-                // during gameplay, trading a slightly longer launch for removing page-fault
-                // stalls later - a real, if blunt, lever for frame-time consistency.
                 args += "-XX:+AlwaysPreTouch"
             }
 

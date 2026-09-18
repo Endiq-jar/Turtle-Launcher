@@ -17,34 +17,6 @@ import net.endiq.launcher.Tools
 import java.io.File
 import java.util.Locale
 
-/**
- * TurtleLauncher's built-in AI assistant - the thing behind the top-bar Assistant button
- * (see ui/fragment/AiChatFragment.kt).
- *
- * ── Why this is local, and what "AI" means here ─────────────────────────────────────
- *
- * Deliberately needs NO API key, NO account and NO network: everything it knows is either
- * (a) a hand-written topic in [topics] about this launcher, written from what the code in
- * this repo actually does, or (b) read live off the device at answer time (installed
- * versions, active renderer, RAM allocation, free storage, last crash diagnosis). That is
- * the honest description of it: a retrieval/intent engine over a curated launcher
- * knowledge base plus live device state - not a language model. It cannot answer things
- * outside that knowledge base, and [unknownAnswer] says so plainly instead of inventing
- * an answer, which is the failure mode a small on-device "AI" must not have.
- *
- * This launcher already has two *optional* real-LLM features that DO need a user-supplied
- * key ([com.endiq.turtlelauncher.feature.log.AiCrashAdvisor] for crash help and
- * [com.endiq.turtlelauncher.feature.skin.AiContentModerator] for skin filtering, both
- * gated on AllSettings.aiApiKey). They stay separate on purpose: a key must never be a
- * prerequisite for the assistant to work, so nothing here calls them and nothing here
- * reads aiApiKey.
- *
- * ── Threading ───────────────────────────────────────────────────────────────────────
- *
- * [respond] can touch the filesystem (crash log tail, storage stats, version list), so it
- * is treated like every other potentially-slow call in this launcher: AiChatFragment runs
- * it on TaskExecutors.getDefault() and posts the result back to the UI thread.
- */
 object TurtleAssistant {
 
     private const val TAG = "TurtleAssistant"
@@ -90,12 +62,6 @@ object TurtleAssistant {
         "How do I install mods?", "Controls", "Friends / LAN"
     )
 
-    /**
-     * Answers [input]. Matching is intentionally dumb and explainable: normalize the
-     * question, count how many of each topic's keywords appear in it (weighted by keyword
-     * length so "resource pack" beats "pack"), and take the best. A tie or a zero score
-     * falls through to [unknownAnswer] / [helpAnswer] rather than picking a random topic.
-     */
     @JvmStatic
     fun respond(context: Context, input: String): Reply {
         val raw = input.trim()
@@ -245,16 +211,6 @@ object TurtleAssistant {
         return sb.toString()
     }
 
-    /**
-     * The freshest game log the assistant can get its hands on.
-     *
-     * First try [CrashAnalyzer.getLastLogText] - the in-memory tail the crash screen
-     * captured - but that only survives in the process that ran the analysis, so fall back
-     * to the newest game log file on disk (the same one the home screen's "Last Game Log"
-     * card points at, see [LatestLogResolver.resolveLastGameLogFile]). Without this fallback
-     * the assistant keeps claiming "no recent game log" in a fresh session even though the
-     * log is sitting right there - which is exactly what made log-sharing feel broken.
-     */
     private fun readMostRecentGameLog(): String? {
         val inMemory = runCatching { CrashAnalyzer.getLastLogText() }.getOrNull()
         if (!inMemory.isNullOrBlank()) return inMemory
@@ -350,11 +306,6 @@ object TurtleAssistant {
             "This assistant is part of the launcher itself and works offline - it doesn't " +
             "call any AI service."
     }
-
-    // ── Knowledge base ──────────────────────────────────────────────────────────────
-    // Every answer below was written against what this repo's own code does; where a claim
-    // comes from upstream (e.g. MobileGlues' behaviour on MC 26.3) the source is named so
-    // it can be checked rather than trusted.
 
     private val topics: List<Topic> = listOf(
         Topic(

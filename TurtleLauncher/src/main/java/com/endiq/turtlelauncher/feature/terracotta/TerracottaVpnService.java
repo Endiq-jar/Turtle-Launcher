@@ -22,27 +22,6 @@ import net.burningtnt.terracotta.TerracottaAndroidAPI;
 
 import java.io.IOException;
 
-/**
- * Terracotta's VPN foreground service.
- *
- * Reimplemented from Zalith Launcher 2's TerracottaVPNService.java
- * (ZalithLauncher/ZalithLauncher2, GPLv3 - itself modified from FCL), keeping this
- * project's own hardening: the Throwable guard around startVpnService(), the
- * self-contained notification channel, and the dedicated ic_friends_network small icon.
- *
- * What the Zalith port adds over the previous simplified version here:
- * - ACTION_UPDATE_STATE: the VPN notification now shows the live Terracotta state text
- *   ("Setting up your room…", "Room created", …) instead of a static "Hosting"/"Connected"
- *   string - Terracotta.java pushes a state resource here on every transition.
- * - ACTION_REPOST + delete intent: if the user swipes the (ongoing) notification away on
- *   an OEM ROM that allows it, it is reposted instead of leaving an invisible foreground
- *   service that the system can kill at any moment.
- * - isStopping guard so a teardown in flight is not re-foregrounded by a queued intent.
- * - buildVpnNotification() returns null when the mode is unknown, so the service never
- *   foregrounds itself for a connection that does not exist.
- * - Explicit FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE on Android 14+, matching the
- *   manifest declaration.
- */
 @SuppressLint("VpnServicePolicy")
 public class TerracottaVpnService extends VpnService {
     private static final String TAG = "TerracottaVpnService";
@@ -60,8 +39,6 @@ public class TerracottaVpnService extends VpnService {
     public static final String EXTRA_STATE_TEXT = "terracotta_state_text";
 
     private NotificationManager notificationManager;
-    /** Either -1 (no state text yet) or a valid string resource - deliberately not
-     *  annotated @StringRes because -1 would trip the ResourceType lint. */
     private int currentStateStringRes = -1;
     private volatile boolean isStopping = false;
 
@@ -121,13 +98,6 @@ public class TerracottaVpnService extends VpnService {
 
         Notification notification = buildVpnNotification();
         if (notification == null) {
-            // TurtleLauncher CRASH FIX: this branch is reached through
-            // startForegroundService(ACTION_START), which arms Android's 5-second
-            // startForeground() deadline. Returning without foregrounding (as before,
-            // when getMode() is transiently null during a connect race) killed the app
-            // with "did not then call Service.startForeground()". The VPN session is
-            // about to be started below regardless, so foreground with a generic
-            // notification instead of bailing out.
             notification = buildFallbackNotification();
         }
         startForeground0(notification);
@@ -142,9 +112,6 @@ public class TerracottaVpnService extends VpnService {
             TerracottaAndroidAPI.VpnServiceRequest request = TerracottaAndroidAPI.getPendingVpnServiceRequest();
             vpnInterface = request.startVpnService(vpnBuilder);
         } catch (Throwable t) {
-            // TurtleLauncher: was catch (Exception) - same Error-vs-Exception gap as
-            // Terracotta.java's poll daemon and TerracottaChat.kt's connection threads.
-            // Zalith upstream lets this throw straight through and crash the process.
             Logging.e(TAG, "Failed to start VPN interface: " + t);
             cleanup();
             stopForeground(true);
@@ -216,9 +183,6 @@ public class TerracottaVpnService extends VpnService {
             : getString(currentStateStringRes);
 
         Notification.Builder builder = new Notification.Builder(this, CHANNEL_ID);
-        // Dedicated Friends/LAN icon. Solid-fill vector rather than a stroked one - see
-        // ic_friends_network.xml for why a stroked icon like ic_globe doesn't survive
-        // being a notification small icon.
         builder.setSmallIcon(R.drawable.ic_friends_network)
             .setContentTitle(getString(R.string.terracotta_notification_title))
             .setContentText(getString(R.string.terracotta_notification_desc, modeText, stateString))
@@ -231,9 +195,6 @@ public class TerracottaVpnService extends VpnService {
         return builder.build();
     }
 
-    /** Minimal always-buildable notification so the ACTION_START path can always honor
-     *  the startForegroundService() contract even when Terracotta.getMode() hasn't been
-     *  populated yet (connect race). Same channel, icon and title; generic text. */
     private Notification buildFallbackNotification() {
         return new Notification.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_friends_network)

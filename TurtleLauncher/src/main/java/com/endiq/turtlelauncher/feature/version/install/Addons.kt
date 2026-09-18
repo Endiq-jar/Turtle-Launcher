@@ -9,10 +9,6 @@ enum class Addon(val addonName: String) {
     QUILT("Quilt"),
     QSL("QSL"),
     CLEANROOM("Cleanroom"),
-    // Not selectable from the addon picker rows above (checkIncompatible() is never
-    // called for it) - only ever added directly to InstallGameFragment's taskMap from
-    // the InstallExtrasDialog "Turtle Client" toggle. Exists as an Addon entry purely
-    // so it can ride the same isMod InstallTaskItem pipeline FABRIC_API/QSL already use.
     TURTLE_CLIENT("Turtle Client");
 
     companion object {

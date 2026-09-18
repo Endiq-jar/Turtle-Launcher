@@ -62,10 +62,6 @@ import java.util.Locale;
 import java.util.zip.ZipOutputStream;
 
 
-
-
-
-
 public final class ZHTools {
     private ZHTools() {
     }
@@ -100,10 +96,6 @@ public final class ZHTools {
             return ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_mouse_pointer, context.getTheme());
         }
 
-        // TurtleLauncher: routes through CustomCursorLoader instead of a bare
-        // Drawable.createFromPath() so .cur/.ani cursors actually decode - the plain
-        // Android codecs this used to rely on have never understood either format and
-        // would just silently return null for them.
         return com.endiq.turtlelauncher.feature.turtle.cursor.CustomCursorLoader.INSTANCE.load(context, mouseFile);
     }
 
@@ -192,13 +184,6 @@ public final class ZHTools {
         return transaction.setReorderingAllowed(true);
     }
 
-    /**
-     * Commits a FragmentTransaction without ever throwing IllegalStateException
-     * ("Can not perform this action after onSaveInstanceState") - a commit issued
-     * while the activity is stopped (e.g. a navigation event delivered late from a
-     * background task) falls back to commitAllowingStateLoss instead of crashing.
-     * Behavior is identical to commit() in the normal (resumed) case.
-     */
     private static void safeCommit(FragmentActivity activity, FragmentTransaction transaction) {
         if (activity.getSupportFragmentManager().isStateSaved()) {
             transaction.commitAllowingStateLoss();
@@ -418,14 +403,6 @@ public final class ZHTools {
                         if (logsFolder.exists() && logsFolder.isDirectory()) {
                             FileTools.zipDirectory(logsFolder, "launcher_logs/", file -> {
                                 String fileName = file.getName();
-                                // TurtleLauncher: launcher crash reports were renamed from
-                                // latestcrash.txt to latestlog.txt. Same file for both
-                                // TurtleApplication's Java-crash handler and NativeCrashCapture's
-                                // native/ANR handler (unified to one filename - see both
-                                // classes' write logic for how they avoid clobbering each other
-                                // now that they share it). Note this is the LAUNCHER's
-                                // latestlog.txt, not the game's DIR_GAME_HOME/latestlog.txt,
-                                // which lives elsewhere and is zipped separately below.
                                 return fileName.equals("latestlog.txt")
                                     || fileName.equals("session_logcat.txt")
                                     || (fileName.startsWith("log") && fileName.endsWith(".txt"));
@@ -441,14 +418,6 @@ public final class ZHTools {
                             FileTools.zipFile(latestLogFile, latestLogFile.getName(), zos);
                         } else Log.d("Zip Log", "The game run log does not exist");
 
-                        // TurtleLauncher: Minecraft's own internal logs (Log4j2's logs/latest.log
-                        // + rotated logs, and crash-reports/) - previously missing entirely, so
-                        // "Share Logs" only ever contained the launcher's side of things. These
-                        // live under the CURRENT version's own game dir, which is a per-version
-                        // isolated folder (not PathManager.DIR_GAME_HOME) whenever Version
-                        // Isolation is on - the default - so they have to be resolved via
-                        // Version.getGameDir(), the same accessor CrashAnalyzer/AutoCleanup use,
-                        // rather than assumed to sit next to latestlog.txt above.
                         Version currentVersion = VersionsManager.INSTANCE.getCurrentVersion();
                         if (currentVersion != null) {
                             File gameDir = currentVersion.getGameDir();

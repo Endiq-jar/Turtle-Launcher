@@ -82,11 +82,6 @@ public class LayoutConverter {
         }
     }
 
-    /**
-     * Normalize the layout to v8 from v6/7. An issue from the joystick height and position has to be fixed.
-     * @param oldLayoutJson The old layout
-     * @return The new layout with the fixed joystick height
-     */
     public static CustomControls convertV6_7Layout(JSONObject oldLayoutJson) {
         CustomControls layout = Tools.GLOBAL_GSON.fromJson(oldLayoutJson.toString(), CustomControls.class);
         for (ControlJoystickData data : layout.mJoystickDataList) {

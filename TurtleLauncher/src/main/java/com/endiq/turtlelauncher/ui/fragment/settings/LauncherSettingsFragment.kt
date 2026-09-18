@@ -77,10 +77,6 @@ class LauncherSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fr
             binding.addFullResourceName
         )
 
-        // TurtleLauncher: built-in AI Assistant (top bar -> Assistant). Runs fully on-device -
-        // no API key, no account, no network (see feature/ai/TurtleAssistant.kt) - so these
-        // two switches are about visibility and local storage only. The optional AI crash
-        // help / skin filter live in Experimental and are the ones that need a key.
         SwitchSettingsWrapper(
             context,
             AllSettings.aiAssistantEnabled,
@@ -152,9 +148,6 @@ class LauncherSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fr
             binding.animation
         )
 
-        // TurtleLauncher: the transition pickers. These feed TurtleTransitions, which every
-        // screen transition and every show/hide asks for its animation - so these two lists
-        // are what actually make slide/bounce/fade/zoom reachable app-wide.
         ListSettingsWrapper(
             context,
             AllSettings.animationEnter,

@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher card: used across popups/cards app-wide. Solid fill + accent edge
-     (previously had a gradient glass-highlight overlay layer - removed per user request
-     for solid colors throughout instead of gradients). -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">

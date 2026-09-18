@@ -56,8 +56,6 @@ class AboutInfoPageFragment() : Fragment(R.layout.fragment_about_info_page) {
             aboutRecycler.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = aboutAdapter
-                // TurtleLauncher: this page is a plain Fragment with no entry animation at
-                // all, so its list appeared fully-formed. post{} so the children exist.
                 post { TurtleTransitions.animateList(this) }
             }
 

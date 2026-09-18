@@ -46,15 +46,6 @@
     </LinearLayout>
 
     <!-- ===================== Waiting: host / join entry ===================== -->
-    <!-- TurtleLauncher SCROLL FIX: this used to be a plain LinearLayout pinned between the
-         header and the bottom of the screen with android:layout_height="0dp" - a fixed-size
-         box with no way to scroll its own content. Host/Join buttons + the (sometimes
-         revealed) join-code row + the custom-node switch/field/preset + the relay-node
-         status line + the version caption easily add up to more height than a small/short
-         screen has, and none of it could ever be reached - "can't scroll here" reported
-         against exactly this screen. Wrapped in a NestedScrollView (same widget the Emotes
-         screen already uses for its own settings block) so anything that doesn't fit just
-         scrolls instead of being silently clipped off the bottom edge. -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -181,11 +172,6 @@
             android:textSize="12sp"
             android:layout_marginTop="@dimen/space_xs"/>
 
-        <!-- Custom EasyTier server node override - ported from TurtleLauncher PR #1496
-             (closes ZL2#1486, the exact "Cannot find scaffolding server"/PingHostFail join
-             failure this screen warns about via terracotta_join_known_issue). Off by
-             default; leaving the field blank while enabled falls back to the default node,
-             same as upstream. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -222,11 +208,6 @@
             android:visibility="gone"
             android:layout_marginTop="@dimen/space_xs"/>
 
-        <!-- TurtleLauncher: one-tap preset for EasyTier's official public shared node
-             (tcp://public.easytier.top:11010), so people hitting the known join-failure
-             issue above don't have to go find/type a node URL by hand. Purely a shortcut
-             that fills the field above - the manual field/switch keep working exactly as
-             before for anyone who wants a different node. -->
         <TextView
             android:id="@+id/custom_node_easytier_preset"
             android:layout_width="wrap_content"
@@ -242,11 +223,6 @@
             android:textColor="@color/accent_primary"
             android:visibility="gone"/>
 
-        <!-- TurtleLauncher: live relay-node readout. Joining fails with "Cannot find
-             scaffolding server" when host and guest never land in a common EasyTier network,
-             which almost always means every shared/relay node was dead. Showing the count and
-             the node actually being used turns a mystery failure into something the user can
-             see and work around. -->
         <TextView
             android:id="@+id/relay_node_status"
             android:layout_width="match_parent"

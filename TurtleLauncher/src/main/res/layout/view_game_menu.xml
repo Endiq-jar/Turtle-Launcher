@@ -18,9 +18,6 @@
         android:gravity="center_horizontal"
         android:text="@string/setting_category_game_menu"/>
 
-    <!-- TurtleLauncher: tab strip for the 4 existing option_category_* sections below.
-         Each tab just flips one tab_page_* group's visibility (see MenuSettingsInitListener) -
-         the sections and their ids/click-wiring are otherwise untouched. -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -162,11 +159,6 @@
                 android:layout_marginTop="@dimen/_8sdp"
                 android:background="@color/game_panel_overlay"/>
 
-            <!-- TurtleLauncher: direct start/stop recording actions (roadmap item 22),
-                 separate from the "Show Record Button" HUD-visibility toggle further down -
-                 this works even if that HUD button is hidden. Only one of the two is ever
-                 shown at a time; GameMenuViewWrapper flips visibility based on
-                 ScreenRecorder.isRecording() each time the menu opens. -->
             </LinearLayout>
 
             <LinearLayout

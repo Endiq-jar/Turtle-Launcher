@@ -42,11 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 
 
-
-
-
-
-
 public class ControlLayout extends FrameLayout {
 	protected CustomControls mLayout;
 	private ControlInfoData mInfoData;
@@ -60,10 +55,6 @@ public class ControlLayout extends FrameLayout {
 	private boolean mControlVisible = false;
 
 	private EditControlPopup mControlPopup = null;
-	// TurtleLauncher: image-picker launcher for the custom-button-image feature, registered by
-	// CustomControlsActivity.onCreate() (a bare ViewGroup like ControlLayout can't register an
-	// ActivityResultLauncher itself - only an Activity/Fragment can) and stored here until the
-	// popup exists to receive it (see editControlButton() below and setImagePickerLauncher()).
 	private ActivityResultLauncher<String> mImagePickerLauncher;
 	private ControlHandleView mHandleView;
 	private ControlButtonMenuListener mMenuListener;
@@ -80,11 +71,6 @@ public class ControlLayout extends FrameLayout {
 
 
 	public void loadLayout(String jsonPath) throws IOException, JsonSyntaxException {
-		// TurtleLauncher CRASH FIX: the throws clause is kept so existing callers still
-		// compile, but this method no longer actually propagates failures. Several call
-		// sites (control switcher, onActivityResult) only catch IOException, so a
-		// JsonSyntaxException/RuntimeException from a corrupt user layout used to kill
-		// the running game. Now: corrupt file -> bundled default -> no custom controls.
 		File jsonFile = jsonPath != null ? new File(jsonPath) : new File(AllSettings.getDefaultCtrl().getValue());
 
 		CustomControls layout = null;
@@ -121,9 +107,6 @@ public class ControlLayout extends FrameLayout {
 		boolean sanitizedModified = false;
 		if(controlLayout != null) {
 			sanitizedModified = LayoutSanitizer.sanitizeLayout(controlLayout);
-			// TurtleLauncher CRASH FIX: Gson leaves these null when the user JSON
-			// explicitly contains "mControlDataList": null etc. - the for-each loops
-			// below would NPE at game startup. Empty lists keep the game alive.
 			if(controlLayout.mControlDataList == null) controlLayout.mControlDataList = new ArrayList<>();
 			if(controlLayout.mDrawerDataList == null) controlLayout.mDrawerDataList = new ArrayList<>();
 			if(controlLayout.mJoystickDataList == null) controlLayout.mJoystickDataList = new ArrayList<>();
@@ -153,11 +136,6 @@ public class ControlLayout extends FrameLayout {
 		mLayout = controlLayout;
 		
 
-		// TurtleLauncher CRASH FIX: each element is added defensively - one corrupt
-		// button/joystick/drawer in a user layout now costs that single control instead
-		// of crashing the whole game while it boots.
-
-		// Joystick(s) first, to workaround the touch dispatch
 		for(ControlJoystickData joystick : mLayout.mJoystickDataList){
 			try {
 				addJoystickView(joystick);
@@ -408,19 +386,11 @@ public class ControlLayout extends FrameLayout {
 		if(mControlPopup != null) mControlPopup.adaptPanelPosition();
 	}
 
-	/**
-	 * TurtleLauncher: called once from CustomControlsActivity.onCreate() to register the
-	 * image-picker launcher. If the popup already exists at that point (it generally won't -
-	 * the popup only gets created on the user's first edit tap, which can't happen before
-	 * onCreate finishes - but this stays correct either way), hand it down immediately;
-	 * otherwise editControlButton() hands it down the moment the popup is actually created.
-	 */
 	public void setImagePickerLauncher(ActivityResultLauncher<String> launcher) {
 		mImagePickerLauncher = launcher;
 		if (mControlPopup != null) mControlPopup.setImagePickerLauncher(launcher);
 	}
 
-	/** TurtleLauncher: forwards a picked custom-button-image Uri to the popup, if present. */
 	public void onCustomImagePicked(Uri uri) {
 		if (mControlPopup != null) mControlPopup.onCustomImagePicked(uri);
 	}

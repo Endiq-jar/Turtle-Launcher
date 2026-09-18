@@ -27,11 +27,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!-- TurtleLauncher: version-card redesign. This used to be a TabLayout (Release/
-                 Snapshot/Beta/Alpha) over a single-type list; now it's one grid of series
-                 cards (1.21, 1.20, ..., plus fixed Beta/Alpha cards). Tapping a card opens
-                 VersionSeriesDetailFragment, which does the Release/Snapshot/Beta/Alpha
-                 categorization for that one series. -->
             <TextView
                 android:id="@+id/version_series_title"
                 android:layout_width="match_parent"
