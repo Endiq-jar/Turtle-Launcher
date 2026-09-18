@@ -453,7 +453,15 @@ public class EditControlPopup {
         mDisplayInGameCheckbox.setChecked(data.displayInGame);
         mDisplayInMenuCheckbox.setChecked(data.displayInMenu);
 
-        for (int i = 0; i < data.keycodes.length; i++) {
+        // TurtleLauncher: mKeycodeSpinners/mKeycodeTextviews are fixed at 4 slots, but
+        // data.keycodes can legitimately have more entries than that - legacy saved
+        // control-layout JSON is deserialized straight into ControlData.keycodes via Gson,
+        // bypassing the constructor's 4-slot inflateKeycodeArray() that normally pads/guards
+        // it. A 5+-key entry from an older save format used to walk past the end of the
+        // spinner array here (ArrayIndexOutOfBoundsException: length=4; index=4). Bound the
+        // loop to whichever array is smaller instead of trusting data.keycodes.length.
+        int keycodeCount = Math.min(data.keycodes.length, mKeycodeSpinners.length);
+        for (int i = 0; i < keycodeCount; i++) {
             if (data.keycodes[i] < 0) {
                 mKeycodeSpinners[i].setSelection(data.keycodes[i] + mSpecialArray.size());
             } else {
