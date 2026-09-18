@@ -1,6 +1,6 @@
 package com.endiq.turtlelauncher.feature.inputstats
 
-import net.kdt.pojavlaunch.LwjglGlfwKeycode
+import net.endiq.launcher.LwjglGlfwKeycode
 import java.util.concurrent.ConcurrentHashMap
 
 /**

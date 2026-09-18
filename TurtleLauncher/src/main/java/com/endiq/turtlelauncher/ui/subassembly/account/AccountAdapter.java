@@ -14,8 +14,8 @@ import com.endiq.turtlelauncher.feature.accounts.AccountUtils;
 import com.endiq.turtlelauncher.feature.log.Logging;
 import com.endiq.turtlelauncher.utils.skin.SkinLoader;
 
-import net.kdt.pojavlaunch.Tools;
-import net.kdt.pojavlaunch.value.MinecraftAccount;
+import net.endiq.launcher.Tools;
+import net.endiq.launcher.value.MinecraftAccount;
 
 import java.util.List;
 

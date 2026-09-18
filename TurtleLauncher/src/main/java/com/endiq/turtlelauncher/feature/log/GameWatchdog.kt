@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean
  * with an option to force-close, instead of leaving the person staring at a dead
  * screen with no feedback at all.
  *
- * Deliberately does NOT use [net.kdt.pojavlaunch.Logger.setLogListener]: that is a
+ * Deliberately does NOT use [net.endiq.launcher.Logger.setLogListener]: that is a
  * single global native callback slot already used by the in-game log viewer
- * (com.kdt.LoggerView), and attaching a second consumer there would silently steal
+ * (com.endiq.LoggerView), and attaching a second consumer there would silently steal
  * or lose callbacks depending on which one last called setLogListener. Polling the
  * log file's length avoids that conflict entirely.
  */

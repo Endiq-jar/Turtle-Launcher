@@ -9,7 +9,7 @@ import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.feature.version.VersionsManager.getTurtleVersionPath
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils.getStringNotNull
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 import java.io.FileWriter
 

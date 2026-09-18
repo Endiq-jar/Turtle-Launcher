@@ -55,9 +55,9 @@ import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.http.NetworkUtils
 import com.endiq.turtlelauncher.utils.path.PathManager
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.fragments.MicrosoftLoginFragment
-import net.kdt.pojavlaunch.value.MinecraftAccount
+import net.endiq.launcher.Tools
+import net.endiq.launcher.fragments.MicrosoftLoginFragment
+import net.endiq.launcher.value.MinecraftAccount
 import org.apache.commons.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -689,7 +689,7 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                                 addUniformPass -> showServerTypeSelectDialog(R.string.other_login_32_bit_server, 1)
                                 addElyby -> addOtherServerDirect("ely.by", 0)
                                 addBattly -> addOtherServerDirect(
-                                    net.kdt.pojavlaunch.authenticator.BattlyAuthlibManager.AUTH_SERVER, 0
+                                    net.endiq.launcher.authenticator.BattlyAuthlibManager.AUTH_SERVER, 0
                                 )
                             }
                             mServerActionPopupWindow.dismiss()

@@ -20,7 +20,7 @@ import com.endiq.turtlelauncher.ui.fragment.settings.wrapper.SeekBarSettingsWrap
 import com.endiq.turtlelauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapper
 import com.endiq.turtlelauncher.utils.ZHTools
 import fr.spse.gamepad_remapper.Remapper
-import net.kdt.pojavlaunch.fragments.GamepadMapperFragment
+import net.endiq.launcher.fragments.GamepadMapperFragment
 
 
 class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fragment_control, SettingCategory.CONTROL) {

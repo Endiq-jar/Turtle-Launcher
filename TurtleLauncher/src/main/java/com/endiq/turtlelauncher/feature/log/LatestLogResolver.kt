@@ -12,7 +12,7 @@ import java.io.File
  * 1. [PathManager.DIR_LAUNCHER_LOG] holds two files that get rewritten on *every* launch,
  *    crash or not - [Logging]'s rotating `log1.txt`..`log10.txt` and [GameLogcat]'s rolling
  *    `session_logcat.txt`. The one file that matters when something crashes - `latestlog.txt`,
- *    written only by [net.kdt.pojavlaunch.PojavApplication]'s uncaught-exception handler and
+ *    written only by [net.endiq.launcher.PojavApplication]'s uncaught-exception handler and
  *    [NativeCrashCapture] - is usually the OLDEST file in that folder during ordinary use, so a
  *    plain "newest mtime wins" picker almost always surfaces the mundane always-on log instead.
  *

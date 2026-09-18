@@ -23,12 +23,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <net.kdt.pojavlaunch.customcontrols.ControlLayout
+        <net.endiq.launcher.customcontrols.ControlLayout
             android:id="@+id/customctrl_controllayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        </net.kdt.pojavlaunch.customcontrols.ControlLayout>
+        </net.endiq.launcher.customcontrols.ControlLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

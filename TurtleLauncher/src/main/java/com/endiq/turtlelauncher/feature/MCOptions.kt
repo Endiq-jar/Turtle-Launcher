@@ -6,7 +6,7 @@ import android.os.FileObserver
 import com.endiq.turtlelauncher.event.single.MCOptionChangeEvent
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.feature.version.Version
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.greenrobot.eventbus.EventBus
 import org.lwjgl.glfw.CallbackBridge.windowHeight
 import org.lwjgl.glfw.CallbackBridge.windowWidth

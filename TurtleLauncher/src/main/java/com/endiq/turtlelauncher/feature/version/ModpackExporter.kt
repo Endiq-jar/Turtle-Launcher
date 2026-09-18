@@ -2,8 +2,8 @@ package com.endiq.turtlelauncher.feature.version
 
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.modloaders.modpacks.models.ModrinthIndex
+import net.endiq.launcher.Tools
+import net.endiq.launcher.modloaders.modpacks.models.ModrinthIndex
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream

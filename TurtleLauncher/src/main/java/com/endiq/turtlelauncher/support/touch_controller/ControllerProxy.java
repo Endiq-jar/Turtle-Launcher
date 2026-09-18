@@ -7,7 +7,7 @@ import android.system.Os;
 import com.endiq.turtlelauncher.InfoDistributor;
 import com.endiq.turtlelauncher.feature.log.Logging;
 
-import net.kdt.pojavlaunch.Logger;
+import net.endiq.launcher.Logger;
 
 import top.fifthlight.touchcontroller.proxy.client.LauncherProxyClient;
 import top.fifthlight.touchcontroller.proxy.client.MessageTransport;

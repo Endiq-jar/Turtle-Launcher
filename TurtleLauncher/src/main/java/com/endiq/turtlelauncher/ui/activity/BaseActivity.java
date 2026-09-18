@@ -23,8 +23,8 @@ import com.endiq.turtlelauncher.setting.AllSettings;
 import com.endiq.turtlelauncher.task.TaskExecutors;
 import com.endiq.turtlelauncher.utils.StoragePermissionsUtils;
 
-import net.kdt.pojavlaunch.MissingStorageActivity;
-import net.kdt.pojavlaunch.Tools;
+import net.endiq.launcher.MissingStorageActivity;
+import net.endiq.launcher.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

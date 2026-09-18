@@ -2,15 +2,15 @@ package com.endiq.turtlelauncher.feature.mod.modloader;
 
 import androidx.annotation.NonNull;
 
-import com.kdt.mcgui.ProgressLayout;
+import com.endiq.mcgui.ProgressLayout;
 import com.endiq.turtlelauncher.R;
 import com.endiq.turtlelauncher.feature.version.install.InstallTask;
 import com.endiq.turtlelauncher.utils.path.PathManager;
 
-import net.kdt.pojavlaunch.Tools;
-import net.kdt.pojavlaunch.modloaders.CleanroomUtils;
-import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper;
-import net.kdt.pojavlaunch.utils.DownloadUtils;
+import net.endiq.launcher.Tools;
+import net.endiq.launcher.modloaders.CleanroomUtils;
+import net.endiq.launcher.progresskeeper.ProgressKeeper;
+import net.endiq.launcher.utils.DownloadUtils;
 
 import java.io.File;
 

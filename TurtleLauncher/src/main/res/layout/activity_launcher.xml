@@ -80,7 +80,7 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <!-- Progress bar at bottom -->
-    <com.kdt.mcgui.ProgressLayout
+    <com.endiq.mcgui.ProgressLayout
         android:id="@+id/progress_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

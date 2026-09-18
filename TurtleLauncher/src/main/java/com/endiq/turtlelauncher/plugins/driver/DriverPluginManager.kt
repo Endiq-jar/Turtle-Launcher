@@ -8,9 +8,9 @@ import com.endiq.turtlelauncher.feature.update.UpdateUtils
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.utils.path.PathManager
 import com.endiq.turtlelauncher.utils.stringutils.StringUtilsKt
-import net.kdt.pojavlaunch.Architecture
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.utils.ZipUtils
+import net.endiq.launcher.Architecture
+import net.endiq.launcher.Tools
+import net.endiq.launcher.utils.ZipUtils
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.util.zip.ZipFile

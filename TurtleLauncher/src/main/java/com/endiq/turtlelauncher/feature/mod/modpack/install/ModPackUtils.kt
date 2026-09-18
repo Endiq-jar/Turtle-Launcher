@@ -10,9 +10,9 @@ import com.endiq.turtlelauncher.feature.mod.models.CurseForgeManifest
 import com.endiq.turtlelauncher.feature.mod.models.MCBBSPackMeta
 import com.endiq.turtlelauncher.feature.mod.models.MMCPackMeta
 import com.endiq.turtlelauncher.utils.runtime.SelectRuntimeUtils
-import net.kdt.pojavlaunch.JavaGUILauncherActivity
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.modloaders.modpacks.models.ModrinthIndex
+import net.endiq.launcher.JavaGUILauncherActivity
+import net.endiq.launcher.Tools
+import net.endiq.launcher.modloaders.modpacks.models.ModrinthIndex
 import java.io.File
 import java.util.zip.ZipFile
 

@@ -2,9 +2,9 @@ package com.endiq.turtlelauncher.ui.subassembly.customcontrols
 
 import android.content.Context
 import com.endiq.turtlelauncher.feature.log.Logging
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.customcontrols.CustomControls
-import net.kdt.pojavlaunch.customcontrols.LayoutConverter
+import net.endiq.launcher.Tools
+import net.endiq.launcher.customcontrols.CustomControls
+import net.endiq.launcher.customcontrols.LayoutConverter
 import org.json.JSONObject
 import java.io.File
 

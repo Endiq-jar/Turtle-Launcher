@@ -26,7 +26,7 @@ import com.endiq.turtlelauncher.ui.fragment.DownloadModFragment
 import com.endiq.turtlelauncher.utils.NumberWithUnits
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.greenrobot.eventbus.EventBus
 import org.jackhuang.hmcl.ui.versions.ModTranslations
 import java.util.Collections

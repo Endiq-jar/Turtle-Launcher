@@ -8,7 +8,7 @@ import com.endiq.turtlelauncher.event.single.SettingsChangeEvent
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.setting.unit.AbstractSettingUnit
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.apache.commons.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.lang.reflect.Type

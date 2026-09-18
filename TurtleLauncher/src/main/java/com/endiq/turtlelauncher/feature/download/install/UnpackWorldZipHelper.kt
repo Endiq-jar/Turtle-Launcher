@@ -1,7 +1,7 @@
 package com.endiq.turtlelauncher.feature.download.install
 
 import com.endiq.turtlelauncher.feature.log.Logging
-import net.kdt.pojavlaunch.utils.ZipUtils
+import net.endiq.launcher.utils.ZipUtils
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException

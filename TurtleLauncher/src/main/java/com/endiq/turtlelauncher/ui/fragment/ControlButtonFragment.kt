@@ -35,9 +35,9 @@ import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.anim.AnimUtils.Companion.setVisibilityAnim
 import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.file.PasteFile
-import net.kdt.pojavlaunch.CustomControlsActivity
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
+import net.endiq.launcher.CustomControlsActivity
+import net.endiq.launcher.Tools
+import net.endiq.launcher.contracts.OpenDocumentWithExtension
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 

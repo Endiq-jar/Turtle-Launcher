@@ -41,8 +41,8 @@ import com.endiq.turtlelauncher.ui.fragment.download.addon.DownloadQuiltFragment
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.runtime.SelectRuntimeUtils
-import net.kdt.pojavlaunch.JavaGUILauncherActivity
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.JavaGUILauncherActivity
+import net.endiq.launcher.Tools
 import org.apache.commons.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.io.File

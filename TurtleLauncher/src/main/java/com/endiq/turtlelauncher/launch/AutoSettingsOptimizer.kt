@@ -10,8 +10,8 @@ import com.endiq.turtlelauncher.renderer.renderers.ZinkRenderer
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.utils.platform.BatterySaverManager
 import com.endiq.turtlelauncher.utils.platform.ThermalManager
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.prefs.LauncherPreferences
+import net.endiq.launcher.Tools
+import net.endiq.launcher.prefs.LauncherPreferences
 
 /**
  * AutoSettingsOptimizer (replaces the old AutoGraphicsOptimizer)

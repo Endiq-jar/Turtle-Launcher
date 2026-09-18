@@ -24,10 +24,10 @@ import com.endiq.turtlelauncher.utils.platform.MemoryUtils.Companion.getFreeDevi
 import com.endiq.turtlelauncher.utils.platform.MemoryUtils.Companion.getTotalDeviceMemory
 import com.endiq.turtlelauncher.utils.platform.MemoryUtils.Companion.getUsedDeviceMemory
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Architecture
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
-import net.kdt.pojavlaunch.multirt.MultiRTConfigDialog
+import net.endiq.launcher.Architecture
+import net.endiq.launcher.Tools
+import net.endiq.launcher.contracts.OpenDocumentWithExtension
+import net.endiq.launcher.multirt.MultiRTConfigDialog
 import kotlin.math.min
 
 

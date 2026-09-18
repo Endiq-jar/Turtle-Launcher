@@ -2,12 +2,12 @@ package com.endiq.turtlelauncher.feature.version.install
 
 import android.content.Intent
 import com.google.gson.JsonParser
-import com.kdt.mcgui.ProgressLayout
+import com.endiq.mcgui.ProgressLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.customprofilepath.ProfilePathHome
 import com.endiq.turtlelauncher.utils.path.LibPath
-import net.kdt.pojavlaunch.JavaGUILauncherActivity
-import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper
+import net.endiq.launcher.JavaGUILauncherActivity
+import net.endiq.launcher.progresskeeper.ProgressKeeper
 import java.io.File
 import java.io.IOException
 import java.util.zip.ZipEntry

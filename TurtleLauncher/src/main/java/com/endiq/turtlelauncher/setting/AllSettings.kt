@@ -6,8 +6,8 @@ import com.endiq.turtlelauncher.setting.unit.IntSettingUnit
 import com.endiq.turtlelauncher.setting.unit.LongSettingUnit
 import com.endiq.turtlelauncher.setting.unit.StringSettingUnit
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.prefs.LauncherPreferences
+import net.endiq.launcher.Tools
+import net.endiq.launcher.prefs.LauncherPreferences
 
 
 class AllSettings {

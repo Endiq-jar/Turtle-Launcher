@@ -7,9 +7,9 @@ import android.view.Choreographer;
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
-import net.kdt.pojavlaunch.GrabListener;
-import net.kdt.pojavlaunch.LwjglGlfwKeycode;
-import net.kdt.pojavlaunch.MainActivity;
+import net.endiq.launcher.GrabListener;
+import net.endiq.launcher.LwjglGlfwKeycode;
+import net.endiq.launcher.MainActivity;
 
 import java.util.ArrayList;
 

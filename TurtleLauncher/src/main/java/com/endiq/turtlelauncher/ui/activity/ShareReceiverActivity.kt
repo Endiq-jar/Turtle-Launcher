@@ -8,7 +8,7 @@ import androidx.core.content.IntentCompat
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.LauncherActivity
+import net.endiq.launcher.LauncherActivity
 import java.io.File
 
 /**

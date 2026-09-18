@@ -5,9 +5,9 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonSyntaxException
 import com.endiq.turtlelauncher.feature.log.Logging.e
 import com.endiq.turtlelauncher.feature.version.install.Addon
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.modloaders.FabricVersion
-import net.kdt.pojavlaunch.utils.DownloadUtils
+import net.endiq.launcher.Tools
+import net.endiq.launcher.modloaders.FabricVersion
+import net.endiq.launcher.utils.DownloadUtils
 import org.json.JSONArray
 import org.json.JSONException
 import java.io.IOException

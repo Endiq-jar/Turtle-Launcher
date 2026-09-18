@@ -1,15 +1,15 @@
 package com.endiq.turtlelauncher.launch
 
 import android.content.Context
-import com.kdt.mcgui.ProgressLayout
+import com.endiq.mcgui.ProgressLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Architecture
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.multirt.MultiRTUtils
-import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper
-import net.kdt.pojavlaunch.utils.DownloadUtils
+import net.endiq.launcher.Architecture
+import net.endiq.launcher.Tools
+import net.endiq.launcher.multirt.MultiRTUtils
+import net.endiq.launcher.progresskeeper.ProgressKeeper
+import net.endiq.launcher.utils.DownloadUtils
 import java.io.File
 import java.io.FileInputStream
 

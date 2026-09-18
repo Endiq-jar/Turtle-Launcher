@@ -2,7 +2,7 @@ package com.endiq.turtlelauncher.feature.skin
 
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.path.UrlManager
-import net.kdt.pojavlaunch.value.MinecraftAccount
+import net.endiq.launcher.value.MinecraftAccount
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.Request

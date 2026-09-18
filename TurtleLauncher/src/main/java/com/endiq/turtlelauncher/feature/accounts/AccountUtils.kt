@@ -1,15 +1,15 @@
 package com.endiq.turtlelauncher.feature.accounts
 
 import android.content.Context
-import com.kdt.mcgui.ProgressLayout
+import com.endiq.mcgui.ProgressLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.task.Task
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.authenticator.listener.DoneListener
-import net.kdt.pojavlaunch.authenticator.listener.ErrorListener
-import net.kdt.pojavlaunch.authenticator.microsoft.MicrosoftBackgroundLogin
-import net.kdt.pojavlaunch.value.MinecraftAccount
+import net.endiq.launcher.Tools
+import net.endiq.launcher.authenticator.listener.DoneListener
+import net.endiq.launcher.authenticator.listener.ErrorListener
+import net.endiq.launcher.authenticator.microsoft.MicrosoftBackgroundLogin
+import net.endiq.launcher.value.MinecraftAccount
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.Locale

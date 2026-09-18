@@ -1,6 +1,6 @@
 package com.endiq.turtlelauncher.feature.download.utils
 
-import net.kdt.pojavlaunch.JMinecraftVersionList
+import net.endiq.launcher.JMinecraftVersionList
 
 /**
  * Groups the flat Mojang version manifest into per-series buckets for the version-card

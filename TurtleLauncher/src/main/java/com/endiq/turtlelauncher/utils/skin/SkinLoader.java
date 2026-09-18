@@ -12,7 +12,7 @@ import android.graphics.drawable.Drawable;
 import com.endiq.turtlelauncher.feature.log.Logging;
 import com.endiq.turtlelauncher.utils.path.PathManager;
 
-import net.kdt.pojavlaunch.value.MinecraftAccount;
+import net.endiq.launcher.value.MinecraftAccount;
 
 import org.jetbrains.annotations.NotNull;
 

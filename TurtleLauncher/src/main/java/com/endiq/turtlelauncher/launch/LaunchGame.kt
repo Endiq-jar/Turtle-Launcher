@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.kdt.mcgui.ProgressLayout
+import com.endiq.mcgui.ProgressLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.event.single.AccountUpdateEvent
 import com.endiq.turtlelauncher.feature.accounts.AccountType
@@ -24,21 +24,21 @@ import com.endiq.turtlelauncher.ui.dialog.TipDialog
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.http.NetworkUtils
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Architecture
-import net.kdt.pojavlaunch.JMinecraftVersionList
-import net.kdt.pojavlaunch.Logger
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.authenticator.microsoft.PresentedException
-import net.kdt.pojavlaunch.lifecycle.ContextAwareDoneListener
+import net.endiq.launcher.Architecture
+import net.endiq.launcher.JMinecraftVersionList
+import net.endiq.launcher.Logger
+import net.endiq.launcher.Tools
+import net.endiq.launcher.authenticator.microsoft.PresentedException
+import net.endiq.launcher.lifecycle.ContextAwareDoneListener
 import java.io.File
-import net.kdt.pojavlaunch.multirt.MultiRTUtils
-import net.kdt.pojavlaunch.plugins.FFmpegPlugin
-import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper
-import net.kdt.pojavlaunch.services.GameService
-import net.kdt.pojavlaunch.tasks.AsyncMinecraftDownloader
-import net.kdt.pojavlaunch.tasks.MinecraftDownloader
-import net.kdt.pojavlaunch.utils.JREUtils
-import net.kdt.pojavlaunch.value.MinecraftAccount
+import net.endiq.launcher.multirt.MultiRTUtils
+import net.endiq.launcher.plugins.FFmpegPlugin
+import net.endiq.launcher.progresskeeper.ProgressKeeper
+import net.endiq.launcher.services.GameService
+import net.endiq.launcher.tasks.AsyncMinecraftDownloader
+import net.endiq.launcher.tasks.MinecraftDownloader
+import net.endiq.launcher.utils.JREUtils
+import net.endiq.launcher.value.MinecraftAccount
 import org.greenrobot.eventbus.EventBus
 
 class LaunchGame {

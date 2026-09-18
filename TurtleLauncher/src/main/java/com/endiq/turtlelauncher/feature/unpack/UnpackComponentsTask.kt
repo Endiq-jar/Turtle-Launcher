@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.res.AssetManager
 import com.endiq.turtlelauncher.feature.log.Logging.i
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.FileInputStream

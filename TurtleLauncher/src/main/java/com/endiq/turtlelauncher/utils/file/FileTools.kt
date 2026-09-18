@@ -11,7 +11,7 @@ import com.endiq.turtlelauncher.task.Task
 import com.endiq.turtlelauncher.ui.dialog.EditTextDialog
 import com.endiq.turtlelauncher.ui.dialog.EditTextDialog.ConfirmListener
 import com.endiq.turtlelauncher.utils.ZHTools
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.FileInputStream

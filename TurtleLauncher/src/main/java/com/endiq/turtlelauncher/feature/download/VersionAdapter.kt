@@ -22,8 +22,8 @@ import com.endiq.turtlelauncher.utils.NumberWithUnits.Companion.formatNumberWith
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.anim.ViewAnimUtils.Companion.setViewAnim
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper
+import net.endiq.launcher.Tools
+import net.endiq.launcher.progresskeeper.ProgressKeeper
 import java.util.Locale
 import java.util.StringJoiner
 import java.util.TimeZone

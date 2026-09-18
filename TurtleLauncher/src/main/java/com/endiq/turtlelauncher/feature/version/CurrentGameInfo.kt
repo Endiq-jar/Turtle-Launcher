@@ -3,7 +3,7 @@ package com.endiq.turtlelauncher.feature.version
 import com.google.gson.annotations.SerializedName
 import com.endiq.turtlelauncher.feature.customprofilepath.ProfilePathHome
 import com.endiq.turtlelauncher.feature.log.Logging
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap

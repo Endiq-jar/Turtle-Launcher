@@ -19,8 +19,8 @@ import com.endiq.turtlelauncher.utils.http.CallUtils.CallbackListener
 import com.endiq.turtlelauncher.utils.http.NetworkUtils
 import com.endiq.turtlelauncher.utils.path.UrlManager
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Architecture
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Architecture
+import net.endiq.launcher.Tools
 import okhttp3.Call
 import okhttp3.Response
 import org.apache.commons.io.FileUtils

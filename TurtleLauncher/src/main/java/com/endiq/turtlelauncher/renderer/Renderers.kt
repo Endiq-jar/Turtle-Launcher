@@ -12,7 +12,7 @@ import com.endiq.turtlelauncher.renderer.renderers.VGPURenderer
 import com.endiq.turtlelauncher.renderer.renderers.VirGLRenderer
 import com.endiq.turtlelauncher.renderer.renderers.ZinkRenderer
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 
 

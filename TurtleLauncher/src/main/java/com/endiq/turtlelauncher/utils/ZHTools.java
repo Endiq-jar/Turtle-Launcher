@@ -45,7 +45,7 @@ import com.endiq.turtlelauncher.ui.dialog.TipDialog;
 import com.endiq.turtlelauncher.ui.fragment.FragmentWithAnim;
 import com.endiq.turtlelauncher.utils.file.FileTools;
 import com.endiq.turtlelauncher.utils.path.PathManager;
-import net.kdt.pojavlaunch.Tools;
+import net.endiq.launcher.Tools;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;

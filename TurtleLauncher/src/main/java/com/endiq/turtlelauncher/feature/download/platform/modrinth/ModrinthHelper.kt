@@ -10,7 +10,7 @@ import com.endiq.turtlelauncher.feature.download.item.SearchResult
 import com.endiq.turtlelauncher.feature.download.item.VersionItem
 import com.endiq.turtlelauncher.feature.download.platform.AbstractPlatformHelper
 import com.endiq.turtlelauncher.feature.download.platform.PlatformNotSupportedException
-import net.kdt.pojavlaunch.modloaders.modpacks.api.ApiHandler
+import net.endiq.launcher.modloaders.modpacks.api.ApiHandler
 import java.io.File
 
 class ModrinthHelper : AbstractPlatformHelper(ApiHandler("https://api.modrinth.com/v2")) {

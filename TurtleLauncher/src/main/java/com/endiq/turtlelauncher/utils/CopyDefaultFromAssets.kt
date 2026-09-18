@@ -2,7 +2,7 @@ package com.endiq.turtlelauncher.utils
 
 import android.content.Context
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 import java.io.IOException
 

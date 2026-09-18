@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
  * TurtleLauncher: system-side (logcat) capture of a game session.
  *
  * Why this exists: every crash screen in this launcher reads its raw log from
- * `latestlog.txt`, which is written by the NATIVE side (`net.kdt.pojavlaunch.Logger
+ * `latestlog.txt`, which is written by the NATIVE side (`net.endiq.launcher.Logger
  * .appendToLog`) from inside the JVM that is running Minecraft. When the game dies the way
  * it most often dies on real devices - a SIGSEGV/SIGABRT in the renderer, an OOM kill, an
  * ANR kill - that process is gone instantly. Whatever was still sitting in the native

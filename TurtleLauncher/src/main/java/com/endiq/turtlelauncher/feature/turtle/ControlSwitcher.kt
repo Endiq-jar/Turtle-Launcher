@@ -6,7 +6,7 @@ import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.customcontrols.ControlLayout
+import net.endiq.launcher.customcontrols.ControlLayout
 import java.io.File
 
 /**

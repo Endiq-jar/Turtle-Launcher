@@ -13,7 +13,7 @@
     android:clickable="true"
     android:focusable="true">
 
-    <net.kdt.pojavlaunch.colorselector.SVRectangleView
+    <net.endiq.launcher.colorselector.SVRectangleView
         android:id="@+id/color_selector_rectangle_view"
         android:layout_width="0dp"
         android:layout_height="@dimen/_150sdp"
@@ -24,7 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <net.kdt.pojavlaunch.colorselector.ColorSideBySideView
+    <net.endiq.launcher.colorselector.ColorSideBySideView
         android:id="@+id/color_selector_color_view"
         android:layout_width="0dp"
         android:layout_height="@dimen/_94sdp"
@@ -51,7 +51,7 @@
         tools:ignore="HardcodedText" />
 
 
-    <net.kdt.pojavlaunch.colorselector.AlphaView
+    <net.endiq.launcher.colorselector.AlphaView
         android:id="@+id/color_selector_alpha_view"
         android:layout_width="@dimen/_25sdp"
         android:layout_height="0dp"
@@ -60,7 +60,7 @@
         app:layout_constraintEnd_toStartOf="@+id/color_selector_hue_view"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <net.kdt.pojavlaunch.colorselector.HueView
+    <net.endiq.launcher.colorselector.HueView
         android:id="@+id/color_selector_hue_view"
         android:layout_width="@dimen/_25sdp"
         android:layout_height="0dp"

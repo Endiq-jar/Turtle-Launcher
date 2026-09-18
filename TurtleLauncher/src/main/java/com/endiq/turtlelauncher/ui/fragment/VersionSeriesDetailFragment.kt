@@ -14,7 +14,7 @@ import com.endiq.turtlelauncher.databinding.FragmentVersionSeriesDetailBinding
 import com.endiq.turtlelauncher.feature.download.SeriesVersionAdapter
 import com.endiq.turtlelauncher.feature.download.utils.VersionSeriesUtils
 import com.endiq.turtlelauncher.utils.ZHTools
-import net.kdt.pojavlaunch.JMinecraftVersionList
+import net.endiq.launcher.JMinecraftVersionList
 
 /**
  * Per-series drill-down: every version belonging to one series (e.g. everything under

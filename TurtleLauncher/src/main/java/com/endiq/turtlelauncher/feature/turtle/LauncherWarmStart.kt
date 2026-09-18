@@ -10,10 +10,10 @@ import com.endiq.turtlelauncher.feature.version.VersionsManager
 import com.endiq.turtlelauncher.renderer.Renderers
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.authenticator.listener.DoneListener
-import net.kdt.pojavlaunch.authenticator.listener.ErrorListener
-import net.kdt.pojavlaunch.multirt.MultiRTUtils
+import net.endiq.launcher.Tools
+import net.endiq.launcher.authenticator.listener.DoneListener
+import net.endiq.launcher.authenticator.listener.ErrorListener
+import net.endiq.launcher.multirt.MultiRTUtils
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory

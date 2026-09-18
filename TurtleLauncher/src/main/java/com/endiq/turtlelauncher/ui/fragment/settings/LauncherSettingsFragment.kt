@@ -19,7 +19,7 @@ import com.endiq.turtlelauncher.ui.fragment.settings.wrapper.SeekBarSettingsWrap
 import com.endiq.turtlelauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapper
 import com.endiq.turtlelauncher.utils.CleanUpCache.Companion.start
 import com.endiq.turtlelauncher.utils.ZHTools
-import net.kdt.pojavlaunch.LauncherActivity
+import net.endiq.launcher.LauncherActivity
 import org.greenrobot.eventbus.EventBus
 import com.endiq.turtlelauncher.utils.anim.TurtleTransitions
 

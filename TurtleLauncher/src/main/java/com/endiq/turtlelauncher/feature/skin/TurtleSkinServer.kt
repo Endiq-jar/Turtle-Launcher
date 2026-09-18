@@ -3,7 +3,7 @@ package com.endiq.turtlelauncher.feature.skin
 import android.util.Base64
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.value.MinecraftAccount
+import net.endiq.launcher.value.MinecraftAccount
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File

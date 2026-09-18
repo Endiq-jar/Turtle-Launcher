@@ -37,7 +37,7 @@ import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.file.FileTools.Companion.mkdirs
 import com.endiq.turtlelauncher.utils.image.ImageUtils.Companion.isImage
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.util.EnumMap

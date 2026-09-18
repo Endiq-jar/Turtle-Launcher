@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import com.endiq.turtlelauncher.R;
 import com.endiq.turtlelauncher.databinding.DialogPixelEditorBinding;
 
-import net.kdt.pojavlaunch.customcontrols.handleview.PixelCanvasView;
+import net.endiq.launcher.customcontrols.handleview.PixelCanvasView;
 
 /**
  * TurtleLauncher: a small pixel-art editor for drawing a custom control-button icon in-app,

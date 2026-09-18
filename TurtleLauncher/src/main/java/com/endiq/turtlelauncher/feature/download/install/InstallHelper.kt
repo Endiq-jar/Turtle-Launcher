@@ -1,6 +1,6 @@
 package com.endiq.turtlelauncher.feature.download.install
 
-import com.kdt.mcgui.ProgressLayout
+import com.endiq.mcgui.ProgressLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.event.value.DownloadProgressKeyEvent
 import com.endiq.turtlelauncher.feature.download.item.ModLoaderWrapper
@@ -9,8 +9,8 @@ import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.feature.version.VersionsManager
 import com.endiq.turtlelauncher.task.Task
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.progresskeeper.DownloaderProgressWrapper
-import net.kdt.pojavlaunch.utils.DownloadUtils
+import net.endiq.launcher.progresskeeper.DownloaderProgressWrapper
+import net.endiq.launcher.utils.DownloadUtils
 import org.apache.commons.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.io.File

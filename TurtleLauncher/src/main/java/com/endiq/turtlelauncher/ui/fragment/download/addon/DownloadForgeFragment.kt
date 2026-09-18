@@ -9,11 +9,11 @@ import com.endiq.turtlelauncher.feature.mod.modloader.ModVersionListAdapter
 import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.subassembly.modlist.ModListFragment
 import com.endiq.turtlelauncher.utils.ZHTools
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import com.endiq.turtlelauncher.feature.mod.modloader.ForgeDownloadTask
 import com.endiq.turtlelauncher.feature.version.install.Addon
 import com.endiq.turtlelauncher.ui.fragment.InstallGameFragment.Companion.BUNDLE_MC_VERSION
-import net.kdt.pojavlaunch.modloaders.ForgeUtils
+import net.endiq.launcher.modloaders.ForgeUtils
 import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.Future
 import java.util.function.Consumer

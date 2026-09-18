@@ -18,7 +18,7 @@ import com.endiq.turtlelauncher.utils.file.FileTools.Companion.formatFileSize
 import com.endiq.turtlelauncher.utils.platform.MemoryUtils.Companion.getFreeDeviceMemory
 import com.endiq.turtlelauncher.utils.platform.MemoryUtils.Companion.getTotalDeviceMemory
 import com.endiq.turtlelauncher.utils.ZHTools
-import net.kdt.pojavlaunch.prefs.LauncherPreferences
+import net.endiq.launcher.prefs.LauncherPreferences
 
 
 /**

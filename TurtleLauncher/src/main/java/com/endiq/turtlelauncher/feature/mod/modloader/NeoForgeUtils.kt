@@ -1,7 +1,7 @@
 package com.endiq.turtlelauncher.feature.mod.modloader
 
-import net.kdt.pojavlaunch.modloaders.ForgeVersionListHandler
-import net.kdt.pojavlaunch.utils.DownloadUtils
+import net.endiq.launcher.modloaders.ForgeVersionListHandler
+import net.endiq.launcher.utils.DownloadUtils
 import org.xml.sax.InputSource
 import org.xml.sax.SAXException
 import java.io.IOException

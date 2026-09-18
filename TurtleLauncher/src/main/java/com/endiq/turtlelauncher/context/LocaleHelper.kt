@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import com.endiq.turtlelauncher.setting.Settings
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.prefs.LauncherPreferences
+import net.endiq.launcher.prefs.LauncherPreferences
 
 class LocaleHelper(context: Context) : ContextWrapper(context) {
     companion object {

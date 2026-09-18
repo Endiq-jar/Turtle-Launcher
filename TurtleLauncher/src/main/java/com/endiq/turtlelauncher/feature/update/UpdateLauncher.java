@@ -17,7 +17,7 @@ import com.endiq.turtlelauncher.utils.ZHTools;
 import com.endiq.turtlelauncher.utils.path.PathManager;
 import com.endiq.turtlelauncher.utils.path.UrlManager;
 
-import net.kdt.pojavlaunch.Tools;
+import net.endiq.launcher.Tools;
 
 import org.apache.commons.io.FileUtils;
 

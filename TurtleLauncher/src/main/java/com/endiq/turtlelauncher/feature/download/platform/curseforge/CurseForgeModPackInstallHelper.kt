@@ -1,7 +1,7 @@
 package com.endiq.turtlelauncher.feature.download.platform.curseforge
 
 import android.content.Context
-import com.kdt.mcgui.ProgressLayout
+import com.endiq.mcgui.ProgressLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.download.enums.ModLoader
 import com.endiq.turtlelauncher.feature.download.item.ModLoaderWrapper
@@ -11,10 +11,10 @@ import com.endiq.turtlelauncher.feature.mod.models.CurseForgeManifest
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.dialog.TipDialog
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.modloaders.modpacks.api.ModDownloader
-import net.kdt.pojavlaunch.progresskeeper.DownloaderProgressWrapper
-import net.kdt.pojavlaunch.utils.ZipUtils
+import net.endiq.launcher.Tools
+import net.endiq.launcher.modloaders.modpacks.api.ModDownloader
+import net.endiq.launcher.progresskeeper.DownloaderProgressWrapper
+import net.endiq.launcher.utils.ZipUtils
 import java.io.File
 import java.util.zip.ZipFile
 

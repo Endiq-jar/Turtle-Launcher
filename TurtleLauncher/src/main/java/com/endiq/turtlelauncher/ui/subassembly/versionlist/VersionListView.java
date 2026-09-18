@@ -16,9 +16,9 @@ import com.endiq.turtlelauncher.task.TaskExecutors;
 import com.endiq.turtlelauncher.ui.subassembly.filelist.FileItemBean;
 import com.endiq.turtlelauncher.ui.subassembly.filelist.FileRecyclerViewCreator;
 
-import net.kdt.pojavlaunch.JMinecraftVersionList;
-import net.kdt.pojavlaunch.Tools;
-import net.kdt.pojavlaunch.utils.FilteredSubList;
+import net.endiq.launcher.JMinecraftVersionList;
+import net.endiq.launcher.Tools;
+import net.endiq.launcher.utils.FilteredSubList;
 
 import org.greenrobot.eventbus.EventBus;
 

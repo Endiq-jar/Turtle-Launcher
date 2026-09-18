@@ -1,6 +1,6 @@
 package com.endiq.turtlelauncher.ui.dialog;
 
-import static net.kdt.pojavlaunch.Tools.currentDisplayMetrics;
+import static net.endiq.launcher.Tools.currentDisplayMetrics;
 
 import android.view.View;
 import android.view.Window;

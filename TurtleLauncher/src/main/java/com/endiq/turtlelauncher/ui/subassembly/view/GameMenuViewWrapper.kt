@@ -20,7 +20,7 @@ import com.petterp.floatingx.assist.helper.FxScopeHelper
 import com.petterp.floatingx.listener.IFxViewLifecycle
 import com.petterp.floatingx.listener.control.IFxScopeControl
 import com.petterp.floatingx.view.FxViewHolder
-import net.kdt.pojavlaunch.LwjglGlfwKeycode
+import net.endiq.launcher.LwjglGlfwKeycode
 import org.lwjgl.glfw.CallbackBridge
 import java.text.SimpleDateFormat
 import java.util.Date

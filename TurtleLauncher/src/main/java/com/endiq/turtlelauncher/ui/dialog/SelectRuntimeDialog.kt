@@ -5,9 +5,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.utils.runtime.RuntimeSelectedListener
-import net.kdt.pojavlaunch.multirt.MultiRTUtils
-import net.kdt.pojavlaunch.multirt.RTRecyclerViewAdapter
-import net.kdt.pojavlaunch.multirt.Runtime
+import net.endiq.launcher.multirt.MultiRTUtils
+import net.endiq.launcher.multirt.RTRecyclerViewAdapter
+import net.endiq.launcher.multirt.Runtime
 
 class SelectRuntimeDialog(
     context: Context,

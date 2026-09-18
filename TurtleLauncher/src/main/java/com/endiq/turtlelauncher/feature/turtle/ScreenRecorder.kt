@@ -28,7 +28,7 @@ import android.widget.Toast
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.task.TaskExecutors
-import net.kdt.pojavlaunch.services.ScreenRecorderAudioService
+import net.endiq.launcher.services.ScreenRecorderAudioService
 import java.io.File
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
@@ -81,7 +81,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * come out silent even with permission granted and no error reported - that's a capture-source
  * question, not a bug in the plumbing here, and would need an on-device recording to confirm.
  *
- * Also requires running net.kdt.pojavlaunch.services.ScreenRecorderAudioService as a
+ * Also requires running net.endiq.launcher.services.ScreenRecorderAudioService as a
  * foregroundServiceType="mediaProjection" service for the lifetime of the MediaProjection -
  * mandatory since targetSdk 34/Android 14 for any use of a MediaProjection instance, audio-only
  * or not. See that class's doc for details.

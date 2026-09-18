@@ -8,7 +8,7 @@ import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.ui.subassembly.customprofilepath.ProfileItem
 import com.endiq.turtlelauncher.utils.path.PathManager
 import com.endiq.turtlelauncher.utils.StoragePermissionsUtils
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 import java.io.FileWriter
 

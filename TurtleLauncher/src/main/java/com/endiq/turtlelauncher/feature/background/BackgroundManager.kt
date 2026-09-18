@@ -10,7 +10,7 @@ import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.path.PathManager
 import com.endiq.turtlelauncher.utils.file.FileTools.Companion.mkdirs
 import com.endiq.turtlelauncher.utils.image.ImageUtils.Companion.isImage
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter

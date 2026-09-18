@@ -8,7 +8,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.databinding.DialogInstallExtrasBinding
 import com.endiq.turtlelauncher.feature.log.Logging
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 
 /**
  * TurtleLauncher: popup shown every time the install action on InstallGameFragment is

@@ -36,9 +36,9 @@ import com.endiq.turtlelauncher.utils.file.FileTools.Companion.copyFileInBackgro
 import com.skydoves.powerspinner.DefaultSpinnerAdapter
 import com.skydoves.powerspinner.OnSpinnerItemSelectedListener
 import com.skydoves.powerspinner.PowerSpinnerView
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.multirt.MultiRTUtils
-import net.kdt.pojavlaunch.multirt.Runtime
+import net.endiq.launcher.Tools
+import net.endiq.launcher.multirt.MultiRTUtils
+import net.endiq.launcher.multirt.Runtime
 import org.greenrobot.eventbus.EventBus
 import kotlin.enums.EnumEntries
 

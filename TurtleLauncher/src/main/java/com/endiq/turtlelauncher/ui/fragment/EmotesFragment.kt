@@ -19,8 +19,8 @@ import com.endiq.turtlelauncher.task.Task
 import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.dialog.KeyboardDialog
 import com.endiq.turtlelauncher.utils.ZHTools
-import net.kdt.pojavlaunch.EfficientAndroidLWJGLKeycode
-import net.kdt.pojavlaunch.utils.DownloadUtils
+import net.endiq.launcher.EfficientAndroidLWJGLKeycode
+import net.endiq.launcher.utils.DownloadUtils
 import java.io.File
 
 /**

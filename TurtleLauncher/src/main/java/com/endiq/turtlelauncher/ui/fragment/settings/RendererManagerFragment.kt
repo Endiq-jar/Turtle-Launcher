@@ -21,7 +21,7 @@ import com.endiq.turtlelauncher.renderer.renderers.HolyGL4ESRenderer
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.ui.fragment.FragmentWithAnim
 import com.endiq.turtlelauncher.utils.ZHTools
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 
 /**

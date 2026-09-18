@@ -3,10 +3,10 @@ package com.endiq.turtlelauncher.feature.log
 import com.endiq.turtlelauncher.feature.version.Version
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.multirt.MultiRTUtils
-import net.kdt.pojavlaunch.tasks.AsyncMinecraftDownloader
-import net.kdt.pojavlaunch.tasks.MinecraftDownloader
+import net.endiq.launcher.Tools
+import net.endiq.launcher.multirt.MultiRTUtils
+import net.endiq.launcher.tasks.AsyncMinecraftDownloader
+import net.endiq.launcher.tasks.MinecraftDownloader
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.RandomAccessFile

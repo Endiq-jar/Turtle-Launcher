@@ -1,8 +1,8 @@
 package com.endiq.turtlelauncher.ui.fragment
 
 import androidx.fragment.app.Fragment
-import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper
-import net.kdt.pojavlaunch.progresskeeper.TaskCountListener
+import net.endiq.launcher.progresskeeper.ProgressKeeper
+import net.endiq.launcher.progresskeeper.TaskCountListener
 
 abstract class BaseFragment : Fragment, TaskCountListener {
     private var mIsTaskRunning: Boolean = false

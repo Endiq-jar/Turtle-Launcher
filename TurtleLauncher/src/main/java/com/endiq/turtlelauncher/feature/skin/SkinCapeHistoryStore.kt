@@ -3,7 +3,7 @@ package com.endiq.turtlelauncher.feature.skin
 import com.google.gson.reflect.TypeToken
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 import java.security.MessageDigest
 

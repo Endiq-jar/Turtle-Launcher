@@ -35,8 +35,8 @@ import com.endiq.turtlelauncher.task.Task
 import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.dialog.DraggableDialog.DialogInitializationListener
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.utils.DownloadUtils
-import net.kdt.pojavlaunch.value.MinecraftAccount
+import net.endiq.launcher.utils.DownloadUtils
+import net.endiq.launcher.value.MinecraftAccount
 import java.io.File
 import java.io.FileOutputStream
 
@@ -258,7 +258,7 @@ class SkinCapeDialog(
             val previewBitmap = resolvedUrl?.let { url ->
                 runCatching {
                     val buffer = java.io.ByteArrayOutputStream()
-                    net.kdt.pojavlaunch.utils.DownloadUtils.download(url, buffer)
+                    net.endiq.launcher.utils.DownloadUtils.download(url, buffer)
                     val bytes = buffer.toByteArray()
                     BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                 }.onFailure { e -> Logging.e("SkinCapeDialog", "Failed to load browse preview", e) }.getOrNull()

@@ -9,8 +9,8 @@ import com.endiq.turtlelauncher.feature.mod.modloader.ModVersionListAdapter
 import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.subassembly.modlist.ModListFragment
 import com.endiq.turtlelauncher.utils.ZHTools
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.modloaders.FabricVersion
+import net.endiq.launcher.Tools
+import net.endiq.launcher.modloaders.FabricVersion
 import com.endiq.turtlelauncher.feature.mod.modloader.FabricLikeUtils
 import com.endiq.turtlelauncher.ui.fragment.InstallGameFragment.Companion.BUNDLE_MC_VERSION
 import org.greenrobot.eventbus.EventBus

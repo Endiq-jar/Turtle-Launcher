@@ -37,7 +37,7 @@ import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.file.FileTools.Companion.mkdirs
 import com.endiq.turtlelauncher.feature.turtle.cursor.CustomCursorLoader
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

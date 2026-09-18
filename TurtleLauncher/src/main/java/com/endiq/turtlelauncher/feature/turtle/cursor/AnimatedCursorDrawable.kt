@@ -22,7 +22,7 @@ import android.view.Choreographer
  * assigns it the standard way (ImageView.setImageDrawable, View.setBackground) gets a
  * working [Drawable.Callback] for free and redraws automatically - this is what gives the
  * settings-card preview and the touchpad test view smooth animation with no per-call-site
- * work. [net.kdt.pojavlaunch.customcontrols.mouse.Touchpad] draws its pointer manually in
+ * work. [net.endiq.launcher.customcontrols.mouse.Touchpad] draws its pointer manually in
  * onDraw() instead of through those APIs, so it wires the callback itself.
  */
 class AnimatedCursorDrawable(

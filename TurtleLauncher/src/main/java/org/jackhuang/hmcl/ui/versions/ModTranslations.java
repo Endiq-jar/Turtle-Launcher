@@ -23,7 +23,7 @@ import com.endiq.turtlelauncher.feature.download.enums.Classify;
 import com.endiq.turtlelauncher.feature.log.Logging;
 import com.endiq.turtlelauncher.utils.stringutils.StringUtilsKt;
 
-import net.kdt.pojavlaunch.Tools;
+import net.endiq.launcher.Tools;
 
 import org.jackhuang.hmcl.util.Pair;
 import org.jackhuang.hmcl.util.StringUtils;

@@ -17,7 +17,7 @@ import com.endiq.turtlelauncher.ui.fragment.ModsFragment
 import com.endiq.turtlelauncher.ui.fragment.VersionConfigFragment
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.file.FileDeletionHandler
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 
 /**

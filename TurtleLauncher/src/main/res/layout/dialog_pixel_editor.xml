@@ -41,7 +41,7 @@
         android:layout_weight="1"
         android:gravity="center">
 
-        <net.kdt.pojavlaunch.customcontrols.handleview.PixelCanvasView
+        <net.endiq.launcher.customcontrols.handleview.PixelCanvasView
             android:id="@+id/pixelEditor_canvas"
             android:layout_width="@dimen/_280sdp"
             android:layout_height="@dimen/_280sdp"

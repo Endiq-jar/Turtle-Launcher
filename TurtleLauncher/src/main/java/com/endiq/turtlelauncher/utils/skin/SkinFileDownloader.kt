@@ -4,8 +4,8 @@ import com.google.gson.JsonObject
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.path.UrlManager
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.utils.DownloadUtils
+import net.endiq.launcher.Tools
+import net.endiq.launcher.utils.DownloadUtils
 import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream

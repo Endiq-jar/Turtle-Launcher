@@ -14,7 +14,7 @@ import com.endiq.turtlelauncher.R;
 import com.endiq.turtlelauncher.databinding.DialogKeyboardBinding;
 import com.endiq.turtlelauncher.ui.view.AnimButton;
 
-import net.kdt.pojavlaunch.Tools;
+import net.endiq.launcher.Tools;
 
 import java.util.ArrayList;
 import java.util.List;

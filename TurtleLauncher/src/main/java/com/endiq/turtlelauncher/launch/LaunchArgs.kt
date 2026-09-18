@@ -11,12 +11,12 @@ import com.endiq.turtlelauncher.feature.version.Version
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.path.LibPath
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.AWTCanvasView
-import net.kdt.pojavlaunch.JMinecraftVersionList
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.multirt.Runtime
-import net.kdt.pojavlaunch.utils.JSONUtils
-import net.kdt.pojavlaunch.value.MinecraftAccount
+import net.endiq.launcher.AWTCanvasView
+import net.endiq.launcher.JMinecraftVersionList
+import net.endiq.launcher.Tools
+import net.endiq.launcher.multirt.Runtime
+import net.endiq.launcher.utils.JSONUtils
+import net.endiq.launcher.value.MinecraftAccount
 import org.jackhuang.hmcl.util.versioning.VersionNumber
 import java.io.File
 
@@ -165,10 +165,10 @@ class LaunchArgs(
                 val serverId = extractNide8ServerId(baseUrl)
                 argsList.add("-javaagent:${LibPath.NIDE_8_AUTH.absolutePath}=$serverId")
                 argsList.add("-Dnide8auth.client=true")
-            } else if (net.kdt.pojavlaunch.authenticator.BattlyAuthlibManager.isBattlyServer(baseUrl)) {
+            } else if (net.endiq.launcher.authenticator.BattlyAuthlibManager.isBattlyServer(baseUrl)) {
                 // Battly ships its own authlib-injector build rather than the generic bundled
                 // one, fetched from their file manifest — see BattlyAuthlibManager for why.
-                net.kdt.pojavlaunch.authenticator.BattlyAuthlibManager.addJvmArgumentsIfAvailable(argsList)
+                net.endiq.launcher.authenticator.BattlyAuthlibManager.addJvmArgumentsIfAvailable(argsList)
             } else {
                 argsList.add("-javaagent:${LibPath.AUTHLIB_INJECTOR.absolutePath}=$baseUrl")
             }

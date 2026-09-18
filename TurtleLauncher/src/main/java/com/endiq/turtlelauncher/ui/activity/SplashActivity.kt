@@ -19,9 +19,9 @@ import com.endiq.turtlelauncher.feature.unpack.UnpackSingleFilesTask
 import com.endiq.turtlelauncher.task.Task
 import com.endiq.turtlelauncher.ui.dialog.TipDialog
 import com.endiq.turtlelauncher.utils.StoragePermissionsUtils
-import net.kdt.pojavlaunch.LauncherActivity
-import net.kdt.pojavlaunch.MissingStorageActivity
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.LauncherActivity
+import net.endiq.launcher.MissingStorageActivity
+import net.endiq.launcher.Tools
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : BaseActivity() {

@@ -39,7 +39,7 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
-        android:name="net.kdt.pojavlaunch.TurtleApplication"
+        android:name="net.endiq.launcher.TurtleApplication"
         android:allowBackup="true"
         android:allowNativeHeapPointerTagging="false"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -80,12 +80,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="net.kdt.pojavlaunch.MissingStorageActivity"
+            android:name="net.endiq.launcher.MissingStorageActivity"
             android:exported="false"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
             android:screenOrientation="sensorLandscape" />
         <activity
-            android:name="net.kdt.pojavlaunch.LauncherActivity"
+            android:name="net.endiq.launcher.LauncherActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
@@ -128,16 +128,16 @@
             android:name="com.endiq.turtlelauncher.ui.activity.ConfigEditorActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name="net.kdt.pojavlaunch.ShowErrorActivity"
+        <activity android:name="net.endiq.launcher.ShowErrorActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
         <activity
             android:process=":gui_installer"
-            android:name="net.kdt.pojavlaunch.JavaGUILauncherActivity"
+            android:name="net.endiq.launcher.JavaGUILauncherActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
             android:screenOrientation="sensorLandscape" />
         <activity
-            android:name="net.kdt.pojavlaunch.CustomControlsActivity"
+            android:name="net.endiq.launcher.CustomControlsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
             android:exported="false"
             android:screenOrientation="sensorLandscape" >
@@ -157,7 +157,7 @@
              of opening the pause menu. Explicit "false" here overrides the "true" default set
              on <application> above; this is Android's documented per-activity opt-out. -->
         <activity
-            android:name="net.kdt.pojavlaunch.MainActivity"
+            android:name="net.endiq.launcher.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
             android:launchMode="singleTop"
             android:process=":game"
@@ -165,7 +165,7 @@
             android:screenOrientation="sensorLandscape" />
 
         <provider
-            android:name="net.kdt.pojavlaunch.scoped.FolderProvider"
+            android:name="net.endiq.launcher.scoped.FolderProvider"
             android:authorities="@string/storageProviderAuthorities"
             android:exported="true"
             android:grantUriPermissions="true"
@@ -198,12 +198,12 @@
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
         <service
-            android:name="net.kdt.pojavlaunch.services.ProgressService"
+            android:name="net.endiq.launcher.services.ProgressService"
             android:foregroundServiceType="specialUse">
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Tracks progress of local background tasks (downloads, asset extraction, version installs) and keeps the process alive while they run. Not data sync with a remote server."/>
         </service>
-        <service android:name="net.kdt.pojavlaunch.services.GameService" android:process=":game"
+        <service android:name="net.endiq.launcher.services.GameService" android:process=":game"
             android:foregroundServiceType="specialUse">
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="This application is intended to run a 3rd-party piece of software which cannot be managed using the activity's saved instance state. This service is used for background persistence of this piece of software."/>
@@ -212,7 +212,7 @@
              ScreenRecorder's in-game audio capture (MediaProjection-authorized, audio only,
              no display mirroring) is allowed to use the MediaProjection it obtains. -->
         <service
-            android:name="net.kdt.pojavlaunch.services.ScreenRecorderAudioService"
+            android:name="net.endiq.launcher.services.ScreenRecorderAudioService"
             android:foregroundServiceType="mediaProjection"
             android:exported="false"/>
 
@@ -239,6 +239,9 @@
              instructions for the user. Package visibility is filtered by default from
              Android 11 onwards, so without this the query always comes back empty. -->
         <package android:name="moe.shizuku.privileged.api"/>
+        <!-- net.kdt.pojavlaunch.ffmpeg is the external FFmpeg plugin APK's OWN
+             applicationId (see FFmpegPlugin.discover) - not one of this launcher's
+             packages, so it is deliberately NOT renamed. -->
         <package android:name="net.kdt.pojavlaunch.ffmpeg"/>
         <intent>
             <action android:name="android.intent.action.MAIN" />

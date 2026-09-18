@@ -37,8 +37,8 @@ import com.endiq.turtlelauncher.utils.anim.AnimUtils.Companion.setVisibilityAnim
 import com.endiq.turtlelauncher.utils.file.FileCopyHandler
 import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.file.PasteFile
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
+import net.endiq.launcher.Tools
+import net.endiq.launcher.contracts.OpenDocumentWithExtension
 import java.io.File
 import java.util.function.Consumer
 

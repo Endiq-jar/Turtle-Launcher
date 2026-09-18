@@ -16,11 +16,11 @@ import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.dialog.TipDialog
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.authenticator.listener.DoneListener
-import net.kdt.pojavlaunch.authenticator.listener.ErrorListener
-import net.kdt.pojavlaunch.authenticator.microsoft.PresentedException
-import net.kdt.pojavlaunch.value.MinecraftAccount
+import net.endiq.launcher.Tools
+import net.endiq.launcher.authenticator.listener.DoneListener
+import net.endiq.launcher.authenticator.listener.ErrorListener
+import net.endiq.launcher.authenticator.microsoft.PresentedException
+import net.endiq.launcher.value.MinecraftAccount
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.io.IOException

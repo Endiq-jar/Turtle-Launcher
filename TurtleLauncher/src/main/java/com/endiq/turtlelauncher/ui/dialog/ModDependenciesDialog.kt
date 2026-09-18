@@ -12,7 +12,7 @@ import com.endiq.turtlelauncher.feature.download.ModDependenciesAdapter
 import com.endiq.turtlelauncher.feature.download.item.DependenciesInfoItem
 import com.endiq.turtlelauncher.feature.download.item.InfoItem
 import com.endiq.turtlelauncher.feature.log.Logging
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import com.endiq.turtlelauncher.utils.anim.TurtleTransitions
 
 

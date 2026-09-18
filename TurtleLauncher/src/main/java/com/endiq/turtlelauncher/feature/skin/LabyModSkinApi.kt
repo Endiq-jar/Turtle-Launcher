@@ -5,8 +5,8 @@ import com.google.gson.JsonParser
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.path.UrlManager
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.utils.DownloadUtils
+import net.endiq.launcher.Tools
+import net.endiq.launcher.utils.DownloadUtils
 
 /**
  * Looks up a player's current Mojang skin and LabyMod cape by username, for the

@@ -21,7 +21,7 @@ import com.endiq.turtlelauncher.feature.download.utils.ModLoaderUtils
 import com.endiq.turtlelauncher.feature.download.utils.PlatformUtils
 import com.endiq.turtlelauncher.feature.download.utils.VersionTypeUtils
 import com.endiq.turtlelauncher.utils.ZHTools
-import net.kdt.pojavlaunch.modloaders.modpacks.api.ApiHandler
+import net.endiq.launcher.modloaders.modpacks.api.ApiHandler
 
 class ModrinthModHelper {
     companion object {

@@ -1,16 +1,16 @@
 package com.endiq.turtlelauncher.feature.version.install
 
 import android.app.Activity
-import com.kdt.mcgui.ProgressLayout
+import com.endiq.mcgui.ProgressLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.event.value.InstallGameEvent
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.feature.version.VersionsManager
 import com.endiq.turtlelauncher.task.Task
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper
-import net.kdt.pojavlaunch.tasks.AsyncMinecraftDownloader
-import net.kdt.pojavlaunch.tasks.MinecraftDownloader
+import net.endiq.launcher.Tools
+import net.endiq.launcher.progresskeeper.ProgressKeeper
+import net.endiq.launcher.tasks.AsyncMinecraftDownloader
+import net.endiq.launcher.tasks.MinecraftDownloader
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.util.concurrent.atomic.AtomicReference
