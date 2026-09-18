@@ -668,48 +668,82 @@ object CrashAnalyzer {
             ),
             // 22. MC 26.3+'s new SDL3-based LWJGL backend (org.lwjgl.sdl.SDLInit.SDL_Init)
             // SIGSEGV inside libSDL3.so's Android backend init path, confirmed via a real
-            // device hs_err_pid*.log (si_addr=0x0, SEGV_MAPERR - a null pointer dereference,
+            // device tombstone (si_addr=0x0, SEGV_MAPERR - a null pointer dereference,
             // not memory corruption) at the same offset across two separate crash logs, so
-            // consistently reproducible rather than flaky. Call chain from the log itself:
-            // SDL_Init -> SDL_InitSubSystem -> three internal (unexported, stripped) helpers
-            // -> crash, inside SDL's Android JNI backend code.
+            // consistently reproducible rather than flaky.
             //
-            // Root cause, now established rather than guessed: SDL's Android backend reads
-            // statics its own SDLActivity Java glue normally fills in (Activity, SDLSurface,
-            // layout, clipboard handler). This launcher never starts SDLActivity as an
-            // Activity, so those were all null and SDL_Init dereferenced one.
+            // MECHANISM (fully decoded Sept 2026 from the tombstone + the bundled
+            // libSDL3.so itself - this is now established, not guessed): pc=libSDL3.so+0xb94c4
+            // lands inside this build's Android_JNI_InitTouch (function at +0xb94ac). It calls
+            // Android_JNI_GetEnv, which reads SDL's mJavaVM static; when that is NULL it logs
+            // "SDL: Failed, there is no JavaVM" and returns a NULL JNIEnv, and InitTouch then
+            // dereferences that NULL unchecked. mJavaVM is only set by SDL's JNI_OnLoad, and a
+            // plain dlopen() never runs JNI_OnLoad - only ART's System.loadLibrary does. LWJGL
+            // loads SDL3 with its own dlopen (Java_org_lwjgl_system_linux_DynamicLinkLoader_
+            // ndlopen in liblwjgl.so - verified by its exports; its DT_NEEDED is just
+            // libdl/libc), so the game-side SDL3 instance only ever gets initialized if bionic's
+            // linker hands it the ALREADY-INITIALIZED soinfo from SdlAndroidJniPrep's ART-side
+            // System.loadLibrary. bionic does exactly that for the same file (same
+            // st_dev/st_ino) within a linker-namespace chain (linker.cpp
+            // find_loaded_library_by_inode) - so the observed crash requires one of:
+            //   (a) a DIFFERENT libSDL3.so file won the search - the per-version natives cache
+            //       dir is FIRST on java.library.path, and Minecraft's own natives bootstrap
+            //       extracts classpath jars there at startup; or
+            //   (b) OEM linker-namespace divergence - the crash device (OPPO/ColorOS, Android
+            //       13) shows a burst of "not accessible for the namespace" vendor-lib dlopen
+            //       failures around game start, consistent with a non-stock namespace topology
+            //       for game-classified processes that defeats the same-inode dedupe. Those
+            //       vendor-lib messages themselves are harmless OEM game-injection attempts,
+            //       NOT missing dependencies of ours (liblwjgl.so needs only libdl/libc -
+            //       verified).
+            // The tombstone offset matching THIS launcher's bundled Amethyst Android SDL build
+            // proves the game loaded an Android-built SDL3, not Mojang's desktop one.
             //
-            // Fix status: the mechanism Amethyst-Android uses for this is now ported -
-            // SDLActivity.externalInitialize() / SDLSurface.setNativeSurface(), plus this
-            // launcher's own surface lifecycle being forwarded into SDL (see
-            // SdlAndroidJniPrep's class doc for which half of their fix is in, which isn't,
-            // and why the native half can't be). That code has NOT been verified on real
-            // hardware, so this rule stays: if the crash still happens the player sees the
-            // diagnosis below, and the "TurtleSDL3: getNativeSurface" log line now says
-            // whether SDL was handed a real Surface - the piece that was invisible before.
+            // FIX STATUS (Java-only, mechanistically grounded, NOT yet device-verified):
+            //   1. LaunchArgs now pins -Dorg.lwjgl.sdl.libname=<APK libSDL3.so> - LWJGL's
+            //      Library.loadNative METHOD 1 dlopens an absolute path directly, bypassing
+            //      the natives-dir/java.library.path search (verified in LWJGL's source).
+            //   2. SdlAndroidJniPrep.ensureSingleSdl3Source() purges foreign libSDL3*.so from
+            //      the per-version natives cache dir pre-launch and logs the pinned file.
+            // These kill cause (a) outright; for (b) they maximize the dedupe odds but cannot
+            // reconfigure an OEM's namespaces - that needs Amethyst's native sdl_hook.c
+            // approach, which this launcher has no NDK toolchain to build. So this rule stays:
+            // if the crash recurs the diagnosis below is what the player sees, and the
+            // "TurtleSDL3:"/"SdlAndroidJniPrep" log lines now record what was pinned/purged.
             Rule(
                 title = "sdl3_android_init_sigsegv",
-                matches = { has(it, "libSDL3.so") && has(it, "SDL_InitSubSystem", "SDL_Init") && has(it, "SIGSEGV") },
+                matches = { has(it, "libSDL3.so") && has(it, "SIGSEGV") &&
+                    // Either the classic SDL_Init-subsystem frames, or SDL's own tell-tale
+                    // pre-crash log line - that line alone identifies this exact mechanism
+                    // (NULL mJavaVM => uninitialized instance) even in a logcat-only report
+                    // with no tombstone frames at all.
+                    (has(it, "SDL_InitSubSystem", "SDL_Init") || has(it, "Failed, there is no JavaVM")) },
                 diagnosis = { _ ->
                     Diagnosis(
                         title = "MC 26.3+'s SDL3 backend crashed on Android during SDL_Init (libSDL3.so)",
-                        cause = "A null-pointer SIGSEGV inside libSDL3.so's own Android backend init code, triggered " +
-                            "by LWJGL's org.lwjgl.sdl.SDL_Init(). SDL's Android backend expects an Activity/SDLSurface " +
-                            "pair from its own Java glue; this launcher now sets that up before the game JVM starts " +
-                            "(SdlAndroidJniPrep), but that path is new and not yet confirmed on a real device - so a " +
-                            "crash here means either it didn't take effect for this launch, or the renderer in use " +
-                            "can't create its EGL window under SDL at all.",
+                        cause = "A null-pointer SIGSEGV inside libSDL3.so's own Android backend: the game thread " +
+                            "called into an SDL3 instance whose Android JNI glue was never initialized - SDL's " +
+                            "JavaVM pointer was still NULL, so SDL's GetEnv returned NULL and its touch-init code " +
+                            "dereferenced it. The launcher DOES initialize SDL's Android side before the game " +
+                            "starts (SdlAndroidJniPrep), which means the game loaded a second, different SDL3 " +
+                            "instance instead of the initialized one - either a foreign libSDL3.so found first in " +
+                            "the natives cache dir, or this device's vendor linker namespaces split the two " +
+                            "loads apart. The launcher now pins the exact SDL3 file and purges foreign copies, " +
+                            "but that fix is new and not yet confirmed on a real device. (The 'not accessible " +
+                            "for the namespace' vendor-library lines some devices print around game start are " +
+                            "harmless OEM game-injection noise - ignore them.)",
                         fixSteps = listOf(
-                            "Switch renderer for this version: Settings → Video → Renderer. Amethyst-Android's own " +
-                                "release notes list MobileGlues and Krypton Wrapper as crashing on MC 26.3-snapshot4+ " +
-                                "\"due to changes in how SDL creates EGL window\" - Zink or LTW are the safer picks there.",
-                            "Leave Settings → Experimental → \"LWJGL compatibility mode\" on Auto so the launcher picks " +
-                                "the LWJGL native matching this version's own manifest.",
-                            "If it still fails, play an MC version at or below 26.2 (pre-SDL3/GLFW-based LWJGL) and " +
-                                "report the log - the new SDL log lines say whether SDL got a real Surface, which is " +
-                                "what's needed to finish this fix.",
-                            "A native backtrace with symbols for the three unexported frames below SDL_InitSubSystem " +
-                                "(gdb/lldb attached to a launch) would give more than the stripped binary can."
+                            "Update to the latest build and relaunch - newer builds pin the SDL3 library file " +
+                                "and purge foreign copies from the natives cache, which addresses the known " +
+                                "cause of this crash.",
+                            "If it still crashes, share the log: the 'TurtleSDL3:' and 'SdlAndroidJniPrep' lines " +
+                                "now record exactly which SDL3 file was pinned and what was removed - that's " +
+                                "what's needed to finish this fix on the affected device.",
+                            "Also try Settings → Video → Renderer: on MC 26.3-snapshot4+, Amethyst-Android's own " +
+                                "notes flag MobileGlues and Krypton Wrapper as crashing 'due to changes in how " +
+                                "SDL creates EGL window' - Zink or LTW are the safer picks.",
+                            "Worst case, play an MC version at or below 26.2 (pre-SDL3, GLFW-based LWJGL), which " +
+                                "this crash cannot affect."
                         ),
                         severity = Severity.CRITICAL
                     )

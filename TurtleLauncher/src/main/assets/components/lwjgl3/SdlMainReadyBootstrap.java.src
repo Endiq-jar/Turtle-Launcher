@@ -34,6 +34,29 @@ import java.lang.reflect.Method;
  * Reflection throughout because org.lwjgl.sdl.SDLMain isn't a compile-time
  * dependency available here - it's one of Mojang's own downloaded
  * libraries, resolved only at runtime from the version-specific classpath.
+ *
+ * ── Sept 2026 verification note (comments only - the compiled class in
+ * lwjgl-glfw-classes.jar is unchanged; comments are not part of bytecode) ──
+ * The wiring described above is now verified end-to-end statically:
+ * assets/components/lwjgl3/lwjgl-glfw-classes.jar contains
+ * com/endiq/turtlelauncher/launch/SdlMainReadyBootstrap.class (Java 8
+ * bytecode), Components.kt unpacks the lwjgl3 component into
+ * <gameHome>/lwjgl3/, Tools.getLWJGL3ClassPath() puts that jar on the game
+ * -cp, and LaunchArgs routes every NEW_SDL launch's main class through here.
+ *
+ * DELIBERATELY does NOT load SDL3 itself, even though that would seem to
+ * "pre-initialize" it: loading libSDL3.so from THIS (guest) JVM - by
+ * System.loadLibrary("SDL3") or by touching org.lwjgl.sdl.SDL early - runs
+ * SDL's JNI_OnLoad, which binds SDL's mJavaVM to the GUEST VM and overwrites
+ * the ART-side binding SdlAndroidJniPrep carefully set up beforehand. SDL's
+ * Android backend would then call Java through the guest JNIEnv using
+ * jclass/jmethodID globals created against the ART VM - cross-VM jobject
+ * misuse, i.e. a different, less predictable crash than the one it tries to
+ * prevent. The launcher-side fix for the SDL3 two-instance crash is
+ * therefore done entirely on the ART side + JVM args instead:
+ * -Dorg.lwjgl.sdl.libname pinning and the natives-cache purge (see
+ * SdlAndroidJniPrep.ensureSingleSdl3Source and its class doc). This class's
+ * job stays exactly one thing: call SDL_SetMainReady() before Mojang's main.
  */
 public class SdlMainReadyBootstrap {
     public static void main(String[] args) throws Exception {

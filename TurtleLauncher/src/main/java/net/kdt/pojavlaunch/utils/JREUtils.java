@@ -602,7 +602,17 @@ public final class JREUtils {
         // SdlAndroidJniPrep's class doc for exactly what's fixed and what still isn't
         // (the ABI mismatch is confirmed fixed; the original SIGSEGV is not confirmed
         // fixed, only improved-odds - this has not been tested on a real device).
+        // TurtleLauncher CRASH FIX (MC 26.3+ SDL3 two-instance crash): before the ART-side
+        // SDL prep below, remove any libSDL3*.so that Minecraft's own natives bootstrap may
+        // have left in the per-version natives cache dir - that dir is FIRST on
+        // java.library.path, so a copy there would shadow this launcher's APK-installed
+        // Android SDL3 build and load a second, uninitialized instance (the confirmed
+        // Android_JNI_InitTouch NULL-env SIGSEGV - full decode in SdlAndroidJniPrep's class
+        // doc). LaunchArgs additionally pins -Dorg.lwjgl.sdl.libname to the same APK file.
+        // Java-only, best-effort: no device here to verify on, but each step logs the
+        // "TurtleSDL3:" lines a crash report needs to confirm or refute it.
         if (gameVersion != null && Tools.resolveLwjglMode(Tools.getVersionInfo(gameVersion)) == Tools.LwjglMode.NEW_SDL) {
+            com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.ensureSingleSdl3Source(gameVersion.getVersionName());
             com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.setup(activity);
         }
 

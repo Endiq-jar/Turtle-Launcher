@@ -112,6 +112,40 @@ class LaunchArgs(
         // let it call SDL_SetMainReady() before handing off to the real one.
         // Every other version launches directly as before, unchanged.
         if (Tools.resolveLwjglMode(versionInfo) == Tools.LwjglMode.NEW_SDL) {
+            // ── TurtleLauncher CRASH FIX (SDL3 two-instance crash, defense layer 2) ──
+            // Pin WHICH libSDL3.so file LWJGL's SDL binding loads. LWJGL's generated
+            // org.lwjgl.sdl.SDL resolves its library through
+            // Library.loadNative(SDL.class, "org.lwjgl.sdl",
+            //     Configuration.SDL_LIBRARY_NAME.get(Platform.mapLibraryNameBundled("SDL3")), true)
+            // (verified against LWJGL's source), and Library.loadNative's METHOD 1 short-circuits
+            // on an absolute path: it dlopens exactly that file, skipping the classpath-natives
+            // extraction, org.lwjgl.librarypath and java.library.path searches entirely. Without
+            // this pin, LWJGL walks those paths in order and the per-version natives cache dir
+            // (FIRST on java.library.path) can shadow us with a foreign libSDL3.so - a different
+            // file, so bionic's same-inode dlopen dedupe can't unify it with the instance
+            // SdlAndroidJniPrep.setup() already initialized on the ART side. The game would then
+            // dlopen a second SDL3 whose JNI_OnLoad never ran (plain dlopen never runs
+            // JNI_OnLoad), its mJavaVM stays NULL, and SDL's Android backend crashes in
+            // Android_JNI_InitTouch with a NULL JNIEnv - the confirmed MC 26.3 tombstone crash;
+            // full decode in SdlAndroidJniPrep's class doc.
+            //
+            // Pinning to this exact APK file is what maximizes the chance both sides end up on
+            // ONE instance: the ART side's System.loadLibrary("SDL3") maps this same file, and
+            // bionic dedupes dlopens of the same inode within a linker-namespace chain
+            // (linker.cpp find_loaded_library_by_inode), so the pinned dlopen should return the
+            // already-initialized soinfo. What this can NOT fix is an OEM linker-namespace
+            // topology that splits the namespaces to begin with (the OPPO/ColorOS device in the
+            // crash log shows vendor-injection dlopen noise consistent with that) - Java has no
+            // lever over namespace layout; that is what Amethyst's native sdl_hook.c is for.
+            // Best-effort/unverified on a real device - see the "TurtleSDL3:" log lines
+            // SdlAndroidJniPrep logs alongside this.
+            // (Guarded on the file existing so a broken/split APK install degrades to LWJGL's
+            // default search instead of pinning to a nonexistent path.)
+            val pinnedSdl3 = File(PathManager.DIR_NATIVE_LIB, "libSDL3.so")
+            if (pinnedSdl3.isFile) {
+                argsList.add("-Dorg.lwjgl.sdl.libname=${pinnedSdl3.absolutePath}")
+            }
+
             argsList.add("-Dturtlelauncher.realMainClass=${versionInfo.mainClass}")
             argsList.add("com.endiq.turtlelauncher.launch.SdlMainReadyBootstrap")
         } else {
