@@ -7,21 +7,21 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout TurtleLauncher
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: turtle
 
       - name: Checkout MojoLauncher's LWJGL Android builder
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: MojoLauncher/unilwjgl3-builder
           path: builder
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -68,10 +68,10 @@ jobs:
           ls -la turtle/TurtleLauncher/src/main/jniLibs/arm64-v8a/
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
       - name: Install required SDK components
         run: |
@@ -97,7 +97,7 @@ jobs:
             --no-daemon
 
       - name: Upload fixed APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: TurtleLauncher-debug-apk-lwjgl-fixed
           path: turtle/TurtleLauncher/build/outputs/apk/debug/*.apk
