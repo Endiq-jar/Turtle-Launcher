@@ -5,25 +5,6 @@ import com.endiq.turtlelauncher.feature.log.Logging
 import java.io.File
 import java.util.zip.ZipFile
 
-/**
- * TurtleLauncher: detects two or more installed mods whose Mixin configs both
- * declare a patch ("mixin") targeting the exact same Minecraft class.
- *
- * This is the single most common cause of an otherwise-cryptic crash on
- * startup ("MixinApplicatorStandard", "Critical injection failure", a mod
- * loading fine alone but crashing only when a second specific mod is also
- * present). Two mods independently rewriting the same class's bytecode will
- * very often produce a transformation conflict that only shows up as a stack
- * trace deep inside Mixin's internals — useless to a non-developer.
- *
- * This is a *static* pre-launch check: it doesn't run any mod code, it just
- * reads each jar's fabric.mod.json/quilt.mod.json "mixins" list, opens each
- * referenced mixin config JSON, and collects every fully-qualified target
- * class name declared under "mixins"/"client"/"server". Forge/NeoForge mods
- * (mods.toml) are skipped — Forge's own coremod system already has its own
- * (much more thorough) conflict-handling, and TurtleLauncher's mod ecosystem
- * is overwhelmingly Fabric/Quilt.
- */
 object ModConflictDetector {
 
     data class Conflict(
@@ -33,11 +14,6 @@ object ModConflictDetector {
         val modNames: List<String>
     )
 
-    /**
-     * Scans every jar in [modsFolder] and returns one [Conflict] per target class that two or
-     * more *different* mods both declare a mixin against. Never throws — unreadable/malformed
-     * jars are silently skipped (this is a best-effort heads-up, not a hard gate).
-     */
     @JvmStatic
     fun detectConflicts(modsFolder: File): List<Conflict> {
         if (!modsFolder.isDirectory) return emptyList()

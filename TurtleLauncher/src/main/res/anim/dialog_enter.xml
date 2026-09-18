@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: dialogs now rise slightly as they scale in, and land with a small
-     overshoot, so opening one feels like it popped rather than just appeared. -->
 <set xmlns:android="http://schemas.android.com/apk/res/android">
 
     <scale

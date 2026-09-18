@@ -4,12 +4,6 @@ plugins {
 
 group = "org.lwjgl.glfw"
 
-// Gradle 9 hard-locks the built-in "default" configuration as Consumable-only at
-// creation - you can no longer flip isCanBeResolved on it (this used to work as a
-// soft-enforced warning in older Gradle, now it's a hard failure). runtimeClasspath
-// is the proper resolvable configuration that already contains everything pulled in
-// via `implementation` below, so we walk that instead; behavior is identical.
-
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveBaseName.set("lwjgl-glfw-classes")

@@ -9,13 +9,6 @@ import androidx.core.content.ContextCompat
 import com.endiq.turtlelauncher.R
 import java.util.Locale
 
-/**
- * TurtleLauncher: draws the "Play Time (Last 7 Days)" mini bar chart on the home screen -
- * a value label per day, a proportional bar, and a Mon..Sun day-of-week label underneath.
- * When every day is still 0 (a fresh install, matching the very first thing this chart
- * shows), each column falls back to a short flat baseline tick instead of an invisible
- * zero-height bar, so the layout still reads as "seven days" rather than empty space.
- */
 class WeeklyPlaytimeChartView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

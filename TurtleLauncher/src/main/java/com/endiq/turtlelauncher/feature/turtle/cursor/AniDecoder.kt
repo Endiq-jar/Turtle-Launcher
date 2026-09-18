@@ -3,28 +3,6 @@ package com.endiq.turtlelauncher.feature.turtle.cursor
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-/**
- * TurtleLauncher: custom binary parser for the Windows Animated Cursor (.ani) container -
- * a RIFF file of form type "ACON". Nothing in the Android SDK understands this format, so
- * this walks the chunk structure by hand:
- *
- * ```
- * RIFF <size> ACON
- *   anih <36 bytes>         fixed animation header: frame/step counts, default rate, flags
- *   rate <N x u32>          optional: per-step display duration, in jiffies (1/60 sec)
- *   seq  <N x u32>          optional: per-step index into the stored icon list (enables
- *                           loops/repeats without duplicating bitmap data)
- *   LIST fram
- *     icon <ICO/CUR bytes>  one per stored frame, decoded via CurIcoDecoder
- *     icon <ICO/CUR bytes>
- *     ...
- *   LIST INFO ...           optional metadata (author/title) - ignored
- * ```
- *
- * If `seq` is absent, playback order is just the icons in storage order. If `rate` is
- * absent, every step uses the header's single default jifRate. Chunk sizes are always
- * padded to an even number of bytes per the RIFF spec.
- */
 object AniDecoder {
     private const val JIFFY_MS = 1000.0 / 60.0
     private const val DEFAULT_JIFFY_RATE = 6 // ~100ms - only used if a file is missing anih entirely

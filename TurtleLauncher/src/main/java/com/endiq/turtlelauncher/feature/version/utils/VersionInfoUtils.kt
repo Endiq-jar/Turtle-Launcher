@@ -6,7 +6,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.feature.version.VersionInfo
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 
 class VersionInfoUtils {

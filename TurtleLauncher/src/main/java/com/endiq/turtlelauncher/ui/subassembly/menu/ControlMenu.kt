@@ -9,12 +9,12 @@ import android.widget.SeekBar
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.databinding.ViewControlMenuBinding
 import com.endiq.turtlelauncher.setting.AllSettings
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.customcontrols.ControlData
-import net.kdt.pojavlaunch.customcontrols.ControlDrawerData
-import net.kdt.pojavlaunch.customcontrols.ControlJoystickData
-import net.kdt.pojavlaunch.customcontrols.ControlLayout
-import net.kdt.pojavlaunch.customcontrols.EditorExitable
+import net.endiq.launcher.Tools
+import net.endiq.launcher.customcontrols.ControlData
+import net.endiq.launcher.customcontrols.ControlDrawerData
+import net.endiq.launcher.customcontrols.ControlJoystickData
+import net.endiq.launcher.customcontrols.ControlLayout
+import net.endiq.launcher.customcontrols.EditorExitable
 
 class ControlMenu(
     private val activity: Activity,

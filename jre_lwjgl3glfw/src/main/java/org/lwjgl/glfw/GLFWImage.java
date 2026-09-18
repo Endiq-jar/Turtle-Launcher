@@ -1,30 +1,6 @@
 /*
  * Copyright LWJGL. All rights reserved.
  * License terms: https://www.lwjgl.org/license
- *
- * TurtleLauncher: this is a source override of the real upstream GLFWImage class,
- * same pattern as GLFW.java in this module. Root cause it fixes: the bundled
- * lwjgl-glfw.jar in libs/ (Specification-Version "3.3.6-snapshot") was built from an
- * LWJGL3 commit that had ALREADY dropped the mallocStack()/callocStack() aliases
- * ahead of their documented "removal in 3.4.0" - real LWJGL 3.3.6 (and everything
- * back through 3.2.x) still had them. Every Minecraft version compiled against
- * pre-3.3 LWJGL (e.g. 1.16.5, which calls GLFWImage.mallocStack(int, MemoryStack)
- * from MainWindow.<init> to build the window-icon buffer) hits a NoSuchMethodError
- * the instant Minecraft() is constructed, since this launcher forces ALL MC
- * versions - old and new - onto this one shared bundled classpath
- * (Tools.getLWJGL3ClassPath(), see MinecraftDownloader/Tools.java comments on why
- * Mojang's own real lwjgl-glfw jar can never be used instead: it expects desktop
- * natives this launcher doesn't have).
- *
- * Everything below the struct layout/plain accessors is unchanged from real
- * upstream LWJGL 3.3.6 GLFWImage.java (fetched from the LWJGL3 GitHub tag to keep
- * the struct's binary layout byte-for-byte identical to what the bundled native
- * side and the rest of this jar's GLFWImage.Buffer usage already expect) - the
- * only functional addition is the mallocStack/callocStack block, restoring exactly
- * what upstream still had at 3.3.6. jspecify's @Nullable (unavailable as a
- * dependency in this module) was dropped in favor of this module's existing
- * javax.annotation.Nullable convention (see GLFW.java) - these are non-TYPE_USE
- * hints only and don't affect the erased method signatures the JVM links against.
  */
 package org.lwjgl.glfw;
 
@@ -224,10 +200,6 @@ public class GLFWImage extends Struct<GLFWImage> implements NativeResource {
         return address == NULL ? null : new Buffer(address, capacity);
     }
 
-    // -----------------------------------
-    // TurtleLauncher: restored - see file header. Real upstream LWJGL kept these
-    // through 3.3.6; only the bundled jar's snapshot commit had already dropped
-    // them ahead of the documented 3.4.0 removal.
 
     /** Deprecated for removal in 3.4.0. Use {@link #malloc(MemoryStack)} instead. */
     @Deprecated public static GLFWImage mallocStack() { return malloc(stackGet()); }

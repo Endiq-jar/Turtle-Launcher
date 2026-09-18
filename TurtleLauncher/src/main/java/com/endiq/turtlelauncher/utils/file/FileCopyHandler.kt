@@ -68,10 +68,6 @@ class FileCopyHandler @JvmOverloads constructor(
         return File(file.absolutePath.replace(mRoot.absolutePath, mTarget.absolutePath).removeSuffix(file.name))
     }
 
-    // If a file with the same name already exists at the target:
-    //  - with autoReplace enabled the target file/folder is replaced outright (the old one is
-    //    deleted so the following copy/move writes straight through)
-    //  - otherwise a numeric suffix is added to the target name so files are not overwritten
     private fun getNewDestination(sourceFile: File, targetDir: File, fileExtension: String?): File {
         var destFile = File(targetDir, sourceFile.name)
         if (!destFile.exists()) return destFile

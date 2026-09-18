@@ -3,10 +3,10 @@ package com.endiq.turtlelauncher.feature.log
 import com.endiq.turtlelauncher.feature.version.Version
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.multirt.MultiRTUtils
-import net.kdt.pojavlaunch.tasks.AsyncMinecraftDownloader
-import net.kdt.pojavlaunch.tasks.MinecraftDownloader
+import net.endiq.launcher.Tools
+import net.endiq.launcher.multirt.MultiRTUtils
+import net.endiq.launcher.tasks.AsyncMinecraftDownloader
+import net.endiq.launcher.tasks.MinecraftDownloader
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.RandomAccessFile
@@ -14,35 +14,10 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
-/**
- * TurtleLauncher Crash & Log Analyzer.
- *
- * Looks at the launcher's "latestlog.txt" (and, if available, Minecraft's own
- * crash-report file) and tries to recognise known failure signatures, surfacing a
- * plain-language cause + a concrete checklist of fixes instead of a raw stack trace.
- *
- * This is intentionally *not* a generic log-parsing framework: it is a small,
- * hand-maintained knowledge base of patterns we've actually seen cause real crashes
- * on Android (native library loading, renderer driver bugs, OOM, broken/incompatible
- * mods, corrupted downloads, auth issues...). New patterns can be added to [rules]
- * as they're discovered.
- *
- * Used from two places:
- *  - After the game process exits with a non-zero code (a real "crash"), via
- *    [analyzeGameExit], wired into JREUtils → ErrorActivity.
- *  - While the game process is still alive but appears stuck (a "black screen" that
- *    never crashes), via [analyzeFrozenState], wired into [GameWatchdog].
- */
 object CrashAnalyzer {
 
     enum class Severity { CRITICAL, WARNING, INFO }
 
-    /**
-     * A concrete, in-app action Crash Analyzer 2.0 can perform on the user's behalf for a
-     * given [Diagnosis] instead of just describing what to do — the "one-click repair" part
-     * of the fix list. Every type below is backed by a real operation in [executeRepair];
-     * there's no repair action here that isn't actually implemented.
-     */
     enum class RepairActionType {
         /** Deletes the writable per-version natives cache dir so it gets rebuilt clean. */
         CLEAR_NATIVES_CACHE,
@@ -58,10 +33,6 @@ object CrashAnalyzer {
         LOWER_RAM_ALLOCATION,
         /** Raises Settings → Game → RAM Allocation by one step. */
         INCREASE_RAM_ALLOCATION,
-        /** Self-Healing Launcher: resets file permissions on the natives cache, mods,
-         *  config, and pinned-Java-runtime folders (the actual spots an Android storage
-         *  permission glitch tends to hit — not a blind recursive chmod of the whole
-         *  game folder, which would be slow and pointless on files the app already owns). */
         FIX_PERMISSIONS,
         /** Self-Healing Launcher: deletes this version's config-like files (options.txt,
          *  servers.dat, launcher_profiles.json, optionsof.txt) if they're zero-byte or
@@ -71,9 +42,6 @@ object CrashAnalyzer {
          *  downloader the normal launch path uses, so anything missing or corrupted gets
          *  re-fetched. */
         VERIFY_GAME_FILES,
-        /** Self-Healing Launcher: if this version's pinned Java runtime is missing or
-         *  broken on disk, removes it and clears the pin so the next launch re-provisions
-         *  a working runtime automatically via TurtleJREAutoInstaller. */
         REPAIR_RUNTIME,
         /** Flips Settings → Video → Performance → "Native object pooling" off, i.e.
          *  AllSettings.nativeObjectPooling → LIBGL_RECYCLEFBO=0 on next launch. */
@@ -121,11 +89,6 @@ object CrashAnalyzer {
     // "steal" a match that already has a much better explanation.
     private val rules: List<Rule> by lazy {
         listOf(
-            // 1. Native renderer library failed to load (liblwjgl.so / libpojavexec.so).
-            // This was the root cause behind every crash log we've analysed so far —
-            // Mojang's own version JSON re-asserts an incomplete java.library.path
-            // *after* the launcher sets the correct one. Fixed in LaunchArgs.kt, but
-            // kept here in case an older/custom build still hits it.
             Rule(
                 title = "native_library_path",
                 matches = { has(it, "Failed to locate library:", "no pojavexec in java.library.path", "no pojavexec_awt in java.library.path") },
@@ -144,14 +107,6 @@ object CrashAnalyzer {
                     repairActions = listOf(RepairAction(RepairActionType.CLEAR_NATIVES_CACHE, "Clear natives cache"))
                 )
             ),
-            // 1b. pojavInitOpenGL crashes at pc=0x0 when POJAV_RENDERER doesn't match one
-            // of libpojavexec.so's own hardcoded recognized strings ("opengles",
-            // "custom_gallium", "vulkan_zink", "gallium_freedreno", "gallium_panfrost",
-            // "gallium_virgl" - confirmed by disassembly, see Renderers.kt's top-of-file
-            // doc comment). Fixed for all six built-in renderers via
-            // RendererInterface.getNativeRendererId(); kept here because a renderer
-            // plugin (RendererPluginManager) could still declare a POJAV_RENDERER value
-            // that isn't one of those six and hit this exact crash.
             Rule(
                 title = "turtle_renderer_unrecognized",
                 matches = { has(it, "pojavInitOpenGL") && has(it, "SIGSEGV") },
@@ -192,17 +147,6 @@ object CrashAnalyzer {
                     repairActions = listOf(RepairAction(RepairActionType.RESET_RENDERER_OVERRIDE, "Reset renderer override"))
                 )
             ),
-            // 2c. armeabi-v7a (32-bit ARM) UnsatisfiedLinkError on org.lwjgl.system.Callback -
-            // seen in an uploaded log from a real 32-bit device (Realme RMX1825, API 29).
-            // Root cause confirmed by inspecting this project's own jniLibs: arm64-v8a ships
-            // BOTH liblwjgl.so (rebuilt for MC 26.3+/LWJGL 3.4.2) and liblwjgl-legacy.so (the
-            // pre-rebuild native, for older MC versions - see LaunchArgs.kt's
-            // getLwjglNativeLibraryOverride doc comment), but armeabi-v7a only ever shipped
-            // ONE liblwjgl.so - it was never rebuilt for the same LWJGL 3.4.2 API surface the
-            // Java-side lwjgl3 classes now expect, so a symbol the Java side expects
-            // (Callback.getCallbackHandler) doesn't exist in the stale 32-bit native. Same
-            // class of problem as the other native-only blockers in this file: prebuilt
-            // binary, no native source/toolchain in this project to rebuild it from.
             Rule(
                 title = "arm32_lwjgl_callback_unsatisfiedlink",
                 matches = { has(it, "Callback.getCallbackHandler") && has(it, "UnsatisfiedLinkError") },
@@ -394,8 +338,6 @@ object CrashAnalyzer {
                 title = "corrupted_zip",
                 matches = { has(it, "zip END header not found", "invalid LOC header", "ZipException", "Truncated ZIP file") },
                 diagnosis = { text ->
-                    // Fabric's ModDiscoverer reports this as: "Error analyzing [<path>]: java.util.zip...".
-                    // When present, name the exact file so the fix is one tap instead of a guessing game.
                     val badFilePath = Regex("Error analyzing \\[([^\\]]+)]:.*?(?:ZipException|LOC header|END header)")
                         .find(text)?.groupValues?.getOrNull(1)
                     val badFileName = badFilePath?.substringAfterLast('/')
@@ -458,9 +400,6 @@ object CrashAnalyzer {
                     )
                 }
             ),
-            // 15. Fast Boot was enabled for this launch — surface it as a likely contributor
-            // whenever the crash also looks like a checksum/corruption-class failure, since
-            // Fast Boot skips the checks that would normally have caught a bad file.
             Rule(
                 title = "fast_boot_skipped_verification",
                 matches = {
@@ -509,9 +448,6 @@ object CrashAnalyzer {
                     )
                 }
             ),
-            // 17. Forge / ModLauncher failed during mod discovery, transformation, or loading.
-            // Excludes NeoForge's own namespace so the more specific rule below doesn't get
-            // shadowed (Forge and NeoForge share cpw.mods.modlauncher but not net.minecraftforge).
             Rule(
                 title = "forge_modlauncher_failure",
                 matches = {
@@ -632,18 +568,6 @@ object CrashAnalyzer {
                     )
                 }
             ),
-            // 21. Holy GL4ES (libgl4es_114.so) SIGSEGV inside glDeleteFramebuffersEXT, seen on
-            // a real device log right at Minecraft startup (RenderTarget's very first
-            // create-then-immediately-resize sequence, which deletes the just-created FBO
-            // before making the real one). Prebuilt binary, no native source in this project
-            // to patch or debug further - but there IS a real, already-wired-up, user-facing
-            // lever worth trying first: Settings → Video → Performance already has a
-            // "native object pooling" switch (AllSettings.nativeObjectPooling) that's the
-            // literal thing controlling LIBGL_RECYCLEFBO (see JREUtils.launchJavaVM) - FBO
-            // *recycling* being on is what makes the just-created FBO's handle eligible for
-            // reuse/deletion in the first place, so it's the most directly implicated existing
-            // setting for a crash inside FBO deletion specifically, even though this hasn't
-            // been confirmed against a real device with it turned off yet.
             Rule(
                 title = "gl4es_delete_framebuffers_sigsegv",
                 matches = { has(it, "glDeleteFramebuffersEXT") && has(it, "libgl4es", "SIGSEGV") },
@@ -666,54 +590,66 @@ object CrashAnalyzer {
                     repairActions = listOf(RepairAction(RepairActionType.DISABLE_FBO_RECYCLING, "Turn off native object pooling"))
                 )
             ),
-            // 22. MC 26.3+'s new SDL3-based LWJGL backend (org.lwjgl.sdl.SDLInit.SDL_Init)
-            // SIGSEGV inside libSDL3.so's Android backend init path, confirmed via a real
-            // device hs_err_pid*.log (si_addr=0x0, SEGV_MAPERR - a null pointer dereference,
-            // not memory corruption) at the same offset across two separate crash logs, so
-            // consistently reproducible rather than flaky. Call chain from the log itself:
-            // SDL_Init -> SDL_InitSubSystem -> three internal (unexported, stripped) helpers
-            // -> crash, inside SDL's Android JNI backend code.
-            //
-            // Root cause, now established rather than guessed: SDL's Android backend reads
-            // statics its own SDLActivity Java glue normally fills in (Activity, SDLSurface,
-            // layout, clipboard handler). This launcher never starts SDLActivity as an
-            // Activity, so those were all null and SDL_Init dereferenced one.
-            //
-            // Fix status: the mechanism Amethyst-Android uses for this is now ported -
-            // SDLActivity.externalInitialize() / SDLSurface.setNativeSurface(), plus this
-            // launcher's own surface lifecycle being forwarded into SDL (see
-            // SdlAndroidJniPrep's class doc for which half of their fix is in, which isn't,
-            // and why the native half can't be). That code has NOT been verified on real
-            // hardware, so this rule stays: if the crash still happens the player sees the
-            // diagnosis below, and the "TurtleSDL3: getNativeSurface" log line now says
-            // whether SDL was handed a real Surface - the piece that was invisible before.
             Rule(
                 title = "sdl3_android_init_sigsegv",
-                matches = { has(it, "libSDL3.so") && has(it, "SDL_InitSubSystem", "SDL_Init") && has(it, "SIGSEGV") },
+                matches = { has(it, "libSDL3.so") && has(it, "SIGSEGV") &&
+                    (has(it, "SDL_InitSubSystem", "SDL_Init") || has(it, "Failed, there is no JavaVM")) },
                 diagnosis = { _ ->
                     Diagnosis(
                         title = "MC 26.3+'s SDL3 backend crashed on Android during SDL_Init (libSDL3.so)",
-                        cause = "A null-pointer SIGSEGV inside libSDL3.so's own Android backend init code, triggered " +
-                            "by LWJGL's org.lwjgl.sdl.SDL_Init(). SDL's Android backend expects an Activity/SDLSurface " +
-                            "pair from its own Java glue; this launcher now sets that up before the game JVM starts " +
-                            "(SdlAndroidJniPrep), but that path is new and not yet confirmed on a real device - so a " +
-                            "crash here means either it didn't take effect for this launch, or the renderer in use " +
-                            "can't create its EGL window under SDL at all.",
+                        cause = "A null-pointer SIGSEGV inside libSDL3.so's own Android backend: the game thread " +
+                            "called into an SDL3 instance whose Android JNI glue was never initialized - SDL's " +
+                            "JavaVM pointer was still NULL, so SDL's GetEnv returned NULL and its touch-init code " +
+                            "dereferenced it. The launcher DOES initialize SDL's Android side before the game " +
+                            "starts (SdlAndroidJniPrep), which means the game loaded a second, different SDL3 " +
+                            "instance instead of the initialized one - either a foreign libSDL3.so found first in " +
+                            "the natives cache dir, or this device's vendor linker namespaces split the two " +
+                            "loads apart. The launcher now pins the exact SDL3 file and purges foreign copies, " +
+                            "but that fix is new and not yet confirmed on a real device. (The 'not accessible " +
+                            "for the namespace' vendor-library lines some devices print around game start are " +
+                            "harmless OEM game-injection noise - ignore them.)",
                         fixSteps = listOf(
-                            "Switch renderer for this version: Settings → Video → Renderer. Amethyst-Android's own " +
-                                "release notes list MobileGlues and Krypton Wrapper as crashing on MC 26.3-snapshot4+ " +
-                                "\"due to changes in how SDL creates EGL window\" - Zink or LTW are the safer picks there.",
-                            "Leave Settings → Experimental → \"LWJGL compatibility mode\" on Auto so the launcher picks " +
-                                "the LWJGL native matching this version's own manifest.",
-                            "If it still fails, play an MC version at or below 26.2 (pre-SDL3/GLFW-based LWJGL) and " +
-                                "report the log - the new SDL log lines say whether SDL got a real Surface, which is " +
-                                "what's needed to finish this fix.",
-                            "A native backtrace with symbols for the three unexported frames below SDL_InitSubSystem " +
-                                "(gdb/lldb attached to a launch) would give more than the stripped binary can."
+                            "Update to the latest build and relaunch - newer builds pin the SDL3 library file " +
+                                "and purge foreign copies from the natives cache, which addresses the known " +
+                                "cause of this crash.",
+                            "If it still crashes, share the log: the 'TurtleSDL3:' and 'SdlAndroidJniPrep' lines " +
+                                "now record exactly which SDL3 file was pinned and what was removed - that's " +
+                                "what's needed to finish this fix on the affected device.",
+                            "Also try Settings → Video → Renderer: on MC 26.3-snapshot4+, Amethyst-Android's own " +
+                                "notes flag MobileGlues and Krypton Wrapper as crashing 'due to changes in how " +
+                                "SDL creates EGL window' - Zink or LTW are the safer picks.",
+                            "Worst case, play an MC version at or below 26.2 (pre-SDL3, GLFW-based LWJGL), which " +
+                                "this crash cannot affect."
                         ),
                         severity = Severity.CRITICAL
                     )
                 }
+            ),
+            Rule(
+                title = "terracotta_native_init_abort",
+                matches = { has(it, "libterracotta.so") && has(it, "SIGABRT", "Fatal signal", "JNI_OnLoad") },
+                diagnosis = fixed(
+                    "Terracotta (Friends/LAN) native library aborted while initializing",
+                    "libterracotta.so's JNI_OnLoad aborted (SIGABRT). Its init code verifies every " +
+                        "Java-side piece it needs - the TerracottaAndroidAPI class, its 11 native method " +
+                        "name/signature pairs, and java/lang/System access - and aborts the whole process " +
+                        "if any single one doesn't match. A descriptor mismatch that would produce exactly " +
+                        "this abort was found and fixed (Sept 18), and the launcher now logs the expected " +
+                        "descriptor table right before loading the library, so a recurrence is decodable " +
+                        "from the log alone. Note: this only affects the Friends/LAN feature - game " +
+                        "launching and everything else keeps working.",
+                    listOf(
+                        "Update to the latest build - the known cause (a native-method signature mismatch) " +
+                            "is already fixed in newer builds.",
+                        "If it recurs, share the log: look for the 'TerracottaAndroidAPI' lines just before " +
+                            "the crash (they list the signatures the library expects), and any line from " +
+                            "logcat tag 'hello' saying 'Cannot initialize Terracotta Android: ...' - that " +
+                            "pair is the exact abort reason.",
+                        "Friends/LAN play just needs the app restarted to try again; if it keeps failing, " +
+                            "the feature can simply be left unused - nothing else in the launcher depends " +
+                            "on it."
+                    )
+                )
             )
         )
     }
@@ -904,13 +840,6 @@ object CrashAnalyzer {
         )
     }
 
-    // ── Last-analysis holder ───────────────────────────────────────────────────
-    // ErrorActivity's game-crash path currently only receives pre-formatted diagnosis
-    // *text* through an Intent extra (see JREUtils → ErrorActivity.showExitMessage),
-    // and Diagnosis/RepairAction aren't Parcelable. Rather than plumb that through every
-    // call site, the structured result of the most recent analysis is kept here so the UI
-    // can still offer one-click repair / export / search-online buttons for it. Read-only
-    // from the UI's perspective; only [analyze] and [analyzeFrozenState] write to it.
     @Volatile private var lastDiagnoses: List<Diagnosis> = emptyList()
     @Volatile private var lastGameVersion: Version? = null
     @Volatile private var lastLogText: String = ""
@@ -945,13 +874,6 @@ object CrashAnalyzer {
         return result
     }
 
-    /**
-     * Specialised analysis for a game that is still running but appears to have
-     * stopped producing any output (a hang / black screen that never crashes).
-     * Prefers a real matched rule if the partial log already shows one; otherwise
-     * falls back to a "frozen, no crash" specific message instead of the generic
-     * post-exit fallback (which assumes the process already died).
-     */
     @JvmStatic
     @JvmOverloads
     fun analyzeFrozenState(partialLogText: String, gameVersion: Version? = null): Diagnosis {
@@ -1155,15 +1077,7 @@ object CrashAnalyzer {
                     RepairResult(true, "RAM allocation changed from ${current}MB to ${updated}MB.")
                 }
 
-                // ── Self-Healing Launcher (roadmap #9) ────────────────────────────
-
                 RepairActionType.FIX_PERMISSIONS -> {
-                    // Deliberately NOT a recursive chmod of the whole game folder (could be
-                    // gigabytes of worlds/resource packs the app already owns and already has
-                    // correct permissions on) — scoped to the actual spots an Android storage
-                    // permission glitch tends to hit: the natives cache, this version's mods/
-                    // config, the app cache, and the pinned Java runtime's own files (which
-                    // need their +x bit specifically, since a copy/extract can drop it).
                     val targets = mutableListOf<File>()
                     gameVersion?.let { v ->
                         targets += File(PathManager.DIR_CACHE, "natives/${v.getVersionName()}")
@@ -1382,9 +1296,6 @@ object CrashAnalyzer {
                 withConflicts.ifEmpty { ruleDiagnoses },
                 buildString { append(logTail); if (!crashReportText.isNullOrBlank()) { append("\n"); append(crashReportText) } }
             )
-            // Overwrite with the final list (conflicts + AI fallback included) so the "last
-            // analysis" the UI reads back for repair/export/search-online reflects everything
-            // actually shown, not just the rule-engine subset analyze() saw on its own.
             lastDiagnoses = diagnoses
             lastGameVersion = gameVersion
 

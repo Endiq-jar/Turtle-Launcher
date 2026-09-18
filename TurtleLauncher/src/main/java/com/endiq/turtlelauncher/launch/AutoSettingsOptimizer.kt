@@ -10,56 +10,9 @@ import com.endiq.turtlelauncher.renderer.renderers.ZinkRenderer
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.utils.platform.BatterySaverManager
 import com.endiq.turtlelauncher.utils.platform.ThermalManager
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.prefs.LauncherPreferences
+import net.endiq.launcher.Tools
+import net.endiq.launcher.prefs.LauncherPreferences
 
-/**
- * AutoSettingsOptimizer (replaces the old AutoGraphicsOptimizer)
- *
- * Tunes more than just renderer/driver: also sets a sensible RAM
- * allocation, live resolution scale, and the TurtleLauncher FPS Boost flags
- * for the device's tier, all before launch. Enabled by default — anything
- * it sets can still be overridden by hand in Video/Experimental settings
- * (it just re-applies its own picks on the next launch unless turned off).
- *
- * Renderer/driver selection maps detected GPU vendor to one of the built-in renderers
- * (see renderer/renderers/ and RendererCatalog):
- *   Adreno GPU     → Freedreno, driver = Turnip (if Vulkan available)
- *   Mali/ARM GPU   → Zink if Vulkan available, else MobileGlues
- *   PowerVR/other  → MobileGlues, driver = default
- *   Unknown        → renderer left as-is (i.e. the AllSettings.renderer default, which is
- *                    also MobileGlues - see that setting's doc comment)
- *
- * TurtleLauncher: the two GL-family picks above used to be LTW (Mali) and Holy GL4ES
- * (PowerVR/other). Both are now MobileGlues so this optimizer agrees with the launcher's
- * own default renderer instead of quietly overriding it with a different one on the first
- * launch - a player who never opens Video settings would otherwise see "MobileGlues" as the
- * documented default and "Holy GL4ES" as what's actually running. The Adreno→Freedreno and
- * Vulkan→Zink picks are unchanged: those are device-specific wins, not defaults.
- *
- * Special case (MC 26.1+): MC 26.x's CubeMapTexture panorama background
- * calls glTexImage2D with GL_TEXTURE_CUBE_MAP + GL_RGB8, which OpenGL ES
- * 3.2 doesn't support as a renderable cubemap format — causing a crash
- * (GL_INVALID_ENUM, error 1280) on PowerVR/Apple/unknown GPUs. For MC 26.1+
- * on those GPUs we switch to Zink if Vulkan is available, which
- * avoids the ES cubemap limitation entirely.
- *
- * Device tiers (by total RAM) drive everything else:
- *   LOW  (< 3GB)   → RAM alloc from findBestRAMAllocation, 80% resolution scale,
- *                    frame skipping on (prioritize responsiveness over smoothness),
- *                    other FPS boost flags left off.
- *   MID  (3–6GB)   → full resolution, adaptive frame timing on, FPS boost flags
- *                    otherwise left off (no need, no obvious win on mid-tier silicon).
- *   HIGH (> 6GB)   → full resolution, all FPS boost flags on (unlimited FPS,
- *                    low-latency rendering, frame pacing, adaptive frame timing).
- *
- * A device already thermally throttled (API 29+, see [ThermalManager]) or with
- * Android's own Battery Saver on (see [BatterySaverManager]) at launch time gets
- * capped one profile down from what its RAM tier alone would pick; a severely
- * throttled device gets forced onto a conservative profile outright. RAM
- * allocation itself is untouched by this - only the FPS-boost/resolution flags
- * that actually drive extra heat and power draw.
- */
 object AutoSettingsOptimizer {
     private const val TAG = "AutoSettingsOptimizer"
 
@@ -71,14 +24,6 @@ object AutoSettingsOptimizer {
      * @param mcVersionId   Minecraft version string, e.g. "26.1.2" (empty = legacy path)
      */
     fun apply(context: Context, mcVersionId: String = "") {
-        // Fast Boot only skips the RAM/FPS-boost performance-tier math (applyPerformanceTier) -
-        // that's the part actually worth skipping for boot speed. GPU/renderer detection
-        // (applyGraphics) always re-runs regardless of Fast Boot: it's a cheap throwaway EGL
-        // pbuffer probe, and skipping it let a bad renderer pick (e.g. Krypton Wrapper
-        // wrongly matched by the old broad "arm" substring check against a weak GPU-string
-        // fallback) get cached via lastOptimizedVersion and then *never* re-evaluated for
-        // that Minecraft version again - even after the detection logic was fixed, a device
-        // that got mis-picked once would keep crashing on every subsequent launch forever.
         applyGraphics(context, mcVersionId)
         if (AllSettings.fastBoot.getValue() && mcVersionId.isNotEmpty() &&
             AllSettings.lastOptimizedVersion.getValue() == mcVersionId) {
@@ -111,12 +56,6 @@ object AutoSettingsOptimizer {
 
         val hasVulkan = Tools.checkVulkanSupport(context.packageManager)
 
-        // TurtleLauncher: this used to store short strings like "gl4es114"/"opengles3" into
-        // AllSettings.renderer, which Renderers.setCurrentRenderer looks up by UUID
-        // (getUniqueIdentifier()) - those never matched anything, so this picker silently
-        // always fell back to the first renderer in the list regardless of what was
-        // "selected" here. Fixed to store the real UUID of one of the six FCL-sourced
-        // renderers (see the renderer/renderers/ package).
         val (rendererUuid, driver) = when {
             gpu.contains("adreno", ignoreCase = true) -> {
                 // Freedreno is explicitly "optimized primarily for Qualcomm Adreno GPUs"
@@ -140,9 +79,6 @@ object AutoSettingsOptimizer {
                     Logging.i(TAG, "MC 26.1+ on PowerVR/Apple GPU: switching to Zink to avoid CubeMap GL_INVALID_ENUM crash")
                     Pair(ZinkRenderer().getUniqueIdentifier(), "default")
                 } else {
-                    // MobileGlues, not Holy GL4ES: matches the launcher default (see class
-                    // doc). Holy GL4ES also has a documented 1.21.4 ceiling in
-                    // RendererCatalog, so it was the wrong standing pick for new versions.
                     Pair(MobileGluesRenderer().getUniqueIdentifier(), "default")
                 }
             }
@@ -165,11 +101,6 @@ object AutoSettingsOptimizer {
     private fun applyPerformanceTier(context: Context) {
         val totalRamMb = Tools.getTotalDeviceMemory(context)
 
-        // TurtleLauncher Phone Settings: Auto RAM Calculator toggle gates this whole block -
-        // if the player turned it off (wants their Game Settings slider value left alone
-        // entirely, not even nudged by the "don't clobber a manual change" heuristic below),
-        // skip RAM auto-tuning outright rather than just falling into the "user already
-        // changed it" branch, since that branch still overwrites on a fresh install (lastAutoRam == -1).
         val appliedRam: Int
         if (!AllSettings.autoRamCalculator.getValue()) {
             appliedRam = AllSettings.ramAllocation.value.getValue()
@@ -177,10 +108,6 @@ object AutoSettingsOptimizer {
         } else {
             val bestRam = presetAdjustedRam(context, LauncherPreferences.findBestRAMAllocation(context))
 
-            // Only overwrite RAM allocation if the user hasn't manually changed it since
-            // we last set it (lastAutoRam == -1 means we've never applied a pick yet on
-            // this install). Otherwise every launch silently reverted a manual override
-            // back to our computed value.
             val currentRam = AllSettings.ramAllocation.value.getValue()
             val lastAutoRam = AllSettings.lastAutoRamAllocation.getValue()
             if (lastAutoRam == -1 || currentRam == lastAutoRam) {
@@ -240,13 +167,6 @@ object AutoSettingsOptimizer {
         }
     }
 
-    /** TurtleLauncher Phone Settings: RAM Presets. "balanced" (the default) is just
-     *  findBestRAMAllocation()'s own pick, untouched - that function's tiers already are
-     *  the balanced recommendation. "low"/"high" scale it down/up from there; "custom"
-     *  passes the baseline through unchanged since Auto RAM Calculator being on with
-     *  preset=custom is a contradiction in terms that shouldn't normally happen (the
-     *  Phone Settings UI defers to the Game Settings slider for "custom" instead of
-     *  calling into this optimizer at all), but a harmless no-op is the safe fallback. */
     private fun presetAdjustedRam(context: Context, baseline: Int): Int {
         val totalRamMb = Tools.getTotalDeviceMemory(context)
         return when (AllSettings.ramPreset.getValue()) {
@@ -257,17 +177,6 @@ object AutoSettingsOptimizer {
     }
 
     private fun detectGpu(): String {
-        // A real, throwaway GLES context is the only source here that reliably returns the
-        // actual GPU chip name ("PowerVR Rogue GM9446", "Adreno 660", "Mali-G78", etc.) via
-        // GL_RENDERER. The fallback signals below (EGL_VENDOR, the ro.hardware.egl system
-        // property, Build.HARDWARE/SoC codename) frequently do NOT contain the GPU brand at
-        // all - e.g. PowerVR GPUs report EGL_VENDOR as "Imagination Technologies", not
-        // "PowerVR", so a `contains("powervr")` check against those alone silently misses
-        // real PowerVR devices and falls through to "unknown GPU", leaving whatever renderer
-        // was already selected instead of the PowerVR-specific picks below (see the header
-        // doc's cubemap-crash note - and a real Krypton Wrapper SIGSEGV seen on a PowerVR
-        // Rogue device in an uploaded crash log, same likely root cause: that device was
-        // probably never actually recognized as PowerVR by the old string matching).
         queryGlRenderer()?.let { return it }
         return try {
             val display = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY)
@@ -281,10 +190,6 @@ object AutoSettingsOptimizer {
         }
     }
 
-    /** Creates a throwaway 1x1 pbuffer-backed GLES2 context purely to read GL_RENDERER (and
-     *  GL_VENDOR alongside it), then tears the context down immediately. Returns null if
-     *  anything about this fails (driver not ready this early, locked-down device, etc.) so
-     *  the caller falls back to the weaker signals instead of detection itself crashing. */
     private fun queryGlRenderer(): String? {
         var display = EGL14.EGL_NO_DISPLAY
         var context = EGL14.EGL_NO_CONTEXT

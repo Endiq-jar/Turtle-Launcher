@@ -38,7 +38,7 @@ import com.endiq.turtlelauncher.ui.subassembly.versionlist.VersionSelectedListen
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.anim.AnimUtils.Companion.setVisibilityAnim
 import com.skydoves.powerspinner.PowerSpinnerView
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.concurrent.Future
@@ -189,9 +189,6 @@ abstract class AbstractResourceDownloadFragment(
             returnButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
         }
 
-        // TurtleLauncher: lets a subclass (e.g. ModPackDownloadFragment, opened from a
-        // "featured modpack" shortcut) pre-fill the search box before the automatic
-        // first search fires, instead of always starting from an empty query.
         initialSearchQuery()?.let { query ->
             binding.nameEdit.setText(query)
         }

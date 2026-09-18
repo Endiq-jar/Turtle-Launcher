@@ -92,12 +92,6 @@
     <color name="turtle_border_subtle">#1A202020</color>
     <color name="turtle_border_default">#202020</color>
 
-    <!-- TurtleLauncher: Accessibility - High Contrast Mode (roadmap item 22). The app is
-         already forced-dark AMOLED with near-white primary text on a near-black background,
-         which already has a very strong contrast ratio - the weakest links are the low-contrast
-         secondary text and especially the borders/dividers (Elevated Cards against Background is
-         still well under WCAG's 3:1 minimum for UI component boundaries), which is what this
-         mode actually targets. -->
     <color name="turtle_hc_border">#F2F5F0</color>
     <color name="turtle_hc_text_secondary">#F2F5F0</color>
     <color name="turtle_hc_surface">#0D0D0D</color>

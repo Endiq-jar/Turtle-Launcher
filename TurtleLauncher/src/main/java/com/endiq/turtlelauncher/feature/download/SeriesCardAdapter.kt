@@ -24,7 +24,7 @@ class SeriesCardAdapter(
         val versionCount: Int,
         val iconRes: Int,
         val isLatest: Boolean,
-        val versions: List<net.kdt.pojavlaunch.JMinecraftVersionList.Version>
+        val versions: List<net.endiq.launcher.JMinecraftVersionList.Version>
     )
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

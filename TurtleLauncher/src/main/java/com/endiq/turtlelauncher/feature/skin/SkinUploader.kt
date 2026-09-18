@@ -2,37 +2,13 @@ package com.endiq.turtlelauncher.feature.skin
 
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.path.UrlManager
-import net.kdt.pojavlaunch.value.MinecraftAccount
+import net.endiq.launcher.value.MinecraftAccount
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
-/**
- * TurtleLauncher: real skin uploads for account types whose skins are NOT served by the
- * launcher's local skin server.
- *
- * Why this exists: LaunchArgs only attaches the local-skin authlib-injector javaagent for
- * LOCAL accounts. A Microsoft account launches with genuine Mojang auth (injecting a custom
- * auth server would break online play), and OtherLogin accounts (ely.by, Battly,
- * LittleSkin, custom Yggdrasil) launch with authlib-injector pointed at THEIR server - in
- * both cases the skin the game shows comes from the account's profile on those services,
- * so a skin saved into the launcher's per-account folder was silently ignored. That was
- * the "can't set skin on my Microsoft / ely.by account" bug.
- *
- * For Microsoft accounts the official route is used - the very same API the official
- * launcher calls (wiki.vg "Mojang API - Upload Skin"):
- * PUT https://api.minecraftservices.com/minecraft/profile/skins
- * with the account's bearer token and a multipart body (variant/model + png file). The
- * skin then applies everywhere Minecraft runs, not just this launcher.
- *
- * Third-party Yggdrasil servers have no common upload API (ely.by manages skins on its
- * website, Battly/LittleSkin have their own portals), so for those SkinCapeDialog offers
- * to open the server's skin site instead - see skinWebsiteFor().
- *
- * Blocking OkHttp calls - only ever invoke from a background Task, never the UI thread.
- */
 object SkinUploader {
 
     private const val TAG = "SkinUploader"
@@ -42,12 +18,6 @@ object SkinUploader {
      *  should tell the user to refresh the account rather than showing a raw HTTP code. */
     const val EXPIRED = "__token_expired__"
 
-    /**
-     * Uploads [skinFile] as the profile skin of a Microsoft account.
-     * @param slim true for the slim/Alex model, false for classic/Steve.
-     * @return null on success, [EXPIRED] when the token was rejected, or a short
-     *         human-readable error string otherwise. Never throws.
-     */
     @JvmStatic
     fun uploadMicrosoft(account: MinecraftAccount, skinFile: File, slim: Boolean): String? {
         return try {

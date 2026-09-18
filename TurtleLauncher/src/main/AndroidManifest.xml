@@ -18,28 +18,17 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
-    <!-- Required since targetSdk 34/Android 14 for TerracottaVpnService, which runs as
-         foregroundServiceType="connectedDevice" - the type Android itself designates for
-         VpnService foreground services. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
-    <!-- Terracotta/EasyTier P2P networking. The upstream Terracotta library module
-         (ZalithLauncher2/Terracotta/src/main/AndroidManifest.xml) declares these and they
-         merge into the host app there; this project vendors the binding directly, so they
-         have to be declared here. EasyTier manages network interfaces and probes Wi-Fi
-         state while the Friends/LAN tunnel is up. -->
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
-    <!-- Required since targetSdk 34/Android 14 to run a foregroundServiceType="mediaProjection"
-         service - see ScreenRecorderAudioService's class doc for why ScreenRecorder's in-game
-         audio capture needs one even though it never mirrors the display. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
-        android:name="net.kdt.pojavlaunch.TurtleApplication"
+        android:name="net.endiq.launcher.TurtleApplication"
         android:allowBackup="true"
         android:allowNativeHeapPointerTagging="false"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -57,13 +46,6 @@
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="r"
         tools:ignore="DiscouragedApi" >
-        <!-- TurtleLauncher: opts every activity into Android 13+'s predictive-back gesture
-             (animated swipe-back preview) by default - every launcher/settings/fragment
-             screen here already goes through OnBackPressedDispatcher (see ZHTools.onBackPressed
-             and each Fragment's back handling), which is exactly the API predictive back is
-             built on top of, so this is a free upgrade for all of them. MainActivity is the
-             one deliberate exception - see its own android:enableOnBackInvokedCallback="false"
-             below for why it opts back out. -->
         <meta-data
             android:name="android.max_aspect"
             android:value="ratio_float" />
@@ -80,20 +62,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="net.kdt.pojavlaunch.MissingStorageActivity"
+            android:name="net.endiq.launcher.MissingStorageActivity"
             android:exported="false"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
             android:screenOrientation="sensorLandscape" />
         <activity
-            android:name="net.kdt.pojavlaunch.LauncherActivity"
+            android:name="net.endiq.launcher.LauncherActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
             android:screenOrientation="sensorLandscape" />
-        <!-- TurtleLauncher: Android share-sheet entry point - this is what makes the
-             launcher appear when a game log (or its text) is shared from another app,
-             and hands it to the built-in Assistant for analysis. Without these
-             intent-filters the launcher simply doesn't exist in the share menu. -->
         <activity
             android:name="com.endiq.turtlelauncher.ui.activity.ShareReceiverActivity"
             android:exported="true"
@@ -128,16 +106,16 @@
             android:name="com.endiq.turtlelauncher.ui.activity.ConfigEditorActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name="net.kdt.pojavlaunch.ShowErrorActivity"
+        <activity android:name="net.endiq.launcher.ShowErrorActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
         <activity
             android:process=":gui_installer"
-            android:name="net.kdt.pojavlaunch.JavaGUILauncherActivity"
+            android:name="net.endiq.launcher.JavaGUILauncherActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
             android:screenOrientation="sensorLandscape" />
         <activity
-            android:name="net.kdt.pojavlaunch.CustomControlsActivity"
+            android:name="net.endiq.launcher.CustomControlsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
             android:exported="false"
             android:screenOrientation="sensorLandscape" >
@@ -147,17 +125,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <!-- TurtleLauncher: MainActivity (the actual running-game window) opts back OUT of
-             the app-level predictive-back callback above. It has no OnBackPressedCallback at
-             all - MinecraftGLSurface/dispatchKeyEvent's raw KEYCODE_BACK interception is what
-             maps Back to in-game ESC (opening the pause menu). If predictive back were left
-             enabled here, a gesture-nav swipe-back would bypass that KeyEvent entirely and go
-             straight to OnBackInvokedDispatcher with nothing registered to consume it -
-             finishing the Activity and silently kicking the player out of their game instead
-             of opening the pause menu. Explicit "false" here overrides the "true" default set
-             on <application> above; this is Android's documented per-activity opt-out. -->
         <activity
-            android:name="net.kdt.pojavlaunch.MainActivity"
+            android:name="net.endiq.launcher.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
             android:launchMode="singleTop"
             android:process=":game"
@@ -165,7 +134,7 @@
             android:screenOrientation="sensorLandscape" />
 
         <provider
-            android:name="net.kdt.pojavlaunch.scoped.FolderProvider"
+            android:name="net.endiq.launcher.scoped.FolderProvider"
             android:authorities="@string/storageProviderAuthorities"
             android:exported="true"
             android:grantUriPermissions="true"
@@ -184,11 +153,6 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <!-- Shizuku/Sui: this is what acquires the privileged binder for us and hands it to
-             ShizukuManager (see feature/shizuku). It is the documented, required manifest
-             entry for the `provider` artifact - without it the binder is never delivered and
-             Shizuku silently stays unavailable. android:permission guards the provider so no
-             ordinary app can query it; only Shizuku (and the system) can. -->
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
@@ -198,21 +162,18 @@
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
         <service
-            android:name="net.kdt.pojavlaunch.services.ProgressService"
+            android:name="net.endiq.launcher.services.ProgressService"
             android:foregroundServiceType="specialUse">
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Tracks progress of local background tasks (downloads, asset extraction, version installs) and keeps the process alive while they run. Not data sync with a remote server."/>
         </service>
-        <service android:name="net.kdt.pojavlaunch.services.GameService" android:process=":game"
+        <service android:name="net.endiq.launcher.services.GameService" android:process=":game"
             android:foregroundServiceType="specialUse">
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="This application is intended to run a 3rd-party piece of software which cannot be managed using the activity's saved instance state. This service is used for background persistence of this piece of software."/>
         </service>
-        <!-- TurtleLauncher: see ScreenRecorderAudioService's class doc - required so
-             ScreenRecorder's in-game audio capture (MediaProjection-authorized, audio only,
-             no display mirroring) is allowed to use the MediaProjection it obtains. -->
         <service
-            android:name="net.kdt.pojavlaunch.services.ScreenRecorderAudioService"
+            android:name="net.endiq.launcher.services.ScreenRecorderAudioService"
             android:foregroundServiceType="mediaProjection"
             android:exported="false"/>
 
@@ -234,10 +195,6 @@
         </service>
     </application>
     <queries>
-        <!-- Shizuku: needed to tell "Shizuku is not installed" apart from "Shizuku is
-             installed but its service has not been started", which are two different
-             instructions for the user. Package visibility is filtered by default from
-             Android 11 onwards, so without this the query always comes back empty. -->
         <package android:name="moe.shizuku.privileged.api"/>
         <package android:name="net.kdt.pojavlaunch.ffmpeg"/>
         <intent>

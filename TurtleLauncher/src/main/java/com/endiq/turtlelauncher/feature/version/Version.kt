@@ -7,7 +7,7 @@ import com.endiq.turtlelauncher.feature.mod.parser.ModChecker
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 
 /**
@@ -118,10 +118,6 @@ class Version(
         override fun createFromParcel(parcel: Parcel): Version {
             val stringList = ArrayList<String>()
             parcel.readStringList(stringList)
-            // A corrupt/truncated Parcel used to crash here twice over: readParcelable()
-            // can return null (non-null assertion -> NPE) and stringList[] throws
-            // IndexOutOfBounds when short. Fall back to defaults so a bad Intent
-            // extra can't kill the app.
             val versionsFolder = stringList.getOrElse(0) { "" }
             val versionPath = stringList.getOrElse(1) { "" }
             val versionConfig = parcel.readParcelable<VersionConfig>(VersionConfig::class.java.classLoader)

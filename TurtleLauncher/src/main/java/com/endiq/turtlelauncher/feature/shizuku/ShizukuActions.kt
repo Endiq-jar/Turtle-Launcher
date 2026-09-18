@@ -5,17 +5,6 @@ import com.endiq.turtlelauncher.BuildConfig
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.setting.AllSettings
 
-/**
- * TurtleLauncher: the concrete things this launcher can do *only* with Shizuku.
- *
- * Everything here is best-effort by design. What an ADB-shell (uid 2000) or root (uid 0)
- * process may do differs per Android version and per ROM, and a command failing is normal -
- * e.g. `renice` to a negative priority needs CAP_SYS_NICE, which the ADB shell user does not
- * have on a user build. None of these failures are errors in this launcher; the UI reports
- * each one honestly rather than claiming success.
- *
- * Every function must be called off the main thread (they block on shell I/O).
- */
 object ShizukuActions {
     private const val TAG = "ShizukuActions"
 
@@ -47,11 +36,6 @@ object ShizukuActions {
         return result.stdout
     }
 
-    /**
-     * Grants the permissions this launcher keeps having to send people to the Settings app
-     * for, and takes it out of battery optimization so a long game session is not throttled
-     * or killed while it runs in the background.
-     */
     fun grantPermissions(): List<ActionOutcome> {
         val packageName = BuildConfig.APPLICATION_ID
         val outcomes = mutableListOf<ActionOutcome>()
@@ -158,13 +142,6 @@ object ShizukuActions {
         }, "turtle-shizuku-boost").apply { isDaemon = true; start() }
     }
 
-    /**
-     * `renice` the running game (and the launcher) so background work and the system's own
-     * scheduling are less likely to starve the render thread.
-     *
-     * Best-effort: lowering a nice value needs CAP_SYS_NICE, which the ADB shell user may not
-     * have. Reported, not assumed.
-     */
     private fun boostGameProcessPriority(): ShizukuShell.Result {
         val pids = findPidsOf(gameProcessName())
         if (pids.isEmpty()) {
@@ -177,12 +154,6 @@ object ShizukuActions {
         return last
     }
 
-    /**
-     * Resolves a process name to its PID(s).
-     *
-     * `ps` column layouts differ between toybox and toolbox builds, so this parses
-     * `PID NAME` first and falls back to a substring match over the whole `ps -A` output.
-     */
     private fun findPidsOf(processName: String): List<Int> {
         val structured = ShizukuShell.run("ps -A -o PID,NAME")
         if (structured.ok) {

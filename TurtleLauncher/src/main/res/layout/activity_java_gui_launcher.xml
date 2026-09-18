@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:background="@color/bg_deep">
 
-        <net.kdt.pojavlaunch.customcontrols.keyboard.TouchCharInput
+        <net.endiq.launcher.customcontrols.keyboard.TouchCharInput
             android:id="@+id/awt_touch_char"
             android:layout_width="1dp"
             android:layout_height="1dp"
@@ -20,7 +20,7 @@
             android:inputType="textFilter|textImeMultiLine|textAutoComplete|textAutoCorrect"
             tools:ignore="MissingConstraints,TouchTargetSizeCheck" />
 
-        <net.kdt.pojavlaunch.AWTCanvasView
+        <net.endiq.launcher.AWTCanvasView
             android:id="@+id/texture_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -169,7 +169,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.kdt.LoggerView
+    <com.endiq.LoggerView
         android:id="@+id/launcherLoggerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

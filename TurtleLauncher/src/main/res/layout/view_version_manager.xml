@@ -11,16 +11,6 @@
     android:translationZ="4dp"
     tools:ignore="ContentDescription">
 
-    <!-- TurtleLauncher: this popup's row count grew (goto/game path/rename/copy/export modpack/
-         export mrpack/dependency graph/delete = 8 rows) to the point it can be taller than the
-         remaining screen space below wherever it's anchored (e.g. tapping "..." on a version
-         card near the bottom of the list). It used to have no ScrollView at all and was given a
-         raw unbounded measured height in VersionAdapter.showPopupWindow, so the overflow just
-         rendered off the bottom of the screen with no way to reach it. ScrollView here plus a
-         capped height on the Kotlin side (see showPopupWindow) fixes that together - neither
-         alone is enough: without the height cap this never needs to scroll (still oversized);
-         without the ScrollView, capping the height would just clip the overflow instead of
-         making it reachable. -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -50,8 +50,6 @@ class AboutSponsorPageFragment : Fragment(R.layout.fragment_about_sponsor_page) 
                         adapter = SponsorRecyclerAdapter(getSponsorData())
                     }
                     binding.loadingProgress.visibility = View.GONE
-                    // TurtleLauncher: the sponsor panel replaces a spinner, so it used to
-                    // just snap into place. It now arrives instead.
                     TurtleTransitions.setVisibilityAnimated(binding.sponsorLayout, true)
                     View.VISIBLE
                 } else View.GONE

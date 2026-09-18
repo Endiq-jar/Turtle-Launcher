@@ -166,8 +166,6 @@ public class FileRecyclerAdapter extends RecyclerView.Adapter<FileRecyclerAdapte
                 return true;
             });
 
-            // TurtleLauncher: tapping the perf-heatmap dot shows the RAM/VRAM/CPU-signal
-            // reasoning behind its tier, independent of the row's own click handler.
             binding.perfBadge.setOnClickListener(v -> {
                 PerfEstimate estimate = mFileItemBean != null ? mFileItemBean.perfEstimate : null;
                 if (estimate == null) return;
@@ -217,13 +215,8 @@ public class FileRecyclerAdapter extends RecyclerView.Adapter<FileRecyclerAdapte
                 binding.name.setTextColor(binding.name.getResources().getColor(R.color.black_or_white, binding.name.getContext().getTheme()));
             }
 
-            // TurtleLauncher: update-available dot, set by ModUpdateChecker after an
-            // async Modrinth hash lookup — independent of the search highlight above,
-            // both can be true at once.
             binding.updateBadge.setVisibility(fileItemBean.hasUpdate ? View.VISIBLE : View.GONE);
 
-            // TurtleLauncher: performance-heatmap tier dot (see HeatmapAnalyzer). Tinted
-            // per-tier since perf_badge reuses the same plain-oval drawable as update_badge.
             PerfEstimate perfEstimate = fileItemBean.perfEstimate;
             if (perfEstimate != null) {
                 int tintColor;
@@ -247,7 +240,6 @@ public class FileRecyclerAdapter extends RecyclerView.Adapter<FileRecyclerAdapte
                 binding.check.setVisibility(View.GONE);
             }
 
-            // TurtleLauncher: inline enable/disable switch for .jar / .jar.disabled files
             if (file != null && file.isFile() &&
                 (file.getName().endsWith(com.endiq.turtlelauncher.feature.mod.ModUtils.JAR_FILE_SUFFIX) ||
                  file.getName().endsWith(com.endiq.turtlelauncher.feature.mod.ModUtils.DISABLE_JAR_FILE_SUFFIX))) {

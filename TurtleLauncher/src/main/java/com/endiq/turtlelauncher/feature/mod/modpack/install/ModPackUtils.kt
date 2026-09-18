@@ -10,9 +10,9 @@ import com.endiq.turtlelauncher.feature.mod.models.CurseForgeManifest
 import com.endiq.turtlelauncher.feature.mod.models.MCBBSPackMeta
 import com.endiq.turtlelauncher.feature.mod.models.MMCPackMeta
 import com.endiq.turtlelauncher.utils.runtime.SelectRuntimeUtils
-import net.kdt.pojavlaunch.JavaGUILauncherActivity
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.modloaders.modpacks.models.ModrinthIndex
+import net.endiq.launcher.JavaGUILauncherActivity
+import net.endiq.launcher.Tools
+import net.endiq.launcher.modloaders.modpacks.models.ModrinthIndex
 import java.io.File
 import java.util.zip.ZipFile
 
@@ -62,11 +62,6 @@ class ModPackUtils {
                             }
                         }
 
-                        // Doesn't match a known modpack manifest, but it's still a real zip -
-                        // treat it as a plain folder-structure import (mods/, config/,
-                        // resourcepacks/, etc. at the zip root, extracted as-is). No loader
-                        // detection possible without a manifest, so the person picks one
-                        // afterward same as any manually-created instance.
                         return ModPackInfo(null, ModPackEnum.GENERIC_ZIP)
                     } else if (suffix == ".mrpack") {
                         val entry = modpackZipFile.getEntry("modrinth.index.json")

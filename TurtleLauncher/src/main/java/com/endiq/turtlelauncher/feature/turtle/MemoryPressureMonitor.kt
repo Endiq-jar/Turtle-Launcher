@@ -6,18 +6,6 @@ import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.platform.MemoryUtils.Companion.getTotalDeviceMemory
 import kotlin.concurrent.thread
 
-/**
- * TurtleLauncher Phone Settings: Memory Pressure Monitor. Android will kill the launcher's
- * (and, since the JVM runs in-process, the game's) process outright once the system decides
- * it's under memory pressure - usually with no warning the player can act on. This polls
- * ActivityManager.MemoryInfo periodically and logs a warning as soon as either the system
- * reports `lowMemory`, or available memory drops under a fraction of total device RAM, so a
- * crash can be traced back to "the OS was starving us" after the fact instead of looking like
- * an ordinary crash in CrashAnalyzer's history.
- *
- * Distinct from AllSettings.autoMemoryCleanup (a periodic idle-time G1 GC nudge for the *game*
- * JVM heap) - this watches *device-wide* memory, independent of whether a game is running.
- */
 object MemoryPressureMonitor {
     private const val TAG = "MemoryPressureMonitor"
     private const val TICK_MS = 5000L

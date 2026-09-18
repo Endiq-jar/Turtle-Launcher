@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: standalone in-game info HUD, separate floating window from
-     the menu button (view_game_menu_window.xml). Laid out as a vertical list
-     so each module (FPS, memory, CPS, etc.) is its own independently
-     toggleable row/block. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
@@ -12,9 +8,6 @@
     android:paddingVertical="@dimen/_4sdp"
     android:background="@drawable/background_game_menu">
 
-    <!-- TurtleLauncher: each readout gets its own small card (matching the boxed style the
-         keystrokes/mouse/screenshot/record modules below already use) instead of sitting as
-         bare text against the shared panel background. -->
     <TextView
         android:id="@+id/fps_text"
         android:layout_width="wrap_content"
@@ -253,9 +246,6 @@
         android:visibility="gone"
         tools:ignore="HardcodedText" />
 
-    <!-- TurtleLauncher: one-tap screen recording toggle (roadmap item 22). Records only the
-         game's own render surface - see ScreenRecorder's doc comment for why the touch
-         controls/HUD stay visible live but never appear in the saved video. -->
     <TextView
         android:id="@+id/record_button"
         android:layout_width="wrap_content"

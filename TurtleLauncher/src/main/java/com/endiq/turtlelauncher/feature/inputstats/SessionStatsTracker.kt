@@ -3,12 +3,6 @@ package com.endiq.turtlelauncher.feature.inputstats
 import com.endiq.turtlelauncher.feature.turtle.DailyPlaytimeStats
 import com.endiq.turtlelauncher.setting.AllSettings
 
-/**
- * Tracks the current game session's elapsed time (Stopwatch) and persists
- * cumulative playtime across all sessions (Playtime). Both are launcher-side
- * facts — start/stop timestamps of the game process — not Minecraft game
- * state, so this is safe to build here.
- */
 object SessionStatsTracker {
     @Volatile private var sessionStartMs: Long = 0L
     @Volatile private var running: Boolean = false
@@ -26,8 +20,6 @@ object SessionStatsTracker {
         if (running) {
             val elapsed = getSessionElapsedMs()
             AllSettings.totalPlaytimeMs.put(AllSettings.totalPlaytimeMs.getValue() + elapsed).save()
-            // TurtleLauncher: also bucket this session into today's total for the home
-            // screen's weekly stats card - see DailyPlaytimeStats.
             DailyPlaytimeStats.recordSession(elapsed)
         }
         running = false

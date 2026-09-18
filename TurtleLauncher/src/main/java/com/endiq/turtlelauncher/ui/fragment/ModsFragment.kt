@@ -37,8 +37,8 @@ import com.endiq.turtlelauncher.utils.anim.AnimUtils.Companion.setVisibilityAnim
 import com.endiq.turtlelauncher.utils.file.FileCopyHandler
 import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.file.PasteFile
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
+import net.endiq.launcher.Tools
+import net.endiq.launcher.contracts.OpenDocumentWithExtension
 import java.io.File
 import java.util.function.Consumer
 
@@ -66,9 +66,6 @@ class ModsFragment : FragmentWithAnim(R.layout.fragment_mods) {
                         FileTools.copyFileInBackground(appContext, uri, mRootPath)
                     }
                 }.ended(TaskExecutors.getAndroidUI()) {
-                    // The copy can outlive this fragment (user navigated away while it was
-                    // running) - requireContext()/binding access here would crash with
-                    // "not attached to a context" otherwise. Bail out quietly if so.
                     if (!isAdded) return@ended
                     Toast.makeText(requireContext(), getString(R.string.profile_mods_added_mod), Toast.LENGTH_SHORT).show()
                     binding.fileRecyclerView.refreshPath()
@@ -315,13 +312,6 @@ class ModsFragment : FragmentWithAnim(R.layout.fragment_mods) {
         )
     }
 
-    /**
-     * TurtleLauncher: long-press on the download-mod button installs a curated set of
-     * performance mods (Sodium/Lithium/Entity Culling/Indium) plus the Bare Bones
-     * resource pack, resolved for this instance's actual Minecraft version + mod loader.
-     * See [RecommendedContentInstaller] for the real Modrinth slugs and the Sodium/Indium
-     * compatibility handling.
-     */
     private fun confirmInstallRecommended() {
         closeMultiSelect()
         val context = requireContext()

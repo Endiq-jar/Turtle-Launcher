@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentActivity
 /**
  * Add a new Fragment to the transaction; LauncherActivity receives and handles it.
  * Guarantees the parent Fragment is the current one when a Fragment is added.
- * @see net.kdt.pojavlaunch.LauncherActivity
+ * @see net.endiq.launcher.LauncherActivity
  * @see com.endiq.turtlelauncher.utils.ZHTools.addFragment
  */
 class AddFragmentEvent(

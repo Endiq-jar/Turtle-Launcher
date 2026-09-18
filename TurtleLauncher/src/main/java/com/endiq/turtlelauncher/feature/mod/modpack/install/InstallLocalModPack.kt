@@ -15,8 +15,8 @@ import com.endiq.turtlelauncher.feature.version.VersionsManager
 import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.dialog.TipDialog
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.utils.ZipUtils
+import net.endiq.launcher.Tools
+import net.endiq.launcher.utils.ZipUtils
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.util.zip.ZipFile

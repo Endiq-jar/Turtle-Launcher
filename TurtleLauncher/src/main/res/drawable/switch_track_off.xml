@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: pixel-art switch track, "off" state - drawn as vector paths
-     instead of a raw pixel-art bitmap (switch_off_raw.png, now removed). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="48dp"
     android:height="24dp"

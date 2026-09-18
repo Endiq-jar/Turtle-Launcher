@@ -55,8 +55,6 @@
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- TurtleLauncher: action buttons row (skin / cape / refresh / delete), own row below the
-         name/type text so it never overlaps or crowds out longer usernames/server names. -->
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/account_actions_row"
         android:layout_width="wrap_content"

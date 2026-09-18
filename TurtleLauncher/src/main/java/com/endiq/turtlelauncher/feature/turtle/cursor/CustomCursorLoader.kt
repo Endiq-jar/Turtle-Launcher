@@ -11,12 +11,6 @@ import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.log.Logging
 import java.io.File
 
-/**
- * TurtleLauncher: central entry point turning a cursor file on disk (.png, .cur or .ani)
- * into a ready-to-draw Android [Drawable]. Replaces the old bare `Drawable.createFromPath()`
- * call, which silently returned null for .cur/.ani - Android's built-in image codecs have
- * never understood either format.
- */
 object CustomCursorLoader {
     /** Extensions this loader knows how to decode, for upload/file-picker validation. */
     @JvmField
@@ -50,9 +44,6 @@ object CustomCursorLoader {
         if (file == null || file.isDirectory) return false
         val ext = file.extension.lowercase()
         if (ext == "ani" || ext == "cur") return true
-        // Fall back to a real bitmap-bounds sniff for png/jpg/webp/etc, same check the
-        // rest of the launcher already uses (ImageUtils.isImage), so anything previously
-        // accepted there still works here.
         return runCatching {
             val options = BitmapFactory.Options()
             options.inJustDecodeBounds = true

@@ -73,38 +73,8 @@ struct ANativeWindow_real
      */
     int     (*dequeueBuffer_DEPRECATED)(struct ANativeWindow* window,
                                         struct ANativeWindowBuffer** buffer);
-    /*
-     * hook called by EGL to lock a buffer. This MUST be called before modifying
-     * the content of a buffer. The buffer must have been acquired with
-     * dequeueBuffer first.
-     *
-     * Returns 0 on success or -errno on error.
-     *
-     * XXX: This function is deprecated.  It will continue to work for some
-     * time for binary compatibility, but it is essentially a no-op, and calls
-     * to it should be removed.
-     */
     int     (*lockBuffer_DEPRECATED)(struct ANativeWindow* window,
                                      struct ANativeWindowBuffer* buffer);
-    /*
-     * Hook called by EGL when modifications to the render buffer are done.
-     * This unlocks and post the buffer.
-     *
-     * The window holds a reference to the buffer between dequeueBuffer and
-     * either queueBuffer or cancelBuffer, so clients only need their own
-     * reference if they might use the buffer after queueing or canceling it.
-     * Holding a reference to a buffer after queueing or canceling it is only
-     * allowed if a specific buffer count has been set.
-     *
-     * Buffers MUST be queued in the same order than they were dequeued.
-     *
-     * Returns 0 on success or -errno on error.
-     *
-     * XXX: This function is deprecated.  It will continue to work for some
-     * time for binary compatibility, but the new queueBuffer function that
-     * takes a fence file descriptor should be used in its place (pass a value
-     * of -1 for the fence file descriptor if there is no valid one to pass).
-     */
     int     (*queueBuffer_DEPRECATED)(struct ANativeWindow* window,
                                       struct ANativeWindowBuffer* buffer);
     /*
@@ -130,23 +100,6 @@ struct ANativeWindow_real
      */
     int     (*perform)(struct ANativeWindow* window,
                        int operation, ... );
-    /*
-     * Hook used to cancel a buffer that has been dequeued.
-     * No synchronization is performed between dequeue() and cancel(), so
-     * either external synchronization is needed, or these functions must be
-     * called from the same thread.
-     *
-     * The window holds a reference to the buffer between dequeueBuffer and
-     * either queueBuffer or cancelBuffer, so clients only need their own
-     * reference if they might use the buffer after queueing or canceling it.
-     * Holding a reference to a buffer after queueing or canceling it is only
-     * allowed if a specific buffer count has been set.
-     *
-     * XXX: This function is deprecated.  It will continue to work for some
-     * time for binary compatibility, but the new cancelBuffer function that
-     * takes a fence file descriptor should be used in its place (pass a value
-     * of -1 for the fence file descriptor if there is no valid one to pass).
-     */
     int     (*cancelBuffer_DEPRECATED)(struct ANativeWindow* window,
                                        struct ANativeWindowBuffer* buffer);
     /*
@@ -191,31 +144,6 @@ struct ANativeWindow_real
      */
     int     (*queueBuffer)(struct ANativeWindow* window,
                            struct ANativeWindowBuffer* buffer, int fenceFd);
-    /*
-     * Hook used to cancel a buffer that has been dequeued.
-     * No synchronization is performed between dequeue() and cancel(), so
-     * either external synchronization is needed, or these functions must be
-     * called from the same thread.
-     *
-     * The window holds a reference to the buffer between dequeueBuffer and
-     * either queueBuffer or cancelBuffer, so clients only need their own
-     * reference if they might use the buffer after queueing or canceling it.
-     * Holding a reference to a buffer after queueing or canceling it is only
-     * allowed if a specific buffer count has been set.
-     *
-     * The fenceFd argument specifies a libsync fence file decsriptor for a
-     * fence that must signal before the buffer can be accessed.  If the buffer
-     * can be accessed immediately then a value of -1 should be used.
-     *
-     * Note that if the client has not waited on the fence that was returned
-     * from dequeueBuffer, that same fence should be passed to cancelBuffer to
-     * ensure that future uses of the buffer are preceded by a wait on that
-     * fence.  The caller must not use the file descriptor after it is passed
-     * to cancelBuffer, and the ANativeWindow implementation is responsible for
-     * closing it.
-     *
-     * Returns 0 on success or -errno on error.
-     */
     int     (*cancelBuffer)(struct ANativeWindow* window,
                             struct ANativeWindowBuffer* buffer, int fenceFd);
 };

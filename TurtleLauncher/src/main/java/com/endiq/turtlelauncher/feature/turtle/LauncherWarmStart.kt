@@ -10,44 +10,16 @@ import com.endiq.turtlelauncher.feature.version.VersionsManager
 import com.endiq.turtlelauncher.renderer.Renderers
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.authenticator.listener.DoneListener
-import net.kdt.pojavlaunch.authenticator.listener.ErrorListener
-import net.kdt.pojavlaunch.multirt.MultiRTUtils
+import net.endiq.launcher.Tools
+import net.endiq.launcher.authenticator.listener.DoneListener
+import net.endiq.launcher.authenticator.listener.ErrorListener
+import net.endiq.launcher.multirt.MultiRTUtils
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
-/**
- * TurtleLauncher: Smart Launcher Warm Start (Section 12 of Endiq's mega-spec). While the
- * user is sitting on the main menu, opportunistically does the parts of "getting ready to
- * launch" that don't require touching the game/JVM yet, for whatever version is currently
- * selected - VersionsManager.getCurrentVersion() IS the "predict next instance": it's the
- * literal, real version Play would launch right now, not a separate guess/heuristic.
- *
- * ARCHITECTURE-HONESTY NOTE on "Warm Java process": this app launches Minecraft's JVM
- * in-process via JNI (see JREUtils/LaunchGame), not as a forked process - there is no way
- * to have a second JVM "ready and waiting" ahead of time without contradicting how launch
- * actually works here. What this does instead is the closest real equivalent: read the
- * predicted runtime's libjvm.so bytes into the OS page cache ahead of time, so the actual
- * dlopen at launch hits a warm cache instead of cold disk I/O. Same technique for "preload
- * libraries" (the selected renderer's .so files) - readahead only, never an actual
- * dlopen/System.load outside the established launch order, since loading a native lib for
- * real out of sequence is exactly the kind of thing that has caused real native crashes in
- * this project before (see the SDL/libSDL3.so saga).
- *
- * "Cache authentication": proactively triggers the same silent MSA refresh path
- * (MicrosoftBackgroundLogin) that preLaunch() already calls for real, just earlier and
- * quietly - no toast/error UI here, since this is purely opportunistic and preLaunch()'s
- * own real check still runs (and surfaces anything the user needs to see) at actual launch
- * time regardless. "Cache assets" is AssetPrefetcher's job, extended there rather than
- * duplicated here.
- *
- * Best-effort and silent throughout, same pattern as AssetPrefetcher: any one piece
- * failing is skipped and logged quietly, never blocks another piece or surfaces to the UI.
- */
 object LauncherWarmStart {
     private const val TAG = "LauncherWarmStart"
     private const val WARM_READ_CHUNK = 64 * 1024
@@ -96,10 +68,6 @@ object LauncherWarmStart {
         }.onFailure { e -> Logging.i(TAG, "Renderer warm skipped: ${e.message}") }
     }
 
-    /** Page-cache-warms the predicted version's already-assigned Java runtime's
-     *  libjvm.so. Deliberately does not trigger a JRE auto-install if none is assigned
-     *  yet - that's a real network/side-effect-heavy operation, not appropriate for a
-     *  silent idle warm-up. */
     private fun warmJavaRuntime(version: com.endiq.turtlelauncher.feature.version.Version) {
         runCatching {
             val javaDir = version.getJavaDir()
@@ -108,8 +76,6 @@ object LauncherWarmStart {
             if (runtimeName.isEmpty()) return
             val home = MultiRTUtils.getRuntimeHome(runtimeName)
             if (!home.isDirectory) return
-            // Exact lib/<arch>/server/libjvm.so subpath varies by runtime package - a
-            // depth-limited search beats hardcoding a path and silently missing it.
             findFileByName(home, "libjvm.so", maxDepth = 5)?.let { warmReadFile(it) }
         }.onFailure { e -> Logging.i(TAG, "Runtime warm skipped: ${e.message}") }
     }

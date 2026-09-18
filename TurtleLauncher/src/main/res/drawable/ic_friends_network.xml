@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  TurtleLauncher: dedicated Friends/LAN icon, closing TerracottaVpnService's long-standing
-  "TODO: swap for a dedicated Friends/network icon" (the ongoing VPN notification used
-  ic_chat, which is also the in-game chat glyph).
-
-  Solid fills and no strokes on purpose: Android draws a notification small icon from its
-  alpha channel only, so a thin-stroked vector like ic_globe.xml turns into near-invisible
-  hairlines in the status bar. Two solid person glyphs at 24dp read as "friends" even at
-  status-bar size.
--->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

@@ -15,7 +15,7 @@ import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.fragment.InstallGameFragment.Companion.BUNDLE_MC_VERSION
 import com.endiq.turtlelauncher.ui.subassembly.modlist.ModListFragment
 import com.endiq.turtlelauncher.utils.ZHTools
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.Future
 import java.util.function.Consumer

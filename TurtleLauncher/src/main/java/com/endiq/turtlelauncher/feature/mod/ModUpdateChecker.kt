@@ -7,16 +7,6 @@ import com.endiq.turtlelauncher.utils.file.FileTools
 import java.io.File
 
 
-/**
- * Auto update checker — mods, resource packs, and shader packs.
- *
- * Hashes each file (SHA-1) and asks Modrinth's bulk version-lookup-by-hash endpoint which
- * project/version it corresponds to, then checks whether a newer version exists for the
- * same Minecraft version (and, for mods, the same mod loader — resource packs and shader
- * packs aren't loader-specific). Anything Modrinth doesn't recognise (not hosted there, or
- * a hash mismatch from local edits) is silently skipped — this is a best-effort convenience
- * feature, not a strict version manager.
- */
 object ModUpdateChecker {
 
     data class UpdateInfo(

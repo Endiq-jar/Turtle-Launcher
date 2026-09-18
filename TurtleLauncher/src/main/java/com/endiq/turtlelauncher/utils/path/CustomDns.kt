@@ -9,19 +9,6 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * TurtleLauncher: lets the user pick a public DNS resolver for the launcher's own
- * network requests (downloads/API calls), independent from the download-source
- * (BMCLAPI) mirror in [DownloadMirror] — that one swaps *which URL* is requested,
- * this one swaps *which server resolves the hostname*. Useful when a device/ISP's
- * default DNS blocks or mis-resolves Mojang/Microsoft/Modrinth/GitHub domains.
- *
- * Implemented as a minimal DNS-over-UDP (RFC 1035) client — a single A-record query
- * sent straight to the chosen resolver's IP on port 53 — rather than pulling in a full
- * DNS library. If anything goes wrong (timeout, malformed reply, no A record, etc.)
- * this transparently falls back to the system resolver, exactly like [DownloadMirror]
- * falls back to the official source when a mirror doesn't have a file.
- */
 object CustomDns : Dns {
 
     private val SERVERS = mapOf(

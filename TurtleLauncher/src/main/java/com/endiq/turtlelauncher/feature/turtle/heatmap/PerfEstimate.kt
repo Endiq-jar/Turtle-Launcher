@@ -1,16 +1,5 @@
 package com.endiq.turtlelauncher.feature.turtle.heatmap
 
-/**
- * TurtleLauncher: how heavy a mod/resource pack/shader pack is *likely* to be.
- *
- * IMPORTANT HONESTY NOTE: nothing here is a measured FPS number. This sandbox has no
- * device to actually run Minecraft on and profile, so [HeatmapAnalyzer] never invents
- * one either - "-12fps" style numbers would be fabricated, not estimated. What it does
- * instead is static-analyze the file itself for real, well-known correlates of runtime
- * cost (declared Mixin count for mods, render-pass count for shader packs, decoded
- * texture memory for resource packs) and bucket those into a tier. Treat the tier as a
- * "worth a second look" signal, not a guarantee.
- */
 enum class PerfTier(val emoji: String, val label: String) {
     LIGHT("🟢", "Lightweight"),
     MODERATE("🟡", "Moderate"),

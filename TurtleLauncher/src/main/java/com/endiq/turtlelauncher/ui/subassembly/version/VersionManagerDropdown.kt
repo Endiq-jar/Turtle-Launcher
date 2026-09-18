@@ -17,16 +17,9 @@ import com.endiq.turtlelauncher.ui.fragment.ModsFragment
 import com.endiq.turtlelauncher.ui.fragment.VersionConfigFragment
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.file.FileDeletionHandler
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 
-/**
- * TurtleLauncher: replaces VersionManagerFragment's full-screen navigation. Same actions
- * (shortcuts to mods/game/resource/world/shader/screenshot/logs/crash-report paths, plus
- * version settings/rename/copy/delete), just shown as a dropdown anchored to the button
- * instead of swapping to a whole new screen. Modeled on VersionAdapter's existing
- * per-version "..." popup (same PopupWindow + showAsDropDown + height-cap pattern).
- */
 class VersionManagerDropdown(private val parentFragment: Fragment) {
 
     private val popupWindow: PopupWindow = PopupWindow().apply {

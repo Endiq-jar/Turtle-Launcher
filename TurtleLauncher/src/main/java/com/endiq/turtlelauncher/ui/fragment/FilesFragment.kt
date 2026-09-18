@@ -39,8 +39,8 @@ import com.endiq.turtlelauncher.utils.anim.AnimUtils.Companion.setVisibilityAnim
 import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.file.PasteFile
 import com.endiq.turtlelauncher.utils.file.ZipExtractUtils
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
+import net.endiq.launcher.Tools
+import net.endiq.launcher.contracts.OpenDocumentWithExtension
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.util.Objects
@@ -78,9 +78,6 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
         openDocumentLauncher = registerForActivityResult(OpenDocumentWithExtension(null, true)) { uris: List<Uri>? ->
             uris?.let { uriList ->
                 val dialog = ZHTools.showTaskRunningDialog((requireContext()))
-                // Snapshot everything the background copy needs up front: if the user
-                // navigates away mid-copy, requireContext()/binding access from either
-                // the worker thread or the ended callback would crash ("not attached").
                 val appContext = requireContext().applicationContext
                 val destPath = binding.fileRecyclerView.fullPath.absolutePath
                 Task.runTask {
@@ -324,12 +321,6 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
     /**
      * Show a name-input dialog, then compress [files] into a .zip next to them.
      */
-    /**
-     * TurtleLauncher: whenever a mods/resourcepacks/shaderpacks folder is opened (or
-     * refreshed), hash whatever's in it against Modrinth and dot-badge anything with a
-     * newer version available. Silently does nothing for any other folder, or if we
-     * can't tell which installed version this one belongs to.
-     */
     private fun checkForResourceUpdates(folder: File) {
         val category = folder.name.lowercase()
         if (category != "mods" && category != "resourcepacks" && category != "shaderpacks") return
@@ -367,13 +358,6 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
         }.execute()
     }
 
-    /**
-     * TurtleLauncher: Performance Heatmap (Section 11) - runs HeatmapAnalyzer over
-     * whatever's in a mods/resourcepacks/shaderpacks folder and stamps each row's
-     * FileItemBean.perfEstimate, same shape as checkForResourceUpdates above (async
-     * Task, mutate the already-bound adapter data, notify only if something changed).
-     * Independent of the update check - a file can have both badges at once.
-     */
     private fun analyzeHeatmap(folder: File) {
         if (!AllSettings.performanceHeatmapEnabled.getValue()) return
         val category = folder.name.lowercase()
@@ -425,9 +409,6 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
                 Task.runTask {
                     ZipExtractUtils.compress(files, destZip)
                 }.ended(TaskExecutors.getAndroidUI()) {
-                    // ctx is the captured Context (safe), but getString() would go
-                    // through requireContext() and crash if the user navigated away
-                    // mid-compression - resolve strings from ctx instead.
                     if (!isAdded) return@ended
                     Toast.makeText(ctx,
                         ctx.getString(R.string.file_zip_success, destZip.name),
@@ -567,11 +548,6 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
                 }
             })
 
-            // TurtleLauncher: these quick-access shortcuts used to be hidden whenever this
-            // browser was locked to a specific subfolder (mods/resourcepacks/shaderpacks/
-            // saves), i.e. everywhere except the main, unrestricted Files screen. Always
-            // showing them lets you jump straight to external or private app storage from
-            // any of those screens too, e.g. to grab a mod file from Downloads.
             if (mSelectFolderMode || !mMultiSelectMode) {
                 multiSelectFiles.visibility = View.GONE
                 selectAll.visibility = View.GONE

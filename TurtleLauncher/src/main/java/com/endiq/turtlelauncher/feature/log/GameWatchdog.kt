@@ -9,23 +9,6 @@ import com.endiq.turtlelauncher.utils.path.PathManager
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
-/**
- * Watches the live game log file while Minecraft is running inside
- * JavaGUILauncherActivity. Some failures don't make the JVM exit at all — the
- * render thread can simply hang (black screen, frozen window) while the process
- * stays alive — so [JvmExitEvent]/exit-code based crash detection never fires.
- *
- * This watchdog polls latestlog.txt's size on a timer; if it stops growing for
- * [STALL_TIMEOUT_MS] it shows a best-effort diagnosis (reusing [CrashAnalyzer])
- * with an option to force-close, instead of leaving the person staring at a dead
- * screen with no feedback at all.
- *
- * Deliberately does NOT use [net.kdt.pojavlaunch.Logger.setLogListener]: that is a
- * single global native callback slot already used by the in-game log viewer
- * (com.kdt.LoggerView), and attaching a second consumer there would silently steal
- * or lose callbacks depending on which one last called setLogListener. Polling the
- * log file's length avoids that conflict entirely.
- */
 class GameWatchdog(
     private val activity: Activity,
     private val onForceClose: Runnable

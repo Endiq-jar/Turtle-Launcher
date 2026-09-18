@@ -12,13 +12,6 @@ abstract class LifecycleAwareTipDialog: LifecycleEventObserver {
     private var mDialog: TipDialog? = null
     private var mLifecycleEnded = false
 
-    /**
-     * Show the lifecycle-aware dialog.
-     * Note that the DialogCreator may not be always invoked.
-     * @param lifecycle the lifecycle to follow
-     * Note that any dismiss listeners added to the dialog must be wrapped
-     * with wrapDismissListener().
-     */
     @SuppressLint("CheckResult")
     fun show(lifecycle: Lifecycle, builder: TipDialog.Builder) {
         this.mLifecycleEnded = false

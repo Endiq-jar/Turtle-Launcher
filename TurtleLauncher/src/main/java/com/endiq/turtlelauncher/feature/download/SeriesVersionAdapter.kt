@@ -5,13 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.endiq.turtlelauncher.R
-import net.kdt.pojavlaunch.JMinecraftVersionList
+import net.endiq.launcher.JMinecraftVersionList
 
-/**
- * Flat list mixing section headers (Release/Snapshot/Beta/Alpha) and version rows, for the
- * per-series detail screen. A plain sealed-list-of-Any approach rather than a full
- * multi-adapter setup, since there are only ever two row shapes here.
- */
 class SeriesVersionAdapter(
     private val rows: List<Row>,
     private val onVersionClick: (String) -> Unit

@@ -2,7 +2,7 @@ package com.endiq.turtlelauncher.feature.download.platform
 
 import android.content.Context
 import android.widget.Toast
-import com.kdt.mcgui.ProgressLayout
+import com.endiq.mcgui.ProgressLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.context.ContextExecutor
 import com.endiq.turtlelauncher.feature.download.Filters
@@ -23,9 +23,9 @@ import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.dialog.EditTextDialog
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.file.FileTools
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.modloaders.modpacks.api.ApiHandler
-import net.kdt.pojavlaunch.utils.DownloadUtils
+import net.endiq.launcher.Tools
+import net.endiq.launcher.modloaders.modpacks.api.ApiHandler
+import net.endiq.launcher.utils.DownloadUtils
 import org.jackhuang.hmcl.ui.versions.ModTranslations
 import java.io.File
 

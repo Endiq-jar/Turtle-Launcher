@@ -18,17 +18,6 @@ import com.endiq.turtlelauncher.ui.fragment.EmotesFragment
 import com.endiq.turtlelauncher.ui.fragment.FragmentWithAnim
 import com.endiq.turtlelauncher.utils.ZHTools
 
-/**
- * TurtleLauncher: a "Settings Hub" - a scrollable grid of tappable category cards, grouped
- * into General / Performance / Other, that drills into each settings category as its own
- * full-screen destination. Replaces the previous vertical-tab + ViewPager2 layout, and then
- * the single-column list that replaced that. Every existing settings category fragment is
- * kept and reused unchanged - this only replaces how you get to them, not what's inside them.
- * Loosely inspired by another launcher's card-grid settings screen, adapted rather than copied:
- * kept this app's existing General/Performance/Other grouping instead of one flat grid (14
- * categories reads better grouped), and added a live search field to jump straight to one
- * given how many categories there now are.
- */
 class SettingsFragment : FragmentWithAnim(R.layout.fragment_settings) {
     companion object {
         const val TAG: String = "SettingsFragment"
@@ -140,8 +129,6 @@ class SettingsFragment : FragmentWithAnim(R.layout.fragment_settings) {
         })
     }
 
-    /** Live-filters the hub grid by card title. A section header (and its whole container)
-     *  hides itself once none of its cards match, rather than leaving an empty group visible. */
     private fun filterCards(query: String) {
         val needle = query.trim().lowercase()
         var anyVisible = false
@@ -171,12 +158,6 @@ class SettingsFragment : FragmentWithAnim(R.layout.fragment_settings) {
         Settings.refreshSettings()
     }
 
-    /** TurtleLauncher: settings is the panel you reach *down* to from the home screen, so it
-     *  deliberately rises off the bottom edge of the display and settles with a bounce rather
-     *  than drifting in from wherever the global transition would put it. Same reasoning as
-     *  the mods screen keeping its Wobble: a per-screen design choice, not an oversight.
-     *  "Sheet" is also selectable globally in the two transition pickers if you want this
-     *  entrance everywhere instead. */
     override fun slideIn(animPlayer: AnimPlayer) {
         animPlayer.apply(AnimPlayer.Entry(binding.settingsLayout, TurtleTransitions.sheetEnter()))
     }

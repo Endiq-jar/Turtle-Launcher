@@ -8,10 +8,6 @@
     android:background="@color/background_app"
     tools:context="com.endiq.turtlelauncher.ui.fragment.SettingsFragment">
 
-    <!-- Header: TurtleLauncher's existing back+title row, plus a subtitle line and a live
-         search field. Settings Hub now has 14 categories, so a way to jump straight to one
-         earns its place here - unlike a flat single-page list, filtering has to fold whole
-         sections away too, handled in SettingsFragment.kt. -->
     <LinearLayout
         android:id="@+id/settings_header"
         android:layout_width="match_parent"

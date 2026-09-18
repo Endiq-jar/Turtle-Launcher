@@ -8,25 +8,9 @@ import androidx.core.content.IntentCompat
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.LauncherActivity
+import net.endiq.launcher.LauncherActivity
 import java.io.File
 
-/**
- * Android share-sheet entry point ("share a log with the Assistant").
- *
- * TurtleLauncher previously had no ACTION_SEND intent filter at all, which is why the
- * launcher never appeared in Android's share menu and a game log shared from a file
- * manager/another app had nowhere to land. This activity is that entry point:
- *
- *  1. Receives ACTION_SEND with either EXTRA_TEXT (shared log text) or EXTRA_STREAM (a
- *     shared log file, e.g. latest.log / latestlog.txt / a .zip-free text export),
- *  2. Copies the content into the launcher's own log folder as `shared_log.txt`,
- *  3. Opens LauncherActivity straight into the AI Assistant, which reads that file and
- *     answers with a crash diagnosis (TurtleAssistant.analyzeSharedLog).
- *
- * Invisible on purpose ([R.style.ShareTrampolineTheme]) - the user should only ever see
- * the Assistant screen with the analysis, never an intermediate activity.
- */
 class ShareReceiverActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,10 +90,6 @@ class ShareReceiverActivity : BaseActivity() {
         }.getOrNull()
     }
 
-    /**
-     * Persists the shared log under the launcher's log folder so the Assistant (and the
-     * Last Game Log card's resolver) can pick it up, overwriting any previous share.
-     */
     private fun saveSharedLog(text: String): File? {
         return runCatching {
             val dir = File(PathManager.DIR_LAUNCHER_LOG)

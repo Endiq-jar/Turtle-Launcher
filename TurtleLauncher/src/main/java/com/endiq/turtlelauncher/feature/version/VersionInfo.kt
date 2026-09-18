@@ -1,7 +1,7 @@
 package com.endiq.turtlelauncher.feature.version
 
 import com.endiq.turtlelauncher.feature.log.Logging
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 import java.io.FileWriter
 

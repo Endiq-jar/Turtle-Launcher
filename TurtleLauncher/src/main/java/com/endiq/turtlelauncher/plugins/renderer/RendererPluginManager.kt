@@ -8,9 +8,9 @@ import com.endiq.turtlelauncher.feature.update.UpdateUtils
 import com.endiq.turtlelauncher.renderer.Renderers
 import com.endiq.turtlelauncher.utils.path.PathManager
 import com.endiq.turtlelauncher.utils.stringutils.StringUtilsKt
-import net.kdt.pojavlaunch.Architecture
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.utils.ZipUtils
+import net.endiq.launcher.Architecture
+import net.endiq.launcher.Tools
+import net.endiq.launcher.utils.ZipUtils
 import java.io.DataInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -100,13 +100,6 @@ object RendererPluginManager {
             ) {
                 val rendererString = metaData.getString("renderer") ?: return
                 val des = metaData.getString("des") ?: return
-                // The env blob ships under different meta-data keys depending on the
-                // plugin's lineage: Turtle-native plugins declare "turtleEnv", but the
-                // MobileGlues app (MobileGL-Dev/MobileGlues-plugin, package
-                // com.fcl.plugin.mobileglues) only declares the PojavLauncher-era
-                // "pojavEnv" plus "boatEnv" - requiring turtleEnv alone made its renderer
-                // silently vanish from the picker (it was visible in v2), so fall back
-                // through the legacy keys before giving up on the plugin.
                 val turtleEnvString = metaData.getString("turtleEnv")
                     ?: metaData.getString("pojavEnv")
                     ?: metaData.getString("boatEnv")
@@ -137,11 +130,6 @@ object RendererPluginManager {
 
                 val packageName = info.packageName
 
-                // The plugin's own supported Minecraft range, declared right next to the
-                // renderer/env metadata (the MobileGlues plugin app ships minMCVer="1.17",
-                // maxMCVer="" = open-ended). Empty/absent means "no bound declared". Kept on
-                // the plugin so the launch-time compat warning and the renderer picker note
-                // can honor it exactly like a built-in RendererCatalog range.
                 val minMCVer = metaData.getString("minMCVer")?.takeIf { it.isNotBlank() }
                 val maxMCVer = metaData.getString("maxMCVer")?.takeIf { it.isNotBlank() }
 

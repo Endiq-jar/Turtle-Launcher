@@ -18,9 +18,6 @@
         android:gravity="center"
         android:layout_marginBottom="@dimen/_12sdp"/>
 
-    <!-- TurtleLauncher: wrapped in a ScrollView + checkHeight() (see FullScreenDialog) so this
-         dialog can never grow taller than the screen without being scrollable - it used to be a
-         plain fixed LinearLayout with no way to reach the content below the fold. -->
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
@@ -69,9 +66,6 @@
                 android:background="@color/turtle_highlight_subtle"
                 android:layout_marginVertical="@dimen/_8sdp"/>
 
-            <!-- TurtleLauncher: local "recently applied" tap-to-apply gallery (bundled default
-                 + history) - offline and always available, independent of the live laby.net
-                 browser section further down. See SkinCapeHistoryStore's doc comment. -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -111,8 +105,6 @@
                 android:background="@color/turtle_highlight_subtle"
                 android:layout_marginVertical="@dimen/_8sdp"/>
 
-            <!-- Look up a specific player (demoted from "the" browser to a secondary fallback -
-                 still real, working Mojang+LabyMod lookup, just no longer the headline flow) -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -192,10 +184,6 @@
                 android:background="@color/turtle_highlight_subtle"
                 android:layout_marginVertical="@dimen/_8sdp"/>
 
-            <!-- TurtleLauncher: live laby.net/skins gallery browsing - an actual grid of
-                 arbitrary community skins to page through and tap-apply, not just the
-                 per-player lookup above. Skin-only (laby.net doesn't have a cape library);
-                 SkinCapeDialog hides this whole block in cape mode. -->
             <TextView
                 android:id="@+id/laby_gallery_label"
                 android:layout_width="match_parent"
@@ -305,9 +293,6 @@
                 android:background="@color/turtle_highlight_subtle"
                 android:layout_marginVertical="@dimen/_8sdp"/>
 
-            <!-- TurtleLauncher: live littleskin.cn skin/cape library browsing - same shape as
-                 the laby.net section above, but works in BOTH skin and cape mode, since
-                 LittleSkin's library natively supports browsing capes too. -->
             <TextView
                 android:id="@+id/littleskin_gallery_label"
                 android:layout_width="match_parent"
@@ -440,9 +425,6 @@
                 android:background="@color/turtle_highlight_subtle"
                 android:layout_marginVertical="@dimen/_8sdp"/>
 
-            <!-- TurtleLauncher: slim (Alex) model toggle - only shown for Microsoft
-                 accounts in skin mode, where the skin really uploads to Mojang
-                 (SkinUploader) and the model choice matters. -->
             <Switch
                 android:id="@+id/switch_slim_model"
                 android:layout_width="match_parent"
@@ -454,7 +436,6 @@
                 android:visibility="gone"
                 tools:ignore="UseSwitchCompatOrMaterialXml"/>
 
-            <!-- TurtleLauncher: local skin server LAN visibility -->
             <Switch
                 android:id="@+id/switch_lan_visible"
                 android:layout_width="match_parent"

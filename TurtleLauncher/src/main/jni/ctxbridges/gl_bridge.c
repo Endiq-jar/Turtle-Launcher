@@ -13,31 +13,16 @@
 #include "gl_bridge.h"
 #include "egl_loader.h"
 
-//
-// Created by maks on 17.09.2022.
-//
-// TurtleLauncher: EGL improvements (config scoring, error logging, front-buffer/
-// low-latency rendering, adaptive vsync, FORCE_VSYNC) added on top of the
-// original bridge - search "TurtleLauncher:" for the specific additions.
-//
-
 static const char* g_LogTag = "GLBridge";
 static __thread gl_render_window_t* currentBundle;
 static EGLDisplay g_EglDisplay;
 
-// TurtleLauncher: extension support, detected once in gl_log_egl_info() right
-// after eglInitialize. Everything downstream checks these instead of calling
-// eglQueryString repeatedly or, worse, assuming an extension is there.
 static bool g_HasSwapControlTear = false;          // EGL_EXT_swap_control_tear -> adaptive vsync
 static bool g_HasMutableRenderBuffer = false;       // EGL_KHR_mutable_render_buffer -> can flip to EGL_SINGLE_BUFFER after creation
 static bool g_HasFrontBufferAutoRefresh = false;    // EGL_ANDROID_front_buffer_auto_refresh -> driver keeps the front buffer fresh without an explicit swap
 static bool g_LowLatencyChecked = false;
 static bool g_LowLatencyRequested = false;
 
-/**
- * TurtleLauncher: translates an eglGetError() code into something actually
- * readable in logcat instead of a bare hex value you have to go look up.
- */
 static void log_egl_error(const char* operation) {
     EGLint error = eglGetError_p();
     const char* description;
@@ -62,12 +47,6 @@ static void log_egl_error(const char* operation) {
     __android_log_print(ANDROID_LOG_ERROR, g_LogTag, "%s failed: %s (0x%04x)", operation, description, error);
 }
 
-/**
- * TurtleLauncher: queries EGL_VENDOR/EGL_VERSION plus the extensions we care
- * about, once, right after eglInitialize. This both gives us something useful
- * in logcat when someone reports a renderer bug on an unfamiliar GPU, and
- * caches the extension support flags everything else below reads.
- */
 void gl_log_egl_info() {
     const char* vendor = eglQueryString_p ? eglQueryString_p(g_EglDisplay, EGL_VENDOR) : NULL;
     const char* version = eglQueryString_p ? eglQueryString_p(g_EglDisplay, EGL_VERSION) : NULL;
@@ -167,14 +146,6 @@ gl_render_window_t* gl_init_context(gl_render_window_t *share) {
         return NULL;
     }
 
-    // TurtleLauncher: EGL config scoring. eglChooseConfig() itself already sorts
-    // candidates per the EGL spec's own rules, but that ordering doesn't know
-    // anything about a "caveat" config being a slow/emulated fallback, and
-    // doesn't care whether EGL_SWAP_BEHAVIOR_PRESERVED_BIT is available (some
-    // drivers use that as a signal to keep the previous frame's contents around
-    // instead of re-rendering it, which is the closest thing EGL exposes to a
-    // "buffering strategy" knob). We pull every matching config and pick the
-    // best-scoring one ourselves instead of blindly trusting index 0.
     EGLint configCount = num_configs;
     if (configCount > 32) configCount = 32; // sane ceiling, no device has this many distinct configs anyway
     EGLConfig candidates[32];
@@ -234,22 +205,6 @@ gl_render_window_t* gl_init_context(gl_render_window_t *share) {
     return bundle;
 }
 
-/**
- * TurtleLauncher: front-buffer / low-latency rendering. Only does anything if
- * POJAV_LOW_LATENCY_RENDERING=1 was set before launch (see gl_low_latency_
- * requested()). Two-step, both gated on the driver actually advertising
- * support - this is a latency/tearing trade-off, not something to force on a
- * driver that doesn't handle it well:
- *   1. EGL_KHR_mutable_render_buffer lets us flip an already-created surface
- *      to EGL_SINGLE_BUFFER - rendering goes straight to what's on screen
- *      instead of waiting on the swap chain.
- *   2. EGL_ANDROID_front_buffer_auto_refresh on top of that tells the
- *      compositor to keep re-presenting the front buffer automatically, which
- *      is what actually makes single-buffered rendering look right instead of
- *      needing an explicit (and self-defeating) eglSwapBuffers per change.
- * No-ops entirely, silently, if either the setting is off or the extensions
- * aren't there - falls back to the normal double-buffered surface as-is.
- */
 static void apply_low_latency_mode(EGLSurface surface) {
     if (!gl_low_latency_requested()) return;
     if (!g_HasMutableRenderBuffer || eglSurfaceAttrib_p == NULL) {
@@ -402,17 +357,6 @@ void gl_setup_window() {
     }
 }
 
-/**
- * TurtleLauncher: FORCE_VSYNC (set from AllSettings.getForceVsync() in
- * JREUtils.setJavaEnv) previously had no native-side reader at all - the
- * setting existed in the UI and got put into the launch environment, but
- * nothing ever consumed it, so toggling it did nothing. This is now the
- * consumer: when set, it overrides whatever interval Minecraft's own video
- * settings asked for. POJAV_ADAPTIVE_VSYNC additionally requests adaptive
- * vsync (EGL_EXT_swap_control_tear, interval -1) instead of a flat on/off,
- * falling back to regular vsync if the driver doesn't advertise the
- * extension - adaptive vsync only means anything once already syncing.
- */
 void gl_swap_interval(int swapInterval) {
     const char *renderer = getenv("POJAV_RENDERER");
     if (renderer && !strcmp(renderer, "opengles3_desktopgl_zink_kopper") && !getenv("POJAV_VSYNC_IN_ZINK")) {

@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: this is now the standalone floating menu BUTTON only.
-     The FPS/Memory/HUD readout lives in its own separate floating window,
-     see view_game_info_hud.xml, so the two no longer share one draggable bubble. -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"

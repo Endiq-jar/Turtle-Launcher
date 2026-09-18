@@ -4,8 +4,8 @@ import com.endiq.turtlelauncher.feature.download.enums.ModLoader
 import com.endiq.turtlelauncher.feature.download.item.ModLoaderWrapper
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.feature.mod.models.MMCPackMeta
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.utils.ZipUtils
+import net.endiq.launcher.Tools
+import net.endiq.launcher.utils.ZipUtils
 import java.io.File
 import java.util.Properties
 import java.util.zip.ZipFile

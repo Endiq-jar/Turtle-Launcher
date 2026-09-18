@@ -20,8 +20,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- TurtleLauncher: dot badge shown when a newer version is available on Modrinth
-         for this mod/resource pack/shader pack (see ModUpdateChecker) -->
     <View
         android:id="@+id/update_badge"
         android:layout_width="@dimen/_6sdp"
@@ -31,9 +29,6 @@
         app:layout_constraintEnd_toEndOf="@+id/image"
         app:layout_constraintTop_toTopOf="@+id/image" />
 
-    <!-- TurtleLauncher: performance-heatmap tier dot (🟢/🟡/🔴), see HeatmapAnalyzer.
-         Tap shows a detail dialog with the RAM/VRAM/CPU-signal reasoning. Positioned at
-         the bottom of the icon so it never collides with update_badge at the top. -->
     <View
         android:id="@+id/perf_badge"
         android:layout_width="@dimen/_6sdp"
@@ -98,7 +93,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <!-- TurtleLauncher: per-mod enable/disable toggle — only visible in ModsFragment -->
     <Switch
         android:id="@+id/mod_toggle"
         android:layout_width="wrap_content"

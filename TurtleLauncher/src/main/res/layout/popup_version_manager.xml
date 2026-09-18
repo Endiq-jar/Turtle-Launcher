@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: dropdown replacement for the old full-screen VersionManagerFragment.
-     Same row style/pattern as view_version_manager.xml's per-version "..." popup (icon +
-     AnimTextView with app:ripple_for_text, ScrollView + Kotlin-side height cap so it never
-     renders off the bottom of the screen when anchored low). Covers every action the old
-     full-screen fragment_version_manager.xml had, in the same order, split into a
-     "shortcuts" group (folder access) and a "manage" group (settings/rename/copy/delete)
-     with a thin divider between them, echoing the two side-by-side cards the old layout used. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"

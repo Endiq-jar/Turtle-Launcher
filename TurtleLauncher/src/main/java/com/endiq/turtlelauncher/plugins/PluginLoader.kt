@@ -22,13 +22,6 @@ object PluginLoader {
     private const val PACKAGE_FLAGS =
         PackageManager.GET_META_DATA or PackageManager.GET_SHARED_LIBRARY_FILES
 
-    /**
-     * The set of installed packages that expose a MAIN activity, as seen by the last scan.
-     * Compared by [rescanIfPluginsChanged] so a plugin app installed (or uninstalled) while
-     * TurtleLauncher is already running gets picked up without a full app restart - "any
-     * plugin app install should work in the launcher" must hold no matter where the install
-     * came from (this launcher's own Settings page, a file manager, a store...).
-     */
     private var lastSeenPackages: Set<String>? = null
 
     @JvmStatic
@@ -39,14 +32,6 @@ object PluginLoader {
 
         DriverPluginManager.initDriver(context, force)
         if (force) {
-            // A re-scan must replace the previously registered plugin renderers, not stack
-            // on top of them: Renderers.addRenderer() rejects duplicate unique identifiers,
-            // so without this removal every still-installed plugin would collide with its
-            // own previous registration, fail to re-register and get dropped from the
-            // plugin list - leaving it unusable until a restart. Clear the old registrations
-            // first (also invalidating the compatible-renderer cache and, if it was one of
-            // them, the current selection, which the next setCurrentRenderer call recovers
-            // or falls back from).
             Renderers.removeRenderers(RendererPluginManager.getRendererList().map { it.uniqueIdentifier })
             RendererPluginManager.clearPlugin()
             FeaturePluginManager.clearPlugin()
@@ -88,15 +73,6 @@ object PluginLoader {
         if (RendererPluginManager.isAvailable()) {
             val failedToLoadList: MutableList<RendererPlugin> = mutableListOf()
             RendererPluginManager.getRendererList().forEach { rendererPlugin ->
-                // Plugin libraries live inside the plugin (its APK's nativeLibraryDir or
-                // the local plugin folder), NOT in this launcher's own jniLibs folder - so
-                // expose them as absolute paths. Renderers.hasRequiredLibrary() verifies
-                // that exact file exists before letting a renderer into the picker, and a
-                // bare library name would make it look in the launcher's folder, miss it,
-                // and silently drop the plugin renderer (that's what hid the MobileGlues
-                // app's renderer from the list). JREUtils.loadGraphicsLibrary() already
-                // resolves the selected plugin's library as path/glName at launch time, so
-                // absolute paths here only affect the picker/validation side.
                 fun resolveInPluginDir(libName: String): String =
                     if (libName.startsWith("/")) libName
                     else "${rendererPlugin.path}/$libName"
@@ -129,17 +105,6 @@ object PluginLoader {
         // whether a plugin app appeared or disappeared in the meantime.
         lastSeenPackages = installedMainPackages(context)
 
-        // TurtleLauncher: silently check renderer/driver plugin updates at startup
-        // (gated by the 5 minute cooldown, Fast Boot and the setting toggle).
-        // Background Services (item 20) - "pause update checker": loadAllPlugins() runs
-        // again for real the moment MainActivity (a separate :game process) reaches this
-        // same BaseActivity.onCreate() codepath at the start of every session, since
-        // isInitialized is per-process state. The plugin *load* below is left untouched
-        // (a plugin renderer/driver genuinely has to load from disk to render at all), but
-        // this upstream network "is there a newer one" check is pure overhead during an
-        // active game session - it never affects what's about to render, only what would
-        // show up next time someone opens Settings. Gate it on the same game-session flag
-        // TaskExecutors already exposes rather than inventing new state.
         if (com.endiq.turtlelauncher.setting.AllSettings.autoCheckPluginUpdates.getValue() &&
             !com.endiq.turtlelauncher.setting.AllSettings.fastBoot.getValue() &&
             !com.endiq.turtlelauncher.task.TaskExecutors.isGameSessionActive) {
@@ -151,12 +116,6 @@ object PluginLoader {
                     "Found ${updates.size} renderer/driver plugin update(s) available upstream"
                 )
 
-                // .zip plugins import silently (no OS interaction needed) so those install
-                // automatically here. .apk companion-app plugins can only go through the real
-                // Android package installer, which requires the user to actually tap confirm -
-                // firing that unprompted on every app launch would be a surprise system dialog
-                // the user never asked for, so those are logged only; ExperimentalSettingsFragment
-                // is where the user reviews and installs them on purpose.
                 val (autoInstallable, manualOnly) = updates.partition { !it.isApk }
                 if (manualOnly.isNotEmpty()) {
                     com.endiq.turtlelauncher.feature.log.Logging.i(
@@ -183,15 +142,6 @@ object PluginLoader {
         ).mapTo(mutableSetOf()) { it.activityInfo.packageName }
     }.getOrDefault(emptySet())
 
-    /**
-     * Re-scans installed plugin apps when - and only when - the set of installed apps
-     * actually changed since the last scan. Called from LauncherActivity.onResume(), i.e.
-     * every time the user comes back to the home screen: from the Android package installer
-     * after confirming a plugin APK install, from a store, from a file manager - anywhere.
-     * Without this, a plugin installed while TurtleLauncher is already running only becomes
-     * visible after a full app restart (and an uninstalled one stays wrongly selectable),
-     * because loadAllPlugins() runs once per process by design.
-     */
     @JvmStatic
     fun rescanIfPluginsChanged(context: Context) {
         if (!isInitialized) {
@@ -199,9 +149,6 @@ object PluginLoader {
             return
         }
         val current = installedMainPackages(context)
-        // A query that comes back empty while we previously saw apps is a transient
-        // PackageManager hiccup, not a mass uninstall - don't let it wipe the registered
-        // plugins via a forced re-scan.
         if (current.isEmpty() && !lastSeenPackages.isNullOrEmpty()) return
         if (current == lastSeenPackages) return
         com.endiq.turtlelauncher.feature.log.Logging.i("PluginLoader", "Installed-app set changed since last scan - rescanning plugin apps")

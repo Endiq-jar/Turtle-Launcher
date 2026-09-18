@@ -132,10 +132,6 @@
                 android:tint="@color/turtle_text_secondary"
                 android:contentDescription="@string/main_nav_cursor"/>
 
-            <!-- TurtleLauncher: built-in AI Assistant (on-device, no API key - see
-                 feature/ai/TurtleAssistant.kt). Placed left of Settings since it's a
-                 help-style entry point rather than a configuration one. Visible by default;
-                 MainMenuFragment hides it only when AllSettings.aiAssistantEnabled is off. -->
             <ImageButton
                 android:id="@+id/top_bar_ai_button"
                 android:layout_width="40dp"
@@ -170,20 +166,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/home_top_bar">
 
-        <!-- TurtleLauncher: launcher_nav_bar (Home/Files/Download/Settings tab strip) removed
-             per Endiq's request - it visually overlapped the account panel in the top-right
-             corner. Home/Files/Download/Settings are still reachable via the equivalent
-             top_bar_storage_button/top_bar_download_button/top_bar_settings_button icons in
-             home_top_bar_actions above, which already duplicated this same functionality. -->
-
-        <!-- TurtleLauncher: quick actions used to be a 2x2 grid of 88dp cards inline in the
-             scrolling content - per user request, replaced with a small, icon-only square
-             button rail docked to the left edge instead, in its own scroll region so it
-             doesn't compete for space with the rest of the home screen content. Same view
-             IDs as before (about_button, custom_control_button, install_jar_button,
-             share_logs_button + their icon/text children) so MainMenuFragment's click
-             listeners and the about_text dynamic label still work unchanged - the label
-             TextViews are just hidden now instead of removed. -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/launcher_content_row"
             android:layout_width="match_parent"

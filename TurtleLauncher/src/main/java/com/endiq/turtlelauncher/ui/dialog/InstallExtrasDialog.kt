@@ -8,19 +8,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.databinding.DialogInstallExtrasBinding
 import com.endiq.turtlelauncher.feature.log.Logging
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 
-/**
- * TurtleLauncher: popup shown every time the install action on InstallGameFragment is
- * pressed, before anything is actually installed. Lets the user opt the Turtle Client
- * and/or FPS Boost mods into the install alongside whatever loader they already picked
- * on the main screen.
- *
- * Neither extra has a real mod resource wired up yet (no Modrinth slug/URL/jar
- * assigned) - see ExtraModInstall for the hook this feeds into once one exists. Today,
- * toggling a row here only flips the boolean passed to [onInstall]; nothing is
- * downloaded for it yet.
- */
 class InstallExtrasDialog(
     context: Context,
     private val onInstall: (includeTurtleClient: Boolean, includeFpsBoost: Boolean) -> Unit

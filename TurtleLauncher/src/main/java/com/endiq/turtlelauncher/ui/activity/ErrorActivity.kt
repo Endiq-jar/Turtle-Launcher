@@ -22,17 +22,9 @@ import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 
-/**
- * Shown as a small floating dialog (see CustomDialogStyle in the manifest) instead of a
- * full-screen takeover, so a crash never feels like the whole app exploded.
- *
- * Always tries to show a plain-language "how to fix this" tip via [CrashAnalyzer] first.
- * The raw stack trace / log is hidden by default behind "Advanced Log", with Copy and
- * Share actions, for when someone actually needs to read or send the real details.
- */
 class ErrorActivity : BaseActivity() {
     private lateinit var binding: ActivityErrorBinding
     private var advancedLogContent: String = ""
@@ -85,23 +77,6 @@ class ErrorActivity : BaseActivity() {
         finish()
     }
 
-    /**
-     * TurtleLauncher: "black screen, then it just closes".
-     *
-     * Every crash screen here is launched from the `:game` process with
-     * FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK, and this Activity is
-     * dialog-themed (see CustomDialogStyle) - a 300sdp card floating over a dimmed
-     * background. When the launcher process is still alive that background is the launcher
-     * UI you came from, which is fine. But a long Minecraft session is exactly when Android
-     * kills background processes for memory, so very often `:launcher` is already dead: the
-     * Intent then cold-starts the app straight into this dialog, with NOTHING behind it.
-     * Result: a dialog over a black screen. And then tapping Confirm called finish() on the
-     * only Activity in the task, so the app vanished entirely - "just closes".
-     *
-     * Fix: when this Activity is the root of its task (nothing to go back to), Confirm
-     * returns the user to the launcher instead of finishing into the void. When there IS
-     * something behind us, behaviour is unchanged.
-     */
     private fun dismissOrReturnToLauncher() {
         if (!isTaskRoot) {
             finish()
@@ -140,13 +115,6 @@ class ErrorActivity : BaseActivity() {
         binding.advancedLogText.text = advancedLogContent
     }
 
-    /**
-     * Populates the Crash Analyzer 2.0 quick-action row (one-click repair, search online,
-     * export) from whatever [CrashAnalyzer] most recently analyzed. Reads back through
-     * [CrashAnalyzer.getLastDiagnoses] rather than taking diagnoses as a parameter, since
-     * Diagnosis/RepairAction aren't Parcelable and can't cross the Intent boundary the
-     * game-crash flow uses (see CrashAnalyzer's own "last-analysis holder" doc comment).
-     */
     private fun showDiagnosisActions() {
         val diagnoses = runCatching { CrashAnalyzer.getLastDiagnoses() }.getOrDefault(emptyList())
         val gameVersion = runCatching { CrashAnalyzer.getLastGameVersion() }.getOrNull()
@@ -181,13 +149,6 @@ class ErrorActivity : BaseActivity() {
         runSelfHeal(diagnoses, gameVersion)
     }
 
-    /**
-     * Self-Healing Launcher (roadmap #9): if any matched diagnosis carries a repair action,
-     * automatically runs it via [SelfHealingManager] instead of waiting for a tap on the
-     * manual "Fix it" button — shown as "Issues Found. Repairing automatically...", per the
-     * roadmap's own wording. A no-op (status view stays hidden) when there's nothing
-     * CrashAnalyzer knows how to repair for this crash.
-     */
     private fun runSelfHeal(diagnoses: List<CrashAnalyzer.Diagnosis>, gameVersion: com.endiq.turtlelauncher.feature.version.Version?) {
         if (diagnoses.none { it.repairActions.isNotEmpty() }) {
             binding.selfHealStatus.visibility = View.GONE
@@ -303,24 +264,6 @@ class ErrorActivity : BaseActivity() {
         showDiagnosisActions()
     }
 
-    /**
-     * TurtleLauncher: "the logs didn't appear".
-     *
-     * `latestlog.txt` is written by the NATIVE logger from inside the JVM that runs
-     * Minecraft. A renderer SIGSEGV / OOM kill / ANR kill takes that process out instantly
-     * and takes the logger's buffered output with it, so the file is routinely EMPTY at
-     * exactly the moment it is needed - the crash screen then showed "<no log available>"
-     * and looked broken. Rather than accept that, fall through a chain of log sources:
-     *
-     *   1. latestlog.txt (best case - the game's own output)
-     *   2. the live logcat drain from this session (GameLogcat) - lives in logd, so it
-     *      survives the process dying
-     *   3. a fresh one-shot `logcat -d`, taken off the UI thread
-     *   4. Shizuku (see ShizukuActions.dumpLogcat) - the same dump, but run with shell
-     *      privilege so it includes system/tombstone lines an app can't normally read
-     *
-     * Only the first two are synchronous; everything else fills the log in once it arrives.
-     */
     private fun applyGameCrashAdvancedLog(diagnosis: String?) {
         val nativeLog = runCatching {
             CrashAnalyzer.tailOf(File(PathManager.DIR_GAME_HOME, "latestlog.txt"), 64 * 1024)

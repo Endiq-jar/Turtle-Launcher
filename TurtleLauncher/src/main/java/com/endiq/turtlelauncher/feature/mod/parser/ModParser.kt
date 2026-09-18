@@ -91,10 +91,6 @@ class ModParser {
         modQueue: ConcurrentLinkedQueue<ModInfo>,
         listener: ModParserListener
     ) {
-        // TurtleLauncher: was FileTools.calculateFileHash(modFile) - a full SHA-256 over the
-        // jar's bytes, meaning every scan re-read every mod file in full just to find out most
-        // of them were unchanged. fingerprintOf() is three stat() calls instead of a full read,
-        // and is what actually makes "skip unchanged mods" cheap for a large modpack folder.
         val fingerprint = fingerprintOf(modFile)
 
         existingCache[fingerprint]?.let { cached ->
@@ -112,10 +108,6 @@ class ModParser {
         }
     }
 
-    /**
-     * Cheap change-detection key for a mod jar: name + size + lastModified. Deliberately not a
-     * content hash - the point is to decide whether to bother reading the file at all.
-     */
     private fun fingerprintOf(file: File): String = "${file.name}:${file.length()}:${file.lastModified()}"
 
     private fun parseModContents(modFile: File): ModInfo? {
@@ -154,12 +146,6 @@ class ModParser {
         }
     }
 
-    // TurtleLauncher: only "schemaVersion"/"id"/"version" are required by the fabric.mod.json
-    // spec - "name", "description" and "authors" are all optional. A real mod
-    // (2hywaj8k4ic.jar in the wild) that simply omits "name" made `jsonObject["name"].asString`
-    // NPE (JsonObject.get() returns null, not JsonNull, for a missing key), which killed
-    // parsing for that mod entirely. Optional fields now fall back instead of throwing; id and
-    // version stay required (a jar missing those isn't a valid fabric mod).
     @Throws(Exception::class)
     private fun parseFabricMod(modFile: File, jarStream: JarInputStream): ModInfo {
         val content = jarStream.bufferedReader().use(BufferedReader::readText)
@@ -196,10 +182,6 @@ class ModParser {
         }.getOrDefault(emptyMap())
     }
 
-    // TurtleLauncher: same fix as parseFabricMod - quilt_loader.metadata's "name",
-    // "description" and "contributors" are all optional per the quilt.mod.json spec, and
-    // "metadata" itself is optional too. Missing-key .asString/.asJsonObject calls here had the
-    // identical NPE-on-missing-optional-field bug; id/version/quilt_loader stay required.
     @Throws(Exception::class)
     private fun parseQuiltMod(modFile: File, jarStream: JarInputStream): ModInfo {
         val content = jarStream.bufferedReader().use(BufferedReader::readText)
@@ -316,9 +298,6 @@ class ModParser {
                     object : TypeToken<List<ModInfoCache>>() {}.type
                 )?.associateBy { it.cacheKey }
             }.getOrElse { e ->
-                // Also catches a pre-update plain-JSON cache file that no longer matches the
-                // Zstd frame this now expects - falls back to an empty (cold) cache either way,
-                // which gets rebuilt and re-persisted in the new compressed format below.
                 Logging.e("ModParser", "Cache load failed: ${it.absolutePath}", e)
                 emptyMap()
             }

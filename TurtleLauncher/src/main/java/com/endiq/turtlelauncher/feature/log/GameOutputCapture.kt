@@ -2,30 +2,6 @@ package com.endiq.turtlelauncher.feature.log
 
 import java.io.PrintStream
 
-/**
- * TurtleLauncher: Java-level capture of the game's own output stream.
- *
- * Why this exists: Minecraft runs as an in-process JVM (JLI_Launch via
- * [net.kdt.pojavlaunch.utils.JREUtils.launchJavaVM]), and everything the game prints -
- * Log4j2's console output, Fabric/Forge/NeoForge loader messages, mod output, crash stack
- * traces - goes through System.out/System.err. The native `latestlog.txt` writer
- * ([net.kdt.pojavlaunch.Logger]) only ever received the launcher's own appendToLog() lines
- * (the "JVMArg:" dump, exit codes), so real uploaded logs consistently ended at the last
- * JVMArg line - exactly the "the launcher isn't saving the logs" half of support reports.
- * The crash screen, the home screen's Last Game Log card, Share Logs and the Assistant all
- * read that file, so none of them ever had the game's side of the story.
- *
- * [install] wraps System.out/System.err in a tee that forwards every line to
- * [net.kdt.pojavlaunch.Logger.appendToLog] - i.e. into the very same `latestlog.txt`
- * (DIR_GAME_HOME) the native logger writes to and every consumer above reads back - while
- * still writing to the original streams untouched, so nothing else changes. [uninstall]
- * restores the originals right after the JVM exits gracefully; on a signal death the whole
- * process dies and there is nothing to restore.
- *
- * Deliberately scoped to the game session only (installed right before launchJVM, removed
- * right after it returns) so ordinary launcher-side logging never gets mirrored into the
- * game log.
- */
 object GameOutputCapture {
 
     private const val TAG = "GameOutputCapture"
@@ -118,7 +94,7 @@ object GameOutputCapture {
             lineBuffer.setLength(0)
             // appendToLog writes into latestlog.txt and notifies the in-game log viewer's
             // listener - one call, both destinations. Must never throw into the game.
-            runCatching { net.kdt.pojavlaunch.Logger.appendToLog(line) }
+            runCatching { net.endiq.launcher.Logger.appendToLog(line) }
                 .onFailure { e -> Logging.w(TAG, "Could not append a game output line to the log", e) }
         }
     }

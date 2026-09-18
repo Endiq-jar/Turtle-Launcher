@@ -3,20 +3,6 @@ package com.endiq.turtlelauncher.feature.mod
 import java.io.DataInputStream
 import java.io.IOException
 
-/**
- * TurtleLauncher: a minimal, dependency-free Java .class file parser whose only job is to
- * find a Mixin class's `@Mixin(...)` annotation and extract the target class names from its
- * `value` (Class[]) and `targets` (String[]) elements.
- *
- * We can't just read the mixin config JSON's "mixins" list — those are the *mixin* class
- * names (e.g. "MixinPlayerEntity"), not what they actually patch. The real target is only
- * recorded inside the compiled class's `@Mixin` annotation, so this reads just enough of the
- * JVM class file format (constant pool + RuntimeVisibleAnnotations) to pull it out, without
- * pulling in a full bytecode library like ASM as a new build dependency.
- *
- * Spec reference: JVMS §4.4 (constant pool) and §4.7.16 (RuntimeVisibleAnnotations / annotation
- * structure). Only what's needed is implemented — this is not a general-purpose class reader.
- */
 object MixinTargetReader {
 
     private const val MIXIN_ANNOTATION_DESC = "Lorg/spongepowered/asm/mixin/Mixin;"

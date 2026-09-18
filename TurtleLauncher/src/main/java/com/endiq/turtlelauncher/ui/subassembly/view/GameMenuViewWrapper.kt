@@ -20,7 +20,7 @@ import com.petterp.floatingx.assist.helper.FxScopeHelper
 import com.petterp.floatingx.listener.IFxViewLifecycle
 import com.petterp.floatingx.listener.control.IFxScopeControl
 import com.petterp.floatingx.view.FxViewHolder
-import net.kdt.pojavlaunch.LwjglGlfwKeycode
+import net.endiq.launcher.LwjglGlfwKeycode
 import org.lwjgl.glfw.CallbackBridge
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -28,13 +28,6 @@ import java.util.Locale
 import java.util.Timer
 import java.util.TimerTask
 
-/**
- * TurtleLauncher: the in-game menu button and the info HUD (FPS, memory,
- * CPS, keystrokes, etc.) used to share one draggable floating bubble.
- * They're now two independent floating windows so the player can
- * position/drag them separately — tapping the gear opens the menu, the
- * info panel is purely informational and never intercepts taps.
- */
 class GameMenuViewWrapper(
     private val activity: Activity,
     private val listener: View.OnClickListener,
@@ -292,9 +285,6 @@ class GameMenuViewWrapper(
                 val totalMb = MemoryUtils.getTotalDeviceMemory(activity) / (1024 * 1024)
                 TaskExecutors.runInUIThread { ramGraphView.pushSample(usedMb, totalMb) }
             }
-            // TurtleLauncher: screen recording - live elapsed-time readout + swap the record
-            // button's glyph to a stop icon while recording. Runs every info-tick rather than
-            // its own timer, same as everything else above.
             if (showRecordButton) {
                 val recording = com.endiq.turtlelauncher.feature.turtle.ScreenRecorder.isRecording()
                 TaskExecutors.runInUIThread {
@@ -390,12 +380,6 @@ class GameMenuViewWrapper(
         }
     }
 
-    /**
-     * The info HUD defaults to the opposite top corner from the menu button
-     * so the two never spawn stacked on top of each other. Both windows are
-     * user-draggable (FloatingX), so this is just a sane starting position,
-     * not a fixed one.
-     */
     private fun getHudGravity(): FxGravity {
         return when(AllSettings.gameMenuLocation.getValue()) {
             "left_or_top", "left_or_bottom" -> FxGravity.RIGHT_OR_TOP

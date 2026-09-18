@@ -18,8 +18,8 @@ import com.endiq.turtlelauncher.utils.path.PathManager
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.anim.ViewAnimUtils.Companion.setViewAnim
 import com.endiq.turtlelauncher.utils.file.FileTools
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
+import net.endiq.launcher.Tools
+import net.endiq.launcher.contracts.OpenDocumentWithExtension
 import org.greenrobot.eventbus.EventBus
 
 class ModPackDownloadFragment(parentFragment: Fragment? = null) : AbstractResourceDownloadFragment(

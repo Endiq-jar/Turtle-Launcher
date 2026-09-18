@@ -24,11 +24,6 @@ public class Servers {
         @SerializedName("register")
         private String register;
 
-        /**
-         * TurtleLauncher: Login server type.
-         * 0 = authlib-injector / standard Yggdrasil (ely.by, littleskin, custom)
-         * 1 = nide8auth / mc-user.com 32-bit unified-pass servers
-         */
         @SerializedName("serverType")
         private int serverType = 0;
 

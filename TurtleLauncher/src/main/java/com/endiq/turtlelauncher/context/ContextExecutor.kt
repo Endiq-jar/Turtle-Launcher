@@ -5,8 +5,8 @@ import android.app.Application
 import android.content.Context
 import android.widget.Toast
 import com.endiq.turtlelauncher.task.TaskExecutors
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.lifecycle.ContextExecutorTask
+import net.endiq.launcher.Tools
+import net.endiq.launcher.lifecycle.ContextExecutorTask
 import java.lang.ref.WeakReference
 
 class ContextExecutor {

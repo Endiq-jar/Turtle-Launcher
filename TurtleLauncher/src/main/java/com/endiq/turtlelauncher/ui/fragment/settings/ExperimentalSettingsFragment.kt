@@ -67,14 +67,12 @@ class ExperimentalSettingsFragment :
             binding.modConflictDetection
         )
 
-        // TurtleLauncher: "Add Multiple LWJGL versions" (Compatibility Improvements, item 16)
         ListSettingsWrapper(
             context, AllSettings.lwjglCompatMode,
             binding.lwjglCompatModeLayout, binding.lwjglCompatModeTitle, binding.lwjglCompatModeValue,
             R.array.lwjgl_compat_mode_names, R.array.lwjgl_compat_mode_values
         )
 
-        // TurtleLauncher: "Background Services" (item 20)
         SwitchSettingsWrapper(
             context,
             AllSettings.backgroundServiceOptimization,
@@ -93,15 +91,6 @@ class ExperimentalSettingsFragment :
             "ms"
         )
 
-        // FPS Boost settings moved to OptimizationSettingsFragment - was duplicated here
-        // wired to the exact same AllSettings keys as VideoSettingsFragment's copy.
-
-        // TurtleLauncher In-Game HUD Modules (CPS/Keystrokes/FPS-adjacent overlays, PvP
-        // preset, HUD scale/alpha) moved to Game Settings - see GameSettingsFragment.kt.
-        // Independent HUD Dragging was removed outright rather than moved; see
-        // GameMenuViewWrapper.kt.
-
-        // ── TurtleLauncher Renderer/Driver Plugin Updater ─────────────────────
         SwitchSettingsWrapper(
             context,
             AllSettings.autoCheckPluginUpdates,

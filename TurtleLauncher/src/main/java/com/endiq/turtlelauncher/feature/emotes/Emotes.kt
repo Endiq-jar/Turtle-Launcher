@@ -12,33 +12,6 @@ import java.io.File
 import java.io.IOException
 import java.util.zip.ZipFile
 
-/**
- * TurtleLauncher Emotes: shared constants and file helpers for the emote feature.
- *
- * Emotes in Minecraft Java are provided by the Emotecraft mod (KosmX, GPL-3.0,
- * Fabric/Forge/NeoForge/Quilt): it reads `.emote` files from the `emotes` folder inside
- * the game directory and plays them through its in-game emote wheel (default keybind B).
- * The launcher side of the feature therefore does three things:
- *
- *  1. Downloads emotes from the official community library (https://emotes.kosmx.dev) -
- *     either embedded in the Settings -> Emotes screen (EmotesFragment's WebView saves
- *     downloads straight into the emotes folder) or opened in the browser from the
- *     in-game menu.
- *  2. Points the mod at the right folder: [emotesDir] is `<gameDir>/emotes` of the
- *     currently selected version (falling back to the shared game home), created on
- *     demand so first-launch downloads have somewhere to land.
- *  3. Triggers the wheel in game: the game menu's "Play emote" button sends
- *     AllSettings.emoteWheelKeycode (default GLFW_KEY_B) through CallbackBridge, which
- *     is exactly the same key event a physical B press produces.
- *  4. Installs Emotecraft's mandatory dependencies alongside the mod itself
- *     ([autoInstallEmotecraft]): Emotecraft declares Player Animation Library as a hard
- *     requirement, and launching without it crashes the game with a missing-dependency
- *     error, so the one-tap installer always fetches that too (see
- *     [installEmotecraftDependencies]).
- *
- * Everything here is defensive on purpose: file listing/parsing must never throw into a
- * click handler or the game process.
- */
 object Emotes {
 
     private const val TAG = "Emotes"
@@ -49,12 +22,6 @@ object Emotes {
     /** Modrinth project slug for Emotecraft. */
     const val EMOTECRAFT_MODRINTH_SLUG = "emotecraft"
 
-    /**
-     * Modrinth project slug for Player Animation Library, Emotecraft's mandatory dependency.
-     * Emotecraft (KosmX) needs this library mod to animate the player - without it the game
-     * crashes at startup with a "missing dependencies" error, so it must always be installed
-     * alongside Emotecraft itself.
-     */
     const val PLAYER_ANIMATOR_MODRINTH_SLUG = "player-animation-library"
 
     /** Mod-loader mod IDs under which Player Animation Library has shipped over time. */
@@ -92,12 +59,6 @@ object Emotes {
         return File(base, "mods")
     }
 
-    /**
-     * Whether Emotecraft looks installed for the current version: any jar in the mods
-     * folder whose name contains "emotecraft" or starts with "emotes" (Emotecraft's own
-     * artifact names across loaders are emotecraft-*, Emotecraft-*, emotes-*). A mod
-     * folder that can't be listed reads as "not installed" rather than throwing.
-     */
     @JvmStatic
     fun isEmotecraftInstalled(): Boolean {
         return runCatching {
@@ -143,14 +104,6 @@ object Emotes {
         }.getOrDefault(false)
     }
 
-    /**
-     * Attempts to automatically download and install Emotecraft for the current version
-     * from Modrinth, followed by its mandatory dependencies (notably Player Animation
-     * Library - without it the game crashes on launch with a missing-dependency error).
-     * Runs synchronously (network calls included) - must be called from a background thread.
-     *
-     * @return Result message or null on success, or throws Exception on failure.
-     */
     @JvmStatic
     fun autoInstallEmotecraft(): String {
         val (mcVersion, loader) = getCurrentVersionInfo()
@@ -170,9 +123,6 @@ object Emotes {
             targetModsDir
         ) ?: throw IOException("No compatible Emotecraft build found for $mcVersion on ${loader.loaderName}.")
 
-        // Emotecraft won't run on its own: it declares Player Animation Library as a
-        // mandatory dependency. Install it right after Emotecraft so the game doesn't
-        // crash with a missing-dependency error the first time it launches.
         val dependencyOutcomes = installEmotecraftDependencies(mcVersion, loader, targetModsDir)
 
         return if (dependencyOutcomes.isEmpty()) {
@@ -187,18 +137,6 @@ object Emotes {
         }
     }
 
-    /**
-     * Installs Emotecraft's own declared mandatory dependencies into [targetModsDir].
-     *
-     * The dependency list is read from whichever Emotecraft jar is actually present in the
-     * mods folder (the one just downloaded, or a previously-installed one), so it stays
-     * correct across Emotecraft versions/loaders instead of being hardcoded here. When the
-     * jar can't be read (e.g. it's a loader format this parser doesn't know), this falls
-     * back to the known Player Animation Library identifiers so the one dependency that
-     * actually matters is still covered.
-     *
-     * @return human-readable "DependencyName: outcome" lines (empty when there was nothing to do)
-     */
     private fun installEmotecraftDependencies(mcVersion: String, loader: ModLoader, targetModsDir: File): List<Pair<String, String>> {
         val outcomes = mutableListOf<Pair<String, String>>()
 

@@ -11,9 +11,9 @@ import com.endiq.turtlelauncher.feature.mod.modpack.install.ModPackUtils
 import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.dialog.ProgressDialog
 import com.endiq.turtlelauncher.utils.file.FileTools
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.utils.FileUtils
-import net.kdt.pojavlaunch.utils.ZipUtils
+import net.endiq.launcher.Tools
+import net.endiq.launcher.utils.FileUtils
+import net.endiq.launcher.utils.ZipUtils
 import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.IOException

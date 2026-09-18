@@ -37,7 +37,7 @@ import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.file.FileTools.Companion.mkdirs
 import com.endiq.turtlelauncher.utils.image.ImageUtils.Companion.isImage
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.util.EnumMap
@@ -57,9 +57,6 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
         openDocumentLauncher = registerForActivityResult<Array<String>, Uri>(ActivityResultContracts.OpenDocument()) { result: Uri? ->
             result?.let { uri ->
                 val dialog = ZHTools.showTaskRunningDialog(requireContext())
-                // Snapshot everything the background copy needs up front: if the user
-                // navigates away mid-copy, requireActivity()/binding access from either
-                // the worker thread or the ended callback would crash ("not attached").
                 val appContext = requireContext().applicationContext
                 val destPath = binding.fileRecyclerView.fullPath.absolutePath
                 Task.runTask {

@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: grid tile for the Settings Hub screen. Same solid/stroke recipe as
-     background_card (bg_card fill, subtle border) but with its own radius so hub tiles
-     read as a distinct, chunkier tap target than a regular list row. -->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="@color/turtle_accent_ripple">
     <item>

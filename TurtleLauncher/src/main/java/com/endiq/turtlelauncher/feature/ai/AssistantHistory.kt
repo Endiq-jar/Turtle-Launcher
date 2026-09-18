@@ -9,23 +9,6 @@ import com.endiq.turtlelauncher.ui.subassembly.aichat.ChatMessage
 import com.endiq.turtlelauncher.utils.path.PathManager
 import java.io.File
 
-/**
- * On-device persistence for the built-in AI Assistant's conversation
- * (see [TurtleAssistant] and ui/fragment/AiChatFragment.kt).
- *
- * A plain JSON file under the app's own private files dir - no cloud, no account, nothing
- * leaves the device. It's opt-out via AllSettings.aiAssistantHistoryEnabled: with that off,
- * [save] is a no-op and [load] returns empty, so every session starts from the greeting.
- *
- * Hand-rolled JsonArray/JsonObject instead of `Gson().toJson(List<ChatMessage>)` on purpose:
- * reflective (de)serialization of a Kotlin data class needs the field names to survive
- * shrinking, and this project builds a minified "proguard" variant (see build.gradle.kts).
- * Writing the two fields explicitly keeps it working with or without keep rules - same
- * approach CrashAnalyzer's own crash-history/custom-rules JSON uses.
- *
- * Capped at [MAX_MESSAGES] so a long-running conversation can't grow the file without bound;
- * the oldest messages are dropped first.
- */
 object AssistantHistory {
 
     private const val TAG = "AssistantHistory"

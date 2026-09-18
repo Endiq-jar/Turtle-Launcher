@@ -1,5 +1,5 @@
 package com.endiq.turtlelauncher.event.value
 
-import net.kdt.pojavlaunch.value.MinecraftAccount
+import net.endiq.launcher.value.MinecraftAccount
 
 data class OtherLoginEvent(val account: MinecraftAccount)

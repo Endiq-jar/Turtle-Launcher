@@ -8,9 +8,9 @@ import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.dialog.TipDialog
-import net.kdt.pojavlaunch.Architecture
-import net.kdt.pojavlaunch.Logger
-import net.kdt.pojavlaunch.plugins.FFmpegPlugin
+import net.endiq.launcher.Architecture
+import net.endiq.launcher.Logger
+import net.endiq.launcher.plugins.FFmpegPlugin
 
 class ModChecker {
     class ModCheckResult() : Parcelable {

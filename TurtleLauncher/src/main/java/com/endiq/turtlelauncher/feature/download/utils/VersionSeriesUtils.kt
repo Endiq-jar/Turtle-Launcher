@@ -1,25 +1,7 @@
 package com.endiq.turtlelauncher.feature.download.utils
 
-import net.kdt.pojavlaunch.JMinecraftVersionList
+import net.endiq.launcher.JMinecraftVersionList
 
-/**
- * Groups the flat Mojang version manifest into per-series buckets for the version-card
- * screen: one card per major.minor series (e.g. "1.21", "26.2"), each containing every
- * release/snapshot/pre-release/rc that belongs to it, plus dedicated Beta and Alpha cards
- * for the pre-1.0 eras (those don't have a meaningful numeric series of their own).
- *
- * Series membership is derived from the version id string itself, not a lookup table
- * Mojang doesn't publish one - so it only works when the id actually encodes its target
- * series. That covers every id shape actually seen in this game's manifest:
- *   - "1.21.4"            (release)               -> series "1.21"
- *   - "26.2"               (release, 2-segment)     -> series "26.2"
- *   - "1.21.4-pre1"/"-rc1" (pre-release/RC)         -> series "1.21"
- *   - "26.3 Snapshot 4"    (this game's snapshot naming - the series is spelled out) -> "26.3"
- * Anything that doesn't match one of those shapes (old week-coded snapshot names with no
- * version number in them at all, like real Minecraft's historical "24w14a") can't be
- * mapped to a series from the id alone and is deliberately left out of the numbered-series
- * grouping rather than guessed at - see [ungroupedSnapshots].
- */
 object VersionSeriesUtils {
 
     /** Same sticky-event lookup VersionListView already used - kept in one place now that
@@ -95,8 +77,6 @@ object VersionSeriesUtils {
         val seriesCards: List<SeriesCard>,
         val betaVersions: List<JMinecraftVersionList.Version>,
         val alphaVersions: List<JMinecraftVersionList.Version>,
-        /** Snapshot/release ids with no parseable version number - not shown as their own
-         *  card by default, but kept here rather than silently dropped. */
         val ungroupedSnapshots: List<JMinecraftVersionList.Version>
     )
 }

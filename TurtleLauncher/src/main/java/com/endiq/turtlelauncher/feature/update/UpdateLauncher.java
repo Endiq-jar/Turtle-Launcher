@@ -17,7 +17,7 @@ import com.endiq.turtlelauncher.utils.ZHTools;
 import com.endiq.turtlelauncher.utils.path.PathManager;
 import com.endiq.turtlelauncher.utils.path.UrlManager;
 
-import net.kdt.pojavlaunch.Tools;
+import net.endiq.launcher.Tools;
 
 import org.apache.commons.io.FileUtils;
 
@@ -43,11 +43,6 @@ import okhttp3.Response;
 public final class UpdateLauncher {
     private final Context context;
     private final LauncherVersion launcherVersion;
-    // Endiq's releases have shipped both a raw .apk asset and (more recently, e.g. v1.0.0.3)
-    // the build wrapped in a .zip - see UpdateUtils.pickBestAsset(). A .zip is downloaded to
-    // its own temp file and extracted afterwards; a .apk downloads straight into
-    // UpdateUtils.sApkFile exactly like before, so that file's contract ("always a real
-    // installable apk once a download completes") never changes for the rest of the class.
     private final boolean isZipAsset;
     private final File downloadedFile;
     private final Call call;
@@ -171,13 +166,6 @@ public final class UpdateLauncher {
         }
     }
 
-    /**
-     * Extracts the first .apk entry found inside the downloaded zip into UpdateUtils.sApkFile,
-     * so everything downstream (installApk, the cached-package reuse check in
-     * UpdateUtils.checkDownloadedPackage) keeps working against a real apk file regardless of
-     * which packaging the release used. Throws if no .apk entry exists, rather than silently
-     * handing a non-apk file to the package installer.
-     */
     private File extractApkFromZip(File zipFile) throws IOException {
         try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(zipFile.toPath())))) {
             ZipEntry entry;

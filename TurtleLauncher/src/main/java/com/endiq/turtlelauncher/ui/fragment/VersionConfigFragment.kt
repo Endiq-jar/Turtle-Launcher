@@ -36,9 +36,9 @@ import com.endiq.turtlelauncher.utils.file.FileTools.Companion.copyFileInBackgro
 import com.skydoves.powerspinner.DefaultSpinnerAdapter
 import com.skydoves.powerspinner.OnSpinnerItemSelectedListener
 import com.skydoves.powerspinner.PowerSpinnerView
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.multirt.MultiRTUtils
-import net.kdt.pojavlaunch.multirt.Runtime
+import net.endiq.launcher.Tools
+import net.endiq.launcher.multirt.MultiRTUtils
+import net.endiq.launcher.multirt.Runtime
 import org.greenrobot.eventbus.EventBus
 import kotlin.enums.EnumEntries
 
@@ -347,9 +347,6 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
                 }
                 runtimeNames.add(getString(R.string.install_auto_select))
                 var jvmIndex = runtimeNames.size - 1
-                // A javaDir that doesn't carry the "turtle://" prefix (legacy config,
-                // hand edit) is shorter than it - substring() would throw
-                // StringIndexOutOfBounds. Only strip the prefix when it's there.
                 val javaDir = config.getJavaDir()
                 if (javaDir.startsWith(Tools.LAUNCHERPROFILES_RTPREFIX)) {
                     val selectedRuntime = javaDir.substring(Tools.LAUNCHERPROFILES_RTPREFIX.length)

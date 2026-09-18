@@ -122,9 +122,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/fix_title"/>
 
-            <!-- Self-Healing Launcher (roadmap #9): shows "Issues Found. Repairing
-                 automatically..." then a plain-language summary once CrashAnalyzer's
-                 repair actions for this crash have run — see SelfHealingManager. -->
             <TextView
                 android:id="@+id/self_heal_status"
                 android:textSize="@dimen/_12ssp"

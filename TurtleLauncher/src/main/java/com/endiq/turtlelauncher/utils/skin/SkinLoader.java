@@ -12,7 +12,7 @@ import android.graphics.drawable.Drawable;
 import com.endiq.turtlelauncher.feature.log.Logging;
 import com.endiq.turtlelauncher.utils.path.PathManager;
 
-import net.kdt.pojavlaunch.value.MinecraftAccount;
+import net.endiq.launcher.value.MinecraftAccount;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -22,11 +22,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 public class SkinLoader {
-    /** Returns the raw, full skin texture bitmap (not cropped to a face/avatar) for the
-     *  given account - falls back to the bundled default ("steve") skin if the account has
-     *  no locally cached skin. Used to feed the 3D skin preview (SkinView3DSurfaceView),
-     *  which needs the whole 64x64/64x32 texture rather than just the face crop getAvatar()
-     *  produces. */
     public static Bitmap getSkinBitmap(Context context, MinecraftAccount account) throws IOException {
         File skin = new File(PathManager.DIR_USER_SKIN, account.getUniqueUUID() + ".png");
         if (skin.exists()) {

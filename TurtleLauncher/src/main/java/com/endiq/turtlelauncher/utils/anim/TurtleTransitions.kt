@@ -15,19 +15,6 @@ import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.context.ContextExecutor
 
 
-/**
- * The one place the launcher's screen transitions are defined.
- *
- * Before this, every fragment hardcoded its own pair of [Animations] (about 33 of them, split
- * between `BounceIn*` on the way in and `FadeOut*` on the way out), so there was no way to
- * change the feel of the launcher without editing three dozen files - and zoom was impossible
- * entirely, because the animation library had no zoom animators.
- *
- * Everything that animates a screen or a panel now asks this class for its enter/exit
- * animation instead, so the two Settings pickers (Launcher settings -> Animation) actually
- * apply app-wide.
- */
-
 /** How a screen arrives. Values are stored in AllSettings.animationEnter. */
 enum class EnterTransition(val key: String, val animation: Animations) {
     SLIDE_UP("slide_up", Animations.SlideInUp),
@@ -76,26 +63,6 @@ object TurtleTransitions {
      * possible moment, so an active game session is treated exactly like the user's own
      * "disable animations" toggle.
      */
-    /**
-     * Whether to animate at all.
-     *
-     * Three independent reasons to say no, and all three are checked centrally so no call site
-     * has to remember to:
-     *
-     * 1. The user turned animations off (or turned the speed down to 0) in Settings.
-     * 2. A game session is running - a transition ticking behind Minecraft is pure waste.
-     * 3. **The system says no.** If ANIMATOR_DURATION_SCALE is 0 - which is exactly what
-     *    Settings -> Accessibility -> "Remove animations" sets, and a common thing to do
-     *    on a low-end phone - then the platform has already told us not to animate. It
-     *    governs every Animator on the device, so it is the authoritative answer.
-     *    Honouring it is both the cheapest optimisation available here and a correctness
-     *    matter: forcing motion on someone who asked for none is genuinely unpleasant.
-     *
-     * The system checks are the expensive ones (a Settings.Global read and a binder-backed
-     * system service), so their results are cached - they don't change at runtime except by
-     * the user leaving for Settings and coming back, and [onResume] clears the cache for
-     * exactly that.
-     */
     @JvmStatic
     fun isEnabled(): Boolean =
         AllSettings.animation.getValue() &&
@@ -129,9 +96,6 @@ object TurtleTransitions {
         val context = try {
             ContextExecutor.getApplication()
         } catch (e: RuntimeException) {
-            // No Application yet (we're being called very early, or from a process that never
-            // sets one up). Assume animations are fine rather than disabling them outright -
-            // this path is a missing optimisation, not a correctness problem.
             return true
         }
 
@@ -155,9 +119,6 @@ object TurtleTransitions {
     @JvmStatic
     fun exit(): Animations = ExitTransition.fromKey(AllSettings.animationExit.getValue()).animation
 
-    /** Called from FragmentWithAnim and from any fragment that overrides slideIn to animate a
-     *  specific sub-panel rather than the whole root. The panel choice stays with the
-     *  fragment; only the animation itself is centralised. */
     @JvmStatic
     fun applyEnter(animPlayer: AnimPlayer, view: View) {
         animPlayer.apply(AnimPlayer.Entry(view, enter()))
@@ -195,14 +156,6 @@ object TurtleTransitions {
         return true
     }
 
-    /**
-     * The bottom-sheet entrance: rises from the bottom edge of the screen and settles with a
-     * bounce, instead of sliding a fixed distance from somewhere mid-screen.
-     *
-     * Used by the settings screen opened from the home page - a panel you reach *down* to
-     * should feel like it came up off the bottom of the display, not like it drifted in from
-     * the side. Also selectable globally via the "Sheet" entry in both pickers.
-     */
     @JvmStatic
     fun sheetEnter(): Animations = Animations.SheetIn
 
@@ -271,15 +224,6 @@ object TurtleTransitions {
         stagger(children, stepMs)
     }
 
-    /**
-     * The per-item entry animation for a list, built the same way everywhere.
-     *
-     * `LayoutAnimationController` spreads children by `delay * animationDuration`, and its
-     * default delay is 0.5 - so with the 210ms entry in `R.anim.fade_downwards` each row
-     * would start ~105ms after the one above it and a 20-row list would still be arriving
-     * two seconds later. Pinning the delay to a small fraction keeps the cascade snappy
-     * no matter how long the entry animation is.
-     */
     @JvmStatic
     fun listLayoutAnimationController(context: Context): LayoutAnimationController =
         LayoutAnimationController(

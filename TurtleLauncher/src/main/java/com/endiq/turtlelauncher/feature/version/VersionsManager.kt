@@ -22,7 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.apache.commons.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.io.File
@@ -39,12 +39,6 @@ object VersionsManager {
     /**
      * @return the current game info
      */
-    // TurtleLauncher: was `lateinit var`, only assigned at the end of handleRefreshOperation()
-    // (an async coroutine). getCurrentVersion()/saveCurrentVersion() can be, and were, called
-    // before that first refresh completes (e.g. early in app startup), throwing
-    // UninitializedPropertyAccessException - seen in the wild as "Get Current Version" and
-    // "Save Current Version" errors. An eager empty default removes the crash window; the real
-    // value still overwrites it once refresh() finishes.
     var currentGameInfo: CurrentGameInfo = CurrentGameInfo()
         private set
 
@@ -134,14 +128,6 @@ object VersionsManager {
                         VersionInfoUtils.parseJson(jsonFile)?.save(versionFile)
                     }
                 } else {
-                    // TurtleLauncher: an empty (0-byte) version json is a real, if rare, state -
-                    // e.g. a version whose json is still being written by an in-progress install/
-                    // extraction at the moment a refresh happens to run concurrently. Parsing it
-                    // was guaranteed to fail (Gson turns an empty string into JsonNull, and
-                    // .asJsonObject on that throws "Not a JSON Object: null"), so every refresh
-                    // was burning a parse-and-fail cycle plus a full stack trace log for a file
-                    // that was never going to succeed. Skip it instead; the next refresh will
-                    // pick it up once the write completes.
                     Logging.w("VersionsManager", "Skipping empty version json: ${jsonFile.path}")
                 }
             }

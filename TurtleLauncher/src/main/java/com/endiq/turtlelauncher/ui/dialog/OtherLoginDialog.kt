@@ -13,15 +13,6 @@ import com.endiq.turtlelauncher.ui.dialog.DraggableDialog.DialogInitializationLi
 import com.endiq.turtlelauncher.utils.ZHTools
 
 
-/**
- * TurtleLauncher: Other Login Dialog
- *
- * Supports two login backends:
- *  • authlib-injector (serverType=0): ely.by, LittleSkin, custom Yggdrasil servers
- *  • nide8auth / mc-user.com (serverType=1): 32-bit unified-pass servers
- *
- * The dialog shows a server-type badge and (for ely.by) a quick-fill hint.
- */
 class OtherLoginDialog(
     context: Context,
     private val server: Server,

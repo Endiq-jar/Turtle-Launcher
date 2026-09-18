@@ -8,7 +8,7 @@ import com.endiq.turtlelauncher.feature.login.OtherLoginApi
 import com.endiq.turtlelauncher.task.Task
 import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.dialog.SelectRoleDialog
-import net.kdt.pojavlaunch.value.MinecraftAccount
+import net.endiq.launcher.value.MinecraftAccount
 import java.util.Objects
 
 /**

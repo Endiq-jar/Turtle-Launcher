@@ -143,9 +143,6 @@
                         android:paddingHorizontal="@dimen/_8sdp" />
                 </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
 
-                <!-- TurtleLauncher: CurseForge API key, optional - only needed for the
-                     Modpack Importer to auto-download mods from a CurseForge-format pack.
-                     See CurseForgeModPackInstallHelper for what happens when it's blank. -->
                 <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/curseForgeApiKey_layout"
                     android:layout_width="match_parent"

@@ -38,7 +38,7 @@ import com.endiq.turtlelauncher.ui.view.AnimButton
 import com.endiq.turtlelauncher.utils.MCVersionRegex.Companion.RELEASE_REGEX
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.stringutils.StringUtilsKt
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.greenrobot.eventbus.EventBus
 import org.jackhuang.hmcl.ui.versions.ModTranslations
 import org.jackhuang.hmcl.util.versioning.VersionNumber

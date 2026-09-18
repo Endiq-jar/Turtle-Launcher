@@ -5,13 +5,6 @@ import java.util.regex.Pattern
 
 class StringFilter {
     companion object {
-        /**
-         * Check whether the input string contains the given substring.
-         * @param input the input string
-         * @param substring the substring to look for
-         * @param caseSensitive whether matching is case sensitive
-         * @return true when the input contains the substring, false otherwise
-         */
         @JvmStatic
         fun containsSubstring(input: String, substring: String, caseSensitive: Boolean): Boolean {
             val adjustedInput = if (caseSensitive) input else input.lowercase(Locale.getDefault())

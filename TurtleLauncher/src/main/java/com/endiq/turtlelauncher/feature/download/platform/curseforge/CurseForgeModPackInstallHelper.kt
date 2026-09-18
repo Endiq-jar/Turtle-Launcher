@@ -1,7 +1,7 @@
 package com.endiq.turtlelauncher.feature.download.platform.curseforge
 
 import android.content.Context
-import com.kdt.mcgui.ProgressLayout
+import com.endiq.mcgui.ProgressLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.download.enums.ModLoader
 import com.endiq.turtlelauncher.feature.download.item.ModLoaderWrapper
@@ -11,23 +11,13 @@ import com.endiq.turtlelauncher.feature.mod.models.CurseForgeManifest
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.dialog.TipDialog
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.modloaders.modpacks.api.ModDownloader
-import net.kdt.pojavlaunch.progresskeeper.DownloaderProgressWrapper
-import net.kdt.pojavlaunch.utils.ZipUtils
+import net.endiq.launcher.Tools
+import net.endiq.launcher.modloaders.modpacks.api.ModDownloader
+import net.endiq.launcher.progresskeeper.DownloaderProgressWrapper
+import net.endiq.launcher.utils.ZipUtils
 import java.io.File
 import java.util.zip.ZipFile
 
-/**
- * CurseForge modpack (manifest.json) installer - same overall shape as
- * ModrinthModPackInstallHelper, with one real difference: manifest.json only carries a
- * (projectID, fileID) pair per mod, not a direct download URL, and resolving that pair to
- * an actual URL requires CurseForge's keyed v1 API (see CurseForgeApi.kt). Overrides and
- * the mod loader install either way; mod-jar downloads only happen if
- * AllSettings.curseForgeApiKey is set. Whatever couldn't be resolved is reported back via
- * a dialog rather than failing the whole import - a modpack with configs/resourcepacks and
- * the right loader in place is still a big head start even without every mod fetched yet.
- */
 class CurseForgeModPackInstallHelper {
     companion object {
         private const val TAG = "CurseForgeModPackInstallHelper"

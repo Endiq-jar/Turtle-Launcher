@@ -1,13 +1,13 @@
 package com.endiq.turtlelauncher.feature.mod.modloader
 
-import com.kdt.mcgui.ProgressLayout
+import com.endiq.mcgui.ProgressLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.download.item.VersionItem
 import com.endiq.turtlelauncher.feature.version.install.InstallTask
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper
-import net.kdt.pojavlaunch.utils.DownloadUtils
+import net.endiq.launcher.Tools
+import net.endiq.launcher.progresskeeper.ProgressKeeper
+import net.endiq.launcher.utils.DownloadUtils
 import java.io.File
 
 class FabricLikeApiModDownloadTask(private val fileName: String, private val versionItem: VersionItem) : InstallTask, Tools.DownloaderFeedback {

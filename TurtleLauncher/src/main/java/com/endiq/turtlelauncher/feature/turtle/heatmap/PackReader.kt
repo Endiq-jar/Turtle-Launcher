@@ -6,11 +6,6 @@ import java.io.InputStream
 import java.util.Collections
 import java.util.zip.ZipFile
 
-/**
- * TurtleLauncher: resource packs and shader packs can be a loose folder or a .zip file -
- * this hides that difference behind one entry-iteration call so [HeatmapAnalyzer] never
- * has to branch on it.
- */
 internal abstract class PackReader : Closeable {
     abstract fun forEachEntry(action: (name: String, openStream: () -> InputStream) -> Unit)
 

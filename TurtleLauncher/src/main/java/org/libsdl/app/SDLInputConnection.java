@@ -35,11 +35,6 @@ public class SDLInputConnection extends BaseInputConnection
          * that still do, we empty this out.
          */
 
-        /*
-         * Return DOES still generate a key event, however.  So rather than using it as the 'click a button' key
-         * as we do with physical keyboards, let's just use it to hide the keyboard.
-         */
-
         if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
             if (SDLActivity.onNativeSoftReturnKey()) {
                 return true;

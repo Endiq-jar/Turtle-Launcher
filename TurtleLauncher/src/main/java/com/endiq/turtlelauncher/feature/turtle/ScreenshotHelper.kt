@@ -13,13 +13,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-/**
- * TurtleLauncher v10: one-tap screenshot for the in-game HUD button.
- * Captures the current GL surface via PixelCopy-free `View.draw` fallback onto the
- * root decor view (works without extra permissions on API 24+ scoped storage),
- * and writes into the standard Minecraft "screenshots" folder equivalent under
- * the app's external files dir so it shows up alongside the game's own shots.
- */
 object ScreenshotHelper {
     private const val TAG = "ScreenshotHelper"
     private val nameFormat = SimpleDateFormat("yyyy-MM-dd_HH.mm.ss", Locale.US)

@@ -9,13 +9,6 @@ import com.endiq.turtlelauncher.databinding.ItemSkinCapeGalleryBinding
 import com.endiq.turtlelauncher.feature.skin.LabyModGalleryApi
 import com.endiq.turtlelauncher.setting.AllSettings
 
-/**
- * Grid of live laby.net skin library thumbnails (see [LabyModGalleryApi]) shown in
- * [SkinCapeDialog]. Unlike [SkinCapeGalleryAdapter] (local bitmaps, already decoded up front),
- * tiles here load their thumbnail over the network individually via Glide, since a gallery
- * page can be dozens of remote images - loading them all before showing anything would make
- * the grid feel like it hung.
- */
 internal class LabyModGalleryGridAdapter(
     private val items: List<LabyModGalleryApi.GallerySkin>,
     private val onItemClick: (position: Int) -> Unit

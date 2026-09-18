@@ -90,14 +90,6 @@ public class SDL {
             }
         }
 
-        // TurtleLauncher: upstream Turtle Launcher calls its own
-        // TurtleSDL3NativeWindowBridge.installHook() here - a native (C-level)
-        // cross-VM hook that lets libSDL3.so's ANativeWindow lookup work even when
-        // Minecraft runs in a separate embedded JVM from the one that published the
-        // Android Surface. That hook requires Turtle's own native library
-        // (turtle_runtime.so) which isn't part of this codebase and can't be
-        // safely ported without an NDK toolchain and real-device verification -
-        // see SdlAndroidJniPrep's class doc for what this does and doesn't fix.
     }
 
     protected static Context mContext;

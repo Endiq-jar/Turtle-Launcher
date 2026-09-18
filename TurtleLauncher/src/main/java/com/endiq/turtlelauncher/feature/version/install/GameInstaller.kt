@@ -1,16 +1,16 @@
 package com.endiq.turtlelauncher.feature.version.install
 
 import android.app.Activity
-import com.kdt.mcgui.ProgressLayout
+import com.endiq.mcgui.ProgressLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.event.value.InstallGameEvent
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.feature.version.VersionsManager
 import com.endiq.turtlelauncher.task.Task
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper
-import net.kdt.pojavlaunch.tasks.AsyncMinecraftDownloader
-import net.kdt.pojavlaunch.tasks.MinecraftDownloader
+import net.endiq.launcher.Tools
+import net.endiq.launcher.progresskeeper.ProgressKeeper
+import net.endiq.launcher.tasks.AsyncMinecraftDownloader
+import net.endiq.launcher.tasks.MinecraftDownloader
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.util.concurrent.atomic.AtomicReference
@@ -40,12 +40,6 @@ class GameInstaller(
                 override fun onDownloadDone() {
                     Task.runTask {
                         if (taskMap.isEmpty()) {
-                            // Empty addons mean a vanilla-only install, so make sure the custom
-							// version folder always contains the vanilla .json file.
-                            // Check for a custom version name: if the real version and the custom name
-							// are equal the user never renamed it, so this install is plain vanilla.
-                            // Without a custom version name there is nothing to copy: the vanilla
-							// file and the target file are already the same file.
                             if (realVersion != customVersionName && VersionsManager.isVersionExists(realVersion)) {
                                 // Locate the vanilla .json file; MinecraftDownloader already fetched it.
                                 val vanillaJsonFile = File(vanillaVersionFolder, "${vanillaVersionFolder.name}.json")

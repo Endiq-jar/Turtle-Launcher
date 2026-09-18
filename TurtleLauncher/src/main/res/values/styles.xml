@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- TurtleLauncher: disable all activity-level transitions for instant navigation -->
         <item name="android:windowAnimationStyle">@style/NoAnimations</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
@@ -14,9 +13,6 @@
         <item name="android:scrollbarThumbVertical">@color/accent_primary</item>
         <item name="android:textSize">@dimen/_12ssp</item>
         <item name="android:textColor">@color/turtle_text_primary</item>
-        <!-- TurtleLauncher: app-wide default font. android:fontFamily covers system views,
-             fontFamily (no android: prefix) covers AppCompat-inflated ones (buttons, etc.
-             on older API levels) - both point at the same resource, need both attributes. -->
         <item name="android:fontFamily">@font/proxima_nova_extrabold</item>
         <item name="fontFamily">@font/proxima_nova_extrabold</item>
         <item name="colorPrimary">@color/accent_primary</item>
@@ -33,16 +29,10 @@
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Turtle.Small</item>
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Turtle.Medium</item>
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Turtle.Large</item>
-        <!-- TurtleLauncher: pixel-art switch/slider skin, applied app-wide via the theme
-             default style so every settings screen's <Switch>/<SeekBar> picks it up
-             automatically without touching each layout individually. -->
         <item name="android:switchStyle">@style/Widget.Turtle.Switch</item>
         <item name="android:seekBarStyle">@style/Widget.Turtle.SeekBar</item>
     </style>
 
-    <!-- TurtleLauncher: on/off track art already bakes in the colored knob (red = off,
-         green = on), so the real thumb layer is made invisible - see
-         drawable/switch_thumb_transparent.xml. -->
     <style name="Widget.Turtle.Switch" parent="android:Widget.Material.CompoundButton.Switch">
         <item name="android:track">@drawable/switch_track_selector</item>
         <item name="android:thumb">@drawable/switch_thumb_transparent</item>
@@ -55,22 +45,12 @@
         <item name="android:progressBackgroundTint">@color/turtle_border_default</item>
     </style>
 
-    <!-- TurtleLauncher: Accessibility - High Contrast Mode (roadmap item 22). Applied at
-         runtime via context.theme.applyStyle() in BaseActivity when AllSettings.highContrastMode
-         is on - see AccessibilityHelper.applyHighContrastOverlay(). Only touches the specific
-         attrs that were actually low-contrast (borders, secondary text, the "elevated surface"
-         tone used for cards/dividers) rather than restyling the whole app, so the rest of the
-         Sage theme (accent color, shapes, etc.) stays exactly as designed. -->
     <style name="ThemeOverlay.Turtle.HighContrast" parent="">
         <item name="colorOutline">@color/turtle_hc_border</item>
         <item name="android:textColorSecondary">@color/turtle_hc_text_secondary</item>
         <item name="colorSurfaceVariant">@color/turtle_hc_surface</item>
     </style>
 
-    <!-- TurtleLauncher: Accessibility - Font Style picker (roadmap item 22). AppTheme bakes in
-         the app's own proxima_nova_extrabold branding font as a fixed resource reference, so
-         swapping to a system font family at runtime needs one overlay style per option rather
-         than a single dynamic value - style resources can't take a variable at apply time. -->
     <style name="ThemeOverlay.Turtle.Font.Sans" parent="">
         <item name="android:fontFamily">sans-serif</item>
         <item name="fontFamily">sans-serif</item>
@@ -143,16 +123,6 @@
     </style>
 
     <!-- Outlined Button -->
-    <!-- TurtleLauncher bugfix: was parented on Widget.MaterialComponents.Button.OutlinedButton
-         (a Material2/MDC style) under a Theme.Material3.DayNight parent theme. MDC1 button
-         styles fill themselves via the legacy ?attr/colorButtonNormal, which this Material3
-         theme never defines (M3 uses colorPrimary/colorSurface instead) - so that attribute
-         fell through to a platform default flat gray, making every "outlined" button using
-         this style render with a solid silver-gray fill instead of the intended transparent
-         background, even though its stroke/text correctly stayed accent blue. Re-parented to
-         the Material3-native outlined style, which resolves fill/ripple against colorPrimary/
-         colorOnSurface like the rest of this theme, plus an explicit transparent
-         backgroundTint here as a guaranteed fallback regardless of style resolution. -->
     <style name="TurtleButtonOutline" parent="Widget.Material3.Button.OutlinedButton">
         <item name="backgroundTint">@android:color/transparent</item>
         <item name="strokeColor">@color/accent_primary</item>
@@ -189,10 +159,6 @@
         <item name="android:paddingTop">4dp</item>
     </style>
 
-    <!-- Invisible trampoline theme for the Android-share-sheet entry point
-         (ShareReceiverActivity): it never shows UI of its own, it just reads the shared
-         log and hands it to the Assistant inside LauncherActivity, so its window must be
-         transparent and animation-free or the user would see a black flash. -->
     <style name="ShareTrampolineTheme" parent="AppTheme">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>

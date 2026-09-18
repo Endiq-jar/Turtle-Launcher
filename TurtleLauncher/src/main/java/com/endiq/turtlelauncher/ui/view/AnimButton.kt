@@ -9,7 +9,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.endiq.turtlelauncher.R
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 
 open class AnimButton @JvmOverloads constructor(
     context: Context,
@@ -31,25 +31,6 @@ open class AnimButton @JvmOverloads constructor(
         }
     }
 
-    /**
-     * TurtleLauncher: `background` is *never* actually null here, even for a button whose
-     * layout XML never mentions android:background at all - Button's own default style
-     * (android.R.attr.buttonStyle, this class's own defStyleAttr) always supplies some
-     * background drawable during the super() call above, before this even runs. That means
-     * `instanceBackground ?: R.drawable.button_background` (the previous version of this
-     * method) could never actually tell "this specific instance asked for a custom
-     * background" apart from "no background was set, that's just the platform style's own
-     * default" - `background` is non-null either way, so the R.drawable.button_background
-     * fallback never fired for ANY button, and every ordinary button (the overwhelming
-     * majority - almost none of them set android:background, they're meant to just get this
-     * class's own themed default) silently rendered with the OS's flat grey Material button
-     * style instead of this app's own themed drawable. Checking the raw AttributeSet for a
-     * literal android:background entry - instead of the resolved `background` property -
-     * is what actually distinguishes the two cases, fixing both bugs at once: an
-     * instance-set background (e.g. play_button's bg_launch_button) still wins because it's
-     * a real attribute on that tag, and every other button gets this app's own themed
-     * background back instead of the OS default.
-     */
     private fun setRipple(attrs: AttributeSet?) {
         val hasExplicitBackground = attrs?.getAttributeValue(ANDROID_NS, "background") != null
         val contentDrawable = if (hasExplicitBackground) {

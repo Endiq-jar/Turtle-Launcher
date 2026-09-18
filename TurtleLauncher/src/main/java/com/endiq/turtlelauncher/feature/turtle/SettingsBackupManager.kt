@@ -3,7 +3,7 @@ package com.endiq.turtlelauncher.feature.turtle
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.setting.Settings
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
 
 /**
@@ -39,11 +39,6 @@ object SettingsBackupManager {
         }.onFailure { e -> Logging.e(TAG, "Settings export write failed", e) }.getOrDefault(false)
     }
 
-    /**
-     * Restores settings from previously-exported [json]. Validates it parses as the
-     * expected JSON array of setting entries before touching anything on disk, so a
-     * corrupt/foreign file can never wipe out the current working settings.
-     */
     @JvmStatic
     fun importFromJson(json: String): Boolean {
         return runCatching {

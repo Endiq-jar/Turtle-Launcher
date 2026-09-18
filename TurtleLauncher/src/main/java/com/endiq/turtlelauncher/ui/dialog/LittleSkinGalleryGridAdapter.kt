@@ -9,11 +9,6 @@ import com.endiq.turtlelauncher.databinding.ItemSkinCapeGalleryBinding
 import com.endiq.turtlelauncher.feature.skin.LittleSkinGalleryApi
 import com.endiq.turtlelauncher.setting.AllSettings
 
-/**
- * Grid of live littleskin.cn skin/cape library thumbnails (see [LittleSkinGalleryApi]) shown
- * in [SkinCapeDialog]. Same shape as [LabyModGalleryGridAdapter] - tiles load their thumbnail
- * over the network individually via Glide rather than all up front.
- */
 internal class LittleSkinGalleryGridAdapter(
     private val items: List<LittleSkinGalleryApi.GallerySkin>,
     private val onItemClick: (position: Int) -> Unit

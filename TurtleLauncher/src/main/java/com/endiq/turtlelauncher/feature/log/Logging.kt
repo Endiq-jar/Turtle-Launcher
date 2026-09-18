@@ -11,7 +11,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter

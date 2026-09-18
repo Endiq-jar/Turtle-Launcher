@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher dialog surface: solid translucent fill + glowing accent border
-     (previously had a gradient glossy-highlight overlay layer - removed per user
-     request for solid colors throughout instead of gradients). -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Base translucent fill -->
     <item>

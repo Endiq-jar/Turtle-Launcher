@@ -31,13 +31,6 @@ import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.file.FileTools
 import java.io.File
 
-/**
- * Built-in log viewer: shows a launcher log file with a live text search (highlights matches)
- * and an "Errors only" filter that narrows the view down to lines carrying
- * [com.endiq.turtlelauncher.feature.log.Logging]'s own `(ERROR)` tag - the same tag every
- * `Logging.e(...)` call writes, so this needs no separate error-detection heuristic. Opened
- * from ShareLogsFragment's "View Log" row instead of the old single-shot TipDialog preview.
- */
 class LogViewerFragment : FragmentWithAnim(R.layout.fragment_log_viewer) {
     companion object {
         const val TAG: String = "LogViewerFragment"

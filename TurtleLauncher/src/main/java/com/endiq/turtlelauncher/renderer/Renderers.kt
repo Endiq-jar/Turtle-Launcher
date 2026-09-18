@@ -12,9 +12,8 @@ import com.endiq.turtlelauncher.renderer.renderers.VGPURenderer
 import com.endiq.turtlelauncher.renderer.renderers.VirGLRenderer
 import com.endiq.turtlelauncher.renderer.renderers.ZinkRenderer
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.File
-
 
 
 object Renderers {
@@ -75,11 +74,6 @@ object Renderers {
     }
 
     private fun hasRequiredLibrary(renderer: RendererInterface): Boolean {
-        // Built-in renderers reference their libraries by bare name inside the launcher's
-        // own jniLibs folder; plugin renderers (RendererPluginManager) bring their own
-        // libraries and reference them by absolute path inside the plugin - check each
-        // where it actually lives. (Previously absolute paths short-circuited to
-        // "doesn't exist", which excluded every plugin renderer from the picker.)
         fun exists(libName: String): Boolean =
             if (libName.startsWith("/")) File(libName).exists()
             else File(PathManager.DIR_NATIVE_LIB, libName).exists()
@@ -125,15 +119,6 @@ object Renderers {
         }
     }
 
-    /**
-     * Drops the renderers with the given unique identifiers and invalidates the cached
-     * compatible-renderer list. Used by [com.endiq.turtlelauncher.plugins.PluginLoader]'s
-     * forced re-scan: plugin renderers were registered by a previous scan, and re-adding the
-     * same unique identifier would be rejected as a conflict (leaving the plugin orphaned -
-     * selectable nowhere, its libraries un-referenced - until a full app restart). Removing
-     * the old instances first lets the fresh scan's wrappers take their place cleanly, and
-     * also makes an uninstalled plugin app's renderer disappear for real.
-     */
     fun removeRenderers(uniqueIdentifiers: Collection<String>) {
         if (uniqueIdentifiers.isEmpty()) return
         renderers.removeAll { it.getUniqueIdentifier() in uniqueIdentifiers }

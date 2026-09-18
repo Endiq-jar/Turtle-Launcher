@@ -13,23 +13,11 @@ import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.version.VersionsManager
 import java.io.File
 
-/**
- * TurtleLauncher v10: in-launcher text editor for a version's files. Any file/extension
- * can be opened — not just known config types. A flat file list + a monospace text box,
- * since the goal is "fix a file without leaving the app", not a full IDE. Files that look
- * binary are still shown but require a confirmation before opening, since editing them as
- * text and saving would corrupt them.
- */
 class ConfigEditorActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_VERSION_NAME = "version_name"
 
-        /**
-         * Opens directly on a single arbitrary file (e.g. from the general file browser's
-         * "Edit" button) instead of listing a version's whole game dir. When set, the file
-         * list only shows this one file and EXTRA_VERSION_NAME is ignored.
-         */
         const val EXTRA_TARGET_FILE_PATH = "target_file_path"
 
         /** Above this size a file is skipped from the listing entirely (avoid OOM on huge files). */

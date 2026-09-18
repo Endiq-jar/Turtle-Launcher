@@ -4,7 +4,7 @@ import android.content.Context
 import com.endiq.turtlelauncher.feature.log.Logging.e
 import com.endiq.turtlelauncher.utils.CopyDefaultFromAssets.Companion.copyFromAssets
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 
 class UnpackSingleFilesTask(val context: Context) : AbstractUnpackTask() {
     override fun isNeedUnpack(): Boolean = true

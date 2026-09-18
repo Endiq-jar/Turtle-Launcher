@@ -19,8 +19,8 @@
 
 # App entry points
 Lcom/endiq/turtlelauncher/ui/activity/SplashActivity;
-Lnet/kdt/pojavlaunch/TurtleApplication;
-Lnet/kdt/pojavlaunch/LauncherActivity;
+Lnet/endiq/launcher/TurtleApplication;
+Lnet/endiq/launcher/LauncherActivity;
 
 # Startup sequencing (this session's addition)
 Lcom/endiq/turtlelauncher/startup/TurtleStartupInitializer;
@@ -34,5 +34,5 @@ Lcom/endiq/turtlelauncher/utils/path/PathManager;
 Lcom/endiq/turtlelauncher/context/ContextExecutor;
 
 # Home screen (first thing rendered after splash in the common case)
-Lnet/kdt/pojavlaunch/fragments/MainMenuFragment;
+Lnet/endiq/launcher/fragments/MainMenuFragment;
 Lcom/endiq/turtlelauncher/feature/turtle/AssetPrefetcher;

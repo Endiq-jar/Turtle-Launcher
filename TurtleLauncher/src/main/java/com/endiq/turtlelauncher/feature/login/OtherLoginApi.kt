@@ -7,8 +7,8 @@ import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.path.UrlManager
 import com.endiq.turtlelauncher.utils.path.UrlManager.Companion.createRequestBuilder
 import com.endiq.turtlelauncher.utils.stringutils.StringUtilsKt
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.value.MinecraftAccount
+import net.endiq.launcher.Tools
+import net.endiq.launcher.value.MinecraftAccount
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody

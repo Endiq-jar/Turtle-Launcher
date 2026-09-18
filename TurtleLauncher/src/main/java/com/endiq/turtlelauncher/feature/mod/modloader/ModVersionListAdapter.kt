@@ -11,8 +11,8 @@ import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.databinding.ItemFileListViewBinding
 import com.endiq.turtlelauncher.feature.download.item.VersionItem
 import com.endiq.turtlelauncher.utils.anim.ViewAnimUtils
-import net.kdt.pojavlaunch.modloaders.FabricVersion
-import net.kdt.pojavlaunch.modloaders.OptiFineUtils.OptiFineVersion
+import net.endiq.launcher.modloaders.FabricVersion
+import net.endiq.launcher.modloaders.OptiFineUtils.OptiFineVersion
 
 class ModVersionListAdapter(
     private val iconDrawable: Int,

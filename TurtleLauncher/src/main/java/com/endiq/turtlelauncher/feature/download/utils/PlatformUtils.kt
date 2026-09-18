@@ -4,7 +4,7 @@ import com.endiq.turtlelauncher.feature.download.Filters
 import com.endiq.turtlelauncher.feature.download.enums.Classify
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils.containsChinese
 import com.endiq.turtlelauncher.utils.stringutils.StringUtilsKt
-import net.kdt.pojavlaunch.modloaders.modpacks.api.ApiHandler
+import net.endiq.launcher.modloaders.modpacks.api.ApiHandler
 import org.jackhuang.hmcl.ui.versions.ModTranslations
 import org.jackhuang.hmcl.util.StringUtils
 

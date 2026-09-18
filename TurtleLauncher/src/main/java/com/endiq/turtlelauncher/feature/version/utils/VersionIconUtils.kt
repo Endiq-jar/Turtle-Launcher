@@ -17,11 +17,6 @@ class VersionIconUtils(
 ) {
     private val iconFile = VersionsManager.getVersionIconFile(version)
 
-    /**
-     * Resolve the default icon of a version (vanilla block, mod-loader cover, ...); a custom
-     * icon always wins.
-     * @return whether a custom icon is set, so the reset action knows what to do
-     */
     fun start(imageView: ImageView): Boolean {
         val context = imageView.context
 

@@ -2,24 +2,18 @@ package com.endiq.turtlelauncher.feature.mod.modloader;
 
 import androidx.annotation.NonNull;
 
-import com.kdt.mcgui.ProgressLayout;
+import com.endiq.mcgui.ProgressLayout;
 import com.endiq.turtlelauncher.R;
 import com.endiq.turtlelauncher.feature.version.install.InstallTask;
 import com.endiq.turtlelauncher.utils.path.PathManager;
 
-import net.kdt.pojavlaunch.Tools;
-import net.kdt.pojavlaunch.modloaders.CleanroomUtils;
-import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper;
-import net.kdt.pojavlaunch.utils.DownloadUtils;
+import net.endiq.launcher.Tools;
+import net.endiq.launcher.modloaders.CleanroomUtils;
+import net.endiq.launcher.progresskeeper.ProgressKeeper;
+import net.endiq.launcher.utils.DownloadUtils;
 
 import java.io.File;
 
-/**
- * Downloads Cleanroom's real installer.jar - mirrors ForgeDownloadTask exactly, since
- * it's the same kind of file (a self-contained installer jar), just from GitHub
- * Releases instead of Forge's Maven repo. See CleanroomUtils for the version-fetch
- * side and the important caveat about launcher support.
- */
 public class CleanroomDownloadTask implements InstallTask, Tools.DownloaderFeedback {
     private final String mVersion;
     private final String mDownloadUrl;

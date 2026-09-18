@@ -17,9 +17,6 @@ class ZinkRenderer : RendererInterface {
 
     override fun getRendererId(): String = ID
 
-    // See RendererInterface.getNativeRendererId's doc comment - the native dispatch
-    // recognizes "vulkan_zink" exactly (confirmed by disassembling pojavInitOpenGL);
-    // "ZINK" alone matches nothing and falls through to the crashing default case.
     override fun getNativeRendererId(): String = "vulkan_zink"
 
     override fun getUniqueIdentifier(): String = "18d93f17-ff53-a319-fa61-58709a77bf87"

@@ -6,34 +6,6 @@ import java.io.FileOutputStream
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-/**
- * TurtleLauncher: system-side (logcat) capture of a game session.
- *
- * Why this exists: every crash screen in this launcher reads its raw log from
- * `latestlog.txt`, which is written by the NATIVE side (`net.kdt.pojavlaunch.Logger
- * .appendToLog`) from inside the JVM that is running Minecraft. When the game dies the way
- * it most often dies on real devices - a SIGSEGV/SIGABRT in the renderer, an OOM kill, an
- * ANR kill - that process is gone instantly. Whatever was still sitting in the native
- * logger's buffer is gone with it, so `latestlog.txt` is frequently EMPTY (or truncated
- * mid-line) at exactly the moment you need it. That is the "logs didn't appear" half of the
- * support reports: the crash screen opened, but there was nothing in it.
- *
- * logcat does not have that problem. It is a kernel buffer owned by logd, not by the dying
- * process, so everything the game (and the launcher, and the renderer) printed survives the
- * crash and can be read afterwards. An app is always allowed to read its OWN log lines
- * (everything sharing its UID - which here means the `:launcher`, `:game` and
- * `:gui_installer` processes), with no permission needed. `READ_LOGS` would be required to
- * read other apps' lines, and nothing here needs that.
- *
- * So this runs `logcat` as a live drain into a rolling file for the duration of a session,
- * and offers a synchronous one-shot dump for when a session is already over. Both are
- * cross-process safe: the file lives under [PathManager.DIR_LAUNCHER_LOG], which every
- * process of this app resolves to the same path, so the `:game` process can write it and
- * ErrorActivity (which runs in the `:launcher` process) can read it back.
- *
- * This is deliberately NOT a replacement for CrashAnalyzer/ErrorActivity - it is a
- * *fallback source of raw log text* for them, used only when `latestlog.txt` has nothing.
- */
 object GameLogcat {
     private const val TAG = "GameLogcat"
 
@@ -180,10 +152,6 @@ object GameLogcat {
             return ""
         }
         return try {
-            // `logcat -d` normally exits as soon as it has dumped, but a wedged logd (or a
-            // very large -t on a busy device) must never be able to hang a crash screen.
-            // A watchdog destroys the process if it overruns; destroying it closes the pipe
-            // and so unblocks the reader below.
             val watchdog = Thread({
                 runCatching {
                     if (!process.waitFor(DUMP_TIMEOUT_SECONDS, TimeUnit.SECONDS)) process.destroy()

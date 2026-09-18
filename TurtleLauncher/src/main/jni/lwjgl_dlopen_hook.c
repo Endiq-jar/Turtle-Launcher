@@ -14,11 +14,6 @@
 
 extern void* maybe_load_vulkan();
 
-/**
- * Basically a verbatim implementation of ndlopen(), found at
- * https://github.com/PojavLauncherTeam/lwjgl3/blob/3.3.1/modules/lwjgl/core/src/generated/c/linux/org_lwjgl_system_linux_DynamicLinkLoader.c#L11
- * but with our own additions for stuff like vulkanmod.
- */
 static jlong ndlopen_bugfix(__attribute__((unused)) JNIEnv *env,
                             __attribute__((unused)) jclass class,
                             jlong filename_ptr,

@@ -24,19 +24,13 @@ import com.endiq.turtlelauncher.utils.platform.MemoryUtils.Companion.getFreeDevi
 import com.endiq.turtlelauncher.utils.platform.MemoryUtils.Companion.getTotalDeviceMemory
 import com.endiq.turtlelauncher.utils.platform.MemoryUtils.Companion.getUsedDeviceMemory
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
-import net.kdt.pojavlaunch.Architecture
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
-import net.kdt.pojavlaunch.multirt.MultiRTConfigDialog
+import net.endiq.launcher.Architecture
+import net.endiq.launcher.Tools
+import net.endiq.launcher.contracts.OpenDocumentWithExtension
+import net.endiq.launcher.multirt.MultiRTConfigDialog
 import kotlin.math.min
 
 
-/**
- * TurtleLauncher: everything Java-runtime-related (install/select a JRE, JVM args, RAM
- * allocation, the JRE sandbox toggle), split out of GameSettingsFragment into its own page
- * so "Java" isn't mixed in with language/HUD/preset settings anymore - same idea as Recording
- * and Phone already being their own dedicated, single-purpose pages.
- */
 class JavaSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment_java, SettingCategory.JAVA) {
     companion object {
         const val TAG: String = "JavaSettingsFragment"

@@ -5,7 +5,7 @@ import com.endiq.anim.AnimPlayer
 import com.endiq.turtlelauncher.event.single.SettingsChangeEvent
 import com.endiq.turtlelauncher.event.value.SettingsPageSwapEvent
 import com.endiq.turtlelauncher.ui.fragment.FragmentWithAnim
-import net.kdt.pojavlaunch.prefs.LauncherPreferences
+import net.endiq.launcher.prefs.LauncherPreferences
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 

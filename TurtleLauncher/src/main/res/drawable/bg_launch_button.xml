@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    TurtleLauncher: launch button. Base @color/launch_button_color (Buttons, #C7E8B0),
-    hovered/pressed @color/launch_button_hover / launch_button_pressed (Secondary Accent,
-    #9CCF93) for mouse/trackpad-capable devices (Chromebooks, DeX, tablets with a mouse),
-    dark text (see play_button in fragment_launcher.xml — Button Text, #0D0D0D, for
-    contrast against the light accent fill). A plain <ripple> can only tint a press
-    animation, not hold a distinct idle-vs-hover color, so the state differentiation
-    lives in the <selector> and the <ripple> just adds the tactile press animation on
-    top of it.
--->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="@color/launch_button_ripple">
     <item>

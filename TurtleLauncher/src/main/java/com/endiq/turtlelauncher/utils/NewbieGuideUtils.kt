@@ -11,7 +11,7 @@ import com.google.gson.JsonParser
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.log.Logging.e
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import java.io.FileWriter
 
 

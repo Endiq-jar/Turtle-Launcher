@@ -23,34 +23,19 @@ import com.endiq.turtlelauncher.setting.AllSettings;
 import com.endiq.turtlelauncher.task.TaskExecutors;
 import com.endiq.turtlelauncher.utils.StoragePermissionsUtils;
 
-import net.kdt.pojavlaunch.MissingStorageActivity;
-import net.kdt.pojavlaunch.Tools;
+import net.endiq.launcher.MissingStorageActivity;
+import net.endiq.launcher.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    // TurtleLauncher: Environment.isExternalStorageManager() and AccountsManager.reload()'s
-    // account-folder scan are both real (binder IPC / disk) I/O, and onResume() used to run
-    // both of them, synchronously, on the main thread, on *every single* resume of *every*
-    // activity in the app - including switching back into the running game after alt-tabbing,
-    // which is exactly the moment you don't want a hitch. Neither result is ever needed
-    // synchronously by the code right after onResume() returns (the storage check only feeds
-    // the cached checkPermissions() getter read elsewhere, and account reload only mutates
-    // AccountsManager's own thread-safe CopyOnWriteArrayList), so both now run on the shared
-    // background pool instead. See TaskExecutors for the pool itself (adaptive size + lower
-    // priority while a game session is active).
     private static final long PERMISSION_RECHECK_DEBOUNCE_MS = 1500L;
     private long lastPermissionCheckElapsedMs = -PERMISSION_RECHECK_DEBOUNCE_MS;
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        // TurtleLauncher: Accessibility (roadmap item 22) - UI text scale. Must happen here,
-        // not onCreate(), since fontScale only takes effect via a Configuration attached before
-        // the Activity's Resources are created. LocaleHelper.setLocale() runs first because it's
-        // also what makes sure Settings.refreshSettings() has actually loaded AllSettings.fontScale
-        // from disk before AccessibilityHelper reads it.
         super.attachBaseContext(AccessibilityHelper.wrapContext(LocaleHelper.Companion.setLocale(newBase)));
     }
 
@@ -58,10 +43,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocaleHelper.Companion.setLocale(this);
-        // TurtleLauncher: Accessibility (roadmap item 22) - high-contrast mode + font family.
-        // Both are theme overlays, so unlike fontScale they need to apply after super.onCreate()
-        // has set this Activity's theme up, but before setContentView()/binding.inflate() in
-        // each subclass actually inflates views against it.
         AccessibilityHelper.applyHighContrastOverlay(this);
         AccessibilityHelper.applyFontFamilyOverride(this);
         Tools.setFullscreen(this);
@@ -88,7 +69,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         checkStoragePermissions(false);
 
-        //TurtleLauncher: off the main thread - see the field comment above for why.
         TaskExecutors.getDefault().execute(AccountsManager.INSTANCE::reload);
     }
 
@@ -117,38 +97,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
-    /**
-     * TurtleLauncher: on API 30+ immersive mode is driven by WindowInsetsControllerCompat
-     * (see Tools#setFullscreen), which - unlike the old SYSTEM_UI_FLAG listener - does not
-     * fire again by itself once the user swipes the transient system bars back into view or
-     * a dialog/notification-shade/IME steals focus. Re-applying on refocus is the standard
-     * fix and also happens to be a correct no-op on the legacy (<R) path.
-     */
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) Tools.setFullscreen(this);
     }
 
-    /**
-     * TurtleLauncher: entering/exiting multi-window (split-screen, freeform, or the
-     * desktop-mode windowing some Android 14/15 tablets and ChromeOS devices default to)
-     * needs the same immersive-state recompute setFullscreen() already does internally
-     * (it checks Activity#isInMultiWindowMode()) - this just makes sure it actually runs
-     * again on the transition instead of only on the next onResume/onPostResume.
-     */
     @Override
     public void onMultiWindowModeChanged(boolean isInMultiWindowMode, @NonNull Configuration newConfig) {
         super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig);
         Tools.setFullscreen(this);
     }
 
-    /**
-     * TurtleLauncher: Glide already registers itself as a ComponentCallbacks2 and trims its
-     * own caches on this callback, so nothing to do for image memory here - this override
-     * exists purely so memory pressure shows up in the log (and therefore in exported crash
-     * diagnostics) instead of being invisible right up until an OOM kill.
-     */
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
@@ -167,17 +127,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         return AllSettings.getIgnoreNotchLauncher().getValue();
     }
 
-    /**
-     * Check the all-files access permission.
-     * @param force whether to skip throttling and run the check synchronously. After the first
-     *              onCreate() check,
-     *              ProfilePathManager/ProfilePathAdapter read it synchronously right away,
-     *              the cached result of StoragePermissionsUtils.checkPermissions();
-     *              instance, so this one pass must finish before returning - it cannot be
-     *              otherwise stale defaults would be read. onCreate() runs once per Activity
-     *              this is not a hot path, so the synchronous cost is fine. onResume() is the
-     *              pushed to a background thread; that is what onResume() needs (async + throttled).
-     */
     private void checkStoragePermissions(boolean force) {
         if (force) {
             lastPermissionCheckElapsedMs = SystemClock.elapsedRealtime();
@@ -186,12 +135,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
         long now = SystemClock.elapsedRealtime();
-        //TurtleLauncher: Environment.isExternalStorageManager() is a binder call into
-        //system_server - cheap once, but wasteful when repeated on every onResume() of
-        //every activity during fast back-and-forth navigation. The cached checkPermissions()
-        //getter is what callers actually read, so a short debounce here doesn't lose any
-        //real freshness (permission state only ever changes via the Settings screen, whose
-        //return already triggers a fresh onResume well past the debounce window).
         if (now - lastPermissionCheckElapsedMs < PERMISSION_RECHECK_DEBOUNCE_MS) return;
         lastPermissionCheckElapsedMs = now;
 

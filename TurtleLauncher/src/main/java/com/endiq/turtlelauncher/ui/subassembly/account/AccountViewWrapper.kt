@@ -12,7 +12,7 @@ import com.endiq.turtlelauncher.ui.fragment.AccountFragment
 import com.endiq.turtlelauncher.ui.fragment.FragmentWithAnim
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.skin.SkinLoader
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 
 class AccountViewWrapper(private val parentFragment: FragmentWithAnim? = null, val binding: ViewAccountBinding) {
     private val mContext: Context = binding.root.context

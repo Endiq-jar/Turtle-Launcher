@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: low-alpha accent circle sitting behind a settings hub tile's icon,
-     so the icon reads as a badge rather than floating bare on the card. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
     <solid android:color="@color/turtle_glass_overlay"/>

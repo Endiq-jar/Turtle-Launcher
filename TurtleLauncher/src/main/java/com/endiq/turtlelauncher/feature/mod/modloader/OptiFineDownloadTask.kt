@@ -1,14 +1,14 @@
 package com.endiq.turtlelauncher.feature.mod.modloader
 
-import com.kdt.mcgui.ProgressLayout
+import com.endiq.mcgui.ProgressLayout
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.version.install.InstallTask
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools.DownloaderFeedback
-import net.kdt.pojavlaunch.modloaders.OFDownloadPageScraper
-import net.kdt.pojavlaunch.modloaders.OptiFineUtils.OptiFineVersion
-import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper
-import net.kdt.pojavlaunch.utils.DownloadUtils
+import net.endiq.launcher.Tools.DownloaderFeedback
+import net.endiq.launcher.modloaders.OFDownloadPageScraper
+import net.endiq.launcher.modloaders.OptiFineUtils.OptiFineVersion
+import net.endiq.launcher.progresskeeper.ProgressKeeper
+import net.endiq.launcher.utils.DownloadUtils
 import java.io.File
 import java.io.IOException
 

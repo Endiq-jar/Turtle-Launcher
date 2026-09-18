@@ -8,7 +8,7 @@ import com.endiq.turtlelauncher.event.single.SettingsChangeEvent
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.setting.unit.AbstractSettingUnit
 import com.endiq.turtlelauncher.utils.path.PathManager
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 import org.apache.commons.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.lang.reflect.Type
@@ -51,9 +51,6 @@ class Settings {
              * Read the value of a key from the launcher settings.
              */
             fun <T> getValue(key: String, defaultValue: T, parser: (String) -> T?): T {
-                // A corrupt settings file must never crash the app: an unparseable
-                // value falls back to the default instead of throwing out of every
-                // getValue() call site.
                 return settingsMap[key]?.value?.let { runCatching { parser(it) }.getOrNull() } ?: defaultValue
             }
 

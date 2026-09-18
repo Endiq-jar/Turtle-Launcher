@@ -19,31 +19,10 @@ import com.endiq.turtlelauncher.task.Task
 import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.ui.dialog.KeyboardDialog
 import com.endiq.turtlelauncher.utils.ZHTools
-import net.kdt.pojavlaunch.EfficientAndroidLWJGLKeycode
-import net.kdt.pojavlaunch.utils.DownloadUtils
+import net.endiq.launcher.EfficientAndroidLWJGLKeycode
+import net.endiq.launcher.utils.DownloadUtils
 import java.io.File
 
-/**
- * Settings -> Emotes.
- *
- * TurtleLauncher: the launcher-side half of the emote feature (the in-game half is the
- * Emotes row in the game menu - see view_game_menu.xml / MainActivity's
- * MenuSettingsInitListener). Embeds the official Emotecraft community library
- * (emotes.kosmx.dev) in a WebView and intercepts its downloads, saving .emote files
- * straight into the current version's `<gameDir>/emotes` folder - the folder Emotecraft
- * reads at startup, so a download here is usable in game without any file juggling.
- *
- * Also hosts:
- *  - the Emotecraft mod status for the current version (emotes need the mod, installed
- *    separately by the user),
- *  - the emote-wheel key picker (the key the in-game "Play emote" button sends; default B
- *    matches Emotecraft's own default wheel keybind), reusing KeyboardDialog so the picker
- *    offers exactly the keys the launcher can send.
- *
- * Everything that can fail (WebView init, site load, downloads, file scans) is wrapped:
- * this screen must never be able to crash the launcher, mirroring the crash-audit rules
- * applied across the codebase.
- */
 class EmotesFragment : FragmentWithAnim(R.layout.settings_fragment_emotes) {
     companion object {
         const val TAG: String = "EmotesFragment"
@@ -71,9 +50,6 @@ class EmotesFragment : FragmentWithAnim(R.layout.settings_fragment_emotes) {
         }
         binding.emotesWheelKeyRow.setOnClickListener { showWheelKeyPicker() }
 
-        // Nested-scroll workaround (see settings_fragment_emotes.xml's comment on these
-        // two FABs): page the WebView's own content directly rather than relying on swipe
-        // gestures, which the outer NestedScrollView can steal mid-scroll.
         binding.emotesPagePrevButton.setOnClickListener {
             runCatching { binding.emotesWebView.pageUp(false) }
         }
@@ -126,11 +102,6 @@ class EmotesFragment : FragmentWithAnim(R.layout.settings_fragment_emotes) {
     private fun refreshStatus() {
         val emotecraftInstalled = Emotes.isEmotecraftInstalled()
         val animatorInstalled = Emotes.isPlayerAnimatorInstalled()
-        // Three visible states: nothing installed, Emotecraft there but its mandatory
-        // Player Animation Library dependency missing (game would crash on launch), and
-        // everything in place. The install button doubles as "install the missing
-        // dependency" in the middle state - autoInstallEmotecraft() is idempotent about
-        // what's already present.
         val statusRes = when {
             emotecraftInstalled && animatorInstalled -> R.string.emotes_status_installed
             emotecraftInstalled -> R.string.emotes_status_missing_animator

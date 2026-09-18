@@ -37,12 +37,11 @@ import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.path.PathManager
 import com.endiq.turtlelauncher.utils.path.UrlManager
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
+import net.endiq.launcher.Tools
+import net.endiq.launcher.contracts.OpenDocumentWithExtension
 import org.apache.commons.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.io.File
-
 
 class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment_video, SettingCategory.VIDEO) {
     private lateinit var binding: SettingsFragmentVideoBinding
@@ -77,13 +76,6 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
                         }
                         TaskExecutors.runInUIThread {
                             if (importedAny) {
-                                // TurtleLauncher: this used to demand a full launcher restart
-                                // (killProcess) before the imported renderer could load. Forced
-                                // plugin re-scans are safe now - PluginLoader replaces the
-                                // previously registered plugin renderers instead of colliding
-                                // with them - so re-scan in place and let the user pick the new
-                                // renderer immediately, exactly like an APK plugin install picked
-                                // up by LauncherActivity.onResume's change detection.
                                 runCatching {
                                     com.endiq.turtlelauncher.plugins.PluginLoader.loadAllPlugins(
                                         requireContext().applicationContext, force = true
@@ -140,20 +132,6 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
             ZHTools.swapFragmentWithAnim(this, com.endiq.turtlelauncher.ui.fragment.settings.RendererManagerFragment::class.java, com.endiq.turtlelauncher.ui.fragment.settings.RendererManagerFragment.TAG, null)
         }
 
-        // ── Graphics Backend switch (Vulkan / OpenGL) ────────────────────────────
-        // Simple shortcut over the same AllSettings.renderer used above: OpenGL maps to the
-        // launcher's default GL-family renderer, Vulkan maps to ZinkRenderer's UUID (Zink
-        // translates Minecraft's GL calls to Vulkan). Matched by renderer id, not display
-        // name, so this doesn't break if a renderer's display name ever changes. Falls back
-        // to whichever of the two is actually compatible/present in the device's renderer
-        // list, in case one isn't available.
-        //
-        // TurtleLauncher: the OpenGL side used to hardcode Holy GL4ES. Now that MobileGlues
-        // is this launcher's default renderer (see AllSettings.renderer), flipping this
-        // switch back to "OpenGL" should land on the same renderer a fresh install gets, not
-        // on a different one - so it prefers MobileGlues and only falls back to Holy GL4ES
-        // on a device where MobileGlues isn't in the compatible list at all (Renderers
-        // already filters those out by bundled library, see Renderers.hasRequiredLibrary).
         val openglRendererId = rendererInstances.find { it.getRendererId() == MobileGluesRenderer.ID }?.getUniqueIdentifier()
             ?: rendererInstances.find { it.getRendererId() == HolyGL4ESRenderer.ID }?.getUniqueIdentifier()
         val vulkanRendererId = rendererInstances.find { it.getRendererId() == ZinkRenderer.ID }?.getUniqueIdentifier()
@@ -163,12 +141,6 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
             val index = renderers.rendererIdentifier.indexOf(rendererId)
             if (index >= 0) binding.rendererValue.text = renderers.rendererNames[index]
         }
-        // Re-sync the switch's persisted state to the actual active renderer every time
-        // this screen opens, so it can never silently disagree with the detailed Renderer
-        // option above - e.g. if the user picked a third renderer directly from that
-        // dropdown instead of using this shortcut. Only Vulkan (Zink) reads as "off";
-        // anything else (including a renderer neither shortcut maps to) reads as "on" /
-        // OpenGL, matching the requested default of On = OpenGL.
         val currentRendererId = AllSettings.renderer.getValue()
         AllSettings.preferOpenGLBackend.put(currentRendererId != vulkanRendererId).save()
         SwitchSettingsWrapper(context, AllSettings.preferOpenGLBackend, binding.graphicsBackendLayout, binding.graphicsBackendSwitch)
@@ -259,17 +231,6 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
         SwitchSettingsWrapper(context, AllSettings.adaptiveVsync,
             binding.adaptiveVsyncLayout, binding.adaptiveVsync)
 
-        // TurtleLauncher bugfix (corrected): this genuinely is a distinct switch from the
-        // "Low Latency Rendering" one under FPS Boost further down - it's the EGL front-buffer
-        // setting (AllSettings.lowLatencyFrontBuffer), not the FPS Boost JVM one
-        // (AllSettings.lowLatencyRendering). It was originally wired to
-        // AllSettings.lowLatencyRendering (wrong - ambiguous/collided with the FPS Boost
-        // setting) and to binding.lowLatencyRenderingLayout/binding.lowLatencyRendering,
-        // which - because the XML ids these came from view-binding-converted to the exact
-        // same field names as the FPS Boost switch's ids - pointed at that other switch
-        // instead of its own. Renamed the XML ids (low_latency_rendering_* ->
-        // low_latency_front_buffer_*) and repointed both refs here accordingly, rather than
-        // deleting this block outright as an earlier pass through this bug mistakenly did.
         SwitchSettingsWrapper(context, AllSettings.lowLatencyFrontBuffer,
             binding.lowLatencyFrontBufferLayout, binding.lowLatencyFrontBuffer)
 
@@ -299,10 +260,6 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
         // ── Auto Settings Optimizer ──────────────────────────────────────────
         SwitchSettingsWrapper(context, AllSettings.autoSettingsOptimizer,
             binding.autoSettingsOptimizerLayout, binding.autoSettingsOptimizer)
-
-        // FPS Boost / renderer performance toggles moved to OptimizationSettingsFragment.
-        // gl4es LIBGL_* JNI tweaks moved to Phone Settings > JNI Optimization (now four
-        // granular switches instead of this one combined toggle) - see PhoneSettingsFragment.
 
         changeResolutionRatioPreview(AllSettings.resolutionRatio.getValue())
         computeVisibility()

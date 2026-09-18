@@ -9,7 +9,6 @@
         <item>bmclapi</item>
     </string-array>
 
-    <!-- TurtleLauncher: "Add Multiple LWJGL versions" (Compatibility Improvements, item 16) -->
     <string-array name="lwjgl_compat_mode_names">
         <item>@string/setting_lwjgl_compat_mode_auto</item>
         <item>@string/setting_lwjgl_compat_mode_new</item>
@@ -58,8 +57,6 @@
         <item>dark</item>
     </string-array>
 
-    <!-- TurtleLauncher: screen transition pickers. Names must stay in the same order as
-         values; the values are the EnterTransition/ExitTransition keys. -->
     <string-array name="animation_enter_names">
         <item>@string/anim_slide_up</item>
         <item>@string/anim_slide_down</item>

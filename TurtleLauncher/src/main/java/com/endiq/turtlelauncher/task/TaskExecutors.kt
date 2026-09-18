@@ -17,12 +17,6 @@ class TaskExecutors {
         private val corePoolSize = cpuCores.coerceIn(2, 4)
         private val maxPoolSize = (cpuCores).coerceAtLeast(corePoolSize)
 
-        // TurtleLauncher: set true right before Minecraft's own Activity starts (a real game
-        // session, not just "the launcher isn't visible" - a paused/backgrounded launcher still
-        // legitimately runs downloads at normal priority, e.g. via ProgressService), cleared once
-        // back at the launcher. beforeExecute() is a standard ThreadPoolExecutor extension point -
-        // this only lowers the OS scheduling priority of tasks in this shared pool so the game
-        // process wins CPU contention, it never pauses/cancels/drops any queued or in-flight work.
         @Volatile
         @JvmStatic
         var isGameSessionActive: Boolean = false

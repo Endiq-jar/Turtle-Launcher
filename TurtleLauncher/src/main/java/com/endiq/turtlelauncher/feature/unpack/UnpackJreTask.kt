@@ -3,9 +3,9 @@ package com.endiq.turtlelauncher.feature.unpack
 import android.content.Context
 import android.content.res.AssetManager
 import com.endiq.turtlelauncher.feature.log.Logging
-import net.kdt.pojavlaunch.Architecture
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.multirt.MultiRTUtils
+import net.endiq.launcher.Architecture
+import net.endiq.launcher.Tools
+import net.endiq.launcher.multirt.MultiRTUtils
 
 class UnpackJreTask(val context: Context, val jre: Jre) : AbstractUnpackTask() {
     private lateinit var assetManager: AssetManager

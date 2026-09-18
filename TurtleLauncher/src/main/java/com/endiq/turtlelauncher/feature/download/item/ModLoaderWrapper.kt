@@ -5,7 +5,7 @@ import android.content.Intent
 import com.endiq.turtlelauncher.feature.download.enums.ModLoader
 import com.endiq.turtlelauncher.feature.mod.modloader.NeoForgeDownloadTask
 import com.endiq.turtlelauncher.feature.version.install.InstallTask
-import net.kdt.pojavlaunch.JavaGUILauncherActivity
+import net.endiq.launcher.JavaGUILauncherActivity
 import com.endiq.turtlelauncher.feature.mod.modloader.FabricLikeUtils
 import com.endiq.turtlelauncher.feature.mod.modloader.ForgeDownloadTask
 import com.endiq.turtlelauncher.feature.version.install.InstallArgsUtils

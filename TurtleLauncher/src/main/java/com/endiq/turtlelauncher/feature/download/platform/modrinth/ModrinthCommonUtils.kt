@@ -18,8 +18,8 @@ import com.endiq.turtlelauncher.feature.download.utils.VersionTypeUtils
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.stringutils.StringUtilsKt
-import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.modloaders.modpacks.api.ApiHandler
+import net.endiq.launcher.Tools
+import net.endiq.launcher.modloaders.modpacks.api.ApiHandler
 import java.util.StringJoiner
 import java.util.TreeSet
 

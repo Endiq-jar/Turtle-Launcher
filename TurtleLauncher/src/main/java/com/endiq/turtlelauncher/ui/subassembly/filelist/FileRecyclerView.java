@@ -169,13 +169,6 @@ public class FileRecyclerView extends LinearLayout {
                 fileSelectedListener.onFileSelected(path, path.getAbsolutePath());
             }
         } else if (lockPath != null && lockPath.exists() && (path == null || !path.equals(lockPath))) {
-            // TurtleLauncher fix: this used to unconditionally jump to the root of the
-            // device's external storage whenever `path` failed its exists() check (e.g. a
-            // stale `fullPath` reference right after a mod enable/disable rename momentarily
-            // raced with this refresh). That teleported the user into an unrelated, unlabeled
-            // folder with no explanation. Instead, fall back to the folder this browser
-            // instance is actually locked to (e.g. the mods folder) — recovering to somewhere
-            // the user recognises instead of somewhere they don't.
             listFileAt(lockPath);
         } else {
             listFileAt(Environment.getExternalStorageDirectory());

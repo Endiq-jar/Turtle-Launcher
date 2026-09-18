@@ -8,26 +8,6 @@ import com.endiq.turtlelauncher.feature.mod.parser.ModInfo
 import java.io.File
 
 
-/**
- * Auto dependency installer.
- *
- * Looks at every parsed mod's own declared dependencies (see [ModInfo.getDependencies],
- * populated by ModParser from fabric.mod.json/quilt.mod.json/mods.toml), figures out
- * which mandatory dependency mod IDs aren't actually present among the installed mods,
- * and tries to download a matching jar straight from Modrinth into the mods folder.
- *
- * Entirely best-effort: a dependency we can't find/identify on Modrinth (its mod ID
- * often doesn't match its Modrinth slug exactly) is simply reported as unresolved —
- * never throws, never blocks the rest of the launch.
- *
- * A disabled mod (renamed to *.jar.disabled, see [ModUtils]) is intentionally left out
- * of [ModInfo] parsing, so on its own this resolver can't tell "genuinely missing" apart
- * from "player disabled/deleted it on purpose" — every dependent mod's jar would just
- * look like it's missing sodium again on the next launch and get a fresh copy installed,
- * piling up duplicate jars of the same mod ID until Fabric refuses to load. The ledger
- * below is what makes that distinction: it remembers what this resolver installed and
- * where, so a disabled copy is left alone and an outright-deleted one is never replaced.
- */
 object ModDependencyResolver {
 
     /** Mod/loader-provided "dependencies" that are never real, installable mods. */
@@ -73,12 +53,6 @@ object ModDependencyResolver {
         }.onFailure { e -> Logging.e("ModDependencyResolver", "Failed to save dependency ledger", e) }
     }
 
-    /**
-     * True if some file already sitting in [modsFolder] (enabled or disabled) looks
-     * like it's [modId] — covers the case where the player installed it themselves
-     * through the mod browser rather than through this resolver, so there's no
-     * ledger entry for it yet but we still shouldn't fetch a second copy.
-     */
     private fun alreadyPresentOnDisk(modsFolder: File, modId: String): Boolean {
         val needle = modId.replace("-", "").replace("_", "").lowercase()
         return modsFolder.listFiles()?.any { file ->

@@ -11,39 +11,9 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
 import android.view.animation.PathInterpolator
 
-
-/**
- * Base for every animation in the launcher.
- *
- * TurtleLauncher rewrite. The originals were straight from daimajia/AndroidViewAnimations and
- * had three problems that showed up badly in a full-screen launcher UI:
- *
- * 1. **Fixed pixel distances** (`100f`, `60f`, `120f`). A 100px slide is a big shove on a
- *    small phone and barely a twitch on a tablet, so the same animation read completely
- *    differently per device. Travel is now a fraction of the screen, clamped to dp.
- * 2. **Distances taken from `target.width / 4`** - which is **0** before the view is laid
- *    out. Every directional Fade silently degraded to a plain fade in exactly the situation
- *    it's used for (a fragment entering), so most of that family never actually moved.
- * 3. **No interpolators at all.** Everything ran on the platform default, and "bounce" was
- *    faked with hand-written keyframes (`60f, -12f, 6f, 0f`) linearly interpolated - a
- *    jitter, not a bounce. Curves are now real: Material decelerate on the way in,
- *    accelerate on the way out, and a genuine overshoot-and-settle for bounce.
- */
 abstract class BaseAnimator {
 
     abstract fun getAnimators(target: View): Array<Animator>
-
-    // ============================== Easing ==============================
-
-    // TurtleLauncher: these used to be instance `val`s, so every animator object built its own
-    // PathInterpolator set - and the Animations enum instantiates all 39 of them, meaning ~150
-    // PathInterpolator allocations before the first screen even transitioned. Interpolators are
-    // stateless, so they're shared here instead. Overshoot/anticipate are keyed by tension
-    // because subclasses ask for several different ones.
-    //
-    // They're still exposed as protected members rather than being referenced directly, so the
-    // 39 subclasses keep working unchanged - companion-object members aren't inherited, so
-    // moving these to a companion would have broken every one of them.
 
     /** Material "decelerate" - fast start, gentle landing. Right for anything arriving. */
     protected val easeOut: TimeInterpolator get() = AnimCurves.easeOut
@@ -56,7 +26,7 @@ abstract class BaseAnimator {
 
     protected val linear: TimeInterpolator get() = AnimCurves.linear
 
-    /** Overshoots the target and springs back - a real bounce, unlike the old keyframes. */
+    /** Overshoots the target and springs back. */
     protected fun overshoot(tension: Float = 1.4f): TimeInterpolator =
         AnimCurves.overshoot(tension)
 
@@ -69,10 +39,6 @@ abstract class BaseAnimator {
     protected fun dp(target: View, value: Float): Float =
         value * target.resources.displayMetrics.density
 
-    /**
-     * How far a slide should travel: a fraction of the **screen's** shorter edge (not the
-     * view's - see problem 2 above), clamped so it stays sensible across phone/tablet.
-     */
     protected fun travel(
         target: View,
         fraction: Float = 0.30f,
@@ -122,17 +88,6 @@ abstract class BaseAnimator {
         ObjectAnimator.ofFloat(target, "scaleY", from, to).apply { this.interpolator = interpolator },
     )
 
-    /**
-     * Slides `target` from [fromPx] back to rest **with a bounce that settles**.
-     *
-     * The bounce amplitude is a fixed dp value, NOT a fraction of the travel. That matters:
-     * a proportional overshoot on a bottom sheet crossing the entire screen would fling it
-     * hundreds of pixels past the top, while a small panel would barely twitch. Fixed dp
-     * means a sheet and a 200px panel both settle by the same tasteful amount.
-     *
-     * Timing is encoded in the keyframe fractions and run on a [LinearInterpolator], so the
-     * curve is fully controlled here rather than being distorted by a second easing pass.
-     */
     protected fun slideWithSettle(
         target: View,
         property: String,
@@ -155,16 +110,6 @@ abstract class BaseAnimator {
     }
 }
 
-/**
- * The interpolators shared by every animator.
- *
- * `PathInterpolator` isn't cheap to build - it rasterises a bezier into a lookup table - and it
- * holds no per-animation state, so there's no reason for 39 animator classes to each own a copy.
- * Tension-parameterised curves are built once per tension and handed back on later calls.
- *
- * Synchronised on write because getAnimators() can be called from any thread; the map is tiny
- * and almost always a read after the first pass, so this is not a contention point.
- */
 internal object AnimCurves {
     val easeOut: TimeInterpolator = PathInterpolator(0.0f, 0.0f, 0.2f, 1.0f)
     val easeIn: TimeInterpolator = PathInterpolator(0.4f, 0.0f, 1.0f, 1.0f)

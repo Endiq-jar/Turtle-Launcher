@@ -7,24 +7,6 @@ import java.io.InputStream
 import java.util.Collections
 import java.util.zip.ZipFile
 
-/**
- * TurtleLauncher: "Performance Heatmap" (Section 11 of Endiq's mega-spec) - classifies
- * installed mods/resource packs/shader packs into 🟢/🟡/🔴 tiers.
- *
- * IMPORTANT HONESTY NOTE, see also [PerfEstimate]'s doc comment: this sandbox has no
- * device to run Minecraft on and actually profile FPS/RAM/VRAM/CPU against, and none of
- * TurtleLauncher's own code runs inside the game process to measure it live either. So
- * every number here is a *static* proxy computed from the file itself:
- *  - mods: how many Mixins it declares (more injected hooks -> plausibly more CPU
- *    overhead) and its uncompressed size (RAM proxy).
- *  - shader packs: how many composite/deferred/prepare render passes it defines, and
- *    whether it has a shadow pass - both real, standard shaderpack-authoring signals
- *    that correlate with GPU cost in practice.
- *  - resource packs: texture resolution vs. vanilla's 16px baseline (VRAM proxy).
- * These are genuinely useful "worth a second look" signals, not measured performance.
- * Best-effort throughout: anything that fails to parse is skipped (returns null), never
- * guessed.
- */
 object HeatmapAnalyzer {
     private const val TAG = "HeatmapAnalyzer"
     private const val MAX_TEXTURES_SCANNED = 300
@@ -198,8 +180,6 @@ object HeatmapAnalyzer {
                 }
             }
 
-            // If the scan was capped, extrapolate rather than silently under-reporting a
-            // huge pack's VRAM footprint as if it were a small one.
             if (texturesScanned in 1 until totalTextures) {
                 vramBytes = vramBytes * totalTextures / texturesScanned
             }

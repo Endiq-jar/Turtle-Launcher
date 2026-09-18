@@ -25,18 +25,6 @@ import com.endiq.turtlelauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapp
 import com.endiq.turtlelauncher.utils.ZHTools
 
 
-/**
- * TurtleLauncher: Shizuku/Sui status + privileged actions.
- *
- * Shizuku is entirely optional - the launcher works without it, so this screen's first job
- * is to say clearly which of the four states the device is in and what to do about it, and
- * its second job is to expose the three things Shizuku actually buys you here (permission
- * granting, keep-alive/performance tweaks, and a full system logcat for crash diagnosis).
- *
- * Every failure is reported verbatim rather than hidden: Shizuku's privilege level varies
- * (ADB shell vs root), and what it can do varies by Android version and ROM, so "it didn't
- * work" is a legitimate, expected outcome the user deserves to see rather than a bug.
- */
 class ShizukuSettingsFragment : FragmentWithAnim(R.layout.settings_fragment_shizuku) {
     companion object {
         const val TAG: String = "ShizukuSettingsFragment"

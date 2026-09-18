@@ -1,19 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TurtleLauncher: this is the per-item entry animation for every list in the launcher
-     (version lists, mods, file browser, accounts, controls, download lists, dialogs) - it's
-     handed to a LayoutAnimationController in ~8 places, so changing it here changes list
-     entry app-wide.
-
-     Was 70ms with a 2% scale and no easing worth mentioning, which is too fast to read: the
-     items were finished before you'd registered they'd moved, so it read as a flicker rather
-     than a transition. Now a readable 210ms on Material's decelerate curve, with enough
-     travel (12% of the parent) and scale (94% -> 100%) to actually see.
-
-     Duration matters for more than looks: LayoutAnimationController spreads children by
-     `delay * duration`, so this also sets how fast a long list cascades. TurtleTransitions
-     .listLayoutAnimationController() pins the delay to a fixed fraction instead of the
-     0.5 default, precisely so raising the duration here doesn't turn a 20-item list into a
-     three-second waterfall. -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@android:interpolator/fast_out_slow_in"
     android:duration="210">

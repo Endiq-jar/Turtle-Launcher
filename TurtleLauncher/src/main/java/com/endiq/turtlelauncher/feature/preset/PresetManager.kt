@@ -2,7 +2,7 @@ package com.endiq.turtlelauncher.feature.preset
 
 import android.content.Context
 import com.endiq.turtlelauncher.setting.AllSettings
-import net.kdt.pojavlaunch.Tools
+import net.endiq.launcher.Tools
 
 object PresetManager {
 

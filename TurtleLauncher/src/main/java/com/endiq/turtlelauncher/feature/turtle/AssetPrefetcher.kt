@@ -11,18 +11,6 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
-/**
- * TurtleLauncher v10: while the user is sitting on the main menu (version list),
- * this warms the on-disk/Glide caches for every version's icon file and touches
- * each version's mods folder listing, so switching to a version or opening its
- * mod list doesn't pay a cold-cache cost the first time. Deliberately cheap and
- * best-effort — any failure for one version is skipped, never surfaced to the UI.
- *
- * Runs its worker threads at Process.THREAD_PRIORITY_BACKGROUND: this work is pure
- * "nice to have if the CPU is free" - on a low-end device where the UI thread and any
- * running renderer/game threads are already fighting for cycles, this keeps prefetching
- * from ever being the reason a tap feels delayed.
- */
 object AssetPrefetcher {
     private const val TAG = "AssetPrefetcher"
 
@@ -39,13 +27,6 @@ object AssetPrefetcher {
     @JvmStatic
     fun prefetch(context: Context) {
         if (!AllSettings.backgroundAssetPrefetch.getValue()) return
-        // Background Services (item 20) - "pause indexing": prefetch() only ever gets
-        // triggered from LauncherActivity.onResume(), which by definition can't fire while
-        // a game session has that Activity stopped behind Minecraft - so this genuinely
-        // stops a *new* version-wide directory-listing pass from ever starting mid-session.
-        // Doesn't touch an already-in-flight pass (this executor's threads already run at
-        // THREAD_PRIORITY_BACKGROUND, and TaskExecutors' own "never cancel in-flight work"
-        // rule applies here too), just prevents redundant restarts from stacking on top.
         if (com.endiq.turtlelauncher.task.TaskExecutors.isGameSessionActive) return
         if (!alreadyRunning.compareAndSet(false, true)) return
 

@@ -7,13 +7,6 @@ import com.endiq.turtlelauncher.feature.version.Version
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-/**
- * TurtleLauncher v10: dependency graph visualizer. Reuses [ModParser] (the same
- * fabric.mod.json/quilt.mod.json/mods.toml parser the auto-dependency-installer
- * uses) to build a simple indented text tree of "which mod requires which" for a
- * version's mods folder — deliberately plain text rather than a graphical canvas,
- * since it needs to render inside a TipDialog with zero extra UI surface.
- */
 object DependencyGraphExporter {
 
     /** Synchronously parses [version]'s mods folder and renders a dependency tree. Blocks the calling thread — call off the main thread. */

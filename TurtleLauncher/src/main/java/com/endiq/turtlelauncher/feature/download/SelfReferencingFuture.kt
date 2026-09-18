@@ -12,10 +12,6 @@ class SelfReferencingFuture(private val mFutureInterface: FutureInterface) {
         val future = executorService.submit { this.run() }
         synchronized(mFutureLock) {
             mMyFuture = future
-            // Kotlin's Any doesn't expose Object.wait()/notify() directly - this used to
-            // borrow OkHttp's internal (non-public, unstable) `notify()`/`wait()` extension
-            // functions for the syntax sugar. Cast to java.lang.Object instead so this has
-            // zero dependency on OkHttp internals that can move/vanish across major versions.
             (mFutureLock as java.lang.Object).notify()
         }
         return future
