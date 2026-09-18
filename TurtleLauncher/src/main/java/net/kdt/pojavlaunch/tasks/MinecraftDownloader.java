@@ -528,7 +528,20 @@ public class MinecraftDownloader {
         }
 
         private void runCatching() throws Exception {
-            if(mDownloadClass == DownloadMirror.DOWNLOAD_CLASS_LIBRARIES && !Tools.isValidString(mTargetSha1)) {
+            // TurtleLauncher: scheduleGameJarDownload()/scheduleLibraryDownload() deliberately
+            // null the sha1 (and the client jar is itself scheduled as DOWNLOAD_CLASS_LIBRARIES)
+            // when Fast Boot is on or "check libraries" is off, to skip hash verification for
+            // speed. Without this guard, tryGetLibrarySha1() ran anyway and threw a network
+            // round trip at every such download - for the client jar that's always a guaranteed
+            // 404, since Mojang's piston-data URLs are already content-addressed by hash
+            // (".../objects/<sha1>/client.jar") and have no ".sha1" sidecar file, unlike a
+            // library's Maven layout. That silently-caught 404 ("Failed to download hash") was
+            // pure wasted latency directly defeating Fast Boot's purpose. Only bother with the
+            // opportunistic fetch when hash checking is actually wanted and the metadata simply
+            // didn't have one - matching the condition scheduleLibraryDownload()/
+            // scheduleGameJarDownload() use to decide whether to null the hash in the first place.
+            boolean hashCheckingWanted = AllSettings.getCheckLibraries().getValue() && !AllSettings.getFastBoot().getValue();
+            if(mDownloadClass == DownloadMirror.DOWNLOAD_CLASS_LIBRARIES && !Tools.isValidString(mTargetSha1) && hashCheckingWanted) {
                 // If we're downloading a library, try to get sha1 since it might be available as a file
                 tryGetLibrarySha1();
             }

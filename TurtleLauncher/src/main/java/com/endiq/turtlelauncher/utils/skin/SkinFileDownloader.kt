@@ -15,18 +15,35 @@ class SkinFileDownloader {
 
     /**
      * Try to download the yggdrasil skin.
+     *
+     * TurtleLauncher: an account with no skin set (freshly created ely.by/authlib-injector
+     * accounts, or a cape-only profile) has no "properties" entry, or a "textures" object with
+     * no "SKIN" key at all - Gson's JsonObject.get() returns null (not JsonNull) for a missing
+     * key, and .asJsonObject on that null crashed with an NPE ("Could not update skin" in the
+     * logs). That is a normal, common profile shape, not an error - treat it as "nothing to
+     * download" instead of throwing.
      */
     @Throws(Exception::class)
     fun yggdrasil(url: String, skinFile: File, uuid: String) {
         val profileJson = DownloadUtils.downloadString("${url.removeSuffix("/")}/session/minecraft/profile/$uuid")
         val profileObject = Tools.GLOBAL_GSON.fromJson(profileJson, JsonObject::class.java)
-        val properties = profileObject.get("properties").asJsonArray
-        val rawValue = properties.get(0).asJsonObject.get("value").asString
+        val rawValue = profileObject?.get("properties")?.takeIf { it.isJsonArray }?.asJsonArray
+            ?.firstOrNull()?.takeIf { it.isJsonObject }?.asJsonObject
+            ?.get("value")?.takeIf { it.isJsonPrimitive }?.asString
+            ?: run {
+                Logging.i("SkinFileDownloader", "Profile has no skin properties, skipping: $uuid")
+                return
+            }
 
         val value = StringUtils.decodeBase64(rawValue)
-
         val valueObject = Tools.GLOBAL_GSON.fromJson(value, JsonObject::class.java)
-        val skinUrl = valueObject.get("textures").asJsonObject.get("SKIN").asJsonObject.get("url").asString
+        val skinUrl = valueObject?.get("textures")?.takeIf { it.isJsonObject }?.asJsonObject
+            ?.get("SKIN")?.takeIf { it.isJsonObject }?.asJsonObject
+            ?.get("url")?.takeIf { it.isJsonPrimitive }?.asString
+            ?: run {
+                Logging.i("SkinFileDownloader", "Account has no skin texture set, skipping: $uuid")
+                return
+            }
 
         downloadSkin(skinUrl, skinFile)
     }

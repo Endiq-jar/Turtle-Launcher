@@ -39,7 +39,13 @@ object VersionsManager {
     /**
      * @return the current game info
      */
-    lateinit var currentGameInfo: CurrentGameInfo
+    // TurtleLauncher: was `lateinit var`, only assigned at the end of handleRefreshOperation()
+    // (an async coroutine). getCurrentVersion()/saveCurrentVersion() can be, and were, called
+    // before that first refresh completes (e.g. early in app startup), throwing
+    // UninitializedPropertyAccessException - seen in the wild as "Get Current Version" and
+    // "Save Current Version" errors. An eager empty default removes the crash window; the real
+    // value still overwrites it once refresh() finishes.
+    var currentGameInfo: CurrentGameInfo = CurrentGameInfo()
         private set
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO + CoroutineName("VersionsManager"))

@@ -154,16 +154,23 @@ class ModParser {
         }
     }
 
+    // TurtleLauncher: only "schemaVersion"/"id"/"version" are required by the fabric.mod.json
+    // spec - "name", "description" and "authors" are all optional. A real mod
+    // (2hywaj8k4ic.jar in the wild) that simply omits "name" made `jsonObject["name"].asString`
+    // NPE (JsonObject.get() returns null, not JsonNull, for a missing key), which killed
+    // parsing for that mod entirely. Optional fields now fall back instead of throwing; id and
+    // version stay required (a jar missing those isn't a valid fabric mod).
     @Throws(Exception::class)
     private fun parseFabricMod(modFile: File, jarStream: JarInputStream): ModInfo {
         val content = jarStream.bufferedReader().use(BufferedReader::readText)
         val jsonObject = JsonParser.parseString(content).asJsonObject
+        val id = jsonObject["id"].asString
         return ModInfo(
-            jsonObject["id"].asString,
+            id,
             jsonObject["version"].asString,
-            jsonObject["name"].asString,
-            jsonObject["description"].asString,
-            jsonObject.get("authors").asJsonArray.let { authorsArray ->
+            jsonObject.get("name")?.takeIf { it.isJsonPrimitive }?.asString ?: id,
+            jsonObject.get("description")?.takeIf { it.isJsonPrimitive }?.asString ?: "",
+            jsonObject.get("authors")?.takeIf { it.isJsonArray }?.asJsonArray?.let { authorsArray ->
                 val authorsList = mutableListOf<String>()
                 authorsArray.forEach { authorElement ->
                     val authorName: String = (
@@ -173,7 +180,7 @@ class ModParser {
                     authorsList.add(authorName)
                 }
                 authorsList.toTypedArray()
-            },
+            } ?: emptyArray(),
             parseFabricDependencies(jsonObject)
         ).apply { file = modFile }
     }
@@ -189,17 +196,23 @@ class ModParser {
         }.getOrDefault(emptyMap())
     }
 
+    // TurtleLauncher: same fix as parseFabricMod - quilt_loader.metadata's "name",
+    // "description" and "contributors" are all optional per the quilt.mod.json spec, and
+    // "metadata" itself is optional too. Missing-key .asString/.asJsonObject calls here had the
+    // identical NPE-on-missing-optional-field bug; id/version/quilt_loader stay required.
     @Throws(Exception::class)
     private fun parseQuiltMod(modFile: File, jarStream: JarInputStream): ModInfo {
         val content = jarStream.bufferedReader().use(BufferedReader::readText)
         val quiltLoader = JsonParser.parseString(content).asJsonObject["quilt_loader"].asJsonObject
-        val metadata = quiltLoader["metadata"].asJsonObject
+        val metadata = quiltLoader.get("metadata")?.takeIf { it.isJsonObject }?.asJsonObject
+        val id = quiltLoader["id"].asString
         return ModInfo(
-            quiltLoader["id"].asString,
+            id,
             quiltLoader["version"].asString,
-            metadata["name"].asString,
-            metadata["description"].asString,
-            metadata["contributors"].asJsonObject.keySet().toTypedArray(),
+            metadata?.get("name")?.takeIf { it.isJsonPrimitive }?.asString ?: id,
+            metadata?.get("description")?.takeIf { it.isJsonPrimitive }?.asString ?: "",
+            metadata?.get("contributors")?.takeIf { it.isJsonObject }?.asJsonObject
+                ?.keySet()?.toTypedArray() ?: emptyArray(),
             parseQuiltDependencies(quiltLoader)
         ).apply { file = modFile }
     }
