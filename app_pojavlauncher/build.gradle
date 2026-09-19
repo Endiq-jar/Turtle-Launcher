@@ -312,7 +312,7 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.16.0'
     implementation 'com.github.angcyo.DslTablayout:TabLayout:3.6.5'
 
-    implementation 'top.fifthlight.touchcontroller:proxy-client-android:0.0.2'
+    implementation 'top.fifthlight.touchcontroller:proxy-client-android:0.0.4'
 
     def shizukuVersion = "13.1.5"
     implementation "dev.rikka.shizuku:api:$shizukuVersion"

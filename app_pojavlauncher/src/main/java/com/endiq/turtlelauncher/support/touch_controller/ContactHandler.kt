@@ -4,7 +4,6 @@ import android.util.SparseIntArray
 import android.view.MotionEvent
 import android.view.View
 import top.fifthlight.touchcontroller.proxy.client.LauncherProxyClient
-import top.fifthlight.touchcontroller.proxy.data.Offset
 
 /**
  * Touch points are handled here to feed the TouchController control proxy.
@@ -13,10 +12,9 @@ object ContactHandler {
     private val pointerIdMap = SparseIntArray()
     private var nextPointerId = 1
 
-    private fun MotionEvent.getOffset(index: Int, view: View) = Offset(
-        getX(index) / view.width,
-        getY(index) / view.height
-    )
+    // proxy-client 0.0.4 API: addPointer takes raw normalized floats [0,1]
+    private fun MotionEvent.getXNormalized(index: Int, view: View) = getX(index) / view.width
+    private fun MotionEvent.getYNormalized(index: Int, view: View) = getY(index) / view.height
 
     fun progressEvent(event: MotionEvent, view: View) {
         val client = ControllerProxy.getProxyClient() ?: return
@@ -29,7 +27,7 @@ object ContactHandler {
             MotionEvent.ACTION_MOVE -> {
                 for (i in 0 until event.pointerCount) {
                     val pointerId = pointerIdMap.get(event.getPointerId(i))
-                    client.addPointer(pointerId, event.getOffset(i, view))
+                    client.addPointer(pointerId, event.getXNormalized(i, view), event.getYNormalized(i, view))
                 }
             }
 
@@ -52,6 +50,6 @@ object ContactHandler {
     private fun handlePointerDown(event: MotionEvent, client: LauncherProxyClient, index: Int, view: View) {
         val pointerId = nextPointerId++
         pointerIdMap.put(event.getPointerId(index), pointerId)
-        client.addPointer(pointerId, event.getOffset(index, view))
+        client.addPointer(pointerId, event.getXNormalized(index, view), event.getYNormalized(index, view))
     }
 }
