@@ -1,0 +1,11 @@
+{
+  "name": "Survival Preset",
+  "description": "Balanced for survival: stable FPS, lower RAM pressure, smooth GC.",
+  "javaArgs": "-XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:G1HeapRegionSize=16M -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:G1ReservePercent=20",
+  "ramAllocation": 1024,
+  "unlimitedFps": false,
+  "lowLatencyRendering": false,
+  "framePacing": true,
+  "frameSkipping": false,
+  "adaptiveFrameTiming": true
+}

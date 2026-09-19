@@ -1,34 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="text_handle_min_size">40dp</dimen>
-    
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-
-    <!-- Padding -->
-    <dimen name="padding_tiny">@dimen/_1sdp</dimen>
-    <dimen name="padding_small">@dimen/_2sdp</dimen>
-    <dimen name="padding_medium">@dimen/_4sdp</dimen>
-    <dimen name="padding_moderate">@dimen/_6sdp</dimen>
-    <dimen name="padding_heavy">@dimen/_12sdp</dimen>
-    <dimen name="padding_large">@dimen/_16sdp</dimen>
-    <dimen name="padding_extra_large">@dimen/_24sdp</dimen>
-    <dimen name="padding_extra_extra_large">@dimen/_32sdp</dimen>
-
-    <!-- Input text padding -->
-    <dimen name="padding_input_bottom">@dimen/padding_heavy</dimen>
-    <dimen name="padding_input_top">@dimen/_11sdp</dimen>
-
-    <!-- Main Activity components -->
-    <dimen name="empty_icon_width">60dp</dimen>
-    <dimen name="empty_icon_height">60dp</dimen>
-    <dimen name="navigation_header_height">160dp</dimen>
-    <dimen name="navigation_item_height">48dp</dimen>
-    <dimen name="navigation_item_icon_size">24dp</dimen>
-
-    <!-- Fragment padding -->
-    <dimen name="fragment_padding_medium">@dimen/_10sdp</dimen>
-    <!-- Misc paddings -->
-    <dimen name="profile_editor_image_padding">@dimen/padding_small</dimen>
+<dimen name="padding_small">@dimen/_2sdp
+<dimen name="padding_medium">@dimen/_4sdp
+<dimen name="padding_moderate">@dimen/_6sdp
+<dimen name="padding_heavy">@dimen/_12sdp
+<dimen name="padding_large">@dimen/_16sdp
+<dimen name="padding_extra_large">@dimen/_24sdp
+<dimen name="padding_input_bottom">@dimen/padding_heavy
+<dimen name="padding_input_top">@dimen/_11sdp
+<dimen name="dialog_min_width">@dimen/_480sdp
+<dimen name="radius_chip">8dp
+<dimen name="radius_item">12dp
+<dimen name="radius_panel">20dp
+<dimen name="radius_dialog">24dp
+<dimen name="space_xs">4dp
+<dimen name="space_s">8dp
+<dimen name="space_m">12dp
+<dimen name="space_l">16dp
+<dimen name="space_xl">24dp
+<dimen name="elevation_flat">0dp
+<dimen name="elevation_card">2dp
+<dimen name="elevation_dialog">8dp
+<dimen name="text_handle_min_size">40dp
+<dimen name="activity_horizontal_margin">16dp
+<dimen name="activity_vertical_margin">16dp
+<dimen name="padding_tiny">@dimen/_1sdp
+<dimen name="padding_extra_extra_large">@dimen/_32sdp
+<dimen name="empty_icon_width">60dp
+<dimen name="empty_icon_height">60dp
+<dimen name="navigation_header_height">160dp
+<dimen name="navigation_item_height">48dp
+<dimen name="navigation_item_icon_size">24dp
+<dimen name="fragment_padding_medium">@dimen/_10sdp
+<dimen name="profile_editor_image_padding">@dimen/padding_small
 </resources>

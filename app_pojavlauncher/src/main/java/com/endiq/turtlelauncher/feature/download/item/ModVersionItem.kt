@@ -1,0 +1,40 @@
+package com.endiq.turtlelauncher.feature.download.item
+
+import com.endiq.turtlelauncher.feature.download.enums.ModLoader
+import com.endiq.turtlelauncher.feature.download.enums.VersionType
+import java.util.Date
+
+/**
+ * @param dependencies info about the mods this version depends on
+ */
+class ModVersionItem(
+    projectId: String,
+    title: String,
+    downloadCount: Long,
+    uploadDate: Date,
+    mcVersions: List<String>,
+    versionType: VersionType,
+    fileName: String,
+    fileHash: String?,
+    fileUrl: String,
+    modloaders: List<ModLoader>,
+    val dependencies: List<DependenciesInfoItem>
+) : ModLikeVersionItem(
+    projectId, title, downloadCount, uploadDate, mcVersions, versionType, fileName, fileHash, fileUrl, modloaders
+) {
+    override fun toString(): String {
+        return "ModVersionItem(" +
+                "projectId='$projectId', " +
+                "title='$title', " +
+                "downloadCount=$downloadCount, " +
+                "uploadDate=$uploadDate, " +
+                "mcVersions=$mcVersions, " +
+                "versionType=$versionType, " +
+                "fileName=$fileName" +
+                "fileHash='$fileHash', " +
+                "fileUrl='$fileUrl', " +
+                "modloaders=$modloaders" +
+                "dependencies=$dependencies" +
+                ")"
+    }
+}

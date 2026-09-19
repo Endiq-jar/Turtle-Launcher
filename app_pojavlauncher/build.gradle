@@ -1,58 +1,38 @@
+import com.android.build.api.variant.FilterConfiguration.FilterType
+import com.android.build.gradle.tasks.MergeSourceSetFolders
+
 plugins {
-    id 'com.android.application' version '9.3.1'
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
 }
 
-static def getDate() { return new Date().format('yyyyMMdd') }
+def getDate() { return new Date().format('yyyyMMdd') }
 
-def getVersionName = {
-    // Get the last version tag, as well as the short head of the last commit
-    String TAG = ""
-    String semVer = "1.1.7"
-    // Used by the fallback for github actions
-    String TAG_PART_COMMIT = ""
-    String TAG_STRING
-
-    try {
-        TAG = providers.exec {
-            commandLine 'git', 'describe', '--tags'
-            ignoreExitValue = true
-        }.getStandardOutput().asText.get()
-    } catch (Exception e) {
-        e.printStackTrace()
-    }
-
-    // Fallback for action builds
-    if (TAG.toString().trim().isEmpty()) {
-        try {
-            TAG_PART_COMMIT = providers.exec {
-                commandLine 'git', 'describe', '--always', '--tags'
-                ignoreExitValue = true
-            }.getStandardOutput().asText.get()
-        } catch (Exception ignored) {
-        }
-    }
-
-
-    if(!TAG.isBlank()){
-        TAG_STRING = TAG
-    }else {
-        if(TAG_PART_COMMIT.isBlank()){
-             //Fallback no repo
-            return ("LOCAL-" + "${getDate()}")
-        }else {
-            // Used by github actions
-            TAG_STRING =  'amethyst-legacy-' + "${getDate()}" + "-" + TAG_PART_COMMIT.toString().trim()
-        }
-
-    }
-
-    def isRelease = project.gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
-    if(!isRelease){
-        return TAG_STRING.trim().replace("-g", "-") + "-" + "debug-" + semVer
-    }else {
-        return TAG_STRING.trim().replace("-g", "-") + "-" + "release-" + semVer
-    }
+/*
+ * Turtle Launcher, Amethyst foundation.
+ *
+ * Identity comes from gradle.properties (launcher_name / launcher_app_name /
+ * launcher_version_code / launcher_version_name) so CI and local builds share
+ * one source of truth. The applicationId stays com.endiq.turtlelauncher so the
+ * Amethyst-based build upgrades existing Turtle Launcher installs in place.
+ */
+def getGithubChatSyncToken = {
+    System.getenv("GITHUB_CHAT_SYNC_TOKEN") ?: ""
 }
+
+def getBuildType = {
+    def buildType = System.getenv("ZL_BUILD_TYPE") ?: "DEBUG"
+    logger.warn("BUILD: Build Type --> $buildType")
+    buildType
+}
+
+def launcherName = project.property('launcher_name')
+def launcherAPPName = project.property('launcher_app_name')
+def launcherVersionCode = Integer.parseInt(project.property('launcher_version_code'))
+def launcherVersionName = project.property('launcher_version_name')
+def nameId = "com.endiq.turtlelauncher"
+def generatedTurtleDir = file("$buildDir/generated/source/turtle/java")
 
 def getCFApiKey = {
     String key = System.getenv("CURSEFORGE_API_KEY");
@@ -77,7 +57,6 @@ android {
 
     compileSdk = 37
 
-
     signingConfigs {
         customDebug {
             storeFile file("debug.keystore")
@@ -85,26 +64,23 @@ android {
             keyAlias "androiddebugkey"
             keyPassword "android"
         }
-        customRelease {
-            storeFile file("aamc_upload.jks")
-            storePassword System.getenv("GPLAY_KEYSTORE_PASSWORD")
-            keyAlias "android_github_release"
-            keyPassword System.getenv("GPLAY_KEYSTORE_PASSWORD")
-        }
-        googlePlayBuild {
-            storeFile file("upload.jks")
-            storePassword System.getenv("GPLAY_KEYSTORE_PASSWORD")
-            keyAlias "upload"
-            keyPassword System.getenv("GPLAY_KEYSTORE_PASSWORD")
+        releaseBuild {
+            // Endiq release key; password injected by CI secret. When the secret is
+            // absent (fork builds, PR builds) release falls back to the debug key so
+            // an APK is still produced - see buildTypes.release.signingConfig.
+            storeFile file("endiq-key.jks")
+            storePassword System.getenv("ENDIQ_KEYSTORE_PASSWORD") ?: ""
+            keyAlias "mtp"
+            keyPassword System.getenv("ENDIQ_KEYSTORE_PASSWORD") ?: ""
         }
     }
 
     defaultConfig {
-        applicationId "org.angelauramc.amethyst"
-        minSdkVersion 21
+        applicationId nameId
+        minSdkVersion 26
         targetSdkVersion 34
-        versionCode 10000000
-        versionName getVersionName()
+        versionCode launcherVersionCode
+        versionName launcherVersionName
         multiDexEnabled true //important
         resValue 'string', 'curseforge_api_key', getCFApiKey()
         externalNativeBuild {
@@ -122,11 +98,11 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.customDebug
-            resValue "string", "app_name", "Amethyst (Debug)"
-            resValue "string", "app_short_name", "Amethyst (Debug)"
-            resValue 'string', 'application_package', 'org.angelauramc.amethyst.debug'
-            resValue 'string', 'storageProviderAuthorities', 'org.angelauramc.amethyst.scoped.gamefolder.debug'
-            resValue 'string', 'shareProviderAuthority', 'org.angelauramc.amethyst.scoped.controlfolder.debug'
+            resValue "string", "app_name", launcherAPPName + " (Debug)"
+            resValue "string", "app_short_name", "Turtle (Debug)"
+            resValue 'string', 'application_package', nameId + '.debug'
+            resValue 'string', 'storageProviderAuthorities', nameId + '.storage_provider.debug'
+            resValue 'string', 'shareProviderAuthority', nameId + '.scoped.controlfolder.debug'
         }
         proguard {
             initWith debug
@@ -142,19 +118,69 @@ android {
             // Don't set to true or java.awt will be a.a or something similar.
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.customRelease
-            // defaultConfig already set
-            // multiDexEnabled = true
-            // debuggable = true
-            resValue "string", "app_name", "Amethyst"
-            resValue "string", "app_short_name", "Amethyst"
-            resValue 'string', 'storageProviderAuthorities', 'org.angelauramc.amethyst.scoped.gamefolder'
-            resValue 'string', 'application_package', 'org.angelauramc.amethyst'
+            signingConfig (System.getenv("ENDIQ_KEYSTORE_PASSWORD") != null ?
+                    signingConfigs.releaseBuild : signingConfigs.customDebug)
+            resValue "string", "app_name", launcherAPPName
+            resValue "string", "app_short_name", "Turtle"
+            resValue 'string', 'storageProviderAuthorities', nameId + '.storage_provider'
+            resValue 'string', 'shareProviderAuthority', nameId + '.scoped.controlfolder'
+            resValue 'string', 'application_package', nameId
         }
         gplay {
             initWith release
-            signingConfig signingConfigs.googlePlayBuild
             matchingFallbacks = [ 'release' ]
+        }
+    }
+
+    sourceSets["main"].java.srcDirs(generatedTurtleDir)
+
+    androidComponents {
+        onVariants { variant ->
+            variant.outputs.each { output ->
+                if (output instanceof com.android.build.api.variant.impl.VariantOutputImpl) {
+                    def variantName = variant.name.replaceFirstChar { it.toUpperCaseChar() }
+                    afterEvaluate {
+                        def task = tasks.named("merge${variantName}Assets").get() as MergeSourceSetFolders
+                        task.doLast {
+                            // Keep only the current architecture's JRE binpacks in assets so
+                            // per-ABI APK splits don't carry every architecture's runtime.
+                            def arch = System.getProperty("arch", "all")
+                            def assetsDir = task.outputDir.get().asFile
+                            def jreList = ["jre8", "jre-17", "jre-21", "jre-25"]
+                            println("arch:$arch")
+                            jreList.each { jreVersion ->
+                                def runtimeDir = new File("$assetsDir/components/$jreVersion")
+                                println("runtimeDir:${runtimeDir.absolutePath}")
+                                runtimeDir.listFiles()?.each {
+                                    if (arch != "all" && it.name != "version" && !it.name.contains("universal") && it.name != "bin-${arch}.tar.xz") {
+                                        println("delete:${it} : ${it.delete()}")
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    def abi = (output.getFilter(FilterType.ABI)?.identifier) ?: "all"
+                    def isRelease = (variant.buildType == "release")
+                    def baseName = "${launcherName}-${isRelease ? launcherVersionName : "Debug-${launcherVersionName}"}"
+                    output.outputFileName = (abi == "all") ? "${baseName}.apk" : "${baseName}-${abi}.apk"
+                }
+            }
+        }
+    }
+
+    splits {
+        def arch = System.getProperty("arch", "all")
+        if (arch != "all") {
+            abi {
+                isEnable = true
+                reset()
+                if (arch == "arm") include("armeabi-v7a")
+                else if (arch == "arm64") include("arm64-v8a")
+                else if (arch == "x86") include("x86")
+                else if (arch == "x86_64") include("x86_64")
+                else include(arch)
+            }
         }
     }
 
@@ -169,6 +195,10 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 
     bundle {
@@ -190,6 +220,8 @@ android {
     buildFeatures {
         prefab true
         buildConfig true
+        viewBinding true
+        resValues true
     }
 
     lint {
@@ -205,7 +237,7 @@ afterEvaluate {
             ":jre_lwjgl3glfw:jar"
     ]
 
-    tasks.withType(com.android.build.gradle.tasks.MergeSourceSetFolders).configureEach { t ->
+    tasks.withType(MergeSourceSetFolders).configureEach { t ->
         t.dependsOn(componentJars)
     }
 
@@ -215,17 +247,59 @@ afterEvaluate {
     }
 }
 
+/*
+ * InfoDistributor: build-time constants (app name, build type, optional chat-sync
+ * token) generated into the net.kdt.pojavlaunch package so the merged codebase -
+ * which now compiles against the Amethyst namespace - can keep referencing it.
+ */
+tasks.register("generateInfoDistributor") {
+    def chatToken = getGithubChatSyncToken()
+    def buildType = getBuildType()
+    def outputDir = generatedTurtleDir
+
+    doLast {
+        def constantMap = [
+                "GITHUB_CHAT_SYNC_TOKEN": chatToken,
+                "LAUNCHER_NAME": launcherName,
+                "APP_NAME": launcherAPPName,
+                "BUILD_TYPE": buildType
+        ]
+        def pkgDir = new File(outputDir, "net/kdt/pojavlaunch")
+        pkgDir.mkdirs()
+        def javaFile = new File(pkgDir, "InfoDistributor.java")
+        def constants = constantMap.collect { key, value ->
+            "\tpublic static final String $key = \"${value.toString().replace('\\', '\\\\').replace('\"', '\\\"')}\";"
+        }.join("\n")
+        javaFile.text = """/**
+ * Automatically generated file. DO NOT MODIFY
+ */
+package net.kdt.pojavlaunch;
+
+public class InfoDistributor {
+$constants
+}
+"""
+        System.out.println("Generated Java file: ${javaFile.absolutePath}")
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn("generateInfoDistributor")
+}
+
 dependencies {
     implementation 'javax.annotation:javax.annotation-api:1.3.2'
-    implementation 'commons-codec:commons-codec:1.15'
-    // implementation 'com.wu-man:android-bsf-api:3.1.3'
+    implementation 'commons-codec:commons-codec:1.17.1'
     implementation 'androidx.preference:preference:1.2.0'
-    //implementation 'androidx.core:core:1.7.0'
     implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
     implementation 'androidx.viewpager2:viewpager2:1.1.0-beta01'
-    implementation 'androidx.annotation:annotation:1.5.0'
-
-    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+    implementation 'androidx.annotation:annotation:1.7.0'
+    implementation 'androidx.core:core-ktx:1.13.0'
+    implementation 'androidx.startup:startup-runtime:1.1.1'
+    implementation 'androidx.tracing:tracing:1.2.0'
+    implementation 'androidx.profileinstaller:profileinstaller:1.3.1'
+    implementation 'androidx.palette:palette-ktx:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
     implementation 'com.github.duanhong169:checkerboarddrawable:1.0.2'
     implementation 'com.github.PojavLauncherTeam:portrait-sdp:ed33e89cbc'
@@ -233,25 +307,74 @@ dependencies {
     implementation 'com.github.Mathias-Boulay:ExtendedView:1.0.0'
     implementation 'com.github.Mathias-Boulay:android_gamepad_remapper:2.0.3'
     implementation 'com.github.Mathias-Boulay:virtual-joystick-android:1.14'
-
-    // implementation 'com.intuit.sdp:sdp-android:1.0.5'
-    // implementation 'com.intuit.ssp:ssp-android:1.0.5'
-
-    implementation 'org.tukaani:xz:1.8'
-    // Our version of exp4j can be built from source at
-    // https://github.com/PojavLauncherTeam/exp4j
-    implementation 'net.sourceforge.htmlcleaner:htmlcleaner:2.6.1'
-    implementation 'com.bytedance:bytehook:1.0.10'
-
-    // implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.0'
+    implementation 'com.github.skydoves:powerspinner:1.2.7'
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    kapt 'com.github.bumptech.glide:compiler:4.16.0'
+    implementation 'com.github.angcyo.DslTablayout:TabLayout:3.6.5'
 
     implementation 'top.fifthlight.touchcontroller:proxy-client-android:0.0.4'
 
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    def shizukuVersion = "13.1.5"
+    implementation "dev.rikka.shizuku:api:$shizukuVersion"
+    implementation "dev.rikka.shizuku:provider:$shizukuVersion"
+
+    implementation 'org.tukaani:xz:1.9'
+
+    implementation 'commons-io:commons-io:2.20.0'
+    implementation 'org.apache.commons:commons-compress:1.28.0'
+    implementation 'org.apache.maven:maven-artifact:3.9.16'
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0'
+
+    implementation 'com.tencent:mmkv:2.4.1'
+    implementation 'com.squareup.okio:okio:3.17.0'
+
+    // AndroidX DataStore (Preferences variant) - SharedPreferences replacement with a
+    // coroutines/Flow-based API. Used by newer Turtle settings screens.
+    implementation 'androidx.datastore:datastore-preferences:1.2.1'
+
+    implementation 'androidx.room:room-runtime:2.8.4'
+    implementation 'androidx.room:room-ktx:2.8.4'
+    kapt 'androidx.room:room-compiler:2.8.4'
+
+    // Process Phoenix - clean full-process restart (vs. just finishing the current Activity).
+    implementation 'com.jakewharton:process-phoenix:3.0.0'
+
+    implementation 'com.github.storeforminecraft:SkinViewAndroid:master-SNAPSHOT'
+
+    // NBT (Querz/NBT) - standalone Java NBT reader/writer
+    implementation 'com.github.Querz:NBT:6.1'
+
+    // Media3 - real AndroidX artifacts.
+    implementation 'androidx.media3:media3-exoplayer:1.11.0'
+    implementation 'androidx.media3:media3-ui:1.11.0'
+
+    implementation 'io.maryk.lz4:lz4-android:1.10.0'
+    implementation 'net.sourceforge.htmlcleaner:htmlcleaner:2.6.1'
+    implementation 'com.bytedance:bytehook:1.0.10'
+
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.google.code.gson:gson:2.14.0'
+    implementation 'org.commonmark:commonmark:0.19.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+
+    implementation 'com.getkeepsafe.taptargetview:taptargetview:1.14.0'
+    implementation 'io.github.petterpx:floatingx:2.3.3'
+    implementation 'org.greenrobot:eventbus:3.3.1'
+    implementation('com.moandjiezana.toml:toml4j:0.7.2') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+
+    // Amethyst core: renderer/native ecosystem AARs (SDL3, MobileGlues, SFPEW, angle,
+    // kopper-zink, LWJGL 3.3.3/3.4.1 natives, openal, imgui, spirv-cross, zstd).
+    // The zstd AAR provides the -dhcompat native build the loader expects, so the
+    // maven zstd-jni coordinate is intentionally NOT used here.
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'], exclude: ['ExagearApacheCommons.jar', 'gson-2.8.6.jar'])
 
     implementation "net.java.dev.jna:jna:5.14.0@aar"
 
     implementation project(":androidnsbypass")
-
 }
 apply from: rootProject.file('gradle/prefab_bypass.gradle')

@@ -1,14 +1,6 @@
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <item android:id="@android:id/background">
-        <color android:color="@color/background_app"/>
-    </item>
-
-
-    <item android:id="@android:id/progress">
-        <clip>
-             <color android:color='@color/minebutton_color'/>
-        </clip>
-    </item>
-
-</layer-list>
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/accent_primary"/>
+    <corners android:radius="4dp"/>
+</shape>

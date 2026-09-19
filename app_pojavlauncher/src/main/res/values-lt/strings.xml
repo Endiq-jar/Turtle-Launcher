@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!-- App name part -->
-    <string name="app_name">Ametistas</string>
     <!-- Action bar part -->
     <!-- Languages list part -->
     <!-- Login strings -->
@@ -12,7 +11,7 @@
     <!-- AlertDialog title -->
     <string name="alerttitle_installmod">Pasirinkite modifikacijų įdiegimui</string>
     <!-- Error messages -->
-    <string name="error_fatal">Amethyst netikėtai išsijungė arba užlužo</string>
+    <string name="error_fatal">Turtle Launcher netikėtai išsijungė arba užlužo</string>
     <string name="error_no_version">Nėra versijos!</string>
     <string name="error_show_more">Rodyti daugiau</string>
     <string name="error_show_less">Rodyti mažiau</string>
@@ -160,7 +159,7 @@
     <string name="arc_capes_title">\"Cosmetica\" apvalkalai</string>
     <string name="arc_capes_desc">Įjungia apvalkalus iš \"Cosmetica\" (anksčiau \"Arc\"). Daugiau informacijos rasite https://cosmetica.cc. Reikalingas OptiFine.</string>
     <string name="notif_channel_name">Pagrindinis</string>
-    <string name="lazy_service_default_title">Amethyst foninis servisas</string>
+    <string name="lazy_service_default_title">Turtle Launcher foninis servisas</string>
     <string name="notification_terminate">Nutraukti</string>
     <string name="notification_game_runs">Žaidimas bėga!</string>
     <string name="folder_dialog_create">Sukurti</string>
@@ -241,5 +240,4 @@
     <string name="controller_button_select">Pasirinkti</string>
     <string name="customctrl_visibility_title">Matomumas</string>
     <string name="preference_experimental_title">Eksperimentiniai dalykai</string>
-    <string name="app_short_name">Ametistas</string>
 </resources>

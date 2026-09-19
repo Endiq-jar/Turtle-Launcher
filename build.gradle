@@ -3,6 +3,8 @@ import java.security.MessageDigest
 plugins{
     id 'com.android.application' version '9.3.1' apply false
     id 'com.android.library' version '9.3.1' apply false
+    id 'org.jetbrains.kotlin.android' version '2.2.20' apply false
+    id 'org.jetbrains.kotlin.kapt' version '2.2.20' apply false
 }
 
 static void hashFileWithDigest(File fileToHash, MessageDigest digest){
@@ -34,7 +36,7 @@ subprojects {subproject ->
     tasks.withType(Jar).configureEach {jar ->
         System.out.println("Subproject $subproject configuring jar task destination to app_pojavlauncher/src/main/assets/components/$subproject.name/")
         destinationDirectory.set(
-                file("../app_pojavlauncher/src/main/assets/components/$subproject.name")
+                file("../app_pojavlauncher/src/main/assets/components/$subproject.name/")
         )
         doLast {
             def versionFile  = new File(project(":app_pojavlauncher").projectDir, "src/main/assets/components/$subproject.name/version")

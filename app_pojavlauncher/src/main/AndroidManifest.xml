@@ -17,41 +17,53 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
-    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <meta-data android:name="android.game_mode_config"
         android:resource="@xml/game_mode_config" />
     <application
-        android:name=".PojavApplication"
+        android:name=".TurtleApplication"
         android:allowBackup="true"
         android:allowNativeHeapPointerTagging="false"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:appCategory="game"
         android:hasFragileUserData="true"
+        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:hardwareAccelerated="true"
         android:isGame="true"
         android:label="@string/app_name"
         android:process=":launcher"
         android:resizeableActivity="true"
-        android:theme="@style/AppTheme">
-        <activity
-            android:name=".MissingStorageActivity"
-            android:exported="false" />
-
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/AppTheme"
+        android:enableOnBackInvokedCallback="true"
+        tools:targetApi="r"
+        tools:ignore="DiscouragedApi" >
         <meta-data
             android:name="android.max_aspect"
             android:value="ratio_float" />
-
         <activity
-            android:name=".TestStorageActivity"
+            android:name="com.endiq.turtlelauncher.ui.activity.SplashActivity"
             android:exported="true"
-            android:label="@string/app_short_name"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
+            android:screenOrientation="sensorLandscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -59,9 +71,61 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".MissingStorageActivity"
+            android:exported="false"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
+            android:screenOrientation="sensorLandscape" />
+        <activity
             android:name=".LauncherActivity"
-            android:label="@string/app_short_name"
-            android:windowSoftInputMode="adjustResize"/>
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
+            android:screenOrientation="sensorLandscape" />
+        <activity
+            android:name="com.endiq.turtlelauncher.ui.activity.ShareReceiverActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop"
+            android:theme="@style/ShareTrampolineTheme"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation">
+            <!-- Shared log text (e.g. selected log content, or apps that share text). -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <!-- Shared log files: .txt/.log and friends come through as text/*; some file
+                 managers hand out application/zip or a generic octet-stream instead. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/*" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-zip" />
+                <data android:mimeType="application/x-zip-compressed" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.endiq.turtlelauncher.ui.activity.ErrorActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
+            android:theme="@style/CustomDialogStyle"
+            android:screenOrientation="sensorLandscape" />
+        <activity
+            android:name="com.endiq.turtlelauncher.ui.activity.ConfigEditorActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ShowErrorActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
+        <activity
+            android:name=".FatalErrorActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
+        <activity
+            android:name=".ExitActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
         <activity
             android:name=".ImportControlActivity"
             android:configChanges="keyboard|keyboardHidden"
@@ -83,17 +147,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FatalErrorActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
-        <activity android:name=".ShowErrorActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
-        <activity
-            android:name=".ExitActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
-        <activity
             android:process=":gui_installer"
             android:name=".JavaGUILauncherActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation|uiMode"
@@ -102,7 +155,7 @@
             android:name=".CustomControlsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
             android:exported="false"
-            android:screenOrientation="sensorLandscape">
+            android:screenOrientation="sensorLandscape" >
             <intent-filter>
                 <action android:name=".CustomControlsActivity" />
 
@@ -114,6 +167,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation|uiMode"
             android:launchMode="singleTop"
             android:process=":game"
+            android:enableOnBackInvokedCallback="false"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="sensorLandscape" />
 
@@ -127,6 +181,23 @@
                 <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
         </provider>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
         <service android:name=".services.ProgressService"
             android:foregroundServiceType="dataSync"/>
@@ -135,8 +206,30 @@
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="This application is intended to run a 3rd-party piece of software which cannot be managed using the activity's saved instance state. This service is used for background persistence of this piece of software."/>
         </service>
+        <service
+            android:name=".services.ScreenRecorderAudioService"
+            android:foregroundServiceType="mediaProjection"
+            android:exported="false"/>
+
+        <!-- Terracotta P2P connection for the Friends/LAN feature. permission+intent-filter
+             here are mandatory Android requirements for every VpnService subclass, not
+             optional boilerplate - the system uses them to verify only this app's own
+             VPN service can bind to the tunnel it creates. -->
+        <service
+            android:name="com.endiq.turtlelauncher.feature.terracotta.TerracottaVpnService"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:foregroundServiceType="connectedDevice"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
     </application>
     <queries>
+        <package android:name="moe.shizuku.privileged.api"/>
         <package android:name="net.kdt.pojavlaunch.ffmpeg"/>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
     </queries>
 </manifest>

@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/_8sdp"
+    android:paddingVertical="@dimen/_4sdp"
+    android:background="@drawable/background_game_menu">
+
+    <TextView
+        android:id="@+id/fps_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_2sdp"
+        android:background="@drawable/background_game_menu"
+        android:paddingHorizontal="@dimen/_6sdp"
+        android:paddingVertical="@dimen/_2sdp"
+        android:visibility="gone"
+        android:text="FPS: 114514"
+        android:textColor="@android:color/white"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/memory_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_2sdp"
+        android:background="@drawable/background_game_menu"
+        android:paddingHorizontal="@dimen/_6sdp"
+        android:paddingVertical="@dimen/_2sdp"
+        android:visibility="gone"
+        android:text="M: 0MB/0MB"
+        android:textColor="@android:color/white"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/cps_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_2sdp"
+        android:background="@drawable/background_game_menu"
+        android:paddingHorizontal="@dimen/_6sdp"
+        android:paddingVertical="@dimen/_2sdp"
+        android:visibility="gone"
+        android:text="CPS: 0"
+        android:textColor="@android:color/white"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/system_resources_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_2sdp"
+        android:background="@drawable/background_game_menu"
+        android:paddingHorizontal="@dimen/_6sdp"
+        android:paddingVertical="@dimen/_2sdp"
+        android:visibility="gone"
+        android:text="Battery: 100%"
+        android:textColor="@android:color/white"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/time_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_2sdp"
+        android:background="@drawable/background_game_menu"
+        android:paddingHorizontal="@dimen/_6sdp"
+        android:paddingVertical="@dimen/_2sdp"
+        android:visibility="gone"
+        android:text="00:00"
+        android:textColor="@android:color/white"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/stopwatch_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_2sdp"
+        android:background="@drawable/background_game_menu"
+        android:paddingHorizontal="@dimen/_6sdp"
+        android:paddingVertical="@dimen/_2sdp"
+        android:visibility="gone"
+        android:text="Session: 0:00"
+        android:textColor="@android:color/white"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/playtime_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_2sdp"
+        android:background="@drawable/background_game_menu"
+        android:paddingHorizontal="@dimen/_6sdp"
+        android:paddingVertical="@dimen/_2sdp"
+        android:visibility="gone"
+        android:text="Playtime: 0:00"
+        android:textColor="@android:color/white"
+        tools:ignore="HardcodedText" />
+
+    <!-- Keystrokes: WASD cluster + Space bar, each key colored when held -->
+    <RelativeLayout
+        android:id="@+id/keystrokes_block"
+        android:layout_width="@dimen/_84sdp"
+        android:layout_height="@dimen/_56sdp"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/key_w"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/background_game_menu"
+            android:gravity="center"
+            android:text="W"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/key_a"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_below="@id/key_w"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/background_game_menu"
+            android:gravity="center"
+            android:text="A"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/key_s"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_below="@id/key_w"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/background_game_menu"
+            android:gravity="center"
+            android:text="S"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/key_d"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_below="@id/key_w"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/background_game_menu"
+            android:gravity="center"
+            android:text="D"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/key_space"
+            android:layout_width="@dimen/_84sdp"
+            android:layout_height="@dimen/_16sdp"
+            android:layout_below="@id/key_a"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/background_game_menu"
+            android:gravity="center"
+            android:text="SPACE"
+            android:textColor="@android:color/white"
+            android:textSize="8sp"
+            tools:ignore="HardcodedText" />
+
+    </RelativeLayout>
+
+    <!-- Mousestrokes: left/right click indicator -->
+    <LinearLayout
+        android:id="@+id/mousestrokes_block"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/mouse_left"
+            android:layout_width="@dimen/_28sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:background="@drawable/background_game_menu"
+            android:gravity="center"
+            android:text="L"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/mouse_right"
+            android:layout_width="@dimen/_28sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:background="@drawable/background_game_menu"
+            android:gravity="center"
+            android:text="R"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            tools:ignore="HardcodedText" />
+
+    </LinearLayout>
+
+    <!-- TurtleLauncher v10: Network Ping module -->
+    <TextView
+        android:id="@+id/ping_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_2sdp"
+        android:background="@drawable/background_game_menu"
+        android:paddingHorizontal="@dimen/_6sdp"
+        android:paddingVertical="@dimen/_2sdp"
+        android:visibility="gone"
+        android:text="Ping: -- ms"
+        android:textColor="@android:color/white"
+        tools:ignore="HardcodedText" />
+
+    <!-- TurtleLauncher v10: RAM Usage Graph module (sparkline, sits under the FPS/memory text) -->
+    <com.endiq.turtlelauncher.feature.turtle.RamGraphView
+        android:id="@+id/ram_graph_view"
+        android:layout_width="@dimen/_84sdp"
+        android:layout_height="@dimen/_28sdp"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:visibility="gone" />
+
+    <!-- TurtleLauncher v10: one-tap screenshot shortcut -->
+    <TextView
+        android:id="@+id/screenshot_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:background="@drawable/background_game_menu"
+        android:gravity="center"
+        android:padding="@dimen/_4sdp"
+        android:text="📷"
+        android:textColor="@android:color/white"
+        android:visibility="gone"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/record_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:background="@drawable/background_game_menu"
+        android:gravity="center"
+        android:padding="@dimen/_4sdp"
+        android:text="⏺"
+        android:textColor="@color/turtle_error"
+        android:visibility="gone"
+        tools:ignore="HardcodedText" />
+
+    <!-- Elapsed-time readout, shown only while actively recording -->
+    <TextView
+        android:id="@+id/record_timer_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:background="@drawable/background_game_menu"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/_6sdp"
+        android:paddingVertical="@dimen/_2sdp"
+        android:text="00:00"
+        android:textColor="@color/turtle_error"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:ignore="HardcodedText" />
+
+</LinearLayout>

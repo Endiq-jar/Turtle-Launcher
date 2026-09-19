@@ -1,10 +1,8 @@
 package net.kdt.pojavlaunch.fragments;
 
 import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,26 +13,41 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.annotation.Nullable;
 
 import net.kdt.pojavlaunch.R;
-import net.kdt.pojavlaunch.Tools;
-import net.kdt.pojavlaunch.extra.ExtraConstants;
-import net.kdt.pojavlaunch.extra.ExtraCore;
+import net.kdt.pojavlaunch.databinding.FragmentMicrosoftLoginBinding;
+import com.endiq.turtlelauncher.event.value.MicrosoftLoginEvent;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.ui.fragment.BaseFragment;
 
-public class MicrosoftLoginFragment extends Fragment {
+import org.greenrobot.eventbus.EventBus;
+
+public class MicrosoftLoginFragment extends BaseFragment {
     public static final String TAG = "MICROSOFT_LOGIN_FRAGMENT";
-    private WebView mWebview;
+    private FragmentMicrosoftLoginBinding binding;
     // Technically the client is blank (or there is none) when the fragment is initialized
     private boolean mBlankClient = true;
 
+    public MicrosoftLoginFragment() {
+        super(R.layout.fragment_microsoft_login);
+    }
+
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mWebview = (WebView) inflater.inflate(R.layout.fragment_microsoft_login, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentMicrosoftLoginBinding.inflate(getLayoutInflater());
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        com.endiq.turtlelauncher.utils.anim.TurtleTransitions.animateView(view, true);
+        binding.returnButton.setOnClickListener(v -> forceBack());
+
         setWebViewSettings();
         if(savedInstanceState == null) startNewSession();
         else restoreWebViewState(savedInstanceState);
-        return mWebview;
     }
 
     // WebView.restoreState() does not restore the WebSettings or the client, so set them there
@@ -42,19 +55,19 @@ public class MicrosoftLoginFragment extends Fragment {
     // to avoid "undesirable side-effects"
     @SuppressLint("SetJavaScriptEnabled")
     private void setWebViewSettings() {
-        WebSettings settings = mWebview.getSettings();
+        WebSettings settings = binding.webView.getSettings();
         settings.setJavaScriptEnabled(true);
-        mWebview.setWebViewClient(new WebViewTrackClient());
+        binding.webView.setWebViewClient(new WebViewTrackClient());
         mBlankClient = false;
     }
 
     private void startNewSession() {
         CookieManager.getInstance().removeAllCookies((b)->{
-            mWebview.clearHistory();
-            mWebview.clearCache(true);
-            mWebview.clearFormData();
-            mWebview.clearHistory();
-            mWebview.loadUrl("https://login.live.com/oauth20_authorize.srf" +
+            binding.webView.clearHistory();
+            binding.webView.clearCache(true);
+            binding.webView.clearFormData();
+            binding.webView.clearHistory();
+            binding.webView.loadUrl("https://login.live.com/oauth20_authorize.srf" +
                     "?client_id=00000000402b5328" +
                     "&response_type=code" +
                     "&scope=service%3A%3Auser.auth.xboxlive.com%3A%3AMBI_SSL" +
@@ -63,9 +76,9 @@ public class MicrosoftLoginFragment extends Fragment {
     }
 
     private void restoreWebViewState(Bundle savedInstanceState) {
-        Log.i("MSAuthFragment","Restoring state...");
-        if(mWebview.restoreState(savedInstanceState) == null) {
-            Log.w("MSAuthFragment", "Failed to restore state, starting afresh");
+        Logging.i("MSAuthFragment","Restoring state...");
+        if(binding.webView.restoreState(savedInstanceState) == null) {
+            Logging.w("MSAuthFragment", "Failed to restore state, starting afresh");
             // if, for some reason, we failed to restore our session,
             // just start afresh
             startNewSession();
@@ -77,56 +90,57 @@ public class MicrosoftLoginFragment extends Fragment {
         super.onStart();
         // If we have switched to a blank client and haven't fully gone though the lifecycle callbacks to restore it,
         // restore it here.
-        if(mBlankClient) mWebview.setWebViewClient(new WebViewTrackClient());
+        if(mBlankClient) binding.webView.setWebViewClient(new WebViewTrackClient());
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (canGoBack()) {
+            goBack();
+            return false;
+        }
+        return super.onBackPressed();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         // Since the value cannot be null, just create a "blank" client. This is done to not let Android
         // kill us if something happens after the state gets saved, when we can't do fragment transitions
-        mWebview.setWebViewClient(new WebViewClient());
-        // For some dumb reason state is saved even when Android won't actually destroy the activity.
-        // Let the fragment know that the client is blank so that we can restore it in onStart()
-        // (it was the earliest lifecycle call actually invoked in this case)
+        binding.webView.setWebViewClient(new WebViewClient());
         mBlankClient = true;
         super.onSaveInstanceState(outState);
-        mWebview.saveState(outState);
+        binding.webView.saveState(outState);
     }
 
     /* Expose webview actions to others */
-    public boolean canGoBack(){ return mWebview.canGoBack();}
-    public void goBack(){ mWebview.goBack();}
+    public boolean canGoBack() {
+        return binding.webView.canGoBack();
+    }
+
+    public void goBack() {
+        binding.webView.goBack();
+    }
 
     /** Client to track when to sent the data to the launcher */
     class WebViewTrackClient extends WebViewClient {
-
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if(url.startsWith("ms-xal-00000000402b5328")) {
+            if (url.startsWith("ms-xal-00000000402b5328")) {
                 // Should be captured by the activity to kill the fragment and get
-                ExtraCore.setValue(ExtraConstants.MICROSOFT_LOGIN_TODO, Uri.parse(url));
-                Toast.makeText(view.getContext(), "Login started !", Toast.LENGTH_SHORT).show();
-                Tools.backToMainMenu(requireActivity());
+                EventBus.getDefault().post(new MicrosoftLoginEvent(Uri.parse(url)));
+                Toast.makeText(view.getContext(), getString(R.string.account_login_start), Toast.LENGTH_SHORT).show();
+                forceBack();
 
                 return true;
             }
 
             // Sometimes, the user just clicked cancel
-            if(url.contains("res=cancel")){
-                requireActivity().onBackPressed();
+            if (url.contains("res=cancel")) {
+                forceBack();
                 return true;
             }
 
-
             return super.shouldOverrideUrlLoading(view, url);
         }
-
-        @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {}
-
-        @Override
-        public void onPageFinished(WebView view, String url) {}
     }
-
-
 }

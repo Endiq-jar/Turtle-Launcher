@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_control_editor"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_moderate"
+    tools:ignore="HardcodedText">
+
+    <!-- HEADER -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/pixel_editor_title"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/pixelEditor_close"
+            android:layout_width="@dimen/_28sdp"
+            android:layout_height="@dimen/_28sdp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/generic_close"
+            android:padding="@dimen/_4sdp"
+            android:src="@drawable/ic_close" />
+    </LinearLayout>
+
+    <!-- CANVAS -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginVertical="@dimen/padding_moderate"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <net.kdt.pojavlaunch.customcontrols.handleview.PixelCanvasView
+            android:id="@+id/pixelEditor_canvas"
+            android:layout_width="@dimen/_280sdp"
+            android:layout_height="@dimen/_280sdp"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+    <!-- TOOLS -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/pixelEditor_toolPencil"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_weight="1"
+            android:background="@drawable/background_edit_box"
+            android:gravity="center"
+            android:text="@string/pixel_editor_tool_pencil" />
+
+        <TextView
+            android:id="@+id/pixelEditor_toolEraser"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginStart="@dimen/padding_medium"
+            android:layout_weight="1"
+            android:background="@drawable/background_edit_box"
+            android:gravity="center"
+            android:text="@string/pixel_editor_tool_eraser" />
+
+        <TextView
+            android:id="@+id/pixelEditor_toolFill"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginStart="@dimen/padding_medium"
+            android:layout_weight="1"
+            android:background="@drawable/background_edit_box"
+            android:gravity="center"
+            android:text="@string/pixel_editor_tool_fill" />
+
+        <TextView
+            android:id="@+id/pixelEditor_undo"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginStart="@dimen/padding_medium"
+            android:layout_weight="1"
+            android:background="@drawable/background_edit_box"
+            android:gravity="center"
+            android:text="@string/pixel_editor_undo" />
+
+        <TextView
+            android:id="@+id/pixelEditor_clear"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginStart="@dimen/padding_medium"
+            android:layout_weight="1"
+            android:background="@drawable/background_edit_box"
+            android:gravity="center"
+            android:text="@string/generic_clear" />
+    </LinearLayout>
+
+    <!-- PALETTE -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_moderate"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/pixelEditor_palette"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <!-- CUSTOM COLOR (RGB) -->
+    <LinearLayout
+        android:id="@+id/pixelEditor_customColorRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_medium"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/pixelEditor_customColorPreview"
+            android:layout_width="@dimen/_28sdp"
+            android:layout_height="@dimen/_28sdp"
+            android:background="@drawable/background_edit_box" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/padding_moderate"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <SeekBar
+                android:id="@+id/pixelEditor_redSeekbar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_24sdp"
+                android:max="255" />
+
+            <SeekBar
+                android:id="@+id/pixelEditor_greenSeekbar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_24sdp"
+                android:max="255" />
+
+            <SeekBar
+                android:id="@+id/pixelEditor_blueSeekbar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_24sdp"
+                android:max="255" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ACTIONS -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_moderate"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/pixelEditor_cancel"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_38sdp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="@string/cancel" />
+
+        <TextView
+            android:id="@+id/pixelEditor_save"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_38sdp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="@string/generic_save"
+            android:textColor="?attr/colorAccent" />
+    </LinearLayout>
+
+</LinearLayout>

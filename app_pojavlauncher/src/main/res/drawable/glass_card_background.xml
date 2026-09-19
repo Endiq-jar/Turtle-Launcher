@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TurtleLauncher card background: lighter-weight surface for popups, menus and
+     cards (compared to bg_dialog, which is for full dialogs). Solid fill, no
+     gradient (previous glass-highlight overlay layer removed per user request). -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="20dp" />
+            <solid android:color="@color/bg_card" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="20dp" />
+            <stroke android:width="1dp" android:color="@color/turtle_border_subtle" />
+        </shape>
+    </item>
+</layer-list>
