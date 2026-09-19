@@ -35,7 +35,7 @@ jobs:
         run: |
           set -o pipefail
           gradle :app_pojavlauncher:assembleDebug --stacktrace 2>&1 | tee build-debug.log
-          cp app_pojavlauncher/build/outputs/apk/debug/app_pojavlauncher-debug.apk out/turtle-launcher-debug.apk
+          cp app_pojavlauncher/build/outputs/apk/debug/*.apk out/turtle-launcher-debug.apk
 
       - name: Report build errors
         if: failure()
@@ -56,8 +56,7 @@ jobs:
         run: |
           set -o pipefail
           gradle :app_pojavlauncher:assembleRelease --stacktrace 2>&1 | tee build-release.log
-          cp app_pojavlauncher/build/outputs/apk/release/app_pojavlauncher-release-unsigned.apk out/turtle-launcher-release-unsigned.apk || \
-          cp app_pojavlauncher/build/outputs/apk/release/app_pojavlauncher-release.apk out/turtle-launcher-release.apk
+cp app_pojavlauncher/build/outputs/apk/release/*.apk out/turtle-launcher-release.apk
 
       - name: Report release build errors
         if: failure()
