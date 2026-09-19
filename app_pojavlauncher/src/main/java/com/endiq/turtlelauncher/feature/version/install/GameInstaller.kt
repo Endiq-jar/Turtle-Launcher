@@ -34,8 +34,7 @@ class GameInstaller(
 
         val mcVersion = AsyncMinecraftDownloader.getListedVersion(realVersion)
         MinecraftDownloader().start(
-            mcVersion,
-            realVersion,
+            null, mcVersion, realVersion,
             object : AsyncMinecraftDownloader.DoneListener {
                 override fun onDownloadDone() {
                     Task.runTask {

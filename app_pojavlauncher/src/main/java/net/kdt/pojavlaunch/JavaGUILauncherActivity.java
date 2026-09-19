@@ -19,7 +19,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 
-import com.kdt.LoggerView;
+import com.endiq.LoggerView;
 
 import net.kdt.pojavlaunch.customcontrols.keyboard.AwtCharSender;
 import net.kdt.pojavlaunch.customcontrols.keyboard.TouchCharInput;
@@ -46,8 +46,15 @@ import java.util.zip.ZipFile;
 
 public class JavaGUILauncherActivity extends BaseActivity implements View.OnTouchListener {
 
+    // Turtle Launcher installer-flow extras (kept for the Turtle download center,
+    // which pre-selects the runtime and force-shows installer logs)
+    public static final String EXTRAS_JRE_NAME = "jre_name";
+    public static final String SUBSCRIBE_JVM_EXIT_EVENT = "subscribe_jvm_exit_event";
+    public static final String FORCE_SHOW_LOG = "force_show_log";
+
     private AWTCanvasView mTextureView;
     private LoggerView mLoggerView;
+    private boolean mSubscribeJvmExitEvent;
     private TouchCharInput mTouchCharInput;
 
     private LinearLayout mTouchPad;
@@ -161,13 +168,18 @@ public class JavaGUILauncherActivity extends BaseActivity implements View.OnTouc
             }
             final String javaArgs = extras.getString("javaArgs");
             final Uri resourceUri = (Uri) extras.getParcelable("modUri");
+            final String jreName = extras.getString(EXTRAS_JRE_NAME, null);
+            mSubscribeJvmExitEvent = extras.getBoolean(SUBSCRIBE_JVM_EXIT_EVENT, false);
+            if (extras.getBoolean(FORCE_SHOW_LOG, false) && mLoggerView instanceof com.endiq.LoggerView) {
+                mLoggerView.forceShow(this::finish);
+            }
             if(extras.getBoolean("openLogOutput", false)) openLogOutput(null);
             if (javaArgs != null) {
-                startModInstaller(null, javaArgs);
+                startModInstaller(null, javaArgs, jreName);
             }else if(resourceUri != null) {
                 ProgressDialog barrierDialog = Tools.getWaitingDialog(this, R.string.multirt_progress_caching);
                 PojavApplication.sExecutorService.execute(()->{
-                    startModInstallerWithUri(resourceUri);
+                    startModInstallerWithUri(resourceUri, jreName);
                     runOnUiThread(barrierDialog::dismiss);
                 });
             }
@@ -185,6 +197,10 @@ public class JavaGUILauncherActivity extends BaseActivity implements View.OnTouc
     }
 
     private void startModInstallerWithUri(Uri uri) {
+        startModInstallerWithUri(uri, null);
+    }
+
+    private void startModInstallerWithUri(Uri uri, String jreName) {
         try {
             File cacheFile = new File(getCacheDir(), "mod-installer-temp");
             InputStream contentStream = getContentResolver().openInputStream(uri);
@@ -193,7 +209,7 @@ public class JavaGUILauncherActivity extends BaseActivity implements View.OnTouc
                 IOUtils.copy(contentStream, fileOutputStream);
             }
             contentStream.close();
-            startModInstaller(cacheFile, null);
+            startModInstaller(cacheFile, null, jreName);
         }catch (IOException e) {
             Tools.showError(this, e, true);
         }
@@ -230,6 +246,10 @@ public class JavaGUILauncherActivity extends BaseActivity implements View.OnTouc
     }
 
     private void startModInstaller(File modFile, String javaArgs) {
+        startModInstaller(modFile, javaArgs, null);
+    }
+
+    private void startModInstaller(File modFile, String javaArgs, String jreName) {
         new Thread(() -> {
             // Maybe replace with more advanced arg parsing logic later
             List<String> argList = javaArgs != null ? Arrays.asList(javaArgs.split(" ")) : null;
@@ -239,7 +259,11 @@ public class JavaGUILauncherActivity extends BaseActivity implements View.OnTouc
                 selectedMod = findModPath(argList);
             }
             Runtime selectedRuntime;
-            if(selectedMod == null || DEFAULT_PREF.getBoolean("disable_autojre_select", false)) {
+            if(jreName != null) {
+                // Turtle Launcher: runtime pre-selected by the caller (e.g. the
+                // download center's SelectRuntimeUtils flow) takes precedence.
+                selectedRuntime = MultiRTUtils.forceReread(jreName);
+            }else if(selectedMod == null || DEFAULT_PREF.getBoolean("disable_autojre_select", false)) {
                 // If we are unable to find out the path to the mod or the user explicitly desires so, we use the default runtime
                 selectedRuntime = MultiRTUtils.forceReread(LauncherPreferences.PREF_DEFAULT_RUNTIME);
             }else {
