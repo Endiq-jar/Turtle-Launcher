@@ -82,7 +82,6 @@ import net.kdt.pojavlaunch.value.launcherprofiles.MinecraftProfile;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.FileUtils;
 import com.endiq.turtlelauncher.feature.customprofilepath.ProfilePathHome;
 import com.endiq.turtlelauncher.feature.log.Logging;
 import com.endiq.turtlelauncher.feature.version.Version;
