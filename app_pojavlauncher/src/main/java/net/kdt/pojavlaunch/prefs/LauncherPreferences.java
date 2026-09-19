@@ -152,7 +152,7 @@ public class LauncherPreferences {
      * @param ctx Context needed to get the total memory of the device.
      * @return The best default value found.
      */
-    private static int findBestRAMAllocation(Context ctx){
+    public static int findBestRAMAllocation(Context ctx){
         int deviceRam = Tools.getTotalDeviceMemory(ctx);
         if (deviceRam < 1024) return 296;
         if (deviceRam < 1536) return 448;

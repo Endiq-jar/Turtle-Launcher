@@ -21,6 +21,17 @@ import net.kdt.pojavlaunch.utils.NotificationUtils;
 import java.lang.ref.WeakReference;
 
 public class GameService extends Service {
+    private static boolean sIsActive = false;
+
+    /** Turtle Launcher API: tracks whether the game process is currently active. */
+    public static void setActive(boolean active) {
+        sIsActive = active;
+    }
+
+    public static boolean isActive() {
+        return sIsActive;
+    }
+
     private static final WeakReference<Service> sGameService = new WeakReference<>(null);
     private final LocalBinder mLocalBinder = new LocalBinder();
 

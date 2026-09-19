@@ -147,6 +147,27 @@ public class MultiRTUtils {
         }
     }
 
+    /**
+     * Turtle Launcher API: timestamp of the last update check for a runtime,
+     * used by the JRE auto-installer to rate-limit update lookups.
+     */
+    public static long readLastUpdateTime(String name) {
+        File lastUpdateTimeFile = new File(RUNTIME_FOLDER, name+"/last_check_time");
+        if(!lastUpdateTimeFile.exists()) return -1;
+        try {
+            return Long.parseLong(Tools.read(lastUpdateTimeFile.getAbsolutePath()).trim());
+        }catch (IOException | NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    public static void writeLastUpdateTime(String name, long time) {
+        File lastUpdateTimeFile = new File(RUNTIME_FOLDER, name+"/last_check_time");
+        try {
+            java.nio.file.Files.write(lastUpdateTimeFile.toPath(), Long.toString(time).getBytes());
+        }catch (IOException ignored) {}
+    }
+
     public static void removeRuntimeNamed(String name) throws IOException {
         File dest = new File(RUNTIME_FOLDER,"/"+name);
         if(dest.exists()) {
