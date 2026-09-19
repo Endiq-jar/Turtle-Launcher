@@ -93,6 +93,17 @@ class LaunchGame {
                 }
             }.onFailure { e -> Logging.e("LaunchGame", "Renderer/MC-version compatibility check failed", e) }
 
+            runCatching {
+                val rendererUniqueId = version.getRenderer()
+                val isLtw = rendererUniqueId == com.endiq.turtlelauncher.renderer.renderers.LTWRenderer().getUniqueIdentifier()
+                val isPowerVr = File("/vendor/lib64/libsrv_um.so").exists() || File("/vendor/lib/libsrv_um.so").exists()
+                if (isLtw && isPowerVr) {
+                    Logging.w("LaunchGame", "LTW selected on a PowerVR GPU - it failed to create a GL context on this GPU family (no context current at RenderSystem init)")
+                    Toast.makeText(context, "LTW can fail to create a GL context on PowerVR GPUs. If the game crashes at startup, switch this version to MobileGlues.", Toast.LENGTH_LONG).show()
+                }
+            }.onFailure { e -> Logging.e("LaunchGame", "PowerVR/LTW check failed", e) }
+
+
             val networkAvailable = NetworkUtils.isNetworkAvailable(context)
 
             fun launch(setOfflineAccount: Boolean = false) {
@@ -205,7 +216,7 @@ class LaunchGame {
             val actualJavaVersion = runCatching { MultiRTUtils.read(javaRuntime).javaVersion }
                 .getOrDefault(requiredJava)
                 .let { if (it <= 0) requiredJava else it }
-            val customArgs = (baseArgs + " " + buildFpsBoostArgs(actualJavaVersion)).trim()
+            val customArgs = mergeJvmArgs(baseArgs, buildFpsBoostArgs(actualJavaVersion))
 
             printLauncherInfo(
                 minecraftVersion,
@@ -377,7 +388,8 @@ class LaunchGame {
             val args = mutableListOf<String>()
 
             args += "-XX:+UseG1GC"
-            args += "-XX:MaxGCPauseMillis=50"
+            args += if (AllSettings.adaptiveFrameTiming.getValue()) "-XX:MaxGCPauseMillis=10"
+                else "-XX:MaxGCPauseMillis=50"
 
             if (AllSettings.unlimitedFps.getValue()) {
                 // Prevents mod/library System.gc() calls from forcing full GC pauses.
@@ -385,7 +397,6 @@ class LaunchGame {
             }
 
             if (AllSettings.lowLatencyRendering.getValue()) {
-                args += "-XX:+UseG1GC"
                 args += "-XX:+UseStringDeduplication"
                 // Skips attaching the JVM's perfdata file to shared memory - removes a real
                 // source of I/O-related micro-jitter, safe on every Java version this
@@ -394,11 +405,12 @@ class LaunchGame {
             }
 
             if (AllSettings.framePacing.getValue()) {
-                args += "-XX:+AlwaysPreTouch"
-            }
-
-            if (AllSettings.adaptiveFrameTiming.getValue()) {
-                args += "-XX:MaxGCPauseMillis=10"
+                if (isPreTouchSafe()) {
+                    args += "-XX:+AlwaysPreTouch"
+                } else {
+                    Logging.w("LaunchGame", "Skipping -XX:+AlwaysPreTouch: heap is too large a share of device RAM " +
+                        "and pre-touching it would commit all of it up front (swap thrash / ANR / low-memory kill)")
+                }
             }
 
             if (AllSettings.autoMemoryCleanup.getValue()) {
@@ -413,6 +425,37 @@ class LaunchGame {
             }
 
             return args.joinToString(" ")
+        }
+
+        /** AlwaysPreTouch commits and zero-fills the entire heap at startup, so it is only
+         *  worth it when the heap is a small share of physical RAM. */
+        private fun isPreTouchSafe(): Boolean = runCatching {
+            val heapMb = AllSettings.ramAllocation.value.getValue()
+            val totalMb = Tools.getTotalDeviceMemory(com.endiq.turtlelauncher.context.ContextExecutor.getApplication())
+            totalMb > 0 && heapMb * 100L <= totalMb * 35L
+        }.getOrDefault(false)
+
+        private fun xxKey(arg: String): String = when {
+            arg.startsWith("-XX:+") || arg.startsWith("-XX:-") -> arg.substring(5)
+            else -> arg.substringAfter("-XX:").substringBefore('=')
+        }
+
+        /** Joins user args and launcher-generated args. A repeated -XX option keeps the
+         *  position of its first occurrence but takes the value of its last, which is what
+         *  the JVM would have resolved anyway, so the same flag is never passed twice. */
+        private fun mergeJvmArgs(base: String, boost: String): String {
+            val out = ArrayList<String>()
+            (base.trim().split(Regex("\\s+")) + boost.trim().split(Regex("\\s+")))
+                .filter { it.isNotBlank() }
+                .forEach { arg ->
+                    if (arg.startsWith("-XX:")) {
+                        val key = xxKey(arg)
+                        val idx = out.indexOfFirst { it.startsWith("-XX:") && xxKey(it) == key }
+                        if (idx >= 0) { out[idx] = arg; return@forEach }
+                    }
+                    out.add(arg)
+                }
+            return out.joinToString(" ")
         }
 
         private fun checkMemory(activity: AppCompatActivity) {

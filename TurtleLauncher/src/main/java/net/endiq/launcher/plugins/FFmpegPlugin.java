@@ -21,7 +21,9 @@ public class FFmpegPlugin {
             executablePath = ffmpegExecutable.getAbsolutePath();
             // Older plugin versions still have the old executable location
             isAvailable = ffmpegExecutable.exists();
-        }catch (Exception e) {
+        } catch (PackageManager.NameNotFoundException e) {
+            Logging.d("FFmpegPlugin", "FFmpeg plugin not installed");
+        } catch (Exception e) {
             Logging.i("FFmpegPlugin", "Failed to discover plugin", e);
         }
     }

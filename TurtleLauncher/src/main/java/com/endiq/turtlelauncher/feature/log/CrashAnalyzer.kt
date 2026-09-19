@@ -124,6 +124,25 @@ object CrashAnalyzer {
                     repairActions = listOf(RepairAction(RepairActionType.RESET_RENDERER_OVERRIDE, "Reset renderer override"))
                 )
             ),
+            // 2a. The renderer never produced a current GL context, so LWJGL's
+            // GL.createCapabilities threw during RenderSystem init. Seen with LTW on a
+            // PowerVR GPU (OPPO CPH2285, MC 1.21.11); MobileGlues launched the same version fine.
+            Rule(
+                title = "gl_context_not_current",
+                matches = { has(it, "No context is current", "GL.createCapabilities") && has(it, "RenderSystem", "initRenderer", "createCapabilities") },
+                diagnosis = fixed(
+                    "The renderer didn't create an OpenGL context",
+                    "Minecraft asked LWJGL for GL capabilities before any GL context was current, so the selected " +
+                        "renderer failed to create one on this GPU/driver. The window and GL info are empty in the report, " +
+                        "which means it failed before Minecraft drew anything.",
+                    listOf(
+                        "Switch this version's renderer to MobileGlues (Settings → Video → Renderer), especially on PowerVR GPUs.",
+                        "Reset the version's renderer override below to fall back to the launcher default.",
+                        "If you are on LTW, note it has failed to create a context on PowerVR devices."
+                    ),
+                    repairActions = listOf(RepairAction(RepairActionType.RESET_RENDERER_OVERRIDE, "Reset renderer override"))
+                )
+            ),
             // 2b. Krypton Wrapper's native GL4ES backend (libng_gl4es.so) SIGSEGV - seen in an
             // uploaded log on a PowerVR Rogue GPU, back when Krypton Wrapper was still a
             // built-in renderer. It was removed as a built-in for exactly this crash (replaced
