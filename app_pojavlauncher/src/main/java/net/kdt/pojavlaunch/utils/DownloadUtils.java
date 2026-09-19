@@ -96,6 +96,19 @@ public class DownloadUtils {
         }
     }
 
+    /**
+     * Turtle Launcher API: cached string download with a "force refresh" flag.
+     * Deletes the cached entry before running when {@code force} is set, then
+     * delegates to the 3-argument variant.
+     */
+    public static <T> T downloadStringCached(String url, String cacheName, boolean force, ParseCallback<T> parseCallback) throws IOException, ParseException{
+        if (force) {
+            File cacheDestination = new File(Tools.DIR_CACHE, "string_cache/"+cacheName);
+            org.apache.commons.io.FileUtils.deleteQuietly(cacheDestination);
+        }
+        return downloadStringCached(url, cacheName, parseCallback);
+    }
+
     public static <T> T downloadStringCached(String url, String cacheName, ParseCallback<T> parseCallback) throws IOException, ParseException{
         File cacheDestination = new File(Tools.DIR_CACHE, "string_cache/"+cacheName);
         if(cacheDestination.isFile() &&

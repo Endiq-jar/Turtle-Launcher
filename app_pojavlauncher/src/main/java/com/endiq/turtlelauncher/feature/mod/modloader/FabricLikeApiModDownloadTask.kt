@@ -20,7 +20,7 @@ class FabricLikeApiModDownloadTask(private val fileName: String, private val ver
         return destinationFile
     }
 
-    override fun updateProgress(curr: Long, max: Long) {
+    override fun updateProgress(curr: Int, max: Int) {
         val progress100 = ((curr.toFloat() / max.toFloat()) * 100f).toInt()
         ProgressKeeper.submitProgress(ProgressLayout.INSTALL_RESOURCE, progress100, R.string.mod_download_progress, versionItem.fileName)
     }
