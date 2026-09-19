@@ -19,8 +19,11 @@ class AccountUtils {
     companion object {
         @JvmStatic
         fun microsoftLogin(context: Context, account: MinecraftAccount, doneListener: DoneListener, errorListener: ErrorListener) {
+            // Amethyst core API: the login flow loads/creates and saves the
+            // MinecraftAccount itself (matched by the gamertag behind the refresh
+            // token), then hands it to the DoneListener on the UI thread.
             MicrosoftBackgroundLogin(true, account.msaRefreshToken)
-                .performLogin(context, account, doneListener, errorListener)
+                .performLogin(null, doneListener, errorListener)
         }
 
         @JvmStatic

@@ -14,7 +14,7 @@ class LocaleHelper(context: Context) : ContextWrapper(context) {
             // Refresh the launcher settings.
             Settings.refreshSettings()
 
-            LauncherPreferences.loadPreferences()
+            LauncherPreferences.loadPreferences(context)
             return LocaleHelper(context)
         }
     }

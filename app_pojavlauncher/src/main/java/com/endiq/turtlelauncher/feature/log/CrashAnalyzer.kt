@@ -1166,7 +1166,7 @@ object CrashAnalyzer {
                         // latch since that API is async/callback-based and executeRepair needs to
                         // return synchronously. Nothing here re-implements the verification itself.
                         MinecraftDownloader().start(
-                            listedVersion, versionName,
+                            null, listedVersion, versionName,
                             object : AsyncMinecraftDownloader.DoneListener {
                                 override fun onDownloadDone() { latch.countDown() }
                                 override fun onDownloadFailed(throwable: Throwable) { failure.set(throwable); latch.countDown() }

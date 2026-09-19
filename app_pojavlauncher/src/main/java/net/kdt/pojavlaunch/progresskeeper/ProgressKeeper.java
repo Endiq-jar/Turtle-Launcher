@@ -97,6 +97,13 @@ public class ProgressKeeper {
         addTaskCountListener(listener);
     }
 
+    /**
+     * Turtle Launcher API: check whether a task key exists in the current task set.
+     */
+    public static synchronized boolean containsProgress(String progressKey) {
+        return sProgressStates.containsKey(progressKey);
+    }
+
     public static synchronized int getTaskCount() {
         return sProgressStates.size();
     }
