@@ -1,201 +1,153 @@
-# Turtle Launcher
-![Downloads](https://img.shields.io/github/downloads/Endiq-jar/TurtleLauncher/total?style=for-the-badge&logo=github)
-![Release](https://img.shields.io/github/v/release/Endiq-jar/TurtleLauncher?style=for-the-badge)
-![Stars](https://img.shields.io/github/stars/Endiq-jar/TurtleLauncher?style=for-the-badge)
-![Forks](https://img.shields.io/github/forks/Endiq-jar/TurtleLauncher?style=for-the-badge)
+<h1 align="center">Angel Aura Amethyst</h1>
 
-![License](https://img.shields.io/github/license/Endiq-jar/TurtleLauncher?style=for-the-badge)
-![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android)
-![Last Commit](https://img.shields.io/github/last-commit/Endiq-jar/TurtleLauncher?style=for-the-badge)
+<img src="https://github.com/AngelAuraMC/Amethyst-Android/blob/v3_openjdk/app_pojavlauncher/src/main/assets/amethyst.png" align="left" width="130" height="130" alt="Amethyst logo">
 
-<H1 ALIGN= "CENTER">A modern, high-performance Android launcher for Minecraft: Java Edition.</H1>
+[![Android CI](https://github.com/AngelAuraMC/Amethyst-Android/workflows/Android%20CI/badge.svg)](https://github.com/AngelAuraMC/Amethyst-Android/actions)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/AngelAuraMC/Amethyst-Android)](https://github.com/AngelAuraMC/Amethyst-Android/actions)
+[![Crowdin](https://badges.crowdin.net/pojavlauncher/localized.svg)](https://crowdin.com/project/pojavlauncher)
+[![Discord](https://img.shields.io/discord/724163890803638273.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/5ptqkyZxEy)
 
-Turtle Launcher is a fast, beautiful, and feature-rich Minecraft Java launcher built for Android by **Endiq**. Based on the open-source **Turtle Launcher** project, it combines a modern Material 3 interface with powerful customization, performance optimizations, and extensive modding support.
+*From [Boardwalk](https://github.com/zhuowei/Boardwalk)'s ashes and [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher)'s ruined reputation, here comes Amethyst!*
 
-![Minecraft](1.jpg)
----
+Amethyst is a launcher that allows you to play Minecraft: Java Edition on your Android and [iOS](https://github.com/AngelAuraMC/Amethyst-iOS) devices.
 
-## ✨ Features
+For more details, check out our [wiki](https://wiki.angelauramc.dev)!
 
-### 🎨 Modern UI
+## Table of Contents
 
-* Material Design 3
-* Dynamic themes & accent colors
-* Smooth animations
-* Responsive phone & tablet layouts
-* Dark mode
-* Gaming-inspired interface
+* [Introduction](#introduction)
+* [Getting Amethyst](#getting-amethyst)
+* [Building](#building)
+    * [Quick Build (Recommended)](#quick-build-recommended)
+    * [Detailed Build](#detailed-build)
+* [Current Status](#current-status)
+* [Known Issues](#known-issues)
+* [FAQ](#faq)
+* [Contributing](#contributing)
+* [Support](#support)
+* [License](#license)
+* [Credits & Dependencies](#credits--dependencies)
+* [Roadmap](#roadmap)
 
-### 🚀 Performance
+## Introduction
 
-* Fast startup
-* Low RAM usage
-* Optimized rendering
-* Hardware-accelerated UI
-* Intelligent memory management
-* Stable FPS & faster launches
+* Amethyst is a Minecraft: Java Edition launcher for Android and iOS based on [Boardwalk](https://github.com/zhuowei/Boardwalk) and [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher)
+* This launcher can launch almost all available Minecraft versions ranging from rd-132211 to 26.3-snapshot-1.
+* Modding via Forge and Fabric are also supported.
+* This repository contains source code for Android. For iOS/iPadOS, check out [Amethyst-iOS](https://github.com/AngelAuraMC/Amethyst-iOS).
 
-### 🎮 Minecraft Support
+## Getting Amethyst
 
-* Release, Snapshot, Beta & Alpha
-* Fabric
-* Quilt
-* Forge
-* NeoForge
+You can get Amethyst via two methods:
 
-### 📦 Content Management
+1. **Releases:** Download the latest prebuilt app from [nightly.link](https://nightly.link/AngelAuraMC/Amethyst-Android/workflows/android/v3_openjdk/app-debug%20%28recommended%29.zip) or select an older version from our [automatic builds](https://github.com/AngelAuraMC/Amethyst-Android/actions).
+2. **Build from Source:** Follow the [building instructions](#building) below.
 
-* Mods
-* Resource Packs
-* Shader Packs
-* Datapacks
-* Worlds
-* Screenshots
-* Logs
+## Building
 
-### 🛠 Launcher Tools
+### Quick Build (Recommended)
 
-* Multiple instances
-* Java Manager
-* Microsoft, Offline, Battly & Ely.by accounts
-* Download Manager
-* Live launch & crash logs
-* Friends / LAN play (Terracotta over EasyTier) — host or join straight from the home screen
-* Chooseable screen transitions — slide, bounce, fade, or zoom, applied app-wide
-* Backup, import & export
+The easiest way to build Amethyst is to use the pre-built JREs provided by our CI.
 
-### 🔓 Shizuku Support (optional)
+1. Clone the repository: `git clone --recursive https://github.com/AngelAuraMC/Amethyst-Android.git`
+2. Build the launcher: `./gradlew :app_pojavlauncher:assembleDebug` (Use `gradlew.bat` on Windows)
 
-* One-tap permission granting (all-files access, notifications, battery exemption)
-* Android 14+ phantom-process limit removed — fixes games being killed mid-session
-* Game process priority boost
-* Full system logcat for crash reports, not just the launcher's own lines
-* Works with both Shizuku (ADB or root) and Sui
+The built APK will be located in `app_pojavlauncher/build/outputs/apk/debug/`.
 
-Shizuku is completely optional — Turtle Launcher works fine without it.
+### Detailed Build
 
-### ⚙ Customization
+If you need more control over the build process, follow these steps:
 
-* Custom backgrounds
-* UI scaling
-* Animation controls
-* Performance profiles
-* JVM & RAM settings
+1. **Java Runtime Environment (JRE):** Download the `jre8-pojav` artifact from our [CI auto builds](https://github.com/AngelAuraMC/openjdk-build-multiarch/actions).  This package contains pre-built JREs for all supported architectures.  If you need to build the JRE yourself, follow the instructions in the [android-openjdk-build-multiarch](https://github.com/AngelAuraMC/openjdk-build-multiarch) repository.
 
----
+2. **LWJGL:** The build instructions for the custom LWJGL are available over the [LWJGL repository](https://github.com/AngelAuraMC/lwjgl3).
 
-## 🏗 Built With
+3. **Language List:** Because languages are auto-added by Crowdin, you need to run the language list generator before building. In the project directory, run:
+   * Linux/macOS:
+     ```bash
+     chmod +x scripts/languagelist_updater.sh
+     bash scripts/languagelist_updater.sh
+     ```
+   * Windows:
+     ```batch
+     scripts\languagelist_updater.bat
+     ```
 
-* Kotlin & Java
-* Jetpack Compose
-* Material Design 3
-* AndroidX
-* Coroutines & Flow
-* Coil
-* Lottie
-* LWJGL 3
-* GL4ES
-* Mesa3D
-* OpenJDK
+4. **Build GLFW stub:** `./gradlew :jre_lwjgl3glfw:build`
 
----
+5. **Build the launcher:** `./gradlew :app_pojavlauncher:assembleDebug` (Replace `gradlew` with `gradlew.bat` on Windows).
 
-## 🎯 Goals
+## Current Status
 
-* Faster startup
-* Lower memory usage
-* Better battery efficiency
-* Smooth gameplay
-* Stable frame pacing
-* Modern user experience
+* [x] OpenJDK 8 Mobile port: ARM32, ARM64, x86, x86_64
+* [x] OpenJDK 17 Mobile port: ARM32, ARM64, x86, x86_64
+* [x] OpenJDK 21 Mobile port: ARM32, ARM64, x86, x86_64
+* [x] Headless mod installer
+* [x] Mod installer with GUI
+* [x] OpenGL in OpenJDK environment
+* [x] OpenAL (works on most devices)
+* [x] Support for Minecraft 1.12.2 and below
+* [x] Support for Minecraft 1.13 and above
+* [x] Support for Minecraft 1.17 (22w13a) and above
+* [x] Game surface zooming
+* [x] New input pipe rewritten to native code
+* [x] Rewritten entire controls system
+* [ ] More to come!
 
----
+## Known Issues
 
-## 🗺 Roadmap
+See our [issue tracker](https://github.com/AngelAuraMC/Amethyst-Android/issues) for a list of known issues and their current status.
 
-### Completed
+## FAQ
 
-- [X] Modern UI
-- [x] Theme engine
-- [x] Instance Manager
-- [x] Ai intregation
-- [x] Performance improvements
-- [x] Mesa3D
-- [x] LTW Renderer
-- [x] MobileGlues Renderer
-- [x] Cleanroom Integration
-- [x] Terracotta Integration
-- [x] mclo.gs Integration
+See our [wiki](https://wiki.angelauramc.dev/) for more information.
 
-### Current
+## Contributing
 
-- [ ] Cloud Sync
-- [x] Skin & Cape Manager
-- [x] Turtle Client integration
-- [x] Replace OSMesa with a real EGL implementation
-- [x] Shizuku Support
-- [x] Beryllium Integration
-- [x] Modpack Instance
-- [x] Animations/Transtions
-- [x] Emotes
+Contributions are welcome! We welcome any type of contribution, not only code. For example, you can help improve the [wiki](https://github.com/AngelAuraMC/angelauramc.github.io/), contribute to the [translations](https://crowdin.com/project/pojavlauncher), or submit bug reports and feature requests.
 
----
+Any code change should be submitted as a pull request. The description should explain what the code does and give steps to execute it.
 
-## FAQs
-## 1. Is Turtle Launcher Safe?
-### -> Yes — Turtle Launcher is safe to use. The source code is fully open on GitHub under the GPL-3.0 license. As always, only download the APK from trusted sources, like the official GitHub releases page..
-## 2. Is Turtle Launcher free?
-### -> Yes! Turtle Launcher is completely free to use, with no ads and no premium paywall.
-## 3. Does Turtle Launcher support Minecraft mods?
-### -> Yes. Turtle Launcher supports Fabric, Quilt, Forge and NeoForge, and you can install mods directly through the built-in mod Explorer.
-## Does it require a Microsoft account?
-### No. Turtle Launcher supports Microsoft, offline, Battly and Ely.by accounts, so you can play the way you prefer.
----
+## Support
 
-## 🤝 Contributing
+For support, please join our [Discord server](https://discord.gg/5ptqkyZxEy).
 
-Contributions are welcome! Feel free to submit issues, feature requests, or pull requests.
+## License
 
----
+Amethyst is licensed under [GNU LGPLv3](https://github.com/AngelAuraMC/Amethyst-Android/blob/v3_openjdk/LICENSE).
 
-## 📄 License
+## Credits & Dependencies
 
-Licensed under **GPL-3.0**.
+* [Boardwalk](https://github.com/zhuowei/Boardwalk) (JVM Launcher): Unknown License/[Apache License 2.0](https://github.com/zhuowei/Boardwalk/blob/master/LICENSE) or GNU GPLv2.
+* [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher): [GLGPL](https://github.com/PojavLauncherTeam/PojavLauncher/blob/v3_openjdk/LICENSE)
+* Android Support Libraries: [Apache License 2.0](https://android.googlesource.com/platform/prebuilts/maven_repo/android/+/master/NOTICE.txt).
+* [GL4ES](https://github.com/AngelAuraMC/gl4es): [MIT License](https://github.com/ptitSeb/gl4es/blob/master/LICENSE).
+* [MobileGlues](https://github.com/MobileGL-Dev/MobileGlues): [LGPL-2.1 License](https://github.com/MobileGL-Dev/MobileGlues/blob/dev-es/LICENSE).
+* [Krypton Wrapper](https://github.com/BZLZHH/NG-GL4ES): [MIT License](https://github.com/BZLZHH/NG-GL4ES/blob/main/LICENSE)
+* [ANGLE](https://chromium.googlesource.com/angle/angle): [All Rights Reserved](app_pojavlauncher/src/main/assets/licenses/ANGLE_LICENSE).
+* [OpenJDK](https://github.com/AngelAuraMC/openjdk-multiarch-jdk8u): [GNU GPLv2 License](https://openjdk.java.net/legal/gplv2+ce.html).
+* [LWJGL3](https://github.com/AngelAuraMC/lwjgl3): [BSD-3 License](https://github.com/LWJGL/lwjgl3/blob/master/LICENSE.md).
+* [LWJGLX](https://github.com/AngelAuraMC/lwjglx) (LWJGL2 API compatibility layer for LWJGL3): unknown license.
+* [Mesa 3D Graphics Library](https://gitlab.freedesktop.org/mesa/mesa): [MIT License](https://docs.mesa3d.org/license.html).
+* [bhook](https://github.com/bytedance/bhook) (Used for exit code trapping): [MIT license](https://github.com/bytedance/bhook/blob/main/LICENSE).
+* [libepoxy](https://github.com/anholt/libepoxy): [MIT License](https://github.com/anholt/libepoxy/blob/master/COPYING).
+* [virglrenderer](https://github.com/AngelAuraMC/virglrenderer): [MIT License](https://gitlab.freedesktop.org/virgl/virglrenderer/-/blob/master/COPYING).
+* [OpenAL-Soft](https://github.com/kcat/openal-soft): [GNU GPLv2](app_pojavlauncher/src/main/assets/licenses/OPENAL-SOFT_GPL2)
+  * [oboe](https://github.com/google/oboe): [Apache License 2.0](app_pojavlauncher/src/main/assets/licenses/OBOE_APACHE2).
+  * [pfffft](https://bitbucket.org/jpommier/pffft/src/master/): [ARR](app_pojavlauncher/src/main/assets/licenses/PFFFT_LICENSE)
+* [SDL3](https://github.com/libsdl-org/SDL): [zlib License](https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt)
+* [sdl2-compat](https://github.com/libsdl-org/sdl2-compat): [zlib License](https://github.com/libsdl-org/sdl2-compat/blob/main/LICENSE.txt)
+* Thanks to [MCHeads](https://mc-heads.net) for providing Minecraft avatars.
 
----
+## Roadmap
 
-## ❤️ Credits
+We are currently focusing on:
 
-Built upon ideas and technologies from:
+* Exploring new rendering technologies.
 
-* TurtleLauncher
-* HMCL
-* Boardwalk
-* OpenJDK
-* LWJGL
-* Mesa3D
-* GL4ES
+Future plans include:
 
-Special thanks to all open-source contributors who make Android Minecraft possible.
+* Improving stability and performance.
+* Enhancing the mod installation experience.
 
----
-
-## ⚠ Disclaimer
-
-Turtle Launcher is an independent open-source project and is **not affiliated with Mojang Studios or Microsoft**.
-
-Minecraft is a trademark of Mojang Studios.
-
----
-
-## ⭐ Support
-
-If you enjoy Turtle Launcher:
-
-* ⭐ Star the repository
-* 🐞 Report bugs
-* 💡 Suggest features
-* 🤝 Contribute code
-* 📢 Share the project
-
-Every contribution helps make Turtle Launcher better.
+We welcome community feedback and suggestions for our roadmap.  Please feel free to open a feature request in our [issue tracker](https://github.com/AngelAuraMC/Amethyst-Android/issues).

@@ -1,0 +1,45 @@
+import java.security.MessageDigest
+
+plugins{
+    id 'com.android.application' version '9.3.1' apply false
+    id 'com.android.library' version '9.3.1' apply false
+}
+
+static void hashFileWithDigest(File fileToHash, MessageDigest digest){
+    fileToHash.withInputStream { is ->
+        byte[] buffer = new byte[8192]
+        int read
+        while ((read = is.read(buffer)) != -1) {
+            digest.update(buffer, 0, read)
+        }
+    }
+}
+
+static void writeVersionFile(File jarFile, File versionFile){
+    def sha1 = MessageDigest.getInstance("SHA-1")
+    hashFileWithDigest(jarFile, sha1)
+    versionFile.write(sha1.digest().collect { String.format("%02x", it) }.join())
+}
+
+static void writeVersionFile(File[] jarFileArray, File versionFile){
+    def sha1 = MessageDigest.getInstance("SHA-1")
+    jarFileArray.each {jarFile ->
+        hashFileWithDigest(jarFile, sha1)
+    }
+    versionFile.write(sha1.digest().collect { String.format("%02x", it) }.join())
+}
+
+subprojects {subproject ->
+    if (subproject.name.contains("lwjgl")) return
+    tasks.withType(Jar).configureEach {jar ->
+        System.out.println("Subproject $subproject configuring jar task destination to app_pojavlauncher/src/main/assets/components/$subproject.name/")
+        destinationDirectory.set(
+                file("../app_pojavlauncher/src/main/assets/components/$subproject.name")
+        )
+        doLast {
+            def versionFile  = new File(project(":app_pojavlauncher").projectDir, "src/main/assets/components/$subproject.name/version")
+            def jarFile = archiveFile.get().asFile
+            writeVersionFile(jarFile, versionFile)
+        }
+    }
+}

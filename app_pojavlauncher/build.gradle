@@ -1,0 +1,257 @@
+plugins {
+    id 'com.android.application' version '9.3.1'
+}
+
+static def getDate() { return new Date().format('yyyyMMdd') }
+
+def getVersionName = {
+    // Get the last version tag, as well as the short head of the last commit
+    String TAG = ""
+    String semVer = "1.1.7"
+    // Used by the fallback for github actions
+    String TAG_PART_COMMIT = ""
+    String TAG_STRING
+
+    try {
+        TAG = providers.exec {
+            commandLine 'git', 'describe', '--tags'
+            ignoreExitValue = true
+        }.getStandardOutput().asText.get()
+    } catch (Exception e) {
+        e.printStackTrace()
+    }
+
+    // Fallback for action builds
+    if (TAG.toString().trim().isEmpty()) {
+        try {
+            TAG_PART_COMMIT = providers.exec {
+                commandLine 'git', 'describe', '--always', '--tags'
+                ignoreExitValue = true
+            }.getStandardOutput().asText.get()
+        } catch (Exception ignored) {
+        }
+    }
+
+
+    if(!TAG.isBlank()){
+        TAG_STRING = TAG
+    }else {
+        if(TAG_PART_COMMIT.isBlank()){
+             //Fallback no repo
+            return ("LOCAL-" + "${getDate()}")
+        }else {
+            // Used by github actions
+            TAG_STRING =  'amethyst-legacy-' + "${getDate()}" + "-" + TAG_PART_COMMIT.toString().trim()
+        }
+
+    }
+
+    def isRelease = project.gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
+    if(!isRelease){
+        return TAG_STRING.trim().replace("-g", "-") + "-" + "debug-" + semVer
+    }else {
+        return TAG_STRING.trim().replace("-g", "-") + "-" + "release-" + semVer
+    }
+}
+
+def getCFApiKey = {
+    String key = System.getenv("CURSEFORGE_API_KEY");
+    if(key != null) return key;
+    File curseforgeKeyFile = new File("$projectDir/curseforge_key.txt");
+    if(curseforgeKeyFile.canRead() && curseforgeKeyFile.isFile()) {
+        return curseforgeKeyFile.text;
+    }
+    logger.warn('BUILD: You have no CurseForge key, the curseforge api will get disabled !');
+    return "DUMMY";
+}
+
+configurations {
+    instrumentedClasspath {
+        canBeConsumed = false
+        canBeResolved = true
+    }
+}
+
+android {
+    namespace 'net.kdt.pojavlaunch'
+
+    compileSdk = 37
+
+
+    signingConfigs {
+        customDebug {
+            storeFile file("debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+        customRelease {
+            storeFile file("aamc_upload.jks")
+            storePassword System.getenv("GPLAY_KEYSTORE_PASSWORD")
+            keyAlias "android_github_release"
+            keyPassword System.getenv("GPLAY_KEYSTORE_PASSWORD")
+        }
+        googlePlayBuild {
+            storeFile file("upload.jks")
+            storePassword System.getenv("GPLAY_KEYSTORE_PASSWORD")
+            keyAlias "upload"
+            keyPassword System.getenv("GPLAY_KEYSTORE_PASSWORD")
+        }
+    }
+
+    defaultConfig {
+        applicationId "org.angelauramc.amethyst"
+        minSdkVersion 21
+        targetSdkVersion 34
+        versionCode 10000000
+        versionName getVersionName()
+        multiDexEnabled true //important
+        resValue 'string', 'curseforge_api_key', getCFApiKey()
+        externalNativeBuild {
+            ndkBuild {
+                // Fix for Windows command line length limit
+                arguments "APP_SHORT_COMMANDS=true"
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.customDebug
+            resValue "string", "app_name", "Amethyst (Debug)"
+            resValue "string", "app_short_name", "Amethyst (Debug)"
+            resValue 'string', 'application_package', 'org.angelauramc.amethyst.debug'
+            resValue 'string', 'storageProviderAuthorities', 'org.angelauramc.amethyst.scoped.gamefolder.debug'
+            resValue 'string', 'shareProviderAuthority', 'org.angelauramc.amethyst.scoped.controlfolder.debug'
+        }
+        proguard {
+            initWith debug
+            minifyEnabled true
+            shrinkResources true
+        }
+        proguardNoDebug {
+            initWith proguard
+            debuggable false
+        }
+
+        release {
+            // Don't set to true or java.awt will be a.a or something similar.
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.customRelease
+            // defaultConfig already set
+            // multiDexEnabled = true
+            // debuggable = true
+            resValue "string", "app_name", "Amethyst"
+            resValue "string", "app_short_name", "Amethyst"
+            resValue 'string', 'storageProviderAuthorities', 'org.angelauramc.amethyst.scoped.gamefolder'
+            resValue 'string', 'application_package', 'org.angelauramc.amethyst'
+        }
+        gplay {
+            initWith release
+            signingConfig signingConfigs.googlePlayBuild
+            matchingFallbacks = [ 'release' ]
+        }
+    }
+
+    ndkVersion = "27.3.13750724"
+
+    externalNativeBuild {
+        ndkBuild {
+            path file('src/main/jni/Android.mk')
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+            // If you're debugging mesa libs, put them here, android will strip them
+            // and not properly link to source files, very smart android studio.
+            keepDebugSymbols += ['**/libcutils.so']
+            pickFirsts += ['**/libbytehook.so']
+        }
+    }
+
+    buildFeatures {
+        prefab true
+        buildConfig true
+    }
+
+    lint {
+        abortOnError false
+    }
+}
+
+afterEvaluate {
+    def componentJars = [
+            ":forge_installer:jar",
+            ":arc_dns_injector:jar",
+            ":MioLibPatcher:jar",
+            ":jre_lwjgl3glfw:jar"
+    ]
+
+    tasks.withType(com.android.build.gradle.tasks.MergeSourceSetFolders).configureEach { t ->
+        t.dependsOn(componentJars)
+    }
+
+    // Needed or else the release builds complain about undeclared dependencies
+    tasks.matching { it.name.toLowerCase().contains("lint") }.configureEach { t ->
+        t.dependsOn(componentJars)
+    }
+}
+
+dependencies {
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation 'commons-codec:commons-codec:1.15'
+    // implementation 'com.wu-man:android-bsf-api:3.1.3'
+    implementation 'androidx.preference:preference:1.2.0'
+    //implementation 'androidx.core:core:1.7.0'
+    implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
+    implementation 'androidx.viewpager2:viewpager2:1.1.0-beta01'
+    implementation 'androidx.annotation:annotation:1.5.0'
+
+    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+
+    implementation 'com.github.duanhong169:checkerboarddrawable:1.0.2'
+    implementation 'com.github.PojavLauncherTeam:portrait-sdp:ed33e89cbc'
+    implementation 'com.github.PojavLauncherTeam:portrait-ssp:6c02fd739b'
+    implementation 'com.github.Mathias-Boulay:ExtendedView:1.0.0'
+    implementation 'com.github.Mathias-Boulay:android_gamepad_remapper:2.0.3'
+    implementation 'com.github.Mathias-Boulay:virtual-joystick-android:1.14'
+
+    // implementation 'com.intuit.sdp:sdp-android:1.0.5'
+    // implementation 'com.intuit.ssp:ssp-android:1.0.5'
+
+    implementation 'org.tukaani:xz:1.8'
+    // Our version of exp4j can be built from source at
+    // https://github.com/PojavLauncherTeam/exp4j
+    implementation 'net.sourceforge.htmlcleaner:htmlcleaner:2.6.1'
+    implementation 'com.bytedance:bytehook:1.0.10'
+
+    // implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.0'
+
+    implementation 'top.fifthlight.touchcontroller:proxy-client-android:0.0.4'
+
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+
+    implementation "net.java.dev.jna:jna:5.14.0@aar"
+
+    implementation project(":androidnsbypass")
+
+}
+apply from: rootProject.file('gradle/prefab_bypass.gradle')
