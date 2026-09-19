@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -33,16 +33,39 @@ jobs:
 
       - name: Build Debug .apk
         run: |
-          gradle :app_pojavlauncher:assembleDebug --stacktrace
+          set -o pipefail
+          gradle :app_pojavlauncher:assembleDebug --stacktrace 2>&1 | tee build-debug.log
           cp app_pojavlauncher/build/outputs/apk/debug/app_pojavlauncher-debug.apk out/turtle-launcher-debug.apk
 
-      - name: Build Release .apk
+      - name: Report build errors
+        if: failure()
         run: |
-          gradle :app_pojavlauncher:assembleRelease --stacktrace
+          # Surface compiler errors as annotations (visible through the API)
+          grep -nE "^e: |error: |\.java:[0-9]+: |\.kt:[0-9]+: |What went wrong|Caused by:|> Task .*FAILED|FAILURE: Build failed" build-debug.log | head -60 > errors.log || true
+          if [ -s errors.log ]; then
+            while IFS= read -r line; do
+              echo "::error::${line:0:600}"
+            done < errors.log
+          else
+            echo "::error::Build failed but no error lines were matched; see full log"
+            tail -60 build-debug.log | while IFS= read -r line; do echo "::error::${line:0:600}"; done
+          fi
+
+      - name: Build Release .apk
+        if: success()
+        run: |
+          set -o pipefail
+          gradle :app_pojavlauncher:assembleRelease --stacktrace 2>&1 | tee build-release.log
           cp app_pojavlauncher/build/outputs/apk/release/app_pojavlauncher-release-unsigned.apk out/turtle-launcher-release-unsigned.apk || \
           cp app_pojavlauncher/build/outputs/apk/release/app_pojavlauncher-release.apk out/turtle-launcher-release.apk
 
+      - name: Report release build errors
+        if: failure()
+        run: |
+          grep -nE "^e: |error: |\.java:[0-9]+: |\.kt:[0-9]+: |What went wrong|Caused by:|> Task .*FAILED|FAILURE: Build failed" build-release.log 2>/dev/null | head -60 | while IFS= read -r line; do echo "::error::${line:0:600}"; done
+
       - name: Generate checksums
+        if: success()
         run: |
           cd out
           for f in *.apk; do
@@ -51,12 +74,14 @@ jobs:
           done
 
       - name: Upload debug APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: turtle-launcher-debug
           path: out/turtle-launcher-debug.apk*
 
       - name: Upload release APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: turtle-launcher-release
