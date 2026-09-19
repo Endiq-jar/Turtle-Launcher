@@ -19,7 +19,7 @@ import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.anim.ViewAnimUtils.Companion.setViewAnim
 import com.endiq.turtlelauncher.utils.file.FileTools
 import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
+import net.kdt.pojavlaunch.contracts.OpenDocumentsWithExtension
 import org.greenrobot.eventbus.EventBus
 
 class ModPackDownloadFragment(parentFragment: Fragment? = null) : AbstractResourceDownloadFragment(
@@ -40,7 +40,7 @@ class ModPackDownloadFragment(parentFragment: Fragment? = null) : AbstractResour
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        openDocumentLauncher = registerForActivityResult(OpenDocumentWithExtension(null)) { uris: List<Uri>? ->
+        openDocumentLauncher = registerForActivityResult(OpenDocumentsWithExtension(null)) { uris: List<Uri>? ->
             uris?.let { uriList ->
                 uriList[0].let { result ->
                     if (!isTaskRunning()) {

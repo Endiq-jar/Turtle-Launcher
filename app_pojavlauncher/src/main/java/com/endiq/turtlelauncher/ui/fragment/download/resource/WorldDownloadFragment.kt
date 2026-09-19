@@ -17,7 +17,7 @@ import com.endiq.turtlelauncher.task.TaskExecutors
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.file.FileTools
 import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
+import net.kdt.pojavlaunch.contracts.OpenDocumentsWithExtension
 
 class WorldDownloadFragment(parentFragment: Fragment? = null) : AbstractResourceDownloadFragment(
     parentFragment,
@@ -29,7 +29,7 @@ class WorldDownloadFragment(parentFragment: Fragment? = null) : AbstractResource
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        openDocumentLauncher = registerForActivityResult(OpenDocumentWithExtension("zip")) { uris: List<Uri>? ->
+        openDocumentLauncher = registerForActivityResult(OpenDocumentsWithExtension("zip")) { uris: List<Uri>? ->
             uris?.let { uriList ->
                 uriList[0].let { result ->
                     val dialog = ZHTools.showTaskRunningDialog(requireContext())

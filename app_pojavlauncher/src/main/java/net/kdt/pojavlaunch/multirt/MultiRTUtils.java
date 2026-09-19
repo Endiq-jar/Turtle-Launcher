@@ -39,6 +39,11 @@ public class MultiRTUtils {
     private static final String JAVA_VERSION_STR = "JAVA_VERSION=\"";
     private static final String OS_ARCH_STR = "OS_ARCH=\"";
 
+    /** Turtle Launcher API: old name for {@link #getInstalledRuntimes()}. */
+    public static List<Runtime> getRuntimes() {
+        return getInstalledRuntimes();
+    }
+
     public static List<Runtime> getInstalledRuntimes() {
         if(!RUNTIME_FOLDER.exists() && !RUNTIME_FOLDER.mkdirs()) {
             throw new RuntimeException("Failed to create runtime directory");

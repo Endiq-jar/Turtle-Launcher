@@ -38,7 +38,7 @@ import com.endiq.turtlelauncher.utils.file.FileCopyHandler
 import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.file.PasteFile
 import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
+import net.kdt.pojavlaunch.contracts.OpenDocumentsWithExtension
 import java.io.File
 import java.util.function.Consumer
 
@@ -55,7 +55,7 @@ class ModsFragment : FragmentWithAnim(R.layout.fragment_mods) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        openDocumentLauncher = registerForActivityResult(OpenDocumentWithExtension("jar", true)) { uris: List<Uri>? ->
+        openDocumentLauncher = registerForActivityResult(OpenDocumentsWithExtension("jar", true)) { uris: List<Uri>? ->
             uris?.let { uriList ->
                 val dialog = ZHTools.showTaskRunningDialog(requireContext())
                 // Snapshot the context up front: requireContext() from the worker

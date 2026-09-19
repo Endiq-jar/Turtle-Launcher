@@ -37,7 +37,7 @@ import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.file.PasteFile
 import net.kdt.pojavlaunch.CustomControlsActivity
 import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
+import net.kdt.pojavlaunch.contracts.OpenDocumentsWithExtension
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 
@@ -55,7 +55,7 @@ class ControlButtonFragment : FragmentWithAnim(R.layout.fragment_control_manager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        openDocumentLauncher = registerForActivityResult(OpenDocumentWithExtension("json", true)) { uris: List<Uri>? ->
+        openDocumentLauncher = registerForActivityResult(OpenDocumentsWithExtension("json", true)) { uris: List<Uri>? ->
             uris?.let { uriList ->
                 val dialog = ZHTools.showTaskRunningDialog(requireContext())
                 // Snapshot the context up front: if the user navigates away mid-copy,

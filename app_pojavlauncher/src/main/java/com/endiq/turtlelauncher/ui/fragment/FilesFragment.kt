@@ -40,7 +40,7 @@ import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.file.PasteFile
 import com.endiq.turtlelauncher.utils.file.ZipExtractUtils
 import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
+import net.kdt.pojavlaunch.contracts.OpenDocumentsWithExtension
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.util.Objects
@@ -75,7 +75,7 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        openDocumentLauncher = registerForActivityResult(OpenDocumentWithExtension(null, true)) { uris: List<Uri>? ->
+        openDocumentLauncher = registerForActivityResult(OpenDocumentsWithExtension(null, true)) { uris: List<Uri>? ->
             uris?.let { uriList ->
                 val dialog = ZHTools.showTaskRunningDialog((requireContext()))
                 val appContext = requireContext().applicationContext

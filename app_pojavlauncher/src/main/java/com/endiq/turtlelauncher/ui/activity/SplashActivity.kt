@@ -58,7 +58,7 @@ class SplashActivity : BaseActivity() {
             isClickable = false
         }
 
-        if (!Tools.checkStorageRoot()) {
+        if (!Tools.checkStorageRoot(this)) {
             startActivity(Intent(this, MissingStorageActivity::class.java))
             finish()
             return

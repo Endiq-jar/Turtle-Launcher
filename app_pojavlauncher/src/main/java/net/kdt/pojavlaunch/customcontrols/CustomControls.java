@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.*;
 import net.kdt.pojavlaunch.*;
 
+import com.endiq.turtlelauncher.ui.subassembly.customcontrols.ControlInfoData;
+
 @Keep
 public class CustomControls {
 	public int version = -1;
@@ -14,16 +16,23 @@ public class CustomControls {
 	public List<ControlData> mControlDataList;
 	public List<ControlDrawerData> mDrawerDataList;
 	public List<ControlJoystickData> mJoystickDataList;
+	/** Turtle Launcher: layout metadata (name/author/version/desc), serialized with v8 layouts. */
+	public ControlInfoData mControlInfoDataList;
 	public CustomControls() {
-		this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+		this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ControlInfoData());
 	}
 
 
 
 	public CustomControls(List<ControlData> mControlDataList, List<ControlDrawerData> mDrawerDataList, List<ControlJoystickData> mJoystickDataList) {
+		this(mControlDataList, mDrawerDataList, mJoystickDataList, new ControlInfoData());
+	}
+
+	public CustomControls(List<ControlData> mControlDataList, List<ControlDrawerData> mDrawerDataList, List<ControlJoystickData> mJoystickDataList, ControlInfoData mControlInfoDataList) {
 		this.mControlDataList = mControlDataList;
 		this.mDrawerDataList = mDrawerDataList;
 		this.mJoystickDataList = mJoystickDataList;
+		this.mControlInfoDataList = mControlInfoDataList;
 		this.scaledAt = 100f;
 	}
 	

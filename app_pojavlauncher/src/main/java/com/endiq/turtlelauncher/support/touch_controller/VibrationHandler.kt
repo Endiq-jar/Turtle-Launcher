@@ -8,7 +8,7 @@ import top.fifthlight.touchcontroller.proxy.client.LauncherProxyClient
 import top.fifthlight.touchcontroller.proxy.message.VibrateMessage
 
 class VibrationHandler(private val vibrator: Vibrator) : LauncherProxyClient.VibrationHandler {
-    override fun viberate(kind: VibrateMessage.Kind) {
+    override fun vibrate(kind: VibrateMessage.Kind) {
         runCatching {
             val effect = VibrationEffect.createOneShot(
                 AllSettings.tcVibrateDuration.getValue().coerceAtMost(500).coerceAtLeast(80).toLong(),

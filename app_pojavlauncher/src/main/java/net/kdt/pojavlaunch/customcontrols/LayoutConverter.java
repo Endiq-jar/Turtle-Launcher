@@ -1,5 +1,7 @@
 package net.kdt.pojavlaunch.customcontrols;
 
+import android.content.Context;
+
 import com.google.gson.JsonSyntaxException;
 
 import net.kdt.pojavlaunch.LwjglGlfwKeycode;
@@ -47,6 +49,52 @@ public class LayoutConverter {
         }
     }
 
+
+    // ---- Turtle Launcher API: context-aware load helpers with error reporting ----
+
+    public static CustomControls loadAndConvertIfNecessary(Context ctx, String jsonPath) {
+        try {
+            return loadAndConvertIfNecessary(jsonPath);
+        } catch (Exception e) {
+            Tools.showError(ctx, ctx.getString(com.endiq.turtlelauncher.R.string.controls_load_failed), e);
+            return null;
+        }
+    }
+
+    public static CustomControls loadFromAssets(Context context, String jsonName) {
+        try (java.io.InputStream is = context.getAssets().open(jsonName)) {
+            String string = org.apache.commons.io.IOUtils.toString(is, java.nio.charset.StandardCharsets.UTF_8);
+            JSONObject layoutJobj = new JSONObject(string);
+            return loadFromJsonObject(context, layoutJobj, string, null, true);
+        } catch (Exception e) {
+            Tools.showError(context, context.getString(com.endiq.turtlelauncher.R.string.controls_load_failed), e);
+            return null;
+        }
+    }
+
+    public static CustomControls loadFromJsonObject(Context ctx, JSONObject layoutJobj, String jsonString, String jsonPath, boolean showError) {
+        try {
+            if (!layoutJobj.has("version")) { //v1 layout
+                CustomControls layout = LayoutConverter.convertV1Layout(layoutJobj);
+                if (jsonPath != null) layout.save(jsonPath);
+                return layout;
+            }
+            int version = layoutJobj.getInt("version");
+            if (version == 2) {
+                CustomControls layout = LayoutConverter.convertV2Layout(layoutJobj);
+                if (jsonPath != null) layout.save(jsonPath);
+                return layout;
+            }
+            if (version == 3 || version == 4 || version == 5) return LayoutConverter.convertV3_4Layout(layoutJobj);
+            if (version == 6 || version == 7) return convertV6_7Layout(layoutJobj);
+            if (version == 8) return Tools.GLOBAL_GSON.fromJson(jsonString, CustomControls.class);
+            if (showError) Tools.showError(ctx, ctx.getString(com.endiq.turtlelauncher.R.string.controls_unsupported_layout_version), new IOException());
+            return null;
+        } catch (Exception e) {
+            if (showError) Tools.showError(ctx, ctx.getString(com.endiq.turtlelauncher.R.string.controls_load_failed), e);
+            return null;
+        }
+    }
 
     /**
      * Normalize the layout to v8 from v6/7. An issue from the joystick height and position has to be fixed.

@@ -26,7 +26,7 @@ import com.endiq.turtlelauncher.utils.platform.MemoryUtils.Companion.getUsedDevi
 import com.endiq.turtlelauncher.utils.stringutils.StringUtils
 import net.kdt.pojavlaunch.Architecture
 import net.kdt.pojavlaunch.Tools
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension
+import net.kdt.pojavlaunch.contracts.OpenDocumentsWithExtension
 import net.kdt.pojavlaunch.multirt.MultiRTConfigDialog
 import kotlin.math.min
 
@@ -38,7 +38,7 @@ class JavaSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment
 
     private lateinit var binding: SettingsFragmentJavaBinding
     private val mVmInstallLauncher = registerForActivityResult(
-        OpenDocumentWithExtension("xz")
+        OpenDocumentsWithExtension("xz")
     ) { uris: List<Uri>? ->
         uris?.let { uriList ->
             uriList[0].let { data ->
