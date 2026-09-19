@@ -116,7 +116,7 @@ class LaunchGame {
                 if (!networkAvailable) {
                     listener.onDownloadDone()
                 } else {
-                    MinecraftDownloader().start(mcVersion, versionName, listener)
+                    MinecraftDownloader().start(context as? android.app.Activity, mcVersion, versionName, listener)
                 }
             }
 
@@ -354,26 +354,16 @@ class LaunchGame {
                 val versionInfo = Tools.getVersionInfo(minecraftVersion)
                 val gameDirPath = minecraftVersion.getGameDir()
 
-                // Pre-processing.
-                Tools.disableSplash(gameDirPath)
-                androidx.tracing.Trace.beginSection("LaunchGame.classpath")
-                val launchClassPath = Tools.generateLaunchClassPath(versionInfo, minecraftVersion)
-                androidx.tracing.Trace.endSection()
-
-                val launchArgs = LaunchArgs(
-                    account,
-                    gameDirPath,
-                    minecraftVersion,
-                    versionInfo,
-                    minecraftVersion.getVersionName(),
-                    runtime,
-                    launchClassPath
-                ).getAllArgs()
-
-                FFmpegPlugin.discover(activity)
-
-                androidx.tracing.Trace.beginSection("LaunchGame.launchWithUtils")
-                JREUtils.launchWithUtils(activity, runtime, minecraftVersion, launchArgs, customArgs)
+                // ---- Amethyst core launch ----
+                // The Zalith-era LaunchArgs/JREUtils.launchWithUtils pipeline is replaced
+                // by the Amethyst launch core (Tools.launchMinecraft): Minecraft 26.3+
+                // metadata, LWJGL 3.4.1/SDL3 natives and runtime selection all live there.
+                // Turtle pre-launch state (renderer, runtime, FPS-boost JVM args, account)
+                // is synced into the Amethyst profile by the bridge.
+                androidx.tracing.Trace.beginSection("LaunchGame.amethystBridge")
+                TurtleLaunchBridge.launchOnAmethystCore(
+                    activity, account, minecraftVersion, versionInfo, javaRuntime, customArgs
+                )
                 androidx.tracing.Trace.endSection()
             } finally {
                 androidx.tracing.Trace.endSection()

@@ -176,6 +176,16 @@ int pojavInitOpenGL() {
         load_vulkan();
         setenv("GALLIUM_DRIVER","zink",1);
         set_osm_bridge_tbl();
+    } else if (strcmp(renderer, "vulkan_virgl") == 0) {
+        /* Turtle Launcher: VirGL renderer (OSMesa + virgl_test_server) */
+        pojav_environ->config_renderer = RENDERER_VK_ZINK;
+        setenv("GALLIUM_DRIVER","virgl",1);
+        set_osm_bridge_tbl();
+    } else if (strcmp(renderer, "gallium_freedreno") == 0) {
+        /* Turtle Launcher: Freedreno gallium driver over the OSMesa bridge */
+        pojav_environ->config_renderer = RENDERER_VK_ZINK;
+        setenv("GALLIUM_DRIVER","freedreno",1);
+        set_osm_bridge_tbl();
     } else printf("EGLBridge: Renderer was not configured as a bridge. Consider adding \"opengles\" to the start of renderer name if it crashes");
     if(br_init()) {
         br_setup_window();
@@ -225,7 +235,35 @@ EXTERNAL_API void pojavSetWindowHint(int hint, int value) {
     }
 }
 
+/*
+ * Turtle Launcher: lightweight FPS counter.
+ * pojavSwapBuffers() runs once per presented frame; we count frames in a 1s window
+ * and expose the value to Java through CallbackBridge.getCurrentFps().
+ */
+#include <time.h>
+static long t_fps_window_start_ms = 0;
+static int t_frame_count = 0;
+static int t_last_fps = 0;
+
+static long now_ms(void) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return ts.tv_sec * 1000L + ts.tv_nsec / 1000000L;
+}
+
+JNIEXPORT jint JNICALL Java_org_lwjgl_glfw_CallbackBridge_getCurrentFps(__attribute__((unused)) JNIEnv* env, __attribute__((unused)) jclass clazz) {
+    return t_last_fps;
+}
+
 EXTERNAL_API void pojavSwapBuffers() {
+    long now = now_ms();
+    if (t_fps_window_start_ms == 0) t_fps_window_start_ms = now;
+    t_frame_count++;
+    if (now - t_fps_window_start_ms >= 1000) {
+        t_last_fps = t_frame_count;
+        t_frame_count = 0;
+        t_fps_window_start_ms = now;
+    }
     br_swap_buffers();
 }
 

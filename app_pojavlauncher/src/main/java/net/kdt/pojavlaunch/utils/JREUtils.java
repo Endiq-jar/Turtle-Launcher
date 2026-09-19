@@ -224,6 +224,37 @@ public class JREUtils {
                 envMap.put("LIBGL_ES", "3");
                 envMap.put("POJAVEXEC_EGL","libltw.so"); // Use ANGLE EGL
             }
+            // Turtle renderer env
+            if(LOCAL_RENDERER.equals("opengles3_gl4es114")) {
+                envMap.put("LIBGL_ES", "3");
+                envMap.put("POJAVEXEC_EGL", "libgl4es_114.so");
+            }
+            if(LOCAL_RENDERER.equals("opengles3_gl4es115")) {
+                envMap.put("LIBGL_ES", "3");
+                envMap.put("POJAVEXEC_EGL", "libgl4es_115.so");
+            }
+            if(LOCAL_RENDERER.equals("opengles3_nw")) {
+                envMap.put("LIBGL_ES", "3");
+                envMap.put("POJAVEXEC_EGL", "libnw.so");
+            }
+            if(LOCAL_RENDERER.equals("opengles3_vgpu")) {
+                envMap.put("LIBGL_ES", "3");
+                envMap.put("POJAVEXEC_EGL", "libvgpu.so");
+            }
+            if(LOCAL_RENDERER.equals("opengles3_angle")) {
+                envMap.put("LIBGL_ES", "3");
+                envMap.put("POJAVEXEC_EGL", "libEGL_angle.so");
+                envMap.put("LIBGL_GLES", "libGLESv2_angle.so");
+                envMap.put("LIBGL_EGL", "libEGL_angle.so");
+            }
+            if(LOCAL_RENDERER.equals("vulkan_virgl")) {
+                envMap.put("POJAVEXEC_EGL", "libOSMesa_81.so");
+                envMap.put("GALLIUM_DRIVER", "virgl");
+            }
+            if(LOCAL_RENDERER.equals("gallium_freedreno")) {
+                envMap.put("POJAVEXEC_EGL", "libOSMesa_8.so");
+                envMap.put("GALLIUM_DRIVER", "freedreno");
+            }
             if(LOCAL_RENDERER.equals("opengles_mobileglues")){
                 envMap.put("MG_DIR_PATH", Tools.DIR_DATA + "/MobileGlues");
                 envMap.put("LIBGL_ES", "3");
@@ -546,6 +577,14 @@ public class JREUtils {
             case "opengles_mobileglues": renderLibrary = "libmobileglues.so"; break;
             case "opengles3_desktopgl_zink_kopper": renderLibrary = "libglxshim.so"; break;
             case "opengles3_ltw" : renderLibrary = "libltw.so"; break;
+            // Turtle Launcher renderer ecosystem (libs shipped in jniLibs)
+            case "opengles3_gl4es114": renderLibrary = "libgl4es_114.so"; break;
+            case "opengles3_gl4es115": renderLibrary = "libgl4es_115.so"; break;
+            case "opengles3_nw"      : renderLibrary = "libnw.so"; break;
+            case "opengles3_vgpu"    : renderLibrary = "libvgpu.so"; break;
+            case "opengles3_angle"   : renderLibrary = "libEGL_angle.so"; break;
+            case "vulkan_virgl"      : renderLibrary = "libOSMesa_81.so"; break;
+            case "gallium_freedreno" : renderLibrary = "libOSMesa_8.so"; break;
             case "opengles_system_gles" : return null; // Literally nothing, this is for system GLES.
             default:
                 Log.w("RENDER_LIBRARY", "No renderer selected, defaulting to opengles_mobileglues");

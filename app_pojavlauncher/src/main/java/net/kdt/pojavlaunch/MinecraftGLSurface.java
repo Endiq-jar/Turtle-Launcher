@@ -226,6 +226,9 @@ public class MinecraftGLSurface extends View implements GrabListener, DirectGame
                 @Override
                 public void onSurfaceTextureUpdated(@NonNull SurfaceTexture surface) {
                     // TODO: Triggers on eglSwapBuffers. Add a loading message and make it end here
+                    // Turtle Launcher: first presented frame - notify the game host so it can
+                    // drop the launcher background image and start overlay features.
+                    fireOnRenderingStarted();
                 }
             });
 
@@ -543,6 +546,28 @@ public class MinecraftGLSurface extends View implements GrabListener, DirectGame
     /** A small interface called when the listener is ready for the first time */
     public interface SurfaceReadyListener {
         void isReady();
+    }
+
+    /**
+     * Turtle Launcher compat: notified once the first frame has been presented, so the
+     * game host can clear the background image and start overlay features.
+     */
+    public interface OnRenderingStartedListener {
+        void onRenderingStarted();
+    }
+
+    private OnRenderingStartedListener mOnRenderingStartedListener = null;
+    private boolean mIsRenderingStarted = false;
+
+    public void setOnRenderingStartedListener(OnRenderingStartedListener listener) {
+        mOnRenderingStartedListener = listener;
+    }
+
+    protected void fireOnRenderingStarted() {
+        if (mIsRenderingStarted) return;
+        mIsRenderingStarted = true;
+        OnRenderingStartedListener listener = mOnRenderingStartedListener;
+        if (listener != null) listener.onRenderingStarted();
     }
 
     public void setSurfaceReadyListener(SurfaceReadyListener listener){

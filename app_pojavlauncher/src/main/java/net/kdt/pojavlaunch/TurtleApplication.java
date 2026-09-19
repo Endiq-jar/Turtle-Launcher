@@ -1,37 +1,62 @@
 package net.kdt.pojavlaunch;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.endiq.turtlelauncher.utils.ZHTools.getVersionCode;
 import static com.endiq.turtlelauncher.utils.ZHTools.getVersionName;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
-import net.kdt.pojavlaunch.InfoDistributor;
+
 import com.endiq.turtlelauncher.context.ContextExecutor;
 import com.endiq.turtlelauncher.context.LocaleHelper;
 import com.endiq.turtlelauncher.feature.log.Logging;
-import com.endiq.turtlelauncher.setting.AllSettings;
 import com.endiq.turtlelauncher.ui.activity.ErrorActivity;
-import com.endiq.turtlelauncher.utils.path.PathManager;
 import com.endiq.turtlelauncher.utils.ZHTools;
+import com.endiq.turtlelauncher.utils.path.PathManager;
+
 import net.kdt.pojavlaunch.utils.FileUtils;
+
 import java.io.File;
 import java.io.PrintStream;
 import java.text.DateFormat;
 import java.util.Date;
 
-
-public class TurtleApplication extends Application {
+/**
+ * Turtle Launcher application layer on top of the Amethyst core.
+ *
+ * Extends {@link PojavApplication} so the Amethyst core initialization
+ * (storage gate, {@link net.kdt.pojavlaunch.prefs.LauncherPreferences},
+ * {@link net.kdt.pojavlaunch.tasks.AsyncAssetManager} runtime unpacking and the
+ * shared executor service used by the launch pipeline) runs unchanged, then adds
+ * the Turtle-specific startup: crash reporting into the Turtle log directory,
+ * Shizuku management and the Turtle startup initializer.
+ */
+public class TurtleApplication extends PojavApplication {
 	public static final String CRASH_REPORT_TAG = "TurtleCrashReport";
 
 	@Override
 	public void onCreate() {
-		ContextExecutor.setApplication(this);
+		// Turtle path constants first, so the crash handler installed below (and any
+		// early Turtle code) always has valid directories even if the core init fails.
+		try {
+			PathManager.DIR_DATA = getDir("files", MODE_PRIVATE).getParent();
+			PathManager.DIR_CACHE = getCacheDir();
+			PathManager.DIR_ACCOUNT_NEW = PathManager.DIR_DATA + "/accounts";
+		} catch (Throwable t) {
+			Log.e(CRASH_REPORT_TAG, "Failed to initialize Turtle path manager", t);
+		}
 
+		// Amethyst core init: crash handler, storage gate, preferences, constants,
+		// architecture detection, AsyncAssetManager.unpackRuntime, executor service.
+		super.onCreate();
+
+		// Replace the Amethyst crash handler with the Turtle one (writes into the
+		// Turtle log dir, keeps earlier reports, shows the Turtle error screen).
 		Thread.setDefaultUncaughtExceptionHandler((thread, th) -> {
 			File crashFile = new File(resolveCrashLogDir(), "latestlog.txt");
 			try {
@@ -69,26 +94,6 @@ public class TurtleApplication extends Application {
 			ZHTools.killProcess();
 		});
 
-		try {
-			super.onCreate();
-			PathManager.DIR_DATA = getDir("files", MODE_PRIVATE).getParent();
-			PathManager.DIR_CACHE = getCacheDir();
-			PathManager.DIR_ACCOUNT_NEW = PathManager.DIR_DATA + "/accounts";
-			Tools.DEVICE_ARCHITECTURE = Architecture.getDeviceArchitecture();
-			//Force x86 lib directory for Asus x86 based zenfones
-			if(Architecture.isx86Device() && Architecture.is32BitsDevice()){
-				String originalJNIDirectory = getApplicationInfo().nativeLibraryDir;
-				getApplicationInfo().nativeLibraryDir = originalJNIDirectory.substring(0,
-												originalJNIDirectory.lastIndexOf("/"))
-												.concat("/x86");
-			}
-		} catch (Throwable throwable) {
-			Intent ferrorIntent = new Intent(this, ErrorActivity.class);
-			ferrorIntent.putExtra("throwable", throwable);
-			ferrorIntent.setFlags(FLAG_ACTIVITY_NEW_TASK);
-			startActivity(ferrorIntent);
-		}
-
 		com.endiq.turtlelauncher.feature.shizuku.ShizukuManager.INSTANCE.init(this);
 
 		androidx.startup.AppInitializer.getInstance(this)
@@ -122,17 +127,17 @@ public class TurtleApplication extends Application {
 	}
 
 	@Override
-    protected void attachBaseContext(Context base) {
+	protected void attachBaseContext(Context base) {
 		ContextExecutor.setApplication(this);
-        super.attachBaseContext(LocaleHelper.Companion.setLocale(base));
-    }
+		super.attachBaseContext(LocaleHelper.Companion.setLocale(base));
+	}
 
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+	@Override
+	public void onConfigurationChanged(@NonNull Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
 		ContextExecutor.setApplication(this);
 		LocaleHelper.Companion.setLocale(this);
-    }
+	}
 
 	private static File resolveCrashLogDir() {
 		try {

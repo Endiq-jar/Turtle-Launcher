@@ -359,6 +359,12 @@ public class CallbackBridge {
 
     @Keep @CriticalNative public static native void nativeSetUseInputStackQueue(boolean useInputStackQueue);
 
+    /**
+     * Turtle Launcher: current game FPS, counted per presented frame in
+     * pojavSwapBuffers (egl_bridge.c). Used by the in-game FPS overlay.
+     */
+    @Keep public static native int getCurrentFps();
+
     @Keep @CriticalNative private static native boolean nativeSendChar(char codepoint);
     // GLFW: GLFWCharModsCallback deprecated, but is Minecraft still use?
     @Keep @CriticalNative private static native boolean nativeSendCharMods(char codepoint, int mods);

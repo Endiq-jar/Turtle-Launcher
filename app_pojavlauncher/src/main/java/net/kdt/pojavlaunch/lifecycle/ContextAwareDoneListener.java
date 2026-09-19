@@ -1,39 +1,86 @@
 package net.kdt.pojavlaunch.lifecycle;
 
 import static net.kdt.pojavlaunch.MainActivity.INTENT_MINECRAFT_VERSION;
+import static net.kdt.pojavlaunch.MainActivity.INTENT_VERSION;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import net.kdt.pojavlaunch.MainActivity;
+import androidx.annotation.NonNull;
+
+import com.endiq.mcgui.ProgressLayout;
 import net.kdt.pojavlaunch.R;
+import com.endiq.turtlelauncher.context.ContextExecutor;
+import com.endiq.turtlelauncher.feature.mod.parser.ModChecker;
+import com.endiq.turtlelauncher.feature.mod.parser.ModInfo;
+import com.endiq.turtlelauncher.feature.mod.parser.ModParser;
+import com.endiq.turtlelauncher.feature.mod.parser.ModParserListener;
+import com.endiq.turtlelauncher.feature.version.Version;
+import com.endiq.turtlelauncher.setting.AllSettings;
+
+import net.kdt.pojavlaunch.MainActivity;
 import net.kdt.pojavlaunch.Tools;
-import net.kdt.pojavlaunch.lifecycle.ContextExecutor;
-import net.kdt.pojavlaunch.lifecycle.ContextExecutorTask;
 import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper;
 import net.kdt.pojavlaunch.tasks.AsyncMinecraftDownloader;
 import net.kdt.pojavlaunch.utils.NotificationUtils;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class ContextAwareDoneListener implements AsyncMinecraftDownloader.DoneListener, ContextExecutorTask {
     private final String mErrorString;
-    private final String mNormalizedVersionid;
+    private final Version mVersion;
 
-    public ContextAwareDoneListener(Context baseContext, String versionId) {
+    public ContextAwareDoneListener(Context baseContext, Version version) {
         this.mErrorString = baseContext.getString(R.string.mc_download_failed);
-        this.mNormalizedVersionid = versionId;
+        this.mVersion = version;
     }
 
     private Intent createGameStartIntent(Context context) {
         Intent mainIntent = new Intent(context, MainActivity.class);
-        mainIntent.putExtra(INTENT_MINECRAFT_VERSION, mNormalizedVersionid);
+        mainIntent.putExtra(INTENT_VERSION, mVersion);
+        // Amethyst-core intake: the MainActivity reads this string extra for its own
+        // version resolution even when the Turtle Version parcel is present.
+        mainIntent.putExtra(INTENT_MINECRAFT_VERSION, mVersion.getVersionName());
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return mainIntent;
     }
 
+    private void executeTask() {
+        ProgressKeeper.waitUntilDone(() -> ContextExecutor.executeTask(this));
+    }
+
     @Override
     public void onDownloadDone() {
-        ProgressKeeper.waitUntilDone(()->ContextExecutor.execute(this));
+        AtomicInteger progressCount = new AtomicInteger(0);
+        ModParser.checkAllMods(mVersion, new ModParserListener() {
+            @Override
+            public void onProgress(@NonNull ModInfo recentlyParsedModInfo, int totalFileCount) {
+                int i = progressCount.incrementAndGet();
+                int percent = totalFileCount > 0 ? i * 100 / totalFileCount : 100;
+                ProgressLayout.setProgress(ProgressLayout.CHECKING_MODS, percent,
+                        R.string.mod_check_progress_message, i, totalFileCount);
+            }
+
+            @Override
+            public void onParseEnded(@NonNull List<? extends ModInfo> modInfoList) {
+                ProgressLayout.clearProgress(ProgressLayout.CHECKING_MODS);
+                if (modInfoList.isEmpty()) executeTask();
+                else {
+                    ContextExecutor.executeTaskWithAllContext(context ->
+                        com.endiq.turtlelauncher.feature.mod.ModAutoMaintenance.runForVersion(
+                            context, mVersion, modInfoList, () ->
+                                new ModChecker().check(context, modInfoList, modCheckResult -> {
+                                    mVersion.setModCheckResult(modCheckResult);
+                                    executeTask();
+                                    return null;
+                                })
+                        )
+                    );
+                }
+            }
+        });
     }
 
     @Override
@@ -45,9 +92,14 @@ public class ContextAwareDoneListener implements AsyncMinecraftDownloader.DoneLi
     public void executeWithActivity(Activity activity) {
         try {
             Intent gameStartIntent = createGameStartIntent(activity);
+            com.endiq.turtlelauncher.task.TaskExecutors.setGameSessionActive(true);
+            com.endiq.turtlelauncher.feature.turtle.BackgroundServiceManager.onGameSessionStart(activity);
+            com.endiq.turtlelauncher.feature.shizuku.ShizukuActions.applyBeforeLaunchIfEnabled();
             activity.startActivity(gameStartIntent);
-            activity.finish();
-            android.os.Process.killProcess(android.os.Process.myPid()); //You should kill yourself, NOW!
+            if (AllSettings.getQuitLauncher().getValue()) {
+                activity.finish();
+                android.os.Process.killProcess(android.os.Process.myPid()); //You should kill yourself, NOW!
+            }
         } catch (Throwable e) {
             Tools.showError(activity.getBaseContext(), e);
         }

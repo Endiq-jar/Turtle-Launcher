@@ -6,7 +6,6 @@ import com.kdt.mcgui.ProgressLayout;
 
 import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.Tools;
-import net.kdt.pojavlaunch.fragments.NeoForgeInstallFragment;
 import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper;
 import net.kdt.pojavlaunch.utils.DownloadUtils;
 
@@ -72,7 +71,9 @@ public class NeoForgeDownloadTask implements Runnable, Tools.DownloaderFeedback 
     }
 
     public boolean findVersion() throws IOException {
-        List<String> neoforgeVersions = NeoForgeInstallFragment.downloadNeoForgeVersions();
+        // Turtle migration: the fragment UI was replaced by the Turtle download center;
+        // fetch the NeoForge version list directly.
+        List<String> neoforgeVersions = net.kdt.pojavlaunch.modloaders.NeoForgeVersions.downloadNeoForgeVersions();
         if(neoforgeVersions == null) return false;
         for(String versionName : neoforgeVersions) {
             if(!versionName.startsWith(mLoaderVersion)) continue;

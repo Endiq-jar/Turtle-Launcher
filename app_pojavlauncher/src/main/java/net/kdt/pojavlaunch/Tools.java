@@ -82,6 +82,11 @@ import net.kdt.pojavlaunch.value.launcherprofiles.MinecraftProfile;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
+import com.endiq.turtlelauncher.feature.customprofilepath.ProfilePathHome;
+import com.endiq.turtlelauncher.feature.log.Logging;
+import com.endiq.turtlelauncher.feature.version.Version;
+import com.endiq.turtlelauncher.utils.path.PathManager;
 import org.libsdl.app.SDLControllerManager;
 import org.lwjgl.glfw.CallbackBridge;
 
@@ -654,6 +659,9 @@ public final class Tools {
 
     public static File getGameDirPath(@NonNull MinecraftProfile minecraftProfile){
         if(minecraftProfile.gameDir != null){
+            // Turtle Launcher: instances may use absolute, custom game directories.
+            if(minecraftProfile.gameDir.startsWith("/"))
+                return new File(minecraftProfile.gameDir);
             if(minecraftProfile.gameDir.startsWith(Tools.LAUNCHERPROFILES_RTPREFIX))
                 return new File(minecraftProfile.gameDir.replace(Tools.LAUNCHERPROFILES_RTPREFIX,Tools.DIR_GAME_HOME+"/"));
             else
@@ -1755,6 +1763,14 @@ public final class Tools {
         // LTW is an optional proprietary dependency
         boolean appHasLtw = new File(Tools.NATIVE_LIB_DIR, "libltw.so").exists();
         boolean appHasKw = new File(Tools.NATIVE_LIB_DIR, "libng_gl4es.so").exists();
+        // Turtle renderer ecosystem libraries (optional, shipped in jniLibs)
+        boolean appHasGl4es114 = new File(Tools.NATIVE_LIB_DIR, "libgl4es_114.so").exists();
+        boolean appHasGl4es115 = new File(Tools.NATIVE_LIB_DIR, "libgl4es_115.so").exists();
+        boolean appHasNw = new File(Tools.NATIVE_LIB_DIR, "libnw.so").exists();
+        boolean appHasVgpu = new File(Tools.NATIVE_LIB_DIR, "libvgpu.so").exists();
+        boolean appHasAngle = new File(Tools.NATIVE_LIB_DIR, "libEGL_angle.so").exists();
+        boolean appHasVirgl = new File(Tools.NATIVE_LIB_DIR, "libOSMesa_81.so").exists();
+        boolean appHasFreedreno = new File(Tools.NATIVE_LIB_DIR, "libOSMesa_8.so").exists();
         List<String> rendererIds = new ArrayList<>(defaultRenderers.length);
         List<String> rendererNames = new ArrayList<>(defaultRendererNames.length);
         for(int i = 0; i < defaultRenderers.length; i++) {
@@ -1762,6 +1778,14 @@ public final class Tools {
             if(rendererId.contains("vulkan") && !deviceHasVulkan) continue;
             if(rendererId.contains("vulkan_zink") && !deviceHasOSMesaZinkBinary) continue;
             if(rendererId.contains("ltw") && (!deviceHasOpenGLES3 || !appHasLtw)) continue;
+            // Turtle renderer gating: only offer a renderer when its library is installed
+            if(rendererId.contains("gl4es114") && !appHasGl4es114) continue;
+            if(rendererId.contains("gl4es115") && !appHasGl4es115) continue;
+            if(rendererId.contains("_nw") && !appHasNw) continue;
+            if(rendererId.contains("vgpu") && !appHasVgpu) continue;
+            if(rendererId.contains("angle") && !appHasAngle) continue;
+            if(rendererId.contains("virgl") && !appHasVirgl) continue;
+            if(rendererId.contains("freedreno") && (!appHasFreedreno || !deviceHasVulkan)) continue;
             if(rendererId.contains("opengles2") && (!deviceHasOpenGLES3 || !appHasKw)) continue;
             rendererIds.add(rendererId);
             rendererNames.add(defaultRendererNames[i]);
@@ -1949,4 +1973,270 @@ public final class Tools {
     }
     public static native String jObjectToString(Object object);
     public static native long getJavaVMPointer();
+    /* ===================== Turtle Launcher compat layer =====================
+     * Members ported from the Zalith/Turtle core that the Turtle app layer
+     * references. They are additive: the Amethyst launch pipeline above is
+     * untouched and remains the single source of truth for launching.
+     * ====================================================================== */
+
+    public static String getClientClasspath(Version version) {
+        return new File(version.getVersionPath(), version.getVersionName() + ".jar").getAbsolutePath();
+    }
+
+    public static String getLWJGL3ClassPath() {
+        StringBuilder libStr = new StringBuilder();
+        File lwjgl3Folder = new File(PathManager.DIR_GAME_HOME, "lwjgl3");
+        File[] lwjgl3Files = lwjgl3Folder.listFiles();
+        if (lwjgl3Files != null) {
+            for (File file: lwjgl3Files) {
+                if (file.getName().endsWith(".jar")) {
+                    libStr.append(file.getAbsolutePath()).append(":");
+                }
+            }
+        }
+        // Remove the ':' at the end
+        if(libStr.length() > 0){
+    libStr.setLength(libStr.length() - 1);
+}
+        return libStr.toString();
+    }
+
+    public static String generateLaunchClassPath(JMinecraftVersionList.Version info, Version minecraftVersion) {
+        StringBuilder finalClasspath = new StringBuilder(); //versnDir + "/" + version + "/" + version + ".jar:";
+
+        String[] classpath = generateLibClasspath(info);
+
+        String clientClasspath = getClientClasspath(minecraftVersion);
+
+        if (isClientFirst) {
+            finalClasspath.append(clientClasspath);
+        }
+        for (String jarFile : classpath) {
+            if (!FileUtils.exists(jarFile)) {
+                Logging.d(InfoDistributor.LAUNCHER_NAME, "Ignored non-exists file: " + jarFile);
+                continue;
+            }
+            finalClasspath.append((isClientFirst ? ":" : "")).append(jarFile).append(!isClientFirst ? ":" : "");
+        }
+        if (!isClientFirst) {
+            finalClasspath.append(clientClasspath);
+        }
+
+        return finalClasspath.toString();
+    }
+
+
+    public static boolean versionUsesLwjglSdl(JMinecraftVersionList.Version info) {
+        for (DependentLibrary libItem : info.libraries) {
+            if (libItem.name != null && libItem.name.startsWith("org.lwjgl:lwjgl-sdl:")) return true;
+        }
+        return false;
+    }
+
+    public enum LwjglMode { NEW_SDL, LEGACY }
+
+    public static LwjglMode resolveLwjglMode(JMinecraftVersionList.Version info) {
+        String override = com.endiq.turtlelauncher.setting.AllSettings.getLwjglCompatMode().getValue();
+        if ("new".equals(override)) return LwjglMode.NEW_SDL;
+        if ("legacy".equals(override)) return LwjglMode.LEGACY;
+        return versionUsesLwjglSdl(info) ? LwjglMode.NEW_SDL : LwjglMode.LEGACY;
+    }
+
+    private static boolean isLwjglAbiCriticalModule(String libName, boolean versionUsesSdl) {
+        if (libName.startsWith("org.lwjgl:lwjgl-sdl:")) return true;
+        return versionUsesSdl && libName.startsWith("org.lwjgl:lwjgl:");
+    }
+
+    public static String getLwjglAbiOverrideClasspath(JMinecraftVersionList.Version info) {
+        List<String> paths = new ArrayList<>();
+        boolean versionUsesSdl = resolveLwjglMode(info) == LwjglMode.NEW_SDL;
+        for (DependentLibrary libItem : info.libraries) {
+            if (!checkRules(libItem.rules)) continue;
+            String libName = libItem.name;
+            if (libName == null || !isLwjglAbiCriticalModule(libName, versionUsesSdl)) continue;
+
+            String libArtifactPath = artifactToPath(libItem);
+            if (libArtifactPath == null) continue;
+            String fullPath = ProfilePathHome.getLibrariesHome() + "/" + libArtifactPath;
+            if (FileUtils.exists(fullPath)) paths.add(fullPath);
+        }
+        return String.join(":", paths);
+    }
+
+    public static String getLwjglNativeLibraryOverride(JMinecraftVersionList.Version info) {
+        return resolveLwjglMode(info) == LwjglMode.NEW_SDL ? null : "lwjgl-legacy";
+    }
+
+    public static JMinecraftVersionList.Version getVersionInfo(Version version) {
+        return getVersionInfo(version, false);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static JMinecraftVersionList.Version getVersionInfo(Version version, boolean skipInheriting) {
+        try {
+            JMinecraftVersionList.Version customVer = Tools.GLOBAL_GSON.fromJson(read(new File(version.getVersionPath(), version.getVersionName() + ".json")), JMinecraftVersionList.Version.class);
+            if (customVer == null) {
+                throw new RuntimeException("Corrupt version json for " + version.getVersionName() + " (parsed to null)");
+            }
+            if (customVer.libraries == null) customVer.libraries = new DependentLibrary[0];
+            if (skipInheriting || customVer.inheritsFrom == null || customVer.inheritsFrom.equals(customVer.id)) {
+                preProcessLibraries(customVer.libraries);
+            } else {
+                JMinecraftVersionList.Version inheritsVer;
+                //If it won't download, just search for it
+                try {
+                    inheritsVer = Tools.GLOBAL_GSON.fromJson(read(version.getVersionsFolder() + "/" + customVer.inheritsFrom + "/" + customVer.inheritsFrom + ".json"), JMinecraftVersionList.Version.class);
+                } catch (IOException e) {
+                    throw new RuntimeException("Can't find the source version for " + version.getVersionName() + " (req version=" + customVer.inheritsFrom + ")");
+                }
+                if (inheritsVer == null) {
+                    throw new RuntimeException("Corrupt version json for inherited version " + customVer.inheritsFrom + " (parsed to null)");
+                }
+                if (inheritsVer.libraries == null) inheritsVer.libraries = new DependentLibrary[0];
+                //inheritsVer.inheritsFrom = inheritsVer.id;
+                insertSafety(inheritsVer, customVer,
+                        "assetIndex", "assets", "id",
+                        "mainClass", "minecraftArguments",
+                        "releaseTime", "time", "type"
+                );
+
+                // Go through the libraries, remove the ones overridden by the custom version
+                List<DependentLibrary> inheritLibraryList = new ArrayList<>(Arrays.asList(inheritsVer.libraries));
+                outer_loop:
+                for(DependentLibrary library : customVer.libraries){
+                    // A library entry with a null or colon-less name (malformed json)
+                    // used to NPE / throw StringIndexOutOfBounds here - compare on the
+                    // full name instead, which still dedups exact duplicates.
+                    if (library == null) continue;
+                    String libName = stripLibraryVersion(library.name);
+
+                    for(DependentLibrary inheritLibrary : inheritLibraryList) {
+                        if (inheritLibrary == null) continue;
+                        String inheritLibName = stripLibraryVersion(inheritLibrary.name);
+
+                        if(libName.equals(inheritLibName)){
+                            Logging.d(InfoDistributor.LAUNCHER_NAME, "Library " + libName + ": Replaced version " +
+                                    libName.substring(libName.lastIndexOf(":") + 1) + " with " +
+                                    inheritLibName.substring(inheritLibName.lastIndexOf(":") + 1));
+
+                            // Remove the library , superseded by the overriding libs
+                            inheritLibraryList.remove(inheritLibrary);
+                            continue outer_loop;
+                        }
+                    }
+                }
+
+                // Fuse libraries
+                inheritLibraryList.addAll(Arrays.asList(customVer.libraries));
+                inheritsVer.libraries = inheritLibraryList.toArray(new DependentLibrary[0]);
+                preProcessLibraries(inheritsVer.libraries);
+
+
+                // Inheriting Minecraft 1.13+ with append custom args
+                if (inheritsVer.arguments != null && customVer.arguments != null
+                        && inheritsVer.arguments.game != null && customVer.arguments.game != null) {
+                    List totalArgList = new ArrayList(Arrays.asList(inheritsVer.arguments.game));
+
+                    int nskip = 0;
+                    for (int i = 0; i < customVer.arguments.game.length; i++) {
+                        if (nskip > 0) {
+                            nskip--;
+                            continue;
+                        }
+
+                        Object perCustomArg = customVer.arguments.game[i];
+                        if (perCustomArg instanceof String) {
+                            String perCustomArgStr = (String) perCustomArg;
+                            // Check if there is a duplicate argument on combine
+                            if (perCustomArgStr.startsWith("--") && totalArgList.contains(perCustomArgStr)) {
+                                // A duplicate flag as the LAST arg has no i+1 - guard the
+                                // read instead of throwing ArrayIndexOutOfBounds.
+                                if (i + 1 >= customVer.arguments.game.length) continue;
+                                perCustomArg = customVer.arguments.game[i + 1];
+                                if (perCustomArg instanceof String) {
+                                    perCustomArgStr = (String) perCustomArg;
+                                    // If the next is argument value, skip it
+                                    if (!perCustomArgStr.startsWith("--")) {
+                                        nskip++;
+                                    }
+                                }
+                            } else {
+                                totalArgList.add(perCustomArgStr);
+                            }
+                        } else if (!totalArgList.contains(perCustomArg)) {
+                            totalArgList.add(perCustomArg);
+                        }
+                    }
+
+                    inheritsVer.arguments.game = totalArgList.toArray(new Object[0]);
+                }
+
+                customVer = inheritsVer;
+            }
+
+            // LabyMod 4 sets version instead of majorVersion
+            if (customVer.javaVersion != null && customVer.javaVersion.majorVersion == 0) {
+                customVer.javaVersion.majorVersion = customVer.javaVersion.version;
+            }
+
+            if (customVer.javaVersion != null && customVer.javaVersion.component != null) {
+                String comp = customVer.javaVersion.component.toLowerCase(java.util.Locale.ROOT);
+                int derivedMaj = -1;
+                if (comp.startsWith("java-epsilon"))        derivedMaj = 25;
+                else if (comp.startsWith("java-delta"))     derivedMaj = 21;
+                else if (comp.startsWith("java-gamma"))     derivedMaj = 17;
+                else if (comp.startsWith("java-beta"))      derivedMaj = 8;
+                else if (comp.startsWith("java-alpha"))     derivedMaj = 8;
+
+                if (derivedMaj > 0) {
+                    Logging.i("Tools", "Resolved javaVersion via component '" + comp + "' → Java " + derivedMaj);
+                    customVer.javaVersion.majorVersion = derivedMaj;
+                }
+            }
+
+            // Fallback: version-name heuristic for MC 26.x when component is absent.
+            // MC 26.1 / 26.2 / ... require Java 25.
+            if (customVer.javaVersion != null) {
+                int maj = customVer.javaVersion.majorVersion;
+                String vName = customVer.id != null ? customVer.id : "";
+
+                // If majorVersion is still 0, apply name-based heuristic
+                if (maj == 0) {
+                    if (vName.startsWith("26.") || vName.startsWith("27.") || vName.startsWith("28.")) {
+                        customVer.javaVersion.majorVersion = 25;
+                        Logging.i("Tools", "MC version " + vName + " matched 26.x+ pattern → Java 25");
+                    } else {
+                        customVer.javaVersion.majorVersion = 8;
+                    }
+                } else if (maj == 21 && (vName.startsWith("26.") || vName.startsWith("27."))) {
+                    // MC 26.x shipped with majorVersion=21 in early betas; bump to 25
+                    Logging.i("Tools", "MC " + vName + " javaVersion=21 overridden to 25 (26.x requires Java 25)");
+                    customVer.javaVersion.majorVersion = 25;
+                } else if (maj > 25 && maj < 100) {
+                    // Future-proof: unknown high version → stay at 25 (highest we support)
+                    Logging.i("Tools", "MC javaVersion.majorVersion=" + maj + " > 25; capping to 25");
+                    customVer.javaVersion.majorVersion = 25;
+                }
+            }
+            return customVer;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void insertSafety(JMinecraftVersionList.Version targetVer, JMinecraftVersionList.Version fromVer, String... keyArr) {
+        for (String key : keyArr) {
+            Object value = null;
+            try {
+                Field fieldA = fromVer.getClass().getField(key);
+                value = fieldA.get(fromVer);
+                if (((value instanceof String) && !((String) value).isEmpty()) || value != null) {
+                    Field fieldB = targetVer.getClass().getField(key);
+                    fieldB.set(targetVer, value);
+                }
+            } catch (Throwable th) {
+                Logging.w(InfoDistributor.LAUNCHER_NAME, "Unable to insert " + key + "=" + value, th);
+            }
+        }
+
 }
