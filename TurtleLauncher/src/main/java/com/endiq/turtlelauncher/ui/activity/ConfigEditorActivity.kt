@@ -1,6 +1,9 @@
 package com.endiq.turtlelauncher.ui.activity
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.InputFilter
+import android.text.TextWatcher
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
@@ -8,9 +11,11 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.feature.version.VersionsManager
+import com.endiq.turtlelauncher.task.TaskExecutors
 import java.io.File
 
 class ConfigEditorActivity : BaseActivity() {
@@ -28,6 +33,9 @@ class ConfigEditorActivity : BaseActivity() {
 
         /** How many leading bytes to sniff when deciding if a file looks binary. */
         private const val BINARY_SNIFF_BYTES = 8000
+
+        /** Largest file loaded fully and editable; anything bigger is a read-only truncated preview. */
+        private const val MAX_EDIT_BYTES = 256 * 1024
     }
 
     private lateinit var fileList: ListView
@@ -36,6 +44,10 @@ class ConfigEditorActivity : BaseActivity() {
     private lateinit var saveButton: Button
     private var currentFile: File? = null
     private var files: List<File> = emptyList()
+    private var readOnly = false
+    private var dirty = false
+    private var suppressWatcher = false
+    private var loadGeneration = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +61,15 @@ class ConfigEditorActivity : BaseActivity() {
         editorText = findViewById(R.id.config_editor_text)
         currentFileLabel = findViewById(R.id.config_current_file_label)
         saveButton = findViewById(R.id.config_editor_save)
+
+        (editorText as? AppCompatEditText)?.setEmojiCompatEnabled(false)
+        editorText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (!suppressWatcher) dirty = true
+            }
+        })
 
         val targetFilePath = intent.getStringExtra(EXTRA_TARGET_FILE_PATH)
         if (targetFilePath != null) {
@@ -76,19 +97,20 @@ class ConfigEditorActivity : BaseActivity() {
             return
         }
 
-        files = collectEditableFiles(version.getGameDir())
-        fileList.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1,
-            files.map { it.relativeTo(version.getGameDir()).path }
-        )
-        fileList.setOnItemClickListener { _, _, position, _ -> openFile(files[position]) }
-
-        saveButton.setOnClickListener { saveCurrentFile() }
-
-        // Auto-open the first non-binary file so we don't greet the user with a warning
-        // dialog on entry; if everything looks binary, just leave the editor empty.
-        files.firstOrNull { !looksBinary(it) }?.let { loadFile(it) }
+        val gameDir = version.getGameDir()
+        TaskExecutors.getDefault().execute {
+            val collected = collectEditableFiles(gameDir)
+            val labels = collected.map { it.relativeTo(gameDir).path }
+            val first = collected.firstOrNull { it.length() <= MAX_EDIT_BYTES && !looksBinary(it) }
+            runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                files = collected
+                fileList.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, labels)
+                fileList.setOnItemClickListener { _, _, position, _ -> openFile(files[position]) }
+                saveButton.setOnClickListener { saveCurrentFile() }
+                first?.let { loadFile(it) }
+            }
+        }
     }
 
     /**
@@ -146,7 +168,7 @@ class ConfigEditorActivity : BaseActivity() {
             AlertDialog.Builder(this)
                 .setTitle(file.name)
                 .setMessage(R.string.config_editor_binary_warning)
-                .setPositiveButton(R.string.generic_ok) { _, _ -> loadFile(file) }
+                .setPositiveButton(R.string.generic_ok) { _, _ -> loadFile(file, forceReadOnly = true) }
                 .setNegativeButton(R.string.cancel, null)
                 .show()
             return
@@ -154,16 +176,63 @@ class ConfigEditorActivity : BaseActivity() {
         loadFile(file)
     }
 
-    private fun loadFile(file: File) {
-        if (currentFile != null) saveCurrentFile(silent = true)
-        currentFile = file
+    private fun loadFile(file: File, forceReadOnly: Boolean = false) {
+        saveCurrentFile(silent = true)
+        val generation = ++loadGeneration
+        currentFile = null
+        dirty = false
         currentFileLabel.text = file.name
-        editorText.setText(runCatching { file.readText() }.getOrDefault(""))
+        saveButton.isEnabled = false
+        TaskExecutors.getDefault().execute {
+            val size = file.length()
+            val truncated = size > MAX_EDIT_BYTES
+            val text = runCatching { readCapped(file, MAX_EDIT_BYTES) }.getOrDefault("")
+            runOnUiThread {
+                if (isFinishing || isDestroyed || generation != loadGeneration) return@runOnUiThread
+                readOnly = forceReadOnly || truncated
+                suppressWatcher = true
+                editorText.filters = emptyArray()
+                editorText.setText(text)
+                editorText.setSelection(0)
+                suppressWatcher = false
+                dirty = false
+                if (readOnly) {
+                    editorText.filters = arrayOf(InputFilter { _, _, _, dest, dStart, dEnd -> dest.subSequence(dStart, dEnd) })
+                }
+                editorText.setShowSoftInputOnFocus(!readOnly)
+                saveButton.isEnabled = !readOnly
+                currentFile = file
+                currentFileLabel.text = when {
+                    truncated -> file.name + " (read-only preview, first " + (MAX_EDIT_BYTES / 1024) + " KB)"
+                    forceReadOnly -> file.name + " (read-only)"
+                    else -> file.name
+                }
+            }
+        }
+    }
+
+    private fun readCapped(file: File, limit: Int): String {
+        file.inputStream().use { stream ->
+            val buffer = ByteArray(limit)
+            var total = 0
+            while (total < limit) {
+                val n = stream.read(buffer, total, limit - total)
+                if (n <= 0) break
+                total += n
+            }
+            return String(buffer, 0, total, Charsets.UTF_8)
+        }
     }
 
     private fun saveCurrentFile(silent: Boolean = false) {
         val file = currentFile ?: return
+        if (readOnly) {
+            if (!silent) Toast.makeText(this, "Read-only preview", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (silent && !dirty) return
         val ok = runCatching { file.writeText(editorText.text.toString()) }.isSuccess
+        if (ok) dirty = false
         if (!silent) {
             Toast.makeText(this, if (ok) getString(R.string.generic_save) + " ✓" else "Save failed", Toast.LENGTH_SHORT).show()
         }

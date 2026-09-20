@@ -45,23 +45,23 @@
                 android:textStyle="bold"
                 tools:ignore="HardcodedText" />
 
-            <ScrollView
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/config_editor_text"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1">
-
-                <EditText
-                    android:id="@+id/config_editor_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@null"
-                    android:fontFamily="monospace"
-                    android:gravity="top|start"
-                    android:inputType="textMultiLine|textNoSuggestions"
-                    android:padding="8dp"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-            </ScrollView>
+                android:layout_weight="1"
+                android:background="@null"
+                android:breakStrategy="simple"
+                android:fontFamily="monospace"
+                android:gravity="top|start"
+                android:hyphenationFrequency="none"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine|textNoSuggestions"
+                android:overScrollMode="ifContentScrolls"
+                android:padding="8dp"
+                android:scrollbars="vertical"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/config_editor_save"
