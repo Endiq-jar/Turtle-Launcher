@@ -17,6 +17,7 @@ public class NotificationUtils {
     public static final int NOTIFICATION_ID_DOWNLOAD_LISTENER = 3;
     public static final int NOTIFICATION_ID_SHOW_ERROR = 4;
     public static final int NOTIFICATION_ID_GAME_START = 5;
+    public static final int NOTIFICATION_ID_RECORDING_AUDIO = 6;
     public static final int PENDINGINTENT_CODE_KILL_PROGRESS_SERVICE = 1;
     public static final int PENDINGINTENT_CODE_KILL_GAME_SERVICE = 2;
     public static final int PENDINGINTENT_CODE_DOWNLOAD_SERVICE = 3;

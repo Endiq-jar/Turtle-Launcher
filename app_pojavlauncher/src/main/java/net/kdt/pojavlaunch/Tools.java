@@ -117,6 +117,8 @@ import java.util.Map;
 @SuppressWarnings("IOStreamConstructor")
 public final class Tools {
     public  static final float BYTE_TO_MB = 1024 * 1024;
+    /** Turtle Launcher API: default notification channel (must match notif_channel_id). */
+    public static final String NOTIFICATION_CHANNEL_DEFAULT = "channel_id";
     public static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
     public static String APP_NAME = "Turtle Launcher";
 
