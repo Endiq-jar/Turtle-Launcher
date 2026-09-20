@@ -21,6 +21,10 @@ import java.io.IOException;
 
 
 public class CustomControlsActivity extends BaseActivity implements EditorExitable {
+
+	/** Turtle Launcher API: extra key carrying a control layout path to open in the editor. */
+	public static final String BUNDLE_CONTROL_PATH = "control_path";
+
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerNavigationView;
 	private ControlLayout mControlLayout;
@@ -31,12 +35,23 @@ public class CustomControlsActivity extends BaseActivity implements EditorExitab
 
 		setContentView(R.layout.activity_custom_controls);
 
+		// Turtle Launcher API: launch the editor focused on a specific layout file
+		Bundle launchBundle = getIntent().getExtras();
+		String controlPath = launchBundle == null ? null : launchBundle.getString(BUNDLE_CONTROL_PATH);
+
 		mControlLayout = findViewById(R.id.customctrl_controllayout);
 		mDrawerLayout = findViewById(R.id.customctrl_drawerlayout);
 		mDrawerNavigationView = findViewById(R.id.customctrl_navigation_view);
 		View mPullDrawerButton = findViewById(R.id.drawer_button);
 
 		mPullDrawerButton.setOnClickListener(v -> mDrawerLayout.openDrawer(mDrawerNavigationView));
+
+		try {
+			if (controlPath == null) mControlLayout.loadLayout((String) null);
+			else mControlLayout.loadLayout(controlPath);
+		} catch (Exception e) {
+			Tools.showError(this, e);
+		}
 		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
 		mDrawerNavigationView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,getResources().getStringArray(R.array.menu_customcontrol_customactivity)));

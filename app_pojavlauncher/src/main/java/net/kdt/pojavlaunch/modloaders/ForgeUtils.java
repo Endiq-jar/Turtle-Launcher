@@ -20,6 +20,16 @@ import javax.xml.parsers.SAXParserFactory;
 public class ForgeUtils {
     private static final String FORGE_METADATA_URL = "https://maven.minecraftforge.net/net/minecraftforge/forge/maven-metadata.xml";
     private static final String FORGE_INSTALLER_URL = "https://maven.minecraftforge.net/net/minecraftforge/forge/%1$s/forge-%1$s-installer.jar";
+    /** Turtle Launcher API: cached download with a force-refresh flag. */
+    public static List<String> downloadForgeVersions(boolean force) throws IOException {
+        if (force) {
+            try {
+                new java.io.File(net.kdt.pojavlaunch.Tools.DIR_CACHE, "string_cache/forge_versions").delete();
+            } catch (Throwable ignored) {}
+        }
+        return downloadForgeVersions();
+    }
+
     public static List<String> downloadForgeVersions() throws IOException {
         SAXParser saxParser;
         try {

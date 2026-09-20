@@ -329,6 +329,9 @@ dependencies {
 
     implementation 'com.squareup.okio:okio:3.17.0'
 
+    // Zstd compression (Turtle cache compression layer)
+    implementation 'com.github.luben:zstd-jni:1.5.7-6@aar'
+
     // AndroidX DataStore (Preferences variant) - SharedPreferences replacement with a
     // coroutines/Flow-based API. Used by newer Turtle settings screens.
     implementation 'androidx.datastore:datastore-preferences:1.2.1'

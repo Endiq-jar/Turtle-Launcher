@@ -59,8 +59,8 @@ class ControlMenu(
                 addJoystick -> controlLayout.addJoystickButton(ControlJoystickData())
 
                 load -> controlLayout.openLoadDialog()
-                save -> controlLayout.openSaveDialog()
-                saveAndExit -> controlLayout.openSaveAndExitDialog(exitListener)
+                save -> controlLayout.openSaveDialog(null) // save without leaving the editor
+                saveAndExit -> controlLayout.openSaveDialog(exitListener) // Amethyst save listener exits the editor after saving
                 saveAndExport -> {
                     try { // Saving the currently shown control
                         val contentUri = DocumentsContract.buildDocumentUri(

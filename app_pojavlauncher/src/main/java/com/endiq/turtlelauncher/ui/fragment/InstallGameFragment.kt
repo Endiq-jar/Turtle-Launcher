@@ -33,11 +33,13 @@ import com.endiq.turtlelauncher.ui.dialog.TipDialog
 import com.endiq.turtlelauncher.ui.fragment.download.addon.DownloadFabricApiFragment
 import com.endiq.turtlelauncher.ui.fragment.download.addon.DownloadFabricFragment
 import com.endiq.turtlelauncher.ui.fragment.download.addon.DownloadForgeFragment
+import com.endiq.turtlelauncher.ui.fragment.download.addon.DownloadBtaFragment
 import com.endiq.turtlelauncher.ui.fragment.download.addon.DownloadCleanroomFragment
 import com.endiq.turtlelauncher.ui.fragment.download.addon.DownloadNeoForgeFragment
 import com.endiq.turtlelauncher.ui.fragment.download.addon.DownloadOptiFineFragment
 import com.endiq.turtlelauncher.ui.fragment.download.addon.DownloadQuiltApiFragment
 import com.endiq.turtlelauncher.ui.fragment.download.addon.DownloadQuiltFragment
+import com.endiq.turtlelauncher.ui.fragment.download.addon.DownloadLwjgl3ifyFragment
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.file.FileTools
 import com.endiq.turtlelauncher.utils.runtime.SelectRuntimeUtils
@@ -97,6 +99,10 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
             quiltApiDelete.setOnClickListener(clickListener)
             cleanroomLayout.setOnClickListener(clickListener)
             cleanroomDelete.setOnClickListener(clickListener)
+            btaLayout.setOnClickListener(clickListener)
+            btaDelete.setOnClickListener(clickListener)
+            lwjgl3ifyLayout.setOnClickListener(clickListener)
+            lwjgl3ifyDelete.setOnClickListener(clickListener)
             modpackLayout.setOnClickListener(clickListener)
 
             back.setOnClickListener(clickListener)
@@ -123,6 +129,8 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
             checkIncompatible(Addon.QUILT, quiltLayout, quiltVersion, quiltInstall, quiltDelete)
             checkIncompatible(Addon.QSL, quiltApiLayout, quiltApiVersion, quiltApiInstall, quiltApiDelete, true)
             checkIncompatible(Addon.CLEANROOM, cleanroomLayout, cleanroomVersion, cleanroomInstall, cleanroomDelete)
+            checkIncompatible(Addon.BTA, btaLayout, btaVersion, btaInstall, btaDelete)
+            checkIncompatible(Addon.LWJGL3IFY, lwjgl3ifyLayout, lwjgl3ifyVersion, lwjgl3ifyInstall, lwjgl3ifyDelete)
 
             val loaderName = addonMap.keys
                 .firstOrNull { it != Addon.OPTIFINE || addonMap.size == 1 }
@@ -250,6 +258,8 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
                 quiltLayout -> swapFragment(DownloadQuiltFragment::class.java, DownloadQuiltFragment.TAG)
                 quiltApiLayout -> swapFragment(DownloadQuiltApiFragment::class.java, DownloadQuiltApiFragment.TAG)
                 cleanroomLayout -> swapFragment(DownloadCleanroomFragment::class.java, DownloadCleanroomFragment.TAG)
+                btaLayout -> swapFragment(DownloadBtaFragment::class.java, DownloadBtaFragment.TAG)
+                lwjgl3ifyLayout -> swapFragment(DownloadLwjgl3ifyFragment::class.java, DownloadLwjgl3ifyFragment.TAG)
                 modpackLayout -> {
                     val bundle = android.os.Bundle().apply {
                         putInt(com.endiq.turtlelauncher.ui.fragment.DownloadFragment.ARG_INITIAL_TAB, 1) // ModPack tab
@@ -267,6 +277,8 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
                 quiltDelete -> removeAddon(Addon.QUILT)
                 quiltApiDelete -> removeAddon(Addon.QSL)
                 cleanroomDelete -> removeAddon(Addon.CLEANROOM)
+                btaDelete -> removeAddon(Addon.BTA)
+                lwjgl3ifyDelete -> removeAddon(Addon.LWJGL3IFY)
 
                 installFab -> {
                     val string = nameEdit.text?.toString()
@@ -355,6 +367,10 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
                     moveFile(file, File(getModPath(), "${taskPair.first}.jar"))
                 }
                 Addon.QUILT -> taskMap[addon] = InstallTaskItem(taskPair.first, false, taskPair.second, null)
+                // BTA and LWJGL3ify bring their own installers from the Amethyst stack:
+                // they create their version/profile themselves, so no end task is needed.
+                Addon.BTA -> taskMap[addon] = InstallTaskItem(taskPair.first, false, taskPair.second, null)
+                Addon.LWJGL3IFY -> taskMap[addon] = InstallTaskItem(taskPair.first, false, taskPair.second, null)
                 Addon.QSL -> taskMap[addon] = InstallTaskItem(taskPair.first, true, taskPair.second) { _, file ->
                     moveFile(file, File(getModPath(), "${taskPair.first}.jar"))
                 }

@@ -97,8 +97,8 @@ touches your worlds.
 ## Mods, modpacks, resource packs, shaders
 
 * **Mods** (Modrinth & CurseForge): install, remove, enable/disable, update, dependency info,
-  version and loader compatibility checks, with the Amethyst mod filter dialog for
-  narrowing by loader, MC version and category.
+  version and loader compatibility checks. Search filters for platform, sort order, category
+  and mod loader are built into the download center's search bar.
 * **Modpacks**: Modrinth `.mrpack` and CurseForge ZIP, from the download center or by
   importing a file. Export your own modpacks too.
 * **Resource packs & shaders**: same management flow, including renderer-compatibility

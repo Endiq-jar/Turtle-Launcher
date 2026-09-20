@@ -11,6 +11,16 @@ import java.util.List;
 
 public class OptiFineUtils {
 
+    /** Turtle Launcher API: cached download with a force-refresh flag. */
+    public static OptiFineVersions downloadOptiFineVersions(boolean force) throws IOException {
+        if (force) {
+            try {
+                new File(Tools.DIR_CACHE, "string_cache/of_downloads_page").delete();
+            } catch (Throwable ignored) {}
+        }
+        return downloadOptiFineVersions();
+    }
+
     public static OptiFineVersions downloadOptiFineVersions() throws IOException {
         try {
             return DownloadUtils.downloadStringCached("https://optifine.net/downloads",
