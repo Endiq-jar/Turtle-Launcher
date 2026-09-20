@@ -19,6 +19,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import android.content.pm.PackageManager;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -113,9 +114,9 @@ public class LauncherActivity extends BaseActivity {
 
     private final AnimPlayer noticeAnimPlayer = new AnimPlayer();
     public final ActivityResultLauncher<Object> modInstallerLauncher =
-            registerForActivityResult(new OpenDocumentWithExtension("jar"), (uris) -> {
-                if (uris != null) {
-                    Tools.launchModInstaller(this, uris.get(0));
+            registerForActivityResult(new OpenDocumentWithExtension("jar"), (uri) -> {
+                if (uri != null) {
+                    Tools.launchModInstaller(this, uri);
                 }
             });
 

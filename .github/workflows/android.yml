@@ -40,8 +40,28 @@ jobs:
       - name: Report build errors
         if: failure()
         run: |
-          # Surface compiler errors as annotations (visible through the API)
-          grep -nE "^e: |error: |symbol: |location: |required:|found:|\.java:[0-9]+: |\.kt:[0-9]+: |What went wrong|Caused by:|> Task .*FAILED|FAILURE: Build failed" build-debug.log | head -250 > errors.log || true
+          # Emit ONE annotation per javac/kotlinc error group (error + symbol +
+          # location + required/found merged onto a single line), so the 50-error
+          # annotation cap carries complete information. Full log goes to the artifact.
+          python3 - << 'PYEOF' > errors.log
+          import re, sys
+          lines = open('build-debug.log', encoding='utf-8', errors='replace').read().splitlines()
+          group, out = [], []
+          def flush():
+              if group:
+                  merged = ' | '.join(g.strip() for g in group)
+                  out.append(merged[:600])
+                  del group[:]
+          for ln in lines:
+              if re.match(r'^e: |error: ', ln) or re.search(r'\.(java|kt):[0-9]+: (error|�)', ln) or 'What went wrong' in ln or 'Caused by:' in ln or re.match(r'> Task .*FAILED', ln):
+                  flush(); group.append(ln)
+              elif group and re.match(r'^  (symbol|location|required|found):', ln):
+                  group.append(ln)
+              elif group and not ln.startswith(' '):
+                  flush()
+          flush()
+          for o in out[:50]: print(o)
+          PYEOF
           if [ -s errors.log ]; then
             while IFS= read -r line; do
               echo "::error::${line:0:600}"
@@ -50,6 +70,8 @@ jobs:
             echo "::error::Build failed but no error lines were matched; see full log"
             tail -60 build-debug.log | while IFS= read -r line; do echo "::error::${line:0:600}"; done
           fi
+          # Keep the raw full-context log for the artifact as well
+          grep -nE "^e: |error: |symbol: |location: |required:|found:|\.java:[0-9]+: |\.kt:[0-9]+: |What went wrong|Caused by:|> Task .*FAILED|FAILURE: Build failed" build-debug.log | head -400 > errors-raw.log || true
 
       - name: Upload build logs on failure
         if: failure()
@@ -59,6 +81,7 @@ jobs:
           path: |
             build-debug.log
             errors.log
+            errors-raw.log
           retention-days: 7
 
       - name: Build Release .apk
