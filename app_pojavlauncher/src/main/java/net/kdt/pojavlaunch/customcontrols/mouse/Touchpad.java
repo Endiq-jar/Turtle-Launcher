@@ -13,11 +13,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.endiq.turtlelauncher.setting.AllSettings;
+import com.endiq.turtlelauncher.utils.ZHTools;
+import com.endiq.turtlelauncher.utils.image.ImageUtils;
 import net.kdt.pojavlaunch.GrabListener;
 import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.prefs.LauncherPreferences;
 
 import org.lwjgl.glfw.CallbackBridge;
+
+import java.awt.Dimension;
 
 /**
  * Class dealing with the virtual mouse
@@ -80,6 +85,23 @@ public class Touchpad extends View implements GrabListener, AbstractTouchpad {
     protected void onDraw(Canvas canvas) {
         canvas.translate(mMouseX, mMouseY);
         mMousePointerDrawable.draw(canvas);
+    }
+
+    /**
+     * Turtle Launcher API: re-apply the mouse-scale setting to the current pointer.
+     */
+    public void updateMouseScale() {
+        Dimension mousescale = ImageUtils.resizeWithRatio(mMousePointerDrawable.getIntrinsicWidth(), mMousePointerDrawable.getIntrinsicHeight(),
+                AllSettings.getMouseScale().getValue());
+        mMousePointerDrawable.setBounds(0, 0, (int) (mousescale.width * 0.5), (int) (mousescale.height * 0.5));
+    }
+
+    /**
+     * Turtle Launcher API: swap in the user's custom mouse pointer (if selected).
+     */
+    public void updateMouseDrawable() {
+        mMousePointerDrawable = ZHTools.customMouse(getContext());
+        updateMouseScale();
     }
 
     private void init(){

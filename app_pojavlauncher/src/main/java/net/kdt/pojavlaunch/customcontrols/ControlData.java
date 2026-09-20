@@ -67,6 +67,7 @@ public class ControlData {
     public boolean isSwipeable;
     public boolean displayInGame;
     public boolean displayInMenu;
+    public String customImagePath;
     private float width;         //Dp instead of Px now
     private float height;        //Dp instead of Px now
 
@@ -153,6 +154,7 @@ public class ControlData {
                 controlData.isSwipeable,
                 controlData.passThruEnabled
         );
+        this.customImagePath = controlData.customImagePath;
     }
 
     public static ControlData[] getSpecialButtons() {

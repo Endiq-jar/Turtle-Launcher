@@ -68,6 +68,13 @@ public class ColorSelector extends SideDialogView implements HueSelectionListene
     /**
      * Shows the color selector with the default (red) color selected.
      */
+    /**
+     * Turtle Launcher API: the view the popup editor animates.
+     */
+    public View getRootView() {
+        return mDialogContent;
+    }
+
     public void show(boolean fromRight) {
         show(fromRight, Color.RED);
     }

@@ -7,6 +7,9 @@ public class Runtime {
     public final String versionString;
     public final String arch;
     public final int javaVersion;
+    /** Turtle Launcher API: true when this runtime is bundled/provided by the launcher. */
+    public boolean isProvidedByLauncher = false;
+
     public Runtime(String name) {
         this.name = name;
         this.versionString = null;

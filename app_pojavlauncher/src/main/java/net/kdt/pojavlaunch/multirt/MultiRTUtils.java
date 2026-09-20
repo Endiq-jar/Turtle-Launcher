@@ -1,5 +1,7 @@
 package net.kdt.pojavlaunch.multirt;
 
+import com.endiq.turtlelauncher.feature.unpack.Jre;
+
 import static net.kdt.pojavlaunch.Architecture.getDeviceArchitecture;
 import static net.kdt.pojavlaunch.Tools.NATIVE_LIB_DIR;
 import static org.apache.commons.io.FileUtils.listFiles;
@@ -52,7 +54,15 @@ public class MultiRTUtils {
         ArrayList<Runtime> runtimes = new ArrayList<>();
         File[] files = RUNTIME_FOLDER.listFiles();
         if(files != null) for(File f : files) {
-            runtimes.add(read(f.getName()));
+            Runtime runtime = read(f.getName());
+            // Turtle Launcher: mark runtimes bundled with the launcher itself
+            for (Jre jre : Jre.values()) {
+                if (jre.getJreName().equals(f.getName())) {
+                    runtime.isProvidedByLauncher = true;
+                    break;
+                }
+            }
+            runtimes.add(runtime);
         }
         else throw new RuntimeException("The runtime directory does not exist");
 
