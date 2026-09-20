@@ -22,7 +22,7 @@ gamma:1.0
 guiScale:0
 maxAnisotropyBit:0
 textureFiltering:0
-maxFps:240
+maxFps:30
 improvedTransparency:false
 inactivityFpsLimit:"afk"
 mipmapLevels:0
