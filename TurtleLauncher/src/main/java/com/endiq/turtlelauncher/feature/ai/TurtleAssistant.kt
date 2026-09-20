@@ -448,7 +448,7 @@ object TurtleAssistant {
             ),
             answer = {
                 "Home screen rail → Custom Controls opens the control editor: add/move/resize buttons, " +
-                    "joysticks and hotbars, save layouts as presets (a survival preset ships with the launcher).\n\n" +
+                    "joysticks and hotbars, and save layouts as presets.\n\n" +
                 "• Settings → Control: sensitivity, control layout picker, gamepad options.\n" +
                 "• Settings → Accessibility: button size/opacity, and the notch/ignore-notch options.\n" +
                 "• Top bar → Cursor opens the custom mouse/cursor manager (you can import .cur/.ani/.ico files).\n" +

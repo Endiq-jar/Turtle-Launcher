@@ -199,4 +199,10 @@
     <color name="new_progress_track">#171717</color>
     <color name="new_progress_fill">#e3e8b0</color>
 
+    <!-- Pastel severity fills used by the live and saved game-log viewers. -->
+    <color name="log_error_background">#FFFFD6D6</color>
+    <color name="log_error_text">#FF742F3F</color>
+    <color name="log_warning_background">#FFFFE9A8</color>
+    <color name="log_warning_text">#FF6B5200</color>
+
 </resources>
