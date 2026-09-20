@@ -57,6 +57,27 @@ import java.lang.reflect.Method;
  * -Dorg.lwjgl.sdl.libname pinning and the natives-cache purge (see
  * SdlAndroidJniPrep.ensureSingleSdl3Source and its class doc). This class's
  * job stays exactly one thing: call SDL_SetMainReady() before Mojang's main.
+ *
+ * ── Sept 20 2026 ROOT CAUSE of the two-instance crash (decoded from three
+ * hs_err logs, all identical: SIGSEGV libSDL3.so+0xb94c4) ──
+ * hs_err's memory map shows libSDL3.so mapped TWICE from the SAME file
+ * (same dev:inode), so the earlier "a different file is winning" theory was
+ * wrong; it is a linker-namespace split. LWJGL loads SDL3 through
+ * DynamicLinkLoader.ndlopen, which liblwjgl.so implements as a 16-byte
+ * tail-call thunk into dlopen(). A tail call leaves the JVM's generated
+ * native-wrapper stub as the return address, which belongs to no library, so
+ * bionic files the load under the anonymous namespace instead of the app
+ * classloader namespace the ART-side System.loadLibrary("SDL3") used. Two
+ * namespaces, two instances; the game gets the one whose JNI_OnLoad never ran.
+ * libpojavexec already ships the fix (lwjgl_dlopen_hook.c re-registers ndlopen
+ * so the dlopen call happens from libpojavexec code, i.e. the classloader
+ * namespace), but it only installs from libpojavexec's JNI_OnLoad on the GUEST
+ * VM - which for SDL launches nothing ever triggered (GLFW is never touched, so
+ * the guest never loaded libpojavexec; the hs_err dll event log shows only
+ * libpojavexec_awt). Touching org.lwjgl.glfw.GLFW here runs its static
+ * initializer, which loads libpojavexec and installs the hook BEFORE Minecraft
+ * reaches SDL. This does not load SDL3 from the guest, so the constraint above
+ * still holds.
  */
 public class SdlMainReadyBootstrap {
     public static void main(String[] args) throws Exception {
@@ -66,6 +87,14 @@ public class SdlMainReadyBootstrap {
                 "turtlelauncher.realMainClass system property was not set - " +
                 "LaunchArgs should always set this alongside routing through this bootstrap class"
             );
+        }
+
+        try {
+            Class.forName("org.lwjgl.glfw.GLFW", true, SdlMainReadyBootstrap.class.getClassLoader());
+            System.out.println("TurtleSDL3: guest libpojavexec loaded, LWJGL dlopen hook installed");
+        } catch (Throwable t) {
+            System.out.println("TurtleSDL3: could not install the LWJGL dlopen hook (" + t
+                + ") - SDL3 may load as a second, uninitialized instance");
         }
 
         try {

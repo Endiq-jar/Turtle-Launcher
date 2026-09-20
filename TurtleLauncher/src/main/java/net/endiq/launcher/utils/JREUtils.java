@@ -524,6 +524,7 @@ public final class JREUtils {
         userArgs.add(0,"java");
         if (gameVersion != null && Tools.resolveLwjglMode(Tools.getVersionInfo(gameVersion)) == Tools.LwjglMode.NEW_SDL) {
             com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.ensureSingleSdl3Source(gameVersion.getVersionName());
+            com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.ensureMobileGluesShaderErrorIgnore();
             com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.setup(activity);
         }
 

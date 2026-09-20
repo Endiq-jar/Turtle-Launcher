@@ -22,6 +22,19 @@ object SdlAndroidJniPrep {
         private set
 
     @JvmStatic
+    fun ensureMobileGluesShaderErrorIgnore() {
+        runCatching {
+            val dir = File(PathManager.DIR_FILE, "mobileglues").apply { mkdirs() }
+            val config = File(dir, "config.json")
+            if (!config.exists()) {
+                config.writeText("{\"enableNoError\":2}\n")
+                Log.i(TAG, "TurtleSDL3: wrote ${config.absolutePath} (enableNoError=2 = ignore shader/program " +
+                    "errors, which MobileGlues' release notes require for MC 26.3-snapshot-3+)")
+            }
+        }.onFailure { Log.w(TAG, "TurtleSDL3: could not write MobileGlues config.json", it) }
+    }
+
+    @JvmStatic
     fun ensureSingleSdl3Source(versionName: String?) {
         // ── Layer 1b: purge shadowing SDL3 copies from the natives cache dir ──
         if (versionName != null) {

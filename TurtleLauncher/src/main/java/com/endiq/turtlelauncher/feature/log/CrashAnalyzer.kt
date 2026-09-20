@@ -620,16 +620,16 @@ object CrashAnalyzer {
                             "called into an SDL3 instance whose Android JNI glue was never initialized - SDL's " +
                             "JavaVM pointer was still NULL, so SDL's GetEnv returned NULL and its touch-init code " +
                             "dereferenced it. The launcher DOES initialize SDL's Android side before the game " +
-                            "starts (SdlAndroidJniPrep), which means the game loaded a second, different SDL3 " +
-                            "instance instead of the initialized one - either a foreign libSDL3.so found first in " +
-                            "the natives cache dir, or this device's vendor linker namespaces split the two " +
-                            "loads apart. The launcher now pins the exact SDL3 file and purges foreign copies, " +
-                            "but that fix is new and not yet confirmed on a real device. (The 'not accessible " +
-                            "for the namespace' vendor-library lines some devices print around game start are " +
-                            "harmless OEM game-injection noise - ignore them.)",
+                            "starts (SdlAndroidJniPrep), which means the game loaded a second copy of the same " +
+                            "libSDL3.so under a different linker namespace (LWJGL's dlopen is a tail call, so " +
+                            "bionic files it under the anonymous namespace instead of the app's). Newer builds " +
+                            "install libpojavexec's dlopen hook in the game JVM before SDL loads, so the game " +
+                            "shares the initialized copy; this is decoded from real hs_err logs but not yet " +
+                            "confirmed fixed on a device. (The 'not accessible for the namespace' vendor-library " +
+                            "lines some devices print around game start are harmless OEM noise - ignore them.)",
                         fixSteps = listOf(
-                            "Update to the latest build and relaunch - newer builds pin the SDL3 library file " +
-                                "and purge foreign copies from the natives cache, which addresses the known " +
+                            "Update to the latest build and relaunch - newer builds make the game JVM load SDL3 " +
+                                "through the same linker namespace as the launcher, which addresses the decoded " +
                                 "cause of this crash.",
                             "If it still crashes, share the log: the 'TurtleSDL3:' and 'SdlAndroidJniPrep' lines " +
                                 "now record exactly which SDL3 file was pinned and what was removed - that's " +
