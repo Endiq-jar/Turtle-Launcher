@@ -4,69 +4,61 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:elevation="-10dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_setting_sign_in_background" />
+    android:layout_height="match_parent"
+    android:background="@color/background_app">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-
         android:layout_marginHorizontal="@dimen/_15sdp"
-        android:background="@drawable/menu_background"
-        android:paddingVertical="20dp"
+        android:background="@drawable/background_item"
+        android:paddingVertical="@dimen/_20sdp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.3"
-        tools:layout_editor_absoluteX="16dp">
+        app:layout_constraintVertical_bias="0.3">
 
         <TextView
             android:id="@+id/textView_import_control_file_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="5dp"
-            android:text="File name:"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:text="@string/import_control_file_name"
+            android:textColor="@color/turtle_text_primary"
             app:layout_constraintBottom_toTopOf="@+id/editText_import_control_file_name"
             app:layout_constraintStart_toStartOf="@+id/editText_import_control_file_name" />
 
-        <com.kdt.mcgui.MineEditText
+        <com.endiq.turtlelauncher.ui.view.AnimEditText
             android:id="@+id/editText_import_control_file_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="35dp"
-            android:layout_marginBottom="20dp"
-            android:hint="File name"
+            android:layout_marginHorizontal="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_20sdp"
+            android:background="@drawable/background_edit_box"
+            android:hint="@string/import_control_hint"
             android:imeOptions="flagForceAscii"
-
+            android:padding="@dimen/_8sdp"
+            android:textColor="@color/turtle_text_primary"
+            android:textColorHint="@color/turtle_text_secondary"
             app:layout_constraintBottom_toTopOf="@+id/mineButton_import_control" />
 
-        <com.kdt.mcgui.MineButton
+        <com.endiq.turtlelauncher.ui.view.AnimButton
             android:id="@+id/mineButton_import_control"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="15dp"
-
-            android:background="@drawable/mine_button_background"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:background="@drawable/background_item_2"
             android:onClick="startImport"
-
+            android:paddingVertical="@dimen/_8sdp"
             android:text="@string/import_control_import_button"
-            android:textColor="@android:color/white"
+            android:textAllCaps="true"
+            android:textColor="@color/turtle_text_primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/editText_import_control_file_name"
-
             app:layout_constraintStart_toStartOf="@+id/editText_import_control_file_name"
-
             app:layout_constraintVertical_bias="0.70" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-

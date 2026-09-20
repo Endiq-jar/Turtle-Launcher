@@ -66,6 +66,13 @@ public class GamepadMapperFragment extends Fragment implements
         buttonRecyclerView.setOnGenericMotionListener(this);
         buttonRecyclerView.requestFocus();
         mInputManager = new RemapperManager(view.getContext(), mRemapperViewBuilder);
+        // Old Turtle look: the styled back button on the right panel
+        View backButton = view.findViewById(R.id.back_button);
+        if (backButton != null)
+            backButton.setOnClickListener(v -> {
+                Activity activity = getActivity();
+                if (activity != null) activity.onBackPressed();
+            });
         Spinner grabStateSpinner = view.findViewById(R.id.gamepad_remapper_mode_spinner);
         ArrayAdapter<String> mGrabStateAdapter = new ArrayAdapter<>(view.getContext(), R.layout.support_simple_spinner_dropdown_item);
         mGrabStateAdapter.addAll(getString(R.string.customctrl_visibility_in_menus), getString(R.string.customctrl_visibility_ingame));

@@ -1,7 +1,7 @@
 package net.kdt.pojavlaunch.mirrors;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.content.Context;
 import android.text.Html;
 
