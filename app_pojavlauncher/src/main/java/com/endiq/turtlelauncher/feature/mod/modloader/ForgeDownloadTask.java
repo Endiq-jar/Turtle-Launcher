@@ -43,7 +43,7 @@ public class ForgeDownloadTask implements InstallTask, Tools.DownloaderFeedback 
     }
 
     @Override
-    public void updateProgress(long curr, long max) {
+    public void updateProgress(int curr, int max) {
         int progress100 = (int)(((float)curr / (float)max)*100f);
         ProgressKeeper.submitProgress(ProgressLayout.INSTALL_RESOURCE, progress100, R.string.mod_download_progress, mFullVersion);
     }

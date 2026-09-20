@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.endiq.anim.animations.Animations;
-import net.kdt.pojavlaunch.databinding.ViewLoggerBinding;
+import net.kdt.pojavlaunch.databinding.ViewLoggerTurtleBinding;
 import com.endiq.turtlelauncher.setting.AllSettings;
 import com.endiq.turtlelauncher.utils.anim.ViewAnimUtils;
 
@@ -23,7 +23,7 @@ import net.kdt.pojavlaunch.Logger;
  */
 public class LoggerView extends ConstraintLayout {
     private Logger.eventLogListener mLogListener;
-    private ViewLoggerBinding binding;
+    private ViewLoggerTurtleBinding binding;
     private boolean isShowing = false;
 
     // TurtleLauncher v10: raw, unfiltered log lines kept separately so the regex/text
@@ -74,7 +74,7 @@ public class LoggerView extends ConstraintLayout {
      * Inflate the layout, and add component behaviors
      */
     private void init() {
-        binding = ViewLoggerBinding.inflate(LayoutInflater.from(getContext()), this, true);
+        binding = ViewLoggerTurtleBinding.inflate(LayoutInflater.from(getContext()), this, true);
 
         binding.logView.setTypeface(Typeface.MONOSPACE);
         //TODO clamp the max text so it doesn't go oob
@@ -180,7 +180,7 @@ public class LoggerView extends ConstraintLayout {
             binding.scroll.fullScroll(View.FOCUS_DOWN);
     }
 
-    public ViewLoggerBinding getBinding() {
+    public ViewLoggerTurtleBinding getBinding() {
         return binding;
     }
 
