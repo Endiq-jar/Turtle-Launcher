@@ -1,105 +1,201 @@
-<h1 align="center">Turtle Launcher</h1>
+# Turtle Launcher
+![Downloads](https://img.shields.io/github/downloads/Endiq-jar/TurtleLauncher/total?style=for-the-badge&logo=github)
+![Release](https://img.shields.io/github/v/release/Endiq-jar/TurtleLauncher?style=for-the-badge)
+![Stars](https://img.shields.io/github/stars/Endiq-jar/TurtleLauncher?style=for-the-badge)
+![Forks](https://img.shields.io/github/forks/Endiq-jar/TurtleLauncher?style=for-the-badge)
 
-<p align="center"><b>Minecraft: Java Edition for Android — Turtle style, Amethyst-powered.</b></p>
+![License](https://img.shields.io/github/license/Endiq-jar/TurtleLauncher?style=for-the-badge)
+![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android)
+![Last Commit](https://img.shields.io/github/last-commit/Endiq-jar/TurtleLauncher?style=for-the-badge)
 
-Turtle Launcher is a Minecraft: Java Edition launcher for Android. It keeps the complete
-Turtle Launcher experience — download center, instances, accounts, skins/capes/chroma names,
-controls, performance profiles, diagnostics, modpacks, mods, resource packs and shaders —
-rebuilt on the [Amethyst](https://github.com/AngelAuraMC/Amethyst-Android) launcher core for
-**Minecraft 26.3+ support** (snapshots included), LWJGL 3.4.x, SDL3 windowing/input and the
-modern renderer stack.
+<H1 ALIGN= "CENTER">A modern, high-performance Android launcher for Minecraft: Java Edition.</H1>
 
-Amethyst is itself based on [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher)
-and [Boardwalk](https://github.com/zhuowei/Boardwalk). Without these projects Turtle Launcher
-would not exist — see [Credits](#credits--dependencies).
+Turtle Launcher is a fast, beautiful, and feature-rich Minecraft Java launcher built for Android by **Endiq**. Based on the open-source **Turtle Launcher** project, it combines a modern Material 3 interface with powerful customization, performance optimizations, and extensive modding support.
 
-## Features
+![Minecraft](1.jpg)
+---
 
-* **Minecraft 26.3 and newer** (plus snapshots, snapshot-4+, and older versions down to the classics)
-* Mod loaders: Fabric, Quilt, Forge, NeoForge, OptiFine (via the download center), plus
-  Amethyst-extras **BTA (Better Than Adventure)** and **LWJGL3ify** (old MC on modern Java)
-* Modpacks: Modrinth `.mrpack`, CurseForge ZIP, import/export
-* Accounts: Microsoft, local/offline (full-featured), Ely.by, Battly — with a profile page per account
-* Skins, capes and chroma names, per account, with import/export
-* Instances: create/duplicate/edit/repair/import/export, per-instance Java + renderer selection
-* Java manager: OpenJDK 8/17/21, OpenJ9 17, GraalVM 21 — ARM64, ARM32, x86, x86_64
-* Renderers: GL4ES, MobileGlues, LTW, Mesa3D/Zink, VirGL, Freedreno, RNW, VGPU, ANGLE, system GLES
-* Touch, keyboard, mouse and gamepad controls with a full layout editor, import/export
-* Per-version control layouts, live mouse speed editor, mod filters (from the Amethyst stack)
-* Performance profiles and JVM/RAM controls, FPS overlay
-* Diagnostics & troubleshooting: automated problem detection with safe repair actions
-* Log management: launcher/game/crash logs, copy/share/save, upload to [mclo.gs](https://mclo.gs)
-* Backups: versioned `TurtleLauncherBackup` format (settings, controls, instance configs, safe account metadata)
+## ✨ Features
 
-## Getting Turtle Launcher
+### 🎨 Modern UI
 
-Download the latest APKs from
-[GitHub Actions](https://github.com/Endiq-jar/TurtleLauncher/actions/workflows/android.yml)
-(both debug and release, with MD5/SHA-256 checksums, are attached to every successful build).
+* Material Design 3
+* Dynamic themes & accent colors
+* Smooth animations
+* Responsive phone & tablet layouts
+* Dark mode
+* Gaming-inspired interface
 
-## Building
+### 🚀 Performance
 
-Requirements: JDK 21, Android SDK (with NDK), Gradle 9.6.1.
+* Fast startup
+* Low RAM usage
+* Optimized rendering
+* Hardware-accelerated UI
+* Intelligent memory management
+* Stable FPS & faster launches
 
-```bash
-git clone https://github.com/Endiq-jar/TurtleLauncher.git
-cd TurtleLauncher
-gradle :app_pojavlauncher:assembleDebug
-```
+### 🎮 Minecraft Support
 
-The APK is output to `app_pojavlauncher/build/outputs/apk/debug/`.
+* Release, Snapshot, Beta & Alpha
+* Fabric
+* Quilt
+* Forge
+* NeoForge
 
-Build configuration notes:
+### 📦 Content Management
 
-* Everything is vendored in-tree (no submodules). The Java 8 runtime binpacks ship
-  under `app_pojavlauncher/src/main/assets/components/jre8/`.
-* Newer runtimes (17/21/25) are downloaded on demand from public release CDNs
-  (AngelAuraMC OpenJDK builds, plus the Turtle JRE CDN for OpenJ9/GraalVM).
-* The project runs AGP 9 in compat DSL mode (`android.newDsl=false`,
-  `android.builtInKotlin=false`) together with Kotlin 2.3.20 and kapt, which is the
-  combination required by the merged Kotlin (Turtle UI) + Java (Amethyst core) codebase.
-* To build a single-ABI APK, pass the architecture: `gradle :app_pojavlauncher:assembleDebug -Darch=arm64`
-  (one of `arm`, `arm64`, `x86`, `x86_64`).
+* Mods
+* Resource Packs
+* Shader Packs
+* Datapacks
+* Worlds
+* Screenshots
+* Logs
 
-See [docs/USERGUIDE.md](docs/USERGUIDE.md) for the full user documentation.
+### 🛠 Launcher Tools
 
-## Current Status
+* Multiple instances
+* Java Manager
+* Microsoft, Offline, Battly & Ely.by accounts
+* Download Manager
+* Live launch & crash logs
+* Friends / LAN play (Terracotta over EasyTier) — host or join straight from the home screen
+* Chooseable screen transitions — slide, bounce, fade, or zoom, applied app-wide
+* Backup, import & export
 
-Migrated onto the Amethyst foundation. The launcher targets Minecraft `rd-132211` through
-`26.3`-era versions including snapshots, keeping Amethyst's LWJGL 3.4.x / SDL3 / native stack
-untouched while Turtle's features run on top of it.
+### 🔓 Shizuku Support (optional)
 
-## License
+* One-tap permission granting (all-files access, notifications, battery exemption)
+* Android 14+ phantom-process limit removed — fixes games being killed mid-session
+* Game process priority boost
+* Full system logcat for crash reports, not just the launcher's own lines
+* Works with both Shizuku (ADB or root) and Sui
 
-Turtle Launcher is licensed under the GNU LGPLv3 (as its upstream Amethyst), with the
-upstream license preserved in [docs/LICENSE-Amethyst-Upstream.txt](docs/LICENSE-Amethyst-Upstream.txt)
-and [LICENSE](LICENSE).
+Shizuku is completely optional — Turtle Launcher works fine without it.
 
-## Credits & Dependencies
+### ⚙ Customization
 
-* [Boardwalk](https://github.com/zhuowei/Boardwalk) (JVM Launcher): Unknown License / [Apache License 2.0](https://github.com/zhuowei/Boardwalk/blob/master/LICENSE) or GNU GPLv2.
-* [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher): [GLGPL](https://github.com/PojavLauncherTeam/PojavLauncher/blob/v3_openjdk/LICENSE)
-* [Amethyst](https://github.com/AngelAuraMC/Amethyst-Android) (launcher core, MC 26.x stack, LWJGL 3.4.x, SDL3): [GNU LGPLv3](https://github.com/AngelAuraMC/Amethyst-Android/blob/v3_openjdk/LICENSE)
-* Android Support Libraries: [Apache License 2.0](https://android.googlesource.com/platform/prebuilts/maven_repo/android/+/master/NOTICE.txt).
-* [GL4ES](https://github.com/AngelAuraMC/gl4es): [MIT License](https://github.com/ptitSeb/gl4es/blob/master/LICENSE).
-* [MobileGlues](https://github.com/MobileGL-Dev/MobileGlues): [LGPL-2.1 License](https://github.com/MobileGL-Dev/MobileGlues/blob/dev-es/LICENSE).
-* [Krypton Wrapper](https://github.com/BZLZHH/NG-GL4ES): [MIT License](https://github.com/BZLZHH/NG-GL4ES/blob/main/LICENSE)
-* [ANGLE](https://chromium.googlesource.com/angle/angle): [All Rights Reserved](app_pojavlauncher/src/main/assets/licenses/ANGLE_LICENSE).
-* [OpenJDK](https://github.com/AngelAuraMC/openjdk-multiarch-jdk8u): [GNU GPLv2 License](https://openjdk.java.net/legal/gplv2+ce.html).
-* [LWJGL3](https://github.com/AngelAuraMC/lwjgl3): [BSD-3 License](https://github.com/LWJGL/lwjgl3/blob/master/LICENSE.md).
-* [LWJGLX](https://github.com/AngelAuraMC/lwjglx) (LWJGL2 API compatibility layer for LWJGL3): unknown license.
-* [Mesa 3D Graphics Library](https://gitlab.freedesktop.org/mesa/mesa): [MIT License](https://docs.mesa3d.org/license.html).
-* [bhook](https://github.com/bytedance/bhook) (Used for exit code trapping): [MIT license](https://github.com/bytedance/bhook/blob/main/LICENSE).
-* [libepoxy](https://github.com/anholt/libepoxy): [MIT License](https://github.com/anholt/libepoxy/blob/main/COPYING).
-* [virglrenderer](https://github.com/AngelAuraMC/virglrenderer): [MIT License](https://gitlab.freedesktop.org/virgl/virglrenderer/-/blob/master/COPYING).
-* [OpenAL-Soft](https://github.com/kcat/openal-soft): [GNU GPLv2](app_pojavlauncher/src/main/assets/licenses/OPENAL-SOFT_GPL2)
-  * [oboe](https://github.com/google/oboe): [Apache License 2.0](app_pojavlauncher/src/main/assets/licenses/OBOE_APACHE2).
-  * [pfffft](https://bitbucket.org/jpommier/pffft/src/master/): [ARR](app_pojavlauncher/src/main/assets/licenses/PFFFT_LICENSE)
-* [SDL3](https://github.com/libsdl-org/SDL): [zlib License](https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt)
-* [sdl2-compat](https://github.com/libsdl-org/sdl2-compat): [zlib License](https://github.com/libsdl-org/sdl2-compat/blob/main/LICENSE.txt)
-* [TouchController](https://github.com/TouchController/TouchController) proxy client: MIT License.
-* [zstd-jni](https://github.com/luben/zstd-jni): BSD-2 License.
-* Thanks to [MCHeads](https://mc-heads.net) for providing Minecraft avatars.
+* Custom backgrounds
+* UI scaling
+* Animation controls
+* Performance profiles
+* JVM & RAM settings
 
-Turtle Launcher is an independent fork. It is not affiliated with Mojang Studios or Microsoft.
+---
+
+## 🏗 Built With
+
+* Kotlin & Java
+* Jetpack Compose
+* Material Design 3
+* AndroidX
+* Coroutines & Flow
+* Coil
+* Lottie
+* LWJGL 3
+* GL4ES
+* Mesa3D
+* OpenJDK
+
+---
+
+## 🎯 Goals
+
+* Faster startup
+* Lower memory usage
+* Better battery efficiency
+* Smooth gameplay
+* Stable frame pacing
+* Modern user experience
+
+---
+
+## 🗺 Roadmap
+
+### Completed
+
+- [X] Modern UI
+- [x] Theme engine
+- [x] Instance Manager
+- [x] Ai intregation
+- [x] Performance improvements
+- [x] Mesa3D
+- [x] LTW Renderer
+- [x] MobileGlues Renderer
+- [x] Cleanroom Integration
+- [x] Terracotta Integration
+- [x] mclo.gs Integration
+
+### Current
+
+- [ ] Cloud Sync
+- [x] Skin & Cape Manager
+- [x] Turtle Client integration
+- [x] Replace OSMesa with a real EGL implementation
+- [x] Shizuku Support
+- [x] Beryllium Integration
+- [x] Modpack Instance
+- [x] Animations/Transtions
+- [x] Emotes
+
+---
+
+## FAQs
+## 1. Is Turtle Launcher Safe?
+### -> Yes — Turtle Launcher is safe to use. The source code is fully open on GitHub under the GPL-3.0 license. As always, only download the APK from trusted sources, like the official GitHub releases page..
+## 2. Is Turtle Launcher free?
+### -> Yes! Turtle Launcher is completely free to use, with no ads and no premium paywall.
+## 3. Does Turtle Launcher support Minecraft mods?
+### -> Yes. Turtle Launcher supports Fabric, Quilt, Forge and NeoForge, and you can install mods directly through the built-in mod Explorer.
+## Does it require a Microsoft account?
+### No. Turtle Launcher supports Microsoft, offline, Battly and Ely.by accounts, so you can play the way you prefer.
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to submit issues, feature requests, or pull requests.
+
+---
+
+## 📄 License
+
+Licensed under **GPL-3.0**.
+
+---
+
+## ❤️ Credits
+
+Built upon ideas and technologies from:
+
+* TurtleLauncher
+* HMCL
+* Boardwalk
+* OpenJDK
+* LWJGL
+* Mesa3D
+* GL4ES
+
+Special thanks to all open-source contributors who make Android Minecraft possible.
+
+---
+
+## ⚠ Disclaimer
+
+Turtle Launcher is an independent open-source project and is **not affiliated with Mojang Studios or Microsoft**.
+
 Minecraft is a trademark of Mojang Studios.
+
+---
+
+## ⭐ Support
+
+If you enjoy Turtle Launcher:
+
+* ⭐ Star the repository
+* 🐞 Report bugs
+* 💡 Suggest features
+* 🤝 Contribute code
+* 📢 Share the project
+
+Every contribution helps make Turtle Launcher better.
