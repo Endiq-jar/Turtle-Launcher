@@ -22,7 +22,7 @@ gamma:1.0
 guiScale:0
 maxAnisotropyBit:0
 textureFiltering:0
-maxFps:30
+maxFps:240
 improvedTransparency:false
 inactivityFpsLimit:"afk"
 mipmapLevels:0
@@ -39,7 +39,7 @@ vignette:false
 weatherRadius:0
 autoJump:false
 rotateWithMinecart:false
-operatorItemsTab:false
+operatorItemsTab:true
 autoSuggestions:true
 chatColors:true
 chatLinks:true
