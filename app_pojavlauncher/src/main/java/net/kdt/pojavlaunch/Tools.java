@@ -182,6 +182,14 @@ public final class Tools {
     }
 
     /**
+     * Turtle Launcher compat: zero-arg storage check using the global game home.
+     */
+    public static boolean checkStorageRoot() {
+        File externalFilesDir = new File(DIR_GAME_HOME);
+        return Environment.getExternalStorageState(externalFilesDir).equals(Environment.MEDIA_MOUNTED);
+    }
+
+    /**
      * Checks if the Pojav's storage root is accessible and read-writable. If it's not, starts
      * the MissingStorageActivity and finishes the supplied activity.
      * @param context the Activity that checks for storage availability
@@ -970,6 +978,13 @@ public final class Tools {
         return displayMetrics;
     }
 
+    /**
+     * Turtle Launcher compat: enable immersive fullscreen without a flag argument.
+     */
+    public static void setFullscreen(Activity activity) {
+        setFullscreen(activity, true);
+    }
+
     public static void setFullscreen(Activity activity, boolean fullscreen) {
         final View decorView = activity.getWindow().getDecorView();
         View.OnSystemUiVisibilityChangeListener visibilityChangeListener = visibility -> {
@@ -1370,6 +1385,15 @@ public final class Tools {
     }
 
     // Prevent NullPointerException
+    /**
+     * Strips the version part from a Maven coordinate ("group:artifact:version...").
+     */
+    private static String stripLibraryVersion(String name) {
+        if (name == null) return "";
+        int lastColon = name.lastIndexOf(':');
+        return lastColon >= 0 ? name.substring(0, lastColon) : name;
+    }
+
     private static void insertSafety(JMinecraftVersionList.Version targetVer, JMinecraftVersionList.Version fromVer, String... keyArr) {
         for (String key : keyArr) {
             Object value = null;
