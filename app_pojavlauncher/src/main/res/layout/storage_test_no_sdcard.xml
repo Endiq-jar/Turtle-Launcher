@@ -14,6 +14,7 @@
         android:src="@drawable/storage_alert" />
 
     <TextView
+        android:id="@+id/warning_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/_8sdp"

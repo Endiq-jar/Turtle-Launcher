@@ -226,7 +226,7 @@
     <string name="preference_gyro_sample_rate_title">קצב דגימת ג\'יירוסקופ</string>
     <string name="preference_gyro_sample_rate_description">אם את/ה נתקל/ת בבעיות ביצועים עם בקרי הג\'יירוסקופ, הגדל/י ערך זה.</string>
     <string name="microsoft_login_retry_later">יותר מדי בקשות, נסו שוב מאוחר יותר.</string>
-    <string name="storage_required">PojavLauncher דורש אחסון חיצוני מחובר. בבקשה תחבר/י אותו ואז הפעל/י מחדש את האפליקציה.</string>
+    <string name="storage_required">Turtle Launcher דורש אחסון חיצוני מחובר. בבקשה תחבר/י אותו ואז הפעל/י מחדש את האפליקציה.</string>
     <string name="mcl_setting_title_buttonallcaps">השתמש באותיות גדולות בלבד בתוויות הכפתורים.</string>
     <string name="mcl_setting_subtitle_buttonallcaps">השבת אפשרות זו אם ברצונך להשתמש באותיות קטנות בבקרים שלך.</string>
     <string name="preference_shader_dump_title">אפשר השלכת הצללה</string>
@@ -311,7 +311,7 @@
     <string name="preference_category_miscellaneous">הגדרות שונות</string>
     <string name="preference_category_video">הגדרות וידאו</string>
     <string name="notification_permission_dialog_title">בקשת הרשאה</string>
-    <string name="notification_permission_dialog_text">PojavLauncher דורש הרשאה לפרסום התראות כדי למנוע הפסקת הורדות של משחקים/מודים כשאתה עוזב את האפליקציה. ללא הרשאה זו, אנדרואיד עשויה לכבות את ההורדות שלך כשאתה מעביר את PojavLauncher למצב רקע.</string>
+    <string name="notification_permission_dialog_text">Turtle Launcher דורש הרשאה לפרסום התראות כדי למנוע הפסקת הורדות של משחקים/מודים כשאתה עוזב את האפליקציה. ללא הרשאה זו, אנדרואיד עשויה לכבות את ההורדות שלך כשאתה מעביר את Turtle Launcher למצב רקע.</string>
     <string name="notification_permission_toast">תמיד ניתן לשנות את דעתך מאוחר יותר על ידי כניסה להגדרות</string>
     <string name="preference_ask_for_notification_title">אפשר התראות</string>
     <string name="preference_ask_for_notification_description">לחץ כדי לבקש מחדש את הרשאת ההתראה, הנדרשת כדי שהורדות ברקע של המשחק/modpack יפעלו כראוי.</string>

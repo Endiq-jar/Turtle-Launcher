@@ -237,7 +237,7 @@
     <string name="preference_gyro_sample_rate_title">Kadar pensampelan giroskop</string>
     <string name="preference_gyro_sample_rate_description">Jika anda mempunyai masalah prestasi dengan kawalan giroskop, tingkatkan pilihan ini.</string>
     <string name="microsoft_login_retry_later">Terlalu banyak permintaan, sila cuba sebentar lagi.</string>
-    <string name="storage_required">PojavLauncher memerlukan storan luaran untuk dilampirkan. Sila sambungkan semula dan mulakan semula aplikasi.</string>
+    <string name="storage_required">Turtle Launcher memerlukan storan luaran untuk dilampirkan. Sila sambungkan semula dan mulakan semula aplikasi.</string>
     <string name="mcl_setting_title_buttonallcaps">Hanya gunakan huruf besar dalam label butang</string>
     <string name="mcl_setting_subtitle_buttonallcaps">Nyahdayakan pilihan ini jika anda ingin menggunakan huruf kecil dalam kawalan anda.</string>
     <string name="create_profile">Cipta profail baharu</string>
@@ -293,7 +293,7 @@
     <string name="modpack_download_downloading_mods">Memuat turun mod (%.2f MB / %.2f MB)</string>
     <string name="modpack_download_downloading_mods_fc">Memuat turun mod (Fail %d daripada %d)</string>
     <string name="modpack_download_applying_overrides">Menerapkan penggantian (%d/%d)</string>
-    <string name="modpack_install_notification_title">Pemasang Pek Mod Pojav</string>
+    <string name="modpack_install_notification_title">Pemasang Pek Mod Turtle</string>
     <string name="modpack_install_notification_success">Klik di sini untuk menyelesaikan pemasangan pek mod</string>
     <string name="modpack_install_notification_data_not_available">Gagal memuat turun maklumat pemuat mod</string>
     <string name="modpack_install_modloader_download_failed">Gagal memuat turun fail pemuat mod</string>
@@ -323,7 +323,7 @@
     <string name="preference_category_miscellaneous">Tetapan lain-lain</string>
     <string name="preference_category_video">Tetapan video</string>
     <string name="notification_permission_dialog_title">Permintaan kebenaran</string>
-    <string name="notification_permission_dialog_text">PojavLauncher memerlukan kebenaran untuk menyiarkan pemberitahuan untuk menghalang muat turun permainan atau pek mod daripada berhenti apabila anda meninggalkan aplikasi. Tanpa kebenaran ini, Android mungkin menutup muat turun anda apabila anda meletakkan PojavLauncher dalam mod latar belakang.</string>
+    <string name="notification_permission_dialog_text">Turtle Launcher memerlukan kebenaran untuk menyiarkan pemberitahuan untuk menghalang muat turun permainan atau pek mod daripada berhenti apabila anda meninggalkan aplikasi. Tanpa kebenaran ini, Android mungkin menutup muat turun anda apabila anda meletakkan Turtle Launcher dalam mod latar belakang.</string>
     <string name="notification_permission_toast">Anda sentiasa boleh mengubah fikiran anda kemudian dengan pergi ke Tetapan</string>
     <string name="preference_ask_for_notification_title">Benarkan pemberitahuan</string>
     <string name="preference_ask_for_notification_description">Klik untuk meminta semula kebenaran pemberitahuan, diperlukan agar pemuatturunan latar belakang permainan atau pek mod berfungsi dengan baik.</string>

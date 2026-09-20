@@ -211,7 +211,7 @@
     <string name="preference_gyro_sample_rate_title">ジャイロコントロールサンプリングの速度</string>
     <string name="preference_gyro_sample_rate_description">ジャイロコントロールでパフォーマンス上の問題がある場合はこの値を増やしてください。</string>
     <string name="microsoft_login_retry_later">リクエストが多すぎるため、後でもう一度お試しください。</string>
-    <string name="storage_required">PojavLauncherを使用するには外部ストレージが必要です。外部ストレージを接続してアプリを起動しなおしてください。</string>
+    <string name="storage_required">Turtle Launcherを使用するには外部ストレージが必要です。外部ストレージを接続してアプリを起動しなおしてください。</string>
     <string name="preference_shader_dump_title">シェーダーダンプをオンにする</string>
     <string name="preference_shader_dump_description">変換されたシェーダーをログファイルに記録します。</string>
     <string name="customctrl_editor_exit_title">終了しますか？</string>
@@ -264,7 +264,7 @@
     <string name="preference_category_miscellaneous">その他の設定</string>
     <string name="preference_category_video">映像設定</string>
     <string name="notification_permission_dialog_title">権限のリクエスト</string>
-    <string name="notification_permission_dialog_text">PojavLauncherのゲーム, MODのダウンロードが停止しないようにするために、通知を許可する必要があります。通知を送信できないと、PojavLancherを閉じるとダウンロードが停止する可能性があります。</string>
+    <string name="notification_permission_dialog_text">Turtle Launcherのゲーム, MODのダウンロードが停止しないようにするために、通知を許可する必要があります。通知を送信できないと、Turtle Launcherを閉じるとダウンロードが停止する可能性があります。</string>
     <string name="notification_permission_toast">Androidの「設定」からいつでも変更できます</string>
     <string name="preference_ask_for_notification_title">通知を許可</string>
     <string name="preference_ask_for_notification_description">ゲーム/MODのバックグラウンドダウンロードを行うために必要な通知権限を要求するにはクリックしてください</string>

@@ -120,10 +120,10 @@
     <string name="preference_gyro_sample_rate_title">Tassa d\'actualització del giroscopi</string>
     <string name="preference_gyro_sample_rate_description">Si tens problemes de rendiment amb el giroscopi, puja aquest valor.</string>
     <string name="microsoft_login_retry_later">Massa peticions, si us plau, torneu-ho a intentar més tard.</string>
-    <string name="storage_required">El PojavLauncher requereix que hi hagi emmagatzemament extern connectat. Si us plau, reconnecteu-ho i reinicieu l\'app.</string>
+    <string name="storage_required">El Turtle Launcher requereix que hi hagi emmagatzemament extern connectat. Si us plau, reconnecteu-ho i reinicieu l\'app.</string>
     <string name="modpack_download_downloading_mods_fc">Baixant mods (Fitxer %d de %d)</string>
     <string name="modpack_download_applying_overrides">Aplicant anul·lacions (%d/%d)</string>
-    <string name="modpack_install_notification_title">Instal·lador de Modpacks del Pojav</string>
+    <string name="modpack_install_notification_title">Instal·lador de Modpacks del Turtle</string>
     <string name="modpack_install_notification_success">Prem ací per acabar la instal·lació del modpack</string>
     <string name="modpack_install_notification_data_not_available">No s\'ha pogut baixar la informació del carregador de mods</string>
     <string name="modpack_install_modloader_download_failed">No s\'ha pogut baixar els fitxers del carregador de mods</string>

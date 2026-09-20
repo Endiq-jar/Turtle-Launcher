@@ -239,7 +239,7 @@
     <string name="preference_gyro_sample_rate_title">Частота дискретизації гіроскопа</string>
     <string name="preference_gyro_sample_rate_description">Якщо у вас виникають проблеми з керуванням гіроскопом, збільште цей параметр.</string>
     <string name="microsoft_login_retry_later">Занадто багато запитів, спробуйте пізніше.</string>
-    <string name="storage_required">PojavLauncher потребує під’єднання до сховища. Будь ласка, під’єднайте його ще раз і перезапустіть додаток.</string>
+    <string name="storage_required">Turtle Launcher потребує під’єднання до сховища. Будь ласка, під’єднайте його ще раз і перезапустіть додаток.</string>
     <string name="mcl_setting_title_buttonallcaps">Використовувати лише великі літери в назвах кнопок</string>
     <string name="mcl_setting_subtitle_buttonallcaps">Вимкніть, якщо бажаєте використовувати малі літери в елементах керування.</string>
     <string name="create_profile">Створити новий профіль</string>
@@ -295,7 +295,7 @@
     <string name="modpack_download_downloading_mods">Завантаження модів (%.2f МБ / %.2f МБ)</string>
     <string name="modpack_download_downloading_mods_fc">Завантаження модів (Файл %d з %d)</string>
     <string name="modpack_download_applying_overrides">Застосування перевизначень (%d/%d)</string>
-    <string name="modpack_install_notification_title">Установлювач пакета модів Pojav</string>
+    <string name="modpack_install_notification_title">Установлювач пакета модів Turtle</string>
     <string name="modpack_install_notification_success">Натисніть тут, щоб завершити встановлення пакета модів</string>
     <string name="modpack_install_notification_data_not_available">Не вдалося завантажити інформацію про завантажувач модів</string>
     <string name="modpack_install_modloader_download_failed">Не вдалося завантажити файли завантажувача мода</string>
@@ -325,7 +325,7 @@
     <string name="preference_category_miscellaneous">Різні налаштування</string>
     <string name="preference_category_video">Налаштування відео</string>
     <string name="notification_permission_dialog_title">Запит на дозвіл</string>
-    <string name="notification_permission_dialog_text">PojavLauncher потребує дозволу на надсилання сповіщень, щоб запобігти припиненню завантаження гри/пакета модів, коли ви виходите з додатка. Без цього дозволу Android може припинити завантаження, коли ви переведете PojavLauncher у тловий режим.</string>
+    <string name="notification_permission_dialog_text">Turtle Launcher потребує дозволу на надсилання сповіщень, щоб запобігти припиненню завантаження гри/пакета модів, коли ви виходите з додатка. Без цього дозволу Android може припинити завантаження, коли ви переведете Turtle Launcher у тловий режим.</string>
     <string name="notification_permission_toast">Ви завжди можете змінити пізніше, перейшовши до налаштувань</string>
     <string name="preference_ask_for_notification_title">Дозволити сповіщення</string>
     <string name="preference_ask_for_notification_description">Натисніть, щоб повторно запитати дозвіл на сповіщення, необхідний для коректної роботи тлових завантажень гри/пакета модів.</string>

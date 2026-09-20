@@ -1,125 +1,85 @@
-<h1 align="center">Angel Aura Amethyst</h1>
+<h1 align="center">Turtle Launcher</h1>
 
-<img src="https://github.com/AngelAuraMC/Amethyst-Android/blob/v3_openjdk/app_pojavlauncher/src/main/assets/amethyst.png" align="left" width="130" height="130" alt="Amethyst logo">
+<p align="center"><b>Minecraft: Java Edition for Android — Turtle style, Amethyst-powered.</b></p>
 
-[![Android CI](https://github.com/AngelAuraMC/Amethyst-Android/workflows/Android%20CI/badge.svg)](https://github.com/AngelAuraMC/Amethyst-Android/actions)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/AngelAuraMC/Amethyst-Android)](https://github.com/AngelAuraMC/Amethyst-Android/actions)
-[![Crowdin](https://badges.crowdin.net/pojavlauncher/localized.svg)](https://crowdin.com/project/pojavlauncher)
-[![Discord](https://img.shields.io/discord/724163890803638273.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/5ptqkyZxEy)
+Turtle Launcher is a Minecraft: Java Edition launcher for Android. It keeps the complete
+Turtle Launcher experience — download center, instances, accounts, skins/capes/chroma names,
+controls, performance profiles, diagnostics, modpacks, mods, resource packs and shaders —
+rebuilt on the [Amethyst](https://github.com/AngelAuraMC/Amethyst-Android) launcher core for
+**Minecraft 26.3+ support** (snapshots included), LWJGL 3.4.x, SDL3 windowing/input and the
+modern renderer stack.
 
-*From [Boardwalk](https://github.com/zhuowei/Boardwalk)'s ashes and [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher)'s ruined reputation, here comes Amethyst!*
+Amethyst is itself based on [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher)
+and [Boardwalk](https://github.com/zhuowei/Boardwalk). Without these projects Turtle Launcher
+would not exist — see [Credits](#credits--dependencies).
 
-Amethyst is a launcher that allows you to play Minecraft: Java Edition on your Android and [iOS](https://github.com/AngelAuraMC/Amethyst-iOS) devices.
+## Features
 
-For more details, check out our [wiki](https://wiki.angelauramc.dev)!
+* **Minecraft 26.3 and newer** (plus snapshots, snapshot-4+, and older versions down to the classics)
+* Mod loaders: Fabric, Quilt, Forge, NeoForge, OptiFine (via the download center), plus
+  Amethyst-extras **BTA (Better Than Adventure)** and **LWJGL3ify** (old MC on modern Java)
+* Modpacks: Modrinth `.mrpack`, CurseForge ZIP, import/export
+* Accounts: Microsoft, local/offline (full-featured), Ely.by, Battly — with a profile page per account
+* Skins, capes and chroma names, per account, with import/export
+* Instances: create/duplicate/edit/repair/import/export, per-instance Java + renderer selection
+* Java manager: OpenJDK 8/17/21, OpenJ9 17, GraalVM 21 — ARM64, ARM32, x86, x86_64
+* Renderers: GL4ES, MobileGlues, LTW, Mesa3D/Zink, VirGL, Freedreno, RNW, VGPU, ANGLE, system GLES
+* Touch, keyboard, mouse and gamepad controls with a full layout editor, import/export
+* Per-version control layouts, live mouse speed editor, mod filters (from the Amethyst stack)
+* Performance profiles and JVM/RAM controls, FPS overlay
+* Diagnostics & troubleshooting: automated problem detection with safe repair actions
+* Log management: launcher/game/crash logs, copy/share/save, upload to [mclo.gs](https://mclo.gs)
+* Backups: versioned `TurtleLauncherBackup` format (settings, controls, instance configs, safe account metadata)
 
-## Table of Contents
+## Getting Turtle Launcher
 
-* [Introduction](#introduction)
-* [Getting Amethyst](#getting-amethyst)
-* [Building](#building)
-    * [Quick Build (Recommended)](#quick-build-recommended)
-    * [Detailed Build](#detailed-build)
-* [Current Status](#current-status)
-* [Known Issues](#known-issues)
-* [FAQ](#faq)
-* [Contributing](#contributing)
-* [Support](#support)
-* [License](#license)
-* [Credits & Dependencies](#credits--dependencies)
-* [Roadmap](#roadmap)
-
-## Introduction
-
-* Amethyst is a Minecraft: Java Edition launcher for Android and iOS based on [Boardwalk](https://github.com/zhuowei/Boardwalk) and [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher)
-* This launcher can launch almost all available Minecraft versions ranging from rd-132211 to 26.3-snapshot-1.
-* Modding via Forge and Fabric are also supported.
-* This repository contains source code for Android. For iOS/iPadOS, check out [Amethyst-iOS](https://github.com/AngelAuraMC/Amethyst-iOS).
-
-## Getting Amethyst
-
-You can get Amethyst via two methods:
-
-1. **Releases:** Download the latest prebuilt app from [nightly.link](https://nightly.link/AngelAuraMC/Amethyst-Android/workflows/android/v3_openjdk/app-debug%20%28recommended%29.zip) or select an older version from our [automatic builds](https://github.com/AngelAuraMC/Amethyst-Android/actions).
-2. **Build from Source:** Follow the [building instructions](#building) below.
+Download the latest APKs from
+[GitHub Actions](https://github.com/Endiq-jar/TurtleLauncher/actions/workflows/android.yml)
+(both debug and release, with MD5/SHA-256 checksums, are attached to every successful build).
 
 ## Building
 
-### Quick Build (Recommended)
+Requirements: JDK 21, Android SDK (with NDK), Gradle 9.6.1.
 
-The easiest way to build Amethyst is to use the pre-built JREs provided by our CI.
+```bash
+git clone https://github.com/Endiq-jar/TurtleLauncher.git
+cd TurtleLauncher
+gradle :app_pojavlauncher:assembleDebug
+```
 
-1. Clone the repository: `git clone --recursive https://github.com/AngelAuraMC/Amethyst-Android.git`
-2. Build the launcher: `./gradlew :app_pojavlauncher:assembleDebug` (Use `gradlew.bat` on Windows)
+The APK is output to `app_pojavlauncher/build/outputs/apk/debug/`.
 
-The built APK will be located in `app_pojavlauncher/build/outputs/apk/debug/`.
+Build configuration notes:
 
-### Detailed Build
+* Everything is vendored in-tree (no submodules). The Java 8 runtime binpacks ship
+  under `app_pojavlauncher/src/main/assets/components/jre8/`.
+* Newer runtimes (17/21/25) are downloaded on demand from public release CDNs
+  (AngelAuraMC OpenJDK builds, plus the Turtle JRE CDN for OpenJ9/GraalVM).
+* The project runs AGP 9 in compat DSL mode (`android.newDsl=false`,
+  `android.builtInKotlin=false`) together with Kotlin 2.3.20 and kapt, which is the
+  combination required by the merged Kotlin (Turtle UI) + Java (Amethyst core) codebase.
+* To build a single-ABI APK, pass the architecture: `gradle :app_pojavlauncher:assembleDebug -Darch=arm64`
+  (one of `arm`, `arm64`, `x86`, `x86_64`).
 
-If you need more control over the build process, follow these steps:
-
-1. **Java Runtime Environment (JRE):** Download the `jre8-pojav` artifact from our [CI auto builds](https://github.com/AngelAuraMC/openjdk-build-multiarch/actions).  This package contains pre-built JREs for all supported architectures.  If you need to build the JRE yourself, follow the instructions in the [android-openjdk-build-multiarch](https://github.com/AngelAuraMC/openjdk-build-multiarch) repository.
-
-2. **LWJGL:** The build instructions for the custom LWJGL are available over the [LWJGL repository](https://github.com/AngelAuraMC/lwjgl3).
-
-3. **Language List:** Because languages are auto-added by Crowdin, you need to run the language list generator before building. In the project directory, run:
-   * Linux/macOS:
-     ```bash
-     chmod +x scripts/languagelist_updater.sh
-     bash scripts/languagelist_updater.sh
-     ```
-   * Windows:
-     ```batch
-     scripts\languagelist_updater.bat
-     ```
-
-4. **Build GLFW stub:** `./gradlew :jre_lwjgl3glfw:build`
-
-5. **Build the launcher:** `./gradlew :app_pojavlauncher:assembleDebug` (Replace `gradlew` with `gradlew.bat` on Windows).
+See [docs/USERGUIDE.md](docs/USERGUIDE.md) for the full user documentation.
 
 ## Current Status
 
-* [x] OpenJDK 8 Mobile port: ARM32, ARM64, x86, x86_64
-* [x] OpenJDK 17 Mobile port: ARM32, ARM64, x86, x86_64
-* [x] OpenJDK 21 Mobile port: ARM32, ARM64, x86, x86_64
-* [x] Headless mod installer
-* [x] Mod installer with GUI
-* [x] OpenGL in OpenJDK environment
-* [x] OpenAL (works on most devices)
-* [x] Support for Minecraft 1.12.2 and below
-* [x] Support for Minecraft 1.13 and above
-* [x] Support for Minecraft 1.17 (22w13a) and above
-* [x] Game surface zooming
-* [x] New input pipe rewritten to native code
-* [x] Rewritten entire controls system
-* [ ] More to come!
-
-## Known Issues
-
-See our [issue tracker](https://github.com/AngelAuraMC/Amethyst-Android/issues) for a list of known issues and their current status.
-
-## FAQ
-
-See our [wiki](https://wiki.angelauramc.dev/) for more information.
-
-## Contributing
-
-Contributions are welcome! We welcome any type of contribution, not only code. For example, you can help improve the [wiki](https://github.com/AngelAuraMC/angelauramc.github.io/), contribute to the [translations](https://crowdin.com/project/pojavlauncher), or submit bug reports and feature requests.
-
-Any code change should be submitted as a pull request. The description should explain what the code does and give steps to execute it.
-
-## Support
-
-For support, please join our [Discord server](https://discord.gg/5ptqkyZxEy).
+Migrated onto the Amethyst foundation. The launcher targets Minecraft `rd-132211` through
+`26.3`-era versions including snapshots, keeping Amethyst's LWJGL 3.4.x / SDL3 / native stack
+untouched while Turtle's features run on top of it.
 
 ## License
 
-Amethyst is licensed under [GNU LGPLv3](https://github.com/AngelAuraMC/Amethyst-Android/blob/v3_openjdk/LICENSE).
+Turtle Launcher is licensed under the GNU LGPLv3 (as its upstream Amethyst), with the
+upstream license preserved in [docs/LICENSE-Amethyst-Upstream.txt](docs/LICENSE-Amethyst-Upstream.txt)
+and [LICENSE](LICENSE).
 
 ## Credits & Dependencies
 
-* [Boardwalk](https://github.com/zhuowei/Boardwalk) (JVM Launcher): Unknown License/[Apache License 2.0](https://github.com/zhuowei/Boardwalk/blob/master/LICENSE) or GNU GPLv2.
+* [Boardwalk](https://github.com/zhuowei/Boardwalk) (JVM Launcher): Unknown License / [Apache License 2.0](https://github.com/zhuowei/Boardwalk/blob/master/LICENSE) or GNU GPLv2.
 * [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher): [GLGPL](https://github.com/PojavLauncherTeam/PojavLauncher/blob/v3_openjdk/LICENSE)
+* [Amethyst](https://github.com/AngelAuraMC/Amethyst-Android) (launcher core, MC 26.x stack, LWJGL 3.4.x, SDL3): [GNU LGPLv3](https://github.com/AngelAuraMC/Amethyst-Android/blob/v3_openjdk/LICENSE)
 * Android Support Libraries: [Apache License 2.0](https://android.googlesource.com/platform/prebuilts/maven_repo/android/+/master/NOTICE.txt).
 * [GL4ES](https://github.com/AngelAuraMC/gl4es): [MIT License](https://github.com/ptitSeb/gl4es/blob/master/LICENSE).
 * [MobileGlues](https://github.com/MobileGL-Dev/MobileGlues): [LGPL-2.1 License](https://github.com/MobileGL-Dev/MobileGlues/blob/dev-es/LICENSE).
@@ -130,24 +90,16 @@ Amethyst is licensed under [GNU LGPLv3](https://github.com/AngelAuraMC/Amethyst-
 * [LWJGLX](https://github.com/AngelAuraMC/lwjglx) (LWJGL2 API compatibility layer for LWJGL3): unknown license.
 * [Mesa 3D Graphics Library](https://gitlab.freedesktop.org/mesa/mesa): [MIT License](https://docs.mesa3d.org/license.html).
 * [bhook](https://github.com/bytedance/bhook) (Used for exit code trapping): [MIT license](https://github.com/bytedance/bhook/blob/main/LICENSE).
-* [libepoxy](https://github.com/anholt/libepoxy): [MIT License](https://github.com/anholt/libepoxy/blob/master/COPYING).
+* [libepoxy](https://github.com/anholt/libepoxy): [MIT License](https://github.com/anholt/libepoxy/blob/main/COPYING).
 * [virglrenderer](https://github.com/AngelAuraMC/virglrenderer): [MIT License](https://gitlab.freedesktop.org/virgl/virglrenderer/-/blob/master/COPYING).
 * [OpenAL-Soft](https://github.com/kcat/openal-soft): [GNU GPLv2](app_pojavlauncher/src/main/assets/licenses/OPENAL-SOFT_GPL2)
   * [oboe](https://github.com/google/oboe): [Apache License 2.0](app_pojavlauncher/src/main/assets/licenses/OBOE_APACHE2).
   * [pfffft](https://bitbucket.org/jpommier/pffft/src/master/): [ARR](app_pojavlauncher/src/main/assets/licenses/PFFFT_LICENSE)
 * [SDL3](https://github.com/libsdl-org/SDL): [zlib License](https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt)
 * [sdl2-compat](https://github.com/libsdl-org/sdl2-compat): [zlib License](https://github.com/libsdl-org/sdl2-compat/blob/main/LICENSE.txt)
+* [TouchController](https://github.com/TouchController/TouchController) proxy client: MIT License.
+* [zstd-jni](https://github.com/luben/zstd-jni): BSD-2 License.
 * Thanks to [MCHeads](https://mc-heads.net) for providing Minecraft avatars.
 
-## Roadmap
-
-We are currently focusing on:
-
-* Exploring new rendering technologies.
-
-Future plans include:
-
-* Improving stability and performance.
-* Enhancing the mod installation experience.
-
-We welcome community feedback and suggestions for our roadmap.  Please feel free to open a feature request in our [issue tracker](https://github.com/AngelAuraMC/Amethyst-Android/issues).
+Turtle Launcher is an independent fork. It is not affiliated with Mojang Studios or Microsoft.
+Minecraft is a trademark of Mojang Studios.

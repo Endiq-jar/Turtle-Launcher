@@ -239,7 +239,7 @@
     <string name="preference_gyro_sample_rate_title">Częstotliwość próbkowania żyroskopu</string>
     <string name="preference_gyro_sample_rate_description">Zwiększ tę wartość, jeśli doświadczasz problemów z wydajnością sterowania żyroskopem.</string>
     <string name="microsoft_login_retry_later">Zbyt wiele żądań. Spróbuj ponownie później.</string>
-    <string name="storage_required">PojavLauncher wymaga podłączenia pamięci zewnętrznej. Podłącz ją ponownie i zrestartuj aplikację.</string>
+    <string name="storage_required">Turtle Launcher wymaga podłączenia pamięci zewnętrznej. Podłącz ją ponownie i zrestartuj aplikację.</string>
     <string name="mcl_setting_title_buttonallcaps">W etykietach przycisków stosuj wyłącznie wielkie litery</string>
     <string name="mcl_setting_subtitle_buttonallcaps">Wyłącz tę opcję, jeśli chcesz używać małych liter w sterowaniu dotykowym.</string>
     <string name="create_profile">Utwórz nowy profil</string>
@@ -295,7 +295,7 @@
     <string name="modpack_download_downloading_mods">Pobieranie modyfikacji (%.2f MB / %.2f MB)</string>
     <string name="modpack_download_downloading_mods_fc">Pobieranie modyfikacji (%d z %d)</string>
     <string name="modpack_download_applying_overrides">Zastosowywanie nadpisów (%d/%d)</string>
-    <string name="modpack_install_notification_title">Instalator paczek modów Pojav</string>
+    <string name="modpack_install_notification_title">Instalator paczek modów Turtle</string>
     <string name="modpack_install_notification_success">Kliknij tutaj, aby zakończyć instalację paczki modów</string>
     <string name="modpack_install_notification_data_not_available">Nie udało się pobrać informacji o module ładującym modyfikacje</string>
     <string name="modpack_install_modloader_download_failed">Nie udało się pobrać plików modułu ładującego modyfikacje</string>
@@ -325,7 +325,7 @@
     <string name="preference_category_miscellaneous">Inne ustawienia</string>
     <string name="preference_category_video">Ustawienia wideo</string>
     <string name="notification_permission_dialog_title">Prośba o uprawnienie</string>
-    <string name="notification_permission_dialog_text">PojavLauncher wymaga uprawnień do wysyłania powiadomień, aby zapobiec zatrzymaniu pobierania gier/paczek modów po opuszczeniu aplikacji. Bez tych uprawnień system Android może zatrzymać pobieranie, gdy PojavLauncher zostanie przełączony w tryb tła.</string>
+    <string name="notification_permission_dialog_text">Turtle Launcher wymaga uprawnień do wysyłania powiadomień, aby zapobiec zatrzymaniu pobierania gier/paczek modów po opuszczeniu aplikacji. Bez tych uprawnień system Android może zatrzymać pobieranie, gdy Turtle Launcher zostanie przełączony w tryb tła.</string>
     <string name="notification_permission_toast">Zawsze możesz zmienić zdanie później, przechodząc do ustawień</string>
     <string name="preference_ask_for_notification_title">Zezwól na powiadomienia</string>
     <string name="preference_ask_for_notification_description">Kliknij, aby ponownie poprosić o uprawnienia do powiadomień, które są wymagane do prawidłowego działania pobierania w tle gier/paczek modów.</string>

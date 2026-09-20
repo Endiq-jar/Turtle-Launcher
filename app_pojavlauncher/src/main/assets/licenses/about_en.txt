@@ -1,0 +1,42 @@
+%s (Minecraft Java Launcher for Android), version %s<br>
+
+Turtle Launcher is built on the <a href="https://github.com/AngelAuraMC/Amethyst-Android">Amethyst</a>
+launcher core (Minecraft 26.x support, LWJGL 3.4.x, SDL3, runtime and renderer infrastructure),
+which is in turn based on
+<a href="https://github.com/PojavLauncherTeam/PojavLauncher">PojavLauncher</a> and
+<a href="https://github.com/zhuowei/Boardwalk">Boardwalk</a> (JVM launcher by ZhuoweiZhang).<br><br>
+
+* License:<br>
+ • This application is licensed under the <a href="https://github.com/PojavLauncherTeam/PojavLauncher/blob/master/LICENSE">GNU GPLv3</a> / LGPLv3 as published by the Free Software Foundation.<br>
+ • The Amethyst upstream license text is preserved in <a href="https://github.com/Endiq-jar/TurtleLauncher/blob/main/docs/LICENSE-Amethyst-Upstream.txt">docs/LICENSE-Amethyst-Upstream.txt</a>.<br><br>
+
+* Credits / Third party components and their licenses:<br>
+ • Boardwalk (JVM Launcher): Unknown License / Apache License 2.0 or GNU GPLv2.<br>
+ • PojavLauncher: GLGPL.<br>
+ • Amethyst (AngelAuraMC): GNU LGPLv3 — Minecraft 26.x launch stack, LWJGL 3.4.x port, SDL3 windowing/input.<br>
+ • Apache Commons (Compress, IO, Codec, Lang): Apache License 2.0.<br>
+ • exp4j: Apache License 2.0.<br>
+ • GL4ES: MIT License.<br>
+ • MobileGlues: LGPL-2.1 License.<br>
+ • Krypton Wrapper (NG-GL4ES): MIT License.<br>
+ • ANGLE: All Rights Reserved (see ANGLE_LICENSE in the app assets).<br>
+ • OpenJDK: GNU GPLv2 License (with Classpath Exception).<br>
+ • LWJGL 3: BSD-3 License.<br>
+ • LWJGLX (LWJGL2 API compatibility layer for LWJGL3): see upstream repositories.<br>
+ • Mesa 3D Graphics Library: MIT License.<br>
+ • virglrenderer: MIT License.<br>
+ • OpenAL-Soft: GNU GPLv2 (with oboe: Apache License 2.0; pfffft: ARR).<br>
+ • SDL3 / sdl2-compat: zlib License.<br>
+ • bhook (exit code trapping): MIT License.<br>
+ • libepoxy: MIT License.<br>
+ • TouchController proxy client (top.fifthlight): MIT License.<br>
+ • zstd-jni: BSD-2 License.<br>
+ • Thanks to MCHeads for providing Minecraft avatars.<br><br>
+
+* Service integrations:<br>
+ • Crash and log sharing via <a href="https://mclo.gs">mclo.gs</a>.<br>
+ • Cleanroom and Terracotta integration support.<br>
+ • Mod hosting via Modrinth and CurseForge APIs.<br><br>
+
+* Privacy policy:
+ <a href="https://raw.githubusercontent.com/PojavLauncherTeam/PojavLauncher/v3_openjdk/GPLAY_PRIVACY_POLICY">PojavLauncher privacy policy</a> applies to the shared core.
