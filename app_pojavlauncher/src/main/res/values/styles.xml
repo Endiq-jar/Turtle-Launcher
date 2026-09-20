@@ -148,4 +148,12 @@
         <item name="android:windowFullscreen">false</item>
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowAnimationStyle">@style/NoAnimations</item>
-    </style>    <item name="dimension_tracker" type="id" /></resources>
+    </style>
+    <style name="ThickDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/_1sdp</item>
+        <item name="android:background">?android:attr/listDivider</item>
+    </style>
+    <!-- id declaration used by Tools.getDisplayDimensions -->
+    <item name="dimension_tracker" type="id" />
+</resources>
