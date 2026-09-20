@@ -16,6 +16,8 @@ import net.kdt.pojavlaunch.customcontrols.ControlJoystickData;
 import net.kdt.pojavlaunch.customcontrols.ControlLayout;
 import net.kdt.pojavlaunch.customcontrols.EditorExitable;
 import net.kdt.pojavlaunch.prefs.LauncherPreferences;
+import com.endiq.turtlelauncher.feature.background.BackgroundManager;
+import com.endiq.turtlelauncher.feature.background.BackgroundType;
 
 import java.io.IOException;
 
@@ -38,6 +40,10 @@ public class CustomControlsActivity extends BaseActivity implements EditorExitab
 		// Turtle Launcher API: launch the editor focused on a specific layout file
 		Bundle launchBundle = getIntent().getExtras();
 		String controlPath = launchBundle == null ? null : launchBundle.getString(BUNDLE_CONTROL_PATH);
+
+		// Old Turtle look: custom background image support in the control editor
+		BackgroundManager.setBackgroundImage(this, BackgroundType.CUSTOM_CONTROLS,
+			(android.widget.ImageView) findViewById(R.id.background_view), null);
 
 		mControlLayout = findViewById(R.id.customctrl_controllayout);
 		mDrawerLayout = findViewById(R.id.customctrl_drawerlayout);
