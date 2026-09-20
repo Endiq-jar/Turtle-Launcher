@@ -41,7 +41,7 @@ jobs:
         if: failure()
         run: |
           # Surface compiler errors as annotations (visible through the API)
-          grep -nE "^e: |error: |\.java:[0-9]+: |\.kt:[0-9]+: |What went wrong|Caused by:|> Task .*FAILED|FAILURE: Build failed" build-debug.log | head -60 > errors.log || true
+          grep -nE "^e: |error: |symbol: |location: |\.java:[0-9]+: |\.kt:[0-9]+: |What went wrong|Caused by:|> Task .*FAILED|FAILURE: Build failed" build-debug.log | head -80 > errors.log || true
           if [ -s errors.log ]; then
             while IFS= read -r line; do
               echo "::error::${line:0:600}"
@@ -61,7 +61,7 @@ jobs:
       - name: Report release build errors
         if: failure()
         run: |
-          grep -nE "^e: |error: |\.java:[0-9]+: |\.kt:[0-9]+: |What went wrong|Caused by:|> Task .*FAILED|FAILURE: Build failed" build-release.log 2>/dev/null | head -60 | while IFS= read -r line; do echo "::error::${line:0:600}"; done
+          grep -nE "^e: |error: |symbol: |location: |\.java:[0-9]+: |\.kt:[0-9]+: |What went wrong|Caused by:|> Task .*FAILED|FAILURE: Build failed" build-release.log 2>/dev/null | head -80 | while IFS= read -r line; do echo "::error::${line:0:600}"; done
 
       - name: Generate checksums
         if: success()

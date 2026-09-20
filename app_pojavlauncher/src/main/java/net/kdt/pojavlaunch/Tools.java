@@ -120,6 +120,10 @@ public final class Tools {
     public static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
     public static String APP_NAME = "Turtle Launcher";
 
+    // Turtle Launcher: whether the Minecraft client jar goes first in the launch
+    // classpath (legacy flag, kept for the custom-classpath assembly logic).
+    private final static boolean isClientFirst = false;
+
     public static final Gson GLOBAL_GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static final String URL_HOME = "https://wiki.angelauramc.dev";
@@ -2223,20 +2227,4 @@ public final class Tools {
         }
     }
 
-    private static void insertSafety(JMinecraftVersionList.Version targetVer, JMinecraftVersionList.Version fromVer, String... keyArr) {
-        for (String key : keyArr) {
-            Object value = null;
-            try {
-                Field fieldA = fromVer.getClass().getField(key);
-                value = fieldA.get(fromVer);
-                if (((value instanceof String) && !((String) value).isEmpty()) || value != null) {
-                    Field fieldB = targetVer.getClass().getField(key);
-                    fieldB.set(targetVer, value);
-                }
-            } catch (Throwable th) {
-                Logging.w(InfoDistributor.LAUNCHER_NAME, "Unable to insert " + key + "=" + value, th);
-            }
-        }
-
-}
 }

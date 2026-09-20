@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
-import com.endiq.turtlelauncher.R;
+import net.kdt.pojavlaunch.R;
 
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.utils.NotificationUtils;

@@ -3,6 +3,7 @@ package net.kdt.pojavlaunch.progresskeeper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProgressKeeper {
     private static final HashMap<String, List<ProgressListener>> sProgressListeners = new HashMap<>();
@@ -110,5 +111,33 @@ public class ProgressKeeper {
 
     public static boolean hasOngoingTasks() {
         return getTaskCount() > 0;
+    }
+
+    /**
+     * Turtle Launcher API: immutable snapshot of a single running task, safe to hand
+     * out to UI code outside this package (ProgressState's own fields are
+     * package-private).
+     */
+    public static final class Snapshot {
+        public final String progressKey;
+        public final int progress;
+        public final int resid;
+        public final Object[] varArg;
+
+        Snapshot(String progressKey, int progress, int resid, Object[] varArg) {
+            this.progressKey = progressKey;
+            this.progress = progress;
+            this.resid = resid;
+            this.varArg = varArg;
+        }
+    }
+
+    public static synchronized List<Snapshot> getSnapshots() {
+        List<Snapshot> snapshots = new ArrayList<>(sProgressStates.size());
+        for (Map.Entry<String, ProgressState> entry : sProgressStates.entrySet()) {
+            ProgressState state = entry.getValue();
+            snapshots.add(new Snapshot(entry.getKey(), state.progress, state.resid, state.varArg));
+        }
+        return snapshots;
     }
 }

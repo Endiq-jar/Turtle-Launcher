@@ -29,7 +29,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.endiq.DefocusableScrollView;
-import com.endiq.turtlelauncher.R;
+import net.kdt.pojavlaunch.R;
 import com.endiq.turtlelauncher.feature.log.Logging;
 import com.endiq.turtlelauncher.listener.SimpleTextWatcher;
 import com.endiq.turtlelauncher.ui.dialog.KeyboardDialog;
