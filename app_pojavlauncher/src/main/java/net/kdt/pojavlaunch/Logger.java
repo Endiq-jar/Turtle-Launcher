@@ -49,5 +49,5 @@ public class Logger {
     }
 
     /** Link a log listener to the logger */
-    private static native void setLogListener(eventLogListener logListener);
+    public static native void setLogListener(eventLogListener logListener);
 }

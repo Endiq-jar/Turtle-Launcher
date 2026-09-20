@@ -41,7 +41,7 @@ jobs:
         if: failure()
         run: |
           # Surface compiler errors as annotations (visible through the API)
-          grep -nE "^e: |error: |symbol: |location: |\.java:[0-9]+: |\.kt:[0-9]+: |What went wrong|Caused by:|> Task .*FAILED|FAILURE: Build failed" build-debug.log | head -80 > errors.log || true
+          grep -nE "^e: |error: |symbol: |location: |required:|found:|\.java:[0-9]+: |\.kt:[0-9]+: |What went wrong|Caused by:|> Task .*FAILED|FAILURE: Build failed" build-debug.log | head -250 > errors.log || true
           if [ -s errors.log ]; then
             while IFS= read -r line; do
               echo "::error::${line:0:600}"
@@ -50,6 +50,16 @@ jobs:
             echo "::error::Build failed but no error lines were matched; see full log"
             tail -60 build-debug.log | while IFS= read -r line; do echo "::error::${line:0:600}"; done
           fi
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-debug-failure-logs
+          path: |
+            build-debug.log
+            errors.log
+          retention-days: 7
 
       - name: Build Release .apk
         if: success()

@@ -148,6 +148,8 @@ public class LauncherActivity extends BaseActivity {
 
     private ActivityResultLauncher<String> mRequestNotificationPermissionLauncher;
     private WeakReference<Runnable> mRequestNotificationPermissionRunnable;
+    private ActivityResultLauncher<String> mRequestMicrophonePermissionLauncher;
+    private WeakReference<Runnable> mRequestMicrophonePermissionRunnable;
 
     @Subscribe()
     public void event(PageOpacityChangeEvent event) {
@@ -214,7 +216,7 @@ public class LauncherActivity extends BaseActivity {
     @Subscribe()
     public void event(MicrosoftLoginEvent event) {
         new MicrosoftBackgroundLogin(false, event.getUri().getQueryParameter("code")).performLogin(
-                this, null,
+                null,
                 AccountsManager.INSTANCE.getDoneListener(),
                 AccountsManager.INSTANCE.getErrorListener()
         );
@@ -369,6 +371,16 @@ public class LauncherActivity extends BaseActivity {
                     if(!isAllowed) handleNoNotificationPermission();
                     else {
                         Runnable runnable = Tools.getWeakReference(mRequestNotificationPermissionRunnable);
+                        if(runnable != null) runnable.run();
+                    }
+                }
+        );
+        mRequestMicrophonePermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isAllowed -> {
+                    if(!isAllowed) handleNoNotificationPermission();
+                    else {
+                        Runnable runnable = Tools.getWeakReference(mRequestMicrophonePermissionRunnable);
                         if(runnable != null) runnable.run();
                     }
                 }
@@ -759,6 +771,25 @@ public class LauncherActivity extends BaseActivity {
     private void handleNoNotificationPermission() {
         AllSettings.getSkipNotificationPermissionCheck().put(true).save();
         Toast.makeText(this, R.string.notification_permission_toast, Toast.LENGTH_LONG).show();
+    }
+
+    public boolean checkForNotificationPermission() {
+        return Build.VERSION.SDK_INT < 33 || ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_DENIED;
+    }
+
+    public boolean checkForMicrophonePermission() {
+        return ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_DENIED;
+    }
+
+    public void askForMicrophonePermission(Runnable onSuccessRunnable) {
+        if (onSuccessRunnable != null) {
+            mRequestMicrophonePermissionRunnable = new WeakReference<>(onSuccessRunnable);
+        }
+        mRequestMicrophonePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO);
     }
 
     public void askForNotificationPermission(Runnable onSuccessRunnable) {

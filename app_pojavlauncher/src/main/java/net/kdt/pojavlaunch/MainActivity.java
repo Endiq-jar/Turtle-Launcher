@@ -103,6 +103,12 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
 
     @SuppressLint("StaticFieldLeak")
     private static ActivityGameBinding binding = null;
+    /** Amethyst-stack API: hotbar gesture index sync from CallbackBridge key events. */
+    public void setmLastIndex(int a) {
+        ActivityGameBinding b = binding;
+        if (b != null) b.hotbarView.setmLastIndex(a);
+    }
+
     public static TouchCharInput touchCharInput;
     private GameMenuViewWrapper mGameMenuWrapper;
     private GyroControl mGyroControl;
