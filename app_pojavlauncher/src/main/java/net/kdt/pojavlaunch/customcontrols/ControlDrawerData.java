@@ -1,5 +1,9 @@
 package net.kdt.pojavlaunch.customcontrols;
 
+import android.content.Context;
+
+import net.kdt.pojavlaunch.R;
+
 import net.kdt.pojavlaunch.Tools;
 
 import java.util.ArrayList;
@@ -24,6 +28,19 @@ public class ControlDrawerData {
         UP,
         RIGHT,
         FREE
+    }
+
+    /**
+     * Turtle Launcher API: localized orientation names for the control editor.
+     */
+    public static String[] getOrientations(Context context){
+        return new String[]{
+                context.getString(R.string.controls_orientation_down),
+                context.getString(R.string.controls_orientation_left),
+                context.getString(R.string.controls_orientation_up),
+                context.getString(R.string.controls_orientation_right),
+                context.getString(R.string.controls_orientation_free)
+        };
     }
 
     public static Orientation[] getOrientations(){

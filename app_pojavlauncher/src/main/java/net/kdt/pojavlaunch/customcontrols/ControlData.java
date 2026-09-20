@@ -2,10 +2,13 @@ package net.kdt.pojavlaunch.customcontrols;
 
 import static net.kdt.pojavlaunch.LwjglGlfwKeycode.GLFW_KEY_UNKNOWN;
 
+import android.content.Context;
 import android.util.ArrayMap;
 
 import androidx.annotation.Keep;
 
+import com.endiq.turtlelauncher.utils.stringutils.StringUtils;
+import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.customcontrols.buttons.ControlInterface;
 import net.kdt.pojavlaunch.prefs.LauncherPreferences;
@@ -177,6 +180,21 @@ public class ControlData {
         }
 
         return SPECIAL_BUTTONS;
+    }
+
+    /**
+     * Turtle Launcher API: localized special-button labels for the control editor.
+     */
+    public static List<String> buildSpecialButtonArray(Context context) {
+        if (SPECIAL_BUTTON_NAME_ARRAY == null) {
+            List<String> nameList = new ArrayList<>();
+            for (ControlData btn : getSpecialButtons()) {
+                nameList.add(StringUtils.insertSpace(context.getString(R.string.keycode_special), btn.name));
+            }
+            SPECIAL_BUTTON_NAME_ARRAY = nameList;
+            Collections.reverse(SPECIAL_BUTTON_NAME_ARRAY);
+        }
+        return SPECIAL_BUTTON_NAME_ARRAY;
     }
 
     public static List<String> buildSpecialButtonArray() {

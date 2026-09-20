@@ -83,6 +83,13 @@ public class ColorSelector extends SideDialogView implements HueSelectionListene
      * Shows the color selector with the desired ARGB color selected
      * @param previousColor the desired ARGB color
      */
+    /**
+     * Turtle Launcher API: show with a preselected color (slides in from the left).
+     */
+    public void show(int previousColor) {
+        show(false, previousColor);
+    }
+
     public void show(boolean fromRight, int previousColor) {
         appear(fromRight);
         runColor(previousColor); // initialize

@@ -56,7 +56,7 @@ public class LayoutConverter {
         try {
             return loadAndConvertIfNecessary(jsonPath);
         } catch (Exception e) {
-            Tools.showError(ctx, ctx.getString(com.endiq.turtlelauncher.R.string.controls_load_failed), e);
+            Tools.showError(ctx, ctx.getString(net.kdt.pojavlaunch.R.string.controls_load_failed), e);
             return null;
         }
     }
@@ -67,7 +67,7 @@ public class LayoutConverter {
             JSONObject layoutJobj = new JSONObject(string);
             return loadFromJsonObject(context, layoutJobj, string, null, true);
         } catch (Exception e) {
-            Tools.showError(context, context.getString(com.endiq.turtlelauncher.R.string.controls_load_failed), e);
+            Tools.showError(context, context.getString(net.kdt.pojavlaunch.R.string.controls_load_failed), e);
             return null;
         }
     }
@@ -88,10 +88,10 @@ public class LayoutConverter {
             if (version == 3 || version == 4 || version == 5) return LayoutConverter.convertV3_4Layout(layoutJobj);
             if (version == 6 || version == 7) return convertV6_7Layout(layoutJobj);
             if (version == 8) return Tools.GLOBAL_GSON.fromJson(jsonString, CustomControls.class);
-            if (showError) Tools.showError(ctx, ctx.getString(com.endiq.turtlelauncher.R.string.controls_unsupported_layout_version), new IOException());
+            if (showError) Tools.showError(ctx, ctx.getString(net.kdt.pojavlaunch.R.string.controls_unsupported_layout_version), new IOException());
             return null;
         } catch (Exception e) {
-            if (showError) Tools.showError(ctx, ctx.getString(com.endiq.turtlelauncher.R.string.controls_load_failed), e);
+            if (showError) Tools.showError(ctx, ctx.getString(net.kdt.pojavlaunch.R.string.controls_load_failed), e);
             return null;
         }
     }

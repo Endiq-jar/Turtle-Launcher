@@ -54,7 +54,7 @@ import com.endiq.turtlelauncher.utils.ZHTools;
 import com.endiq.turtlelauncher.utils.anim.ViewAnimUtils;
 
 import net.kdt.pojavlaunch.Tools;
-import net.kdt.pojavlaunch.contracts.OpenDocumentWithExtension;
+import net.kdt.pojavlaunch.contracts.OpenDocumentsWithExtension;
 import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper;
 
 import org.greenrobot.eventbus.EventBus;
@@ -76,7 +76,7 @@ public class MainMenuFragment extends FragmentWithAnim {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        modpackImportLauncher = registerForActivityResult(new OpenDocumentWithExtension(null), uris -> {
+        modpackImportLauncher = registerForActivityResult(new OpenDocumentsWithExtension(null), uris -> {
             if (uris == null || uris.isEmpty()) return;
             importModpackFromUri(uris.get(0));
         });
