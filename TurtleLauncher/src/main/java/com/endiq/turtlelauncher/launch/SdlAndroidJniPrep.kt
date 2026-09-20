@@ -1,6 +1,7 @@
 package com.endiq.turtlelauncher.launch
 
 import android.app.Activity
+import android.system.Os
 import android.util.Log
 import com.endiq.turtlelauncher.utils.path.PathManager
 import org.libsdl.app.SDL
@@ -21,17 +22,50 @@ object SdlAndroidJniPrep {
     var isActive: Boolean = false
         private set
 
+    /**
+     * DroidBridge's Snapshot 4 workaround. RenderPearl prefers persistent
+     * buffer storage when a wrapper advertises desktop GL extensions, but the
+     * GLES-backed MobileGlues/Krypton path cannot safely map those buffers.
+     * Hide only the two buffer-storage extensions for 26.3 pre/snapshot 4+
+     * so RenderPearl uses its mutable-buffer fallback.
+     *
+     * This is process environment, not a game option: it must be installed
+     * before the embedded JVM is forked and before SDL selects its GL library.
+     */
     @JvmStatic
-    fun ensureMobileGluesShaderErrorIgnore() {
+    fun applyDroidBridgeSnapshot4Patch(versionName: String?) {
+        if (!isDroidBridgeSnapshot4OrLater(versionName)) return
         runCatching {
-            val dir = File(PathManager.DIR_FILE, "mobileglues").apply { mkdirs() }
-            val config = File(dir, "config.json")
-            if (!config.exists()) {
-                config.writeText("{\"enableNoError\":2}\n")
-                Log.i(TAG, "TurtleSDL3: wrote ${config.absolutePath} (enableNoError=2 = ignore shader/program " +
-                    "errors, which MobileGlues' release notes require for MC 26.3-snapshot-3+)")
-            }
-        }.onFailure { Log.w(TAG, "TurtleSDL3: could not write MobileGlues config.json", it) }
+            Os.setenv(
+                "MESA_EXTENSION_OVERRIDE",
+                "-GL_ARB_buffer_storage -GL_EXT_buffer_storage",
+                true
+            )
+            Os.setenv("DROIDBRIDGE_SDL3_DISABLE_PERSISTENT_MAPPING", "1", true)
+            Log.i(TAG, "DroidBridge Pre4: disabled persistent GL buffer storage for $versionName")
+        }.onFailure {
+            // The SDL/JNI fix below is independent of the renderer workaround.
+            // Never make an otherwise launchable version fail just because an
+            // OEM blocks process-environment writes.
+            Log.w(TAG, "DroidBridge Pre4: could not apply buffer-storage override", it)
+        }
+    }
+
+    @JvmStatic
+    fun isDroidBridgeSnapshot4OrLater(versionName: String?): Boolean {
+        if (versionName == null) return false
+        val value = versionName.trim().lowercase()
+            .replace('_', '-')
+            .replace(' ', '-')
+            .replace(Regex("-+"), "-")
+
+        val snapshot = Regex("^26\\.3-(?:snapshot|pre)-?(\\d+)(?:$|[^0-9].*)").matchEntire(value)
+        if (snapshot != null) return snapshot.groupValues[1].toIntOrNull()?.let { it >= 4 } == true
+
+        // The 26.3 release and later 26.x releases retain the Snapshot 4
+        // RenderPearl startup path.
+        val release = Regex("^26\\.(\\d+)(?:$|[^0-9].*)").matchEntire(value)
+        return release?.groupValues?.get(1)?.toIntOrNull()?.let { it >= 3 } == true
     }
 
     @JvmStatic
@@ -85,7 +119,9 @@ object SdlAndroidJniPrep {
      * @param activity the Activity used as the SDL host. Must not be null.
      */
     @JvmStatic
+    @Synchronized
     fun setup(activity: Activity?) {
+        if (isActive) return
         if (activity == null) {
             Log.e(TAG, "Cannot prepare SDL host state without an Activity")
             return
