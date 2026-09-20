@@ -1132,7 +1132,9 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
     // C functions we call
     public static native String nativeGetVersion();
-    public static native int nativeSetupJNI();
+    public static native void nativeSetupJNI();
+    public static native int nativeGetCompiledSubsystems();
+    public static native boolean nativeIsHIDAPIEnabled();
     public static native void nativeInitMainThread();
     public static native void nativeCleanupMainThread();
     public static native int nativeRunMain(String library, String function, Object arguments);
@@ -1153,12 +1155,17 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     public static native void onNativeTouch(int touchDevId, int pointerFingerId,
                                             int action, float x,
                                             float y, float p);
-    public static native void onNativePen(int penId, int button, int action, float x, float y, float p);
+    public static native void onNativePen(int penId, int device_type, int button, int action, float x, float y, float p);
     public static native void onNativeAccel(float x, float y, float z);
     public static native void onNativeClipboardChanged();
     public static native void onNativeSurfaceCreated();
     public static native void onNativeSurfaceChanged();
     public static native void onNativeSurfaceDestroyed();
+    public static native void onNativeScreenKeyboardShown();
+    public static native void onNativeScreenKeyboardHidden();
+    public static native void onNativePinchStart(float span_x, float span_y, float focus_x, float focus_y);
+    public static native void onNativePinchUpdate(float scale, float span_x, float span_y, float focus_x, float focus_y);
+    public static native void onNativePinchEnd();
     public static native String nativeGetHint(String name);
     public static native boolean nativeGetHintBoolean(String name, boolean default_value);
     public static native void nativeSetenv(String name, String value);
@@ -1379,8 +1386,43 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     /**
      * This method is called by SDL using JNI.
      */
-    public static Context getContext() {
-        return SDL.getContext();
+    public static Activity getContext() {
+        Context context = SDL.getContext();
+        if (context instanceof Activity) {
+            return (Activity) context;
+        }
+        return getTurtleActivity();
+    }
+
+    /**
+     * Pen device type passed to onNativePen: 0 = unknown, 1 = direct, 2 = indirect (SDL_PenDeviceType).
+     */
+    public static int getPenDeviceType(InputDevice penDevice) {
+        if (penDevice == null) {
+            return 0;
+        }
+        if (Build.VERSION.SDK_INT >= 29 /* Android 10 (Q) */) {
+            return penDevice.isExternal() ? 2 : 1;
+        }
+        return 0;
+    }
+
+    /**
+     * This method is called by SDL using JNI.
+     */
+    static String getDeviceFormFactor() {
+        try {
+            if (isAndroidTV()) {
+                return "tv";
+            } else if (isVRHeadset()) {
+                return "headset";
+            } else if (isTablet()) {
+                return "tablet";
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "getDeviceFormFactor failed, assuming phone", t);
+        }
+        return "phone";
     }
 
     /**
@@ -1599,11 +1641,11 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         if (SDLControllerManager.isDeviceSDLJoystick(deviceId)) {
             // Note that we process events with specific key codes here
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                if (SDLControllerManager.onNativePadDown(deviceId, keyCode)) {
+                if (SDLControllerManager.onNativePadDown(deviceId, keyCode, event.getScanCode())) {
                     return true;
                 }
             } else if (event.getAction() == KeyEvent.ACTION_UP) {
-                if (SDLControllerManager.onNativePadUp(deviceId, keyCode)) {
+                if (SDLControllerManager.onNativePadUp(deviceId, keyCode, event.getScanCode())) {
                     return true;
                 }
             }
@@ -2185,19 +2227,23 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     /**
      * This method is called by SDL using JNI.
      */
-    public static boolean showFileDialog(String[] filters, boolean allowMultiple, boolean forWrite, int requestCode) {
+    public static boolean showFileDialog(String[] filters, boolean allowMultiple, int type, String initialPath, int requestCode) {
         if (mSingleton == null) {
             return false;
         }
 
-        if (forWrite) {
+        /* SDL_FileDialogType: 0 = open file, 1 = save file, 2 = open folder */
+        final boolean forWrite = (type == 1);
+        final boolean forFolder = (type == 2);
+
+        if (forWrite || forFolder) {
             allowMultiple = false;
         }
 
         /* Convert string list of extensions to their respective MIME types */
         ArrayList<String> mimes = new ArrayList<>();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-        if (filters != null) {
+        if (filters != null && !forFolder) {
             for (String pattern : filters) {
                 String[] extensions = pattern.split(";");
 
@@ -2216,19 +2262,22 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         }
 
         /* Display the file dialog */
-        Intent intent = new Intent(forWrite ? Intent.ACTION_CREATE_DOCUMENT : Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
-        switch (mimes.size()) {
-            case 0:
-                intent.setType("*/*");
-                break;
-            case 1:
-                intent.setType(mimes.get(0));
-                break;
-            default:
-                intent.setType("*/*");
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimes.toArray(new String[]{}));
+        Intent intent = new Intent(forFolder ? Intent.ACTION_OPEN_DOCUMENT_TREE
+                : (forWrite ? Intent.ACTION_CREATE_DOCUMENT : Intent.ACTION_OPEN_DOCUMENT));
+        if (!forFolder) {
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
+            switch (mimes.size()) {
+                case 0:
+                    intent.setType("*/*");
+                    break;
+                case 1:
+                    intent.setType(mimes.get(0));
+                    break;
+                default:
+                    intent.setType("*/*");
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimes.toArray(new String[]{}));
+            }
         }
 
         try {

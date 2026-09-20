@@ -30,17 +30,19 @@ import android.view.View;
 public class SDLControllerManager
 {
 
-    public static native int nativeSetupJNI();
+    public static native void nativeSetupJNI();
 
     public static native void nativeAddJoystick(int device_id, String name, String desc,
                                                 int vendor_id, int product_id,
                                                 int button_mask,
-                                                int naxes, int axis_mask, int nhats, boolean can_rumble);
+                                                int naxes, int axis_mask, int nhats, boolean can_rumble,
+                                                boolean has_rgb_led, boolean has_accelerometer, boolean has_gyroscope);
     public static native void nativeRemoveJoystick(int device_id);
     public static native void nativeAddHaptic(int device_id, String name);
     public static native void nativeRemoveHaptic(int device_id);
-    public static native boolean onNativePadDown(int device_id, int keycode);
-    public static native boolean onNativePadUp(int device_id, int keycode);
+    public static native boolean onNativePadDown(int device_id, int keycode, int scancode);
+    public static native boolean onNativePadUp(int device_id, int keycode, int scancode);
+    public static native void onNativeJoySensor(int device_id, int sensor_type, long sensor_timestamp, float x, float y, float z);
     public static native void onNativeJoy(int device_id, int axis,
                                           float value);
     public static native void onNativeHat(int device_id, int hat_id,
@@ -185,6 +187,32 @@ public class SDLControllerManager
             initialize();
         }
         return mJoystickHandler != null && mJoystickHandler.handleMotionEvent(event);
+    }
+
+    /**
+     * This method is called by SDL using JNI.
+     */
+    static void detectDevices() {
+        pollInputDevices();
+    }
+
+    /**
+     * This method is called by SDL using JNI. LED control is not supported by this launcher.
+     */
+    static void joystickSetLED(int device_id, int red, int green, int blue) {
+    }
+
+    /**
+     * This method is called by SDL using JNI. Controller sensors are not exposed by this launcher.
+     */
+    static void joystickSetSensorsEnabled(int device_id, boolean enabled) {
+    }
+
+    /**
+     * This method is called by SDL using JNI.
+     */
+    static void detectHapticDevices() {
+        pollHapticDevices();
     }
 
     /**
@@ -637,12 +665,14 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler {
 
                     if (hasLooper) {
                         SDLControllerManager.nativeAddJoystick(fDeviceId, fName, fDesc,
-                                fVendorId, fProductId, fButtonMask, fAxesSize, fAxisMask, fHatsSize, fCanRumble);
+                                fVendorId, fProductId, fButtonMask, fAxesSize, fAxisMask, fHatsSize, fCanRumble,
+                                false, false, false);
                     } else {
                         // Post to main thread: safe ART context, no TLS collision risk
                         new Handler(Looper.getMainLooper()).post(() ->
                                 SDLControllerManager.nativeAddJoystick(fDeviceId, fName, fDesc,
-                                        fVendorId, fProductId, fButtonMask, fAxesSize, fAxisMask, fHatsSize, fCanRumble)
+                                        fVendorId, fProductId, fButtonMask, fAxesSize, fAxisMask, fHatsSize, fCanRumble,
+                                        false, false, false)
                         );
                     }
                 }
@@ -1356,7 +1386,7 @@ class SDLGenericMotionListener_API14 implements View.OnGenericMotionListener {
                         // BUTTON_STYLUS_PRIMARY is 2^5, so shift by 4, and apply SDL_PEN_INPUT_DOWN/SDL_PEN_INPUT_ERASER_TIP
                         int buttons = (event.getButtonState() >> 4) | (1 << (toolType == MotionEvent.TOOL_TYPE_STYLUS ? 0 : 30));
 
-                        SDLActivity.onNativePen(event.getPointerId(i), buttons, action, x, y, p);
+                        SDLActivity.onNativePen(event.getPointerId(i), SDLActivity.getPenDeviceType(event.getDevice()), buttons, action, x, y, p);
                         consumed = true;
                         break;
                 }
