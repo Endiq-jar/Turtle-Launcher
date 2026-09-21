@@ -190,9 +190,8 @@ object SdlAndroidJniPrep {
     @Synchronized
     fun setup(activity: Activity?) {
         if (isActive) return
-        if (activity == null) {
-            Log.e(TAG, "Cannot prepare SDL host state without an Activity")
-            return
+        check(activity != null) {
+            "Cannot prepare SDL host state without an Activity"
         }
         try {
             System.loadLibrary("SDL3")
