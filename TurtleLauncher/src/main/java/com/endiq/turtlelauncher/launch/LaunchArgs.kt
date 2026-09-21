@@ -113,7 +113,7 @@ class LaunchArgs(
             }
         }
 
-        argsList.addAll(getCacioJavaArgs(runtime.javaVersion == 8))
+        argsList.addAll(getCacioJavaArgs(runtime.javaVersion))
 
         val is7 = VersionNumber.compare(VersionNumber.asVersion(versionInfo.id ?: "0.0").canonical, "1.12") < 0
         val configFilePath = if (is7) LibPath.LOG4J_XML_1_7 else LibPath.LOG4J_XML_1_12
@@ -279,7 +279,21 @@ class LaunchArgs(
 
         @JvmStatic
         fun getCacioJavaArgs(isJava8: Boolean): List<String> {
+            return getCacioJavaArgs(if (isJava8) 8 else 17)
+        }
+
+        /**
+         * Java 25 removed sun.java2d.SurfaceManagerFactory, which the
+         * caciocavallo17 premain agent reflectively patches. The agent catches
+         * that failure and prints a stack trace, but cannot perform its Java2D
+         * setup. Do not install it on Java 25+; the normal Cacio toolkit and
+         * graphics-environment properties below remain available without the
+         * incompatible premain hook.
+         */
+        @JvmStatic
+        fun getCacioJavaArgs(javaVersion: Int): List<String> {
             val argsList: MutableList<String> = ArrayList()
+            val isJava8 = javaVersion == 8
 
             argsList.add("-Djava.awt.headless=false")
             argsList.add("-Dcacio.managed.screensize=" + AWTCanvasView.AWT_CANVAS_WIDTH + "x" + AWTCanvasView.AWT_CANVAS_HEIGHT)
@@ -292,7 +306,9 @@ class LaunchArgs(
             } else {
                 argsList.add("-Dawt.toolkit=com.github.caciocavallosilano.cacio.ctc.CTCToolkit")
                 argsList.add("-Djava.awt.graphicsenv=com.github.caciocavallosilano.cacio.ctc.CTCGraphicsEnvironment")
-                argsList.add("-javaagent:" + LibPath.CACIO_17_AGENT.getAbsolutePath())
+                if (javaVersion < 25) {
+                    argsList.add("-javaagent:" + LibPath.CACIO_17_AGENT.getAbsolutePath())
+                }
                 argsList.add("--add-exports=java.desktop/java.awt=ALL-UNNAMED")
                 argsList.add("--add-exports=java.desktop/java.awt.peer=ALL-UNNAMED")
                 argsList.add("--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED")
