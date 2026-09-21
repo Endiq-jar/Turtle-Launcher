@@ -12,6 +12,8 @@ class LibPath {
 
         @JvmField val CACIO_8 = File(DIR_GAME_HOME, "caciocavallo")
         @JvmField val CACIO_17 = File(DIR_GAME_HOME, "caciocavallo17")
+        /** Java 25 removed sun.java2d.SurfaceManagerFactory; this directory contains the software-only Cacio variant. */
+        @JvmField val CACIO_25 = File(DIR_GAME_HOME, "caciocavallo25")
         @JvmField val CACIO_17_AGENT = File(CACIO_17, "cacio-agent.jar")
 
         @JvmField val FORGE_INSTALLER = File(COMPONENTS_DIR, "forge_installer.jar")

@@ -283,12 +283,11 @@ class LaunchArgs(
         }
 
         /**
-         * Java 25 removed sun.java2d.SurfaceManagerFactory, which the
-         * caciocavallo17 premain agent reflectively patches. The agent catches
-         * that failure and prints a stack trace, but cannot perform its Java2D
-         * setup. Do not install it on Java 25+; the normal Cacio toolkit and
-         * graphics-environment properties below remain available without the
-         * incompatible premain hook.
+         * Builds the Cacio arguments for the selected runtime. Java 25 removed
+         * sun.java2d.SurfaceManagerFactory, so Java 25+ uses the bundled
+         * software-only Cacio variant and never installs the Java 17 premain
+         * agent. The regular Java 8/17/21 path keeps its existing toolkit and
+         * agent setup.
          */
         @JvmStatic
         fun getCacioJavaArgs(javaVersion: Int): List<String> {
@@ -329,7 +328,11 @@ class LaunchArgs(
 
             val cacioClassPath = StringBuilder()
             cacioClassPath.append("-Xbootclasspath/").append(if (isJava8) "p" else "a")
-            val cacioFiles = if (isJava8) LibPath.CACIO_8 else LibPath.CACIO_17
+            val cacioFiles = when {
+                isJava8 -> LibPath.CACIO_8
+                javaVersion >= 25 -> LibPath.CACIO_25
+                else -> LibPath.CACIO_17
+            }
             cacioFiles.listFiles()?.onEach {
                 if (it.name.endsWith(".jar")) cacioClassPath.append(":").append(it.absolutePath)
             }
