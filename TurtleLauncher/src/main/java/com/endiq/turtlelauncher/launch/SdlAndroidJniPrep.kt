@@ -226,7 +226,7 @@ object SdlAndroidJniPrep {
             // destruction callbacks continue to come from MinecraftGLSurface.
             if (sdlSurface != null && gameSurface != null && gameSurface.isValid()) {
                 val metrics = activity.resources.displayMetrics
-                sdlSurface.surfaceChanged(null, 0, metrics.widthPixels, metrics.heightPixels)
+                sdlSurface.surfaceChanged(sdlSurface.holder, 0, metrics.widthPixels, metrics.heightPixels)
             }
 
             // From here on MinecraftGLSurface forwards its own Surface callbacks to SDL's
