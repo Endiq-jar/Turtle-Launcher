@@ -592,7 +592,7 @@ object CrashAnalyzer {
                 matches = { has(it, "glDeleteFramebuffersEXT") && has(it, "libgl4es", "SIGSEGV") },
                 diagnosis = fixed(
                     "Holy GL4ES crashed deleting a framebuffer object (glDeleteFramebuffersEXT)",
-                    "A native SIGSEGV inside libgl4es_114.so itself, not a Java exception - happens right at " +
+                    "A native SIGSEGV inside the HolyGL4ES native library itself, not a Java exception - happens right at " +
                         "Minecraft startup, in the framebuffer create-then-resize sequence RenderTarget always " +
                         "runs once during init. It's a prebuilt upstream binary with no native source in this " +
                         "project to patch. The most directly implicated lever already in this launcher is FBO " +
