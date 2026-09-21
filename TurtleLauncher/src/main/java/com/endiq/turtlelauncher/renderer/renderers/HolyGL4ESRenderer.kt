@@ -19,7 +19,8 @@ class HolyGL4ESRenderer : RendererInterface {
 
     override fun getDlopenLibrary(): Lazy<List<String>> = lazy { emptyList() }
 
-    override fun getRendererLibrary(): String = "libgl4es_114.so"
+    // HolyGL4ES AAR ships the current 1.1.5 backend for every supported ABI.
+    override fun getRendererLibrary(): String = "libgl4es_115.so"
 
     override fun getRendererEGL(): String = "libEGL.so"
 }
