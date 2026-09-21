@@ -1,6 +1,8 @@
 package com.endiq.turtlelauncher.launch
 
 import android.app.Activity
+import android.os.Build
+import android.system.Os
 import android.util.Log
 import com.endiq.turtlelauncher.utils.path.PathManager
 import org.libsdl.app.SDL
@@ -21,17 +23,117 @@ object SdlAndroidJniPrep {
     var isActive: Boolean = false
         private set
 
+    /**
+     * DroidBridge's Snapshot 4 workaround. RenderPearl prefers persistent
+     * buffer storage when a wrapper advertises desktop GL extensions, but the
+     * GLES-backed MobileGlues/Krypton path cannot safely map those buffers.
+     * Hide only the two buffer-storage extensions for 26.3 pre/snapshot 4+
+     * so RenderPearl uses its mutable-buffer fallback.
+     *
+     * This is process environment, not a game option: it must be installed
+     * before the embedded JVM is forked and before SDL selects its GL library.
+     */
     @JvmStatic
-    fun ensureMobileGluesShaderErrorIgnore() {
+    fun applyDroidBridgeSnapshot4Patch(versionName: String?) {
+        if (!isDroidBridgeSnapshot4OrLater(versionName)) return
         runCatching {
-            val dir = File(PathManager.DIR_FILE, "mobileglues").apply { mkdirs() }
-            val config = File(dir, "config.json")
-            if (!config.exists()) {
-                config.writeText("{\"enableNoError\":2}\n")
-                Log.i(TAG, "TurtleSDL3: wrote ${config.absolutePath} (enableNoError=2 = ignore shader/program " +
-                    "errors, which MobileGlues' release notes require for MC 26.3-snapshot-3+)")
+            Os.setenv(
+                "MESA_EXTENSION_OVERRIDE",
+                "-GL_ARB_buffer_storage -GL_EXT_buffer_storage",
+                true
+            )
+            Os.setenv("DROIDBRIDGE_SDL3_DISABLE_PERSISTENT_MAPPING", "1", true)
+            Log.i(TAG, "DroidBridge Pre4: disabled persistent GL buffer storage for $versionName")
+        }.onFailure {
+            // The SDL/JNI fix below is independent of the renderer workaround.
+            // Never make an otherwise launchable version fail just because an
+            // OEM blocks process-environment writes.
+            Log.w(TAG, "DroidBridge Pre4: could not apply buffer-storage override", it)
+        }
+    }
+
+    @JvmStatic
+    fun isDroidBridgeSnapshot4OrLater(versionName: String?): Boolean {
+        if (versionName == null) return false
+        val value = versionName.trim().lowercase()
+            .replace('_', '-')
+            .replace(' ', '-')
+            .replace(Regex("-+"), "-")
+
+        val snapshot = Regex("^26\\.3-(?:snapshot|pre)-?(\\d+)(?:$|[^0-9].*)").matchEntire(value)
+        if (snapshot != null) return snapshot.groupValues[1].toIntOrNull()?.let { it >= 4 } == true
+
+        // The 26.3 release and later 26.x releases retain the Snapshot 4
+        // RenderPearl startup path.
+        val release = Regex("^26\\.(\\d+)(?:$|[^0-9].*)").matchEntire(value)
+        return release?.groupValues?.get(1)?.toIntOrNull()?.let { it >= 3 } == true
+    }
+
+    /**
+     * PowerVR Rogue drivers found on low-end Android devices can expose a
+     * Vulkan loader but not Minecraft 26.3's required Vulkan 1.2 feature set.
+     * Minecraft may otherwise fall back from its failed OpenGL window to that
+     * unusable Vulkan backend. Force only this hardware family to OpenGL; do
+     * not change the user's API preference on other GPUs or Minecraft versions.
+     */
+    @JvmStatic
+    fun forcePowerVrOpenGl(versionName: String?, gameDir: File) {
+        if (!isMinecraft26_3OrLater(versionName) || !isPowerVrDevice()) return
+
+        val optionsFile = File(gameDir, "options.txt")
+        if (!optionsFile.isFile) {
+            Log.w(TAG, "PowerVR OpenGL guard: options.txt does not exist yet; Minecraft will create it")
+            return
+        }
+
+        runCatching {
+            val lines = optionsFile.readLines()
+            var changed = false
+            var foundPreference = false
+            val rewritten = lines.map { line ->
+                when {
+                    line.startsWith("graphicsApiPreference:") -> {
+                        foundPreference = true
+                        if (line != "graphicsApiPreference:prefer_opengl") changed = true
+                        "graphicsApiPreference:prefer_opengl"
+                    }
+                    line.startsWith("graphicsApi:") -> {
+                        // Older 26.x snapshots used this key; preserve the
+                        // key spelling if it is what this profile already has.
+                        foundPreference = true
+                        if (line != "graphicsApi:prefer_opengl") changed = true
+                        "graphicsApi:prefer_opengl"
+                    }
+                    else -> line
+                }
+            }.toMutableList()
+            if (!foundPreference) {
+                rewritten += "graphicsApiPreference:prefer_opengl"
+                changed = true
             }
-        }.onFailure { Log.w(TAG, "TurtleSDL3: could not write MobileGlues config.json", it) }
+            if (changed) {
+                optionsFile.writeText(rewritten.joinToString("\n") + "\n")
+                Log.w(TAG, "TurtleSDL3: PowerVR Vulkan capabilities are insufficient; forced Minecraft 26.3 to Prefer OpenGL")
+            }
+        }.onFailure {
+            // A profile write failure must not turn into a launcher crash. The
+            // valid Surface path remains independent and the game can still
+            // report its own backend choice.
+            Log.w(TAG, "PowerVR OpenGL guard: could not update ${optionsFile.absolutePath}", it)
+        }
+    }
+
+    private fun isMinecraft26_3OrLater(versionName: String?): Boolean {
+        val match = Regex("^26\\.(\\d+)(?:$|[^0-9].*)").matchEntire(versionName?.trim() ?: "") ?: return false
+        return match.groupValues[1].toIntOrNull()?.let { it >= 3 } == true
+    }
+
+    private fun isPowerVrDevice(): Boolean {
+        val buildIdentity = listOf(Build.HARDWARE, Build.BOARD, Build.DEVICE, Build.MANUFACTURER)
+            .joinToString(" ").lowercase()
+        return buildIdentity.contains("powervr") || buildIdentity.contains("rogue") ||
+            buildIdentity.contains("sgx") || File("/vendor/lib64/libsrv_um.so").isFile ||
+            File("/vendor/lib/libsrv_um.so").isFile
     }
 
     @JvmStatic
@@ -85,7 +187,9 @@ object SdlAndroidJniPrep {
      * @param activity the Activity used as the SDL host. Must not be null.
      */
     @JvmStatic
+    @Synchronized
     fun setup(activity: Activity?) {
+        if (isActive) return
         if (activity == null) {
             Log.e(TAG, "Cannot prepare SDL host state without an Activity")
             return
@@ -102,11 +206,29 @@ object SdlAndroidJniPrep {
             // launch pipeline happens to be running on.
             val sdlSurface = createSurfaceOnUiThread(activity)
 
-            // externalInitialize assigns the Activity, the SDLSurface and the layout, installs
-            // the clipboard handler and cursor list, and registers the (still null) native
-            // surface so SDL can find everything when it starts.
-            SDLActivity.externalInitialize(sdlSurface, null, null)
+            // MinecraftGLSurface publishes its live Surface before realStart()
+            // releases the launch callback. Carry that exact object into the SDL
+            // host; passing null here used to replace it with the detached
+            // SDLSurface holder, which is not a valid Android window.
+            val gameSurface = SDLActivity.getTurtleNativeSurface()
+            check(sdlSurface != null) {
+                "SDL host Surface could not be created on the UI thread"
+            }
+            check(gameSurface != null && gameSurface.isValid()) {
+                "No valid Minecraft Surface was published before SDL setup"
+            }
+            Log.i(TAG, "Using published Minecraft Surface for SDL (valid=true)")
+            SDLActivity.externalInitialize(sdlSurface, null, gameSurface)
             SDL.setupJNI()
+
+            // The real Minecraft view is not the SDLSurface view, so Android
+            // will not deliver a callback to this detached host. Send the
+            // initial dimensions once the JNI methods exist; later size and
+            // destruction callbacks continue to come from MinecraftGLSurface.
+            if (sdlSurface != null && gameSurface != null && gameSurface.isValid()) {
+                val metrics = activity.resources.displayMetrics
+                sdlSurface.surfaceChanged(null, 0, metrics.widthPixels, metrics.heightPixels)
+            }
 
             // From here on MinecraftGLSurface forwards its own Surface callbacks to SDL's
             // SDLSurface, which is the only way SDL learns the real window size (see
@@ -115,14 +237,13 @@ object SdlAndroidJniPrep {
             isActive = true
             Log.i(TAG, "SDL host state prepared")
         } catch (e: Throwable) {
-            // Best effort. Failing here must not take down the launch - without SDL set up some
-            // 26.3+ features will be degraded, but the game can still start. NOTE: this is the
-            // ART side only. If this fails while the game still launches, LWJGL's own dlopen of
-            // SDL3 will get an instance whose mJavaVM/mActivityClass never got set, and SDL's
-            // Android backend will crash inside Android_JNI_InitTouch (see class doc) - that is
-            // exactly what CrashAnalyzer rule 22 decodes for the user afterwards.
-            Log.e(TAG, "SDL prepare failed - the game-side SDL3 instance will be uninitialized, " +
-                "expect the sdl3_android_init_sigsegv crash if the game reaches SDL_Init", e)
+            isActive = false
+            // Do not let the guest JVM continue after ART-side SDL setup
+            // failed. Its LWJGL dlopen would otherwise create an SDL3 instance
+            // without the Android JNI state initialized above and turn this
+            // recoverable setup error into a native crash.
+            Log.e(TAG, "SDL prepare failed; refusing to launch an uninitialized game-side SDL3", e)
+            throw IllegalStateException("SDL host setup failed; game launch was stopped safely", e)
         }
     }
 

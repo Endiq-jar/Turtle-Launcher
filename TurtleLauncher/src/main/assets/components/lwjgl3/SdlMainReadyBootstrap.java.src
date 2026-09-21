@@ -35,9 +35,12 @@ import java.lang.reflect.Method;
  * dependency available here - it's one of Mojang's own downloaded
  * libraries, resolved only at runtime from the version-specific classpath.
  *
- * ── Sept 2026 verification note (comments only - the compiled class in
- * lwjgl-glfw-classes.jar is unchanged; comments are not part of bytecode) ──
- * The wiring described above is now verified end-to-end statically:
+ * ── Sept 2026 verification note ──
+ * The source and compiled class in lwjgl-glfw-classes.jar are kept together:
+ * the bundled Callback/Descriptor pair is selected first on the game classpath,
+ * and a hook linkage failure now aborts before Minecraft can load SDL3 through
+ * an uninitialized guest-VM instance. The wiring described above is verified
+ * end-to-end statically:
  * assets/components/lwjgl3/lwjgl-glfw-classes.jar contains
  * com/endiq/turtlelauncher/launch/SdlMainReadyBootstrap.class (Java 8
  * bytecode), Components.kt unpacks the lwjgl3 component into
@@ -57,27 +60,6 @@ import java.lang.reflect.Method;
  * -Dorg.lwjgl.sdl.libname pinning and the natives-cache purge (see
  * SdlAndroidJniPrep.ensureSingleSdl3Source and its class doc). This class's
  * job stays exactly one thing: call SDL_SetMainReady() before Mojang's main.
- *
- * ── Sept 20 2026 ROOT CAUSE of the two-instance crash (decoded from three
- * hs_err logs, all identical: SIGSEGV libSDL3.so+0xb94c4) ──
- * hs_err's memory map shows libSDL3.so mapped TWICE from the SAME file
- * (same dev:inode), so the earlier "a different file is winning" theory was
- * wrong; it is a linker-namespace split. LWJGL loads SDL3 through
- * DynamicLinkLoader.ndlopen, which liblwjgl.so implements as a 16-byte
- * tail-call thunk into dlopen(). A tail call leaves the JVM's generated
- * native-wrapper stub as the return address, which belongs to no library, so
- * bionic files the load under the anonymous namespace instead of the app
- * classloader namespace the ART-side System.loadLibrary("SDL3") used. Two
- * namespaces, two instances; the game gets the one whose JNI_OnLoad never ran.
- * libpojavexec already ships the fix (lwjgl_dlopen_hook.c re-registers ndlopen
- * so the dlopen call happens from libpojavexec code, i.e. the classloader
- * namespace), but it only installs from libpojavexec's JNI_OnLoad on the GUEST
- * VM - which for SDL launches nothing ever triggered (GLFW is never touched, so
- * the guest never loaded libpojavexec; the hs_err dll event log shows only
- * libpojavexec_awt). Touching org.lwjgl.glfw.GLFW here runs its static
- * initializer, which loads libpojavexec and installs the hook BEFORE Minecraft
- * reaches SDL. This does not load SDL3 from the guest, so the constraint above
- * still holds.
  */
 public class SdlMainReadyBootstrap {
     public static void main(String[] args) throws Exception {
@@ -89,12 +71,23 @@ public class SdlMainReadyBootstrap {
             );
         }
 
+        // DroidBridge's GLFW bridge installs the LWJGL ndlopen hook from its
+        // static initializer. SDL 3.2 moved Minecraft's window creation from
+        // GLFW into SDL, so SDL launches otherwise never load libpojavexec in
+        // the guest JVM and the game can receive a second, uninitialized SDL
+        // linker instance. This only touches GLFW; it deliberately does not
+        // load SDL3 from the guest VM.
         try {
             Class.forName("org.lwjgl.glfw.GLFW", true, SdlMainReadyBootstrap.class.getClassLoader());
             System.out.println("TurtleSDL3: guest libpojavexec loaded, LWJGL dlopen hook installed");
         } catch (Throwable t) {
-            System.out.println("TurtleSDL3: could not install the LWJGL dlopen hook (" + t
-                + ") - SDL3 may load as a second, uninitialized instance");
+            // Continuing here lets LWJGL load SDL3 through a second guest-VM
+            // linker path. That instance has no ART-side SDL JNI state and is
+            // exactly the failure this bootstrap is meant to prevent. Fail
+            // before Minecraft's main class can create SDL instead of turning
+            // the mismatch into a native crash later.
+            throw new IllegalStateException(
+                "TurtleSDL3: refusing launch: hook installation failed");
         }
 
         try {

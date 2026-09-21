@@ -247,6 +247,15 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         mTurtleNativeSurface = surface;
     }
 
+    /**
+     * Surface published by MinecraftGLSurface. It can be set before the SDL
+     * host view is initialized because Minecraft may create GlDevice while the
+     * launch thread is still completing SDL setup.
+     */
+    public static Surface getTurtleNativeSurface() {
+        return mTurtleNativeSurface;
+    }
+
     public static void setTurtleInputView(View view) {
         mTurtleInputView = view;
     }
@@ -419,7 +428,11 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         // Must be set before SDLSurface.setNativeSurface: that records the Surface SDL will
         // report, and SDLActivity.getNativeSurface() below reads it back through mSurface.
         mSurface = surface;
-        SDLSurface.setNativeSurface(nativeSurface);
+        // The surface callback can publish before this host is created. Keep
+        // that live Surface instead of replacing it with null during setup.
+        Surface publishedSurface = nativeSurface != null
+                ? nativeSurface : mTurtleNativeSurface;
+        SDLSurface.setNativeSurface(publishedSurface);
         mTextEdit = null;
         mLayout = layout;
         if (activity != null) SDL.setContext(activity);

@@ -42,10 +42,15 @@ class LaunchArgs(
         argsList.add("-Djna.boot.library.path=$nativeLibraryPath")
 
         val lwjglAbiOverrideClasspath = Tools.getLwjglAbiOverrideClasspath(versionInfo)
-        val lwjglClasspathPrefix = if (lwjglAbiOverrideClasspath.isNotEmpty()) "$lwjglAbiOverrideClasspath:" else ""
+        val bundledLwjglClasspath = Tools.getLWJGL3ClassPath()
+        val lwjglAbiClasspath = if (lwjglAbiOverrideClasspath.isNotEmpty()) "$lwjglAbiOverrideClasspath:" else ""
 
         argsList.add("-cp")
-        argsList.add("$lwjglClasspathPrefix${Tools.getLWJGL3ClassPath()}:$launchClassPath")
+        // The bundled GLFW bridge contains the matching Callback/Descriptor
+        // pair. It must precede Mojang's ABI-critical lwjgl.jar; otherwise
+        // GLFW resolves Callback$Descriptor from the other LWJGL build and
+        // fails with NoSuchMethodError before the dlopen hook is installed.
+        argsList.add("$bundledLwjglClasspath:$lwjglAbiClasspath$launchClassPath")
 
         val lwjglNativeOverride = Tools.getLwjglNativeLibraryOverride(versionInfo)
         if (lwjglNativeOverride != null) {

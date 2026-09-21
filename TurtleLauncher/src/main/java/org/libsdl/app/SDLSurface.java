@@ -99,6 +99,11 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         // the (upstream) case where an SDLSurface really is the view being drawn to.
         Surface external = mNativeSurface;
         if (external != null && external.isValid()) return external;
+        // A callback may have published the game Surface immediately before
+        // SDLActivity installed this SDLSurface. Use the shared pending value
+        // as a second chance, never the detached holder's invalid Surface.
+        Surface published = SDLActivity.getTurtleNativeSurface();
+        if (published != null && published.isValid()) return published;
         return getHolder().getSurface();
     }
 

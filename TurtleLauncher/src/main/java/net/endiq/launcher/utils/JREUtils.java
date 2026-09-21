@@ -523,8 +523,13 @@ public final class JREUtils {
         chdir(gameVersion == null ? ProfilePathHome.getGameHome() : gameVersion.getGameDir().getAbsolutePath());
         userArgs.add(0,"java");
         if (gameVersion != null && Tools.resolveLwjglMode(Tools.getVersionInfo(gameVersion)) == Tools.LwjglMode.NEW_SDL) {
+            // Apply DroidBridge's pre4 renderer workaround before either ART or
+            // the embedded JVM can load SDL3. The Amethyst JNI hook below then
+            // keeps the two VMs from registering SDL twice.
+            com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.applyDroidBridgeSnapshot4Patch(gameVersion.getVersionName());
+            com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.forcePowerVrOpenGl(
+                    gameVersion.getVersionName(), gameVersion.getGameDir());
             com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.ensureSingleSdl3Source(gameVersion.getVersionName());
-            com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.ensureMobileGluesShaderErrorIgnore();
             com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.setup(activity);
         }
 

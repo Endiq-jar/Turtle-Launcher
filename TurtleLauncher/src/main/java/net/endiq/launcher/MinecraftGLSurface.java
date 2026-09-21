@@ -105,8 +105,10 @@ public class MinecraftGLSurface extends View implements GrabListener {
     }
 
     private void publishSurfaceToSdl(Surface surface) {
-        if (!SdlAndroidJniPrep.isActive()) return;
         try {
+            // Keep the pending surface even before SdlAndroidJniPrep activates.
+            // The launch callback runs from realStart(), and SDL must receive
+            // this object before that callback can create GlDevice.
             SDLActivity.setTurtleNativeSurface(surface);
             SDLSurface.setNativeSurface(surface);
 
@@ -161,9 +163,13 @@ public class MinecraftGLSurface extends View implements GrabListener {
                     }
                     isCalled = true;
 
-                    realStart(surfaceView.getHolder().getSurface());
-                    publishSurfaceToSdl(surfaceView.getHolder().getSurface());
+                    Surface gameSurface = surfaceView.getHolder().getSurface();
+                    // Publish before launching the JVM. SDL3 asks ART for the
+                    // native window during Minecraft construction, which can
+                    // happen before the old post-launch publish ran.
+                    publishSurfaceToSdl(gameSurface);
                     markSurfaceValid();
+                    realStart(gameSurface);
                 }
 
                 @Override
@@ -197,9 +203,12 @@ public class MinecraftGLSurface extends View implements GrabListener {
                     }
                     isCalled = true;
 
-                    realStart(tSurface);
+                    // The SDL3 native window is queried while Minecraft's
+                    // constructor runs, so publish before releasing the launch
+                    // thread rather than after realStart().
                     publishSurfaceToSdl(tSurface);
                     markSurfaceValid();
+                    realStart(tSurface);
                 }
 
                 @Override
