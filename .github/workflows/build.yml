@@ -74,7 +74,7 @@ jobs:
         working-directory: ${{ steps.locate.outputs.dir }}
         run: |
           set -o pipefail
-          ./gradlew :jre_lwjgl3glfw:bridgeJar --no-daemon --stacktrace --info 2>&1 | tee bridge-build.log
+          ./gradlew :jre_lwjgl3glfw:bridgeJar --no-daemon --no-configuration-cache --stacktrace --info 2>&1 | tee bridge-build.log
 
       - name: Report bridge build diagnostics
         if: failure()
