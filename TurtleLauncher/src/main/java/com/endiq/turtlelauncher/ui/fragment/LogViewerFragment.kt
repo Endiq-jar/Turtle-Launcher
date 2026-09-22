@@ -10,7 +10,6 @@ import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.text.style.BackgroundColorSpan
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +21,7 @@ import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.databinding.FragmentLogViewerBinding
 import com.endiq.turtlelauncher.feature.log.CrashAnalyzer
 import com.endiq.turtlelauncher.feature.log.LatestLogResolver
+import com.endiq.turtlelauncher.feature.log.LogLineStyle
 import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.feature.log.MclogsUploader
 import com.endiq.turtlelauncher.task.Task
@@ -167,7 +167,7 @@ class LogViewerFragment : FragmentWithAnim(R.layout.fragment_log_viewer) {
         val errorsOnly = binding.logErrorsOnlyCheckbox.isChecked
 
         val filtered = allLines.filter { line ->
-            (!errorsOnly || line.contains("(ERROR)")) &&
+            (!errorsOnly || LogLineStyle.isError(line)) &&
                 (query.isEmpty() || line.contains(query, ignoreCase = true))
         }
 
@@ -182,9 +182,8 @@ class LogViewerFragment : FragmentWithAnim(R.layout.fragment_log_viewer) {
             return
         }
 
-        val errorColor = ContextCompat.getColor(requireContext(), R.color.turtle_error)
-        val warnColor = ContextCompat.getColor(requireContext(), R.color.turtle_warning)
-        val highlightColor = ContextCompat.getColor(requireContext(), R.color.accent_primary)
+        val context = requireContext()
+        val highlightColor = ContextCompat.getColor(context, R.color.accent_primary)
 
         val builder = SpannableStringBuilder()
         filtered.forEachIndexed { index, line ->
@@ -192,10 +191,7 @@ class LogViewerFragment : FragmentWithAnim(R.layout.fragment_log_viewer) {
             builder.append(line)
             val end = builder.length
 
-            when {
-                line.contains("(ERROR)") -> builder.setSpan(ForegroundColorSpan(errorColor), start, end, 0)
-                line.contains("(WARN)") -> builder.setSpan(ForegroundColorSpan(warnColor), start, end, 0)
-            }
+            LogLineStyle.apply(context, builder, start, end, line)
 
             if (query.isNotEmpty()) {
                 var searchFrom = 0

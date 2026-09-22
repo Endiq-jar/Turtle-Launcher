@@ -2,6 +2,7 @@ package org.lwjgl.glfw;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.app.Activity;
 import android.view.Choreographer;
 
 import androidx.annotation.Keep;
@@ -10,6 +11,8 @@ import androidx.annotation.Nullable;
 import net.endiq.launcher.GrabListener;
 import net.endiq.launcher.LwjglGlfwKeycode;
 import net.endiq.launcher.MainActivity;
+import com.endiq.turtlelauncher.launch.SdlAndroidJniPrep;
+import org.libsdl.app.SDL;
 
 import java.util.ArrayList;
 
@@ -105,6 +108,40 @@ public class CallbackBridge {
     public static boolean isGrabbing() {
         // Avoid going through the JNI each time.
         return isGrabbing;
+    }
+
+    // Amethyst's SDL bridge calls this from the native SDL_InitSubSystem hook.
+    // The callback runs in ART even though the initiating SDL call is in the
+    // embedded game JVM. Keep it idempotent because SDL can initialize more
+    // than one subsystem during startup.
+    public static final int NOTIF_TYPE_SDL = 0;
+    public static final int ACTION_INIT_LAUNCHER_INTEGRATION = 0;
+
+    @SuppressWarnings("unused")
+    @Keep
+    public static boolean notifyLauncher(int type, int... action) {
+        if (type != NOTIF_TYPE_SDL
+                || action == null
+                || action.length == 0
+                || action[0] != ACTION_INIT_LAUNCHER_INTEGRATION) {
+            return false;
+        }
+
+        try {
+            if (SdlAndroidJniPrep.isActive()) return true;
+            android.content.Context context = SDL.getContext();
+            if (!(context instanceof Activity)) {
+                android.util.Log.w("CallbackBridge",
+                        "SDL requested launcher integration before an Activity was prepared");
+                return false;
+            }
+            SdlAndroidJniPrep.setup((Activity) context);
+            return SdlAndroidJniPrep.isActive();
+        } catch (Throwable t) {
+            android.util.Log.e("CallbackBridge",
+                    "Amethyst SDL launcher integration failed", t);
+            return false;
+        }
     }
 
     // Called from JRE side
