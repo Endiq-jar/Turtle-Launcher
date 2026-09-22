@@ -28,6 +28,11 @@ tasks.jar {
             if (it.isDirectory) it else zipTree(it)
         }
     })
+    // The checked-in bridge carries the released Vulkan/support payload and
+    // Callback.Descriptor ABI shim. Include it in the full legacy jar before
+    // patchCallbackDescriptor runs; otherwise the patch task has no descriptor
+    // class to update and bridgeJar cannot be regenerated from source.
+    from(zipTree(file("$buildDir/bridge-input/lwjgl-glfw-bridge.jar")))
     exclude("net/java/openjdk/cacio/ctc/**")
     manifest {
         attributes("Manifest-Version" to "3.3.6")
