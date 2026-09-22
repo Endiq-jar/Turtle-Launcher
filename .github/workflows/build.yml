@@ -72,6 +72,17 @@ jobs:
           set -o pipefail
           ./gradlew :jre_lwjgl3glfw:bridgeJar --no-daemon --stacktrace --info 2>&1 | tee bridge-build.log
 
+      - name: Report bridge build diagnostics
+        if: failure()
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: |
+          {
+            echo '### LWJGL bridge regeneration diagnostics'
+            echo '```text'
+            tail -300 bridge-build.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload bridge build log
         if: always()
         uses: actions/upload-artifact@v6
