@@ -79,7 +79,10 @@ jobs:
       - name: Commit regenerated LWJGL bridge payload
         if: success() && github.event_name == 'pull_request'
         working-directory: ${{ steps.locate.outputs.dir }}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          set -euxo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add TurtleLauncher/src/main/assets/components/lwjgl3/lwjgl-glfw-bridge.jar \
@@ -89,6 +92,7 @@ jobs:
             exit 0
           fi
           git commit -m "Regenerate LWJGL bridge payload [skip ci]"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push origin "HEAD:${{ github.head_ref }}"
 
       - name: Report bridge build diagnostics
