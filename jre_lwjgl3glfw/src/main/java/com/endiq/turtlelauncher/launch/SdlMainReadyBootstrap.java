@@ -87,8 +87,10 @@ public class SdlMainReadyBootstrap {
             // exactly the failure this bootstrap is meant to prevent. Fail
             // before Minecraft's main class can create SDL instead of turning
             // the mismatch into a native crash later.
+            String detail = t.getClass().getName() +
+                (t.getMessage() == null ? "" : ": " + t.getMessage());
             throw new IllegalStateException(
-                "TurtleSDL3: refusing launch: hook installation failed");
+                "TurtleSDL3: refusing launch: hook installation failed: " + detail, t);
         }
 
         try {

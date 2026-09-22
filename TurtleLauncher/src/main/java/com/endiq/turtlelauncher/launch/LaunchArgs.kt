@@ -58,17 +58,18 @@ class LaunchArgs(
             argsList.add("-Dorg.lwjgl.libname=$lwjglNativeOverride")
         }
 
-        if (runtime.javaVersion > 8) {
-            val mainClass = versionInfo.mainClass ?: ""
-            val lastDot = mainClass.lastIndexOf(".")
-            if (lastDot > 0) {
-                argsList.add("--add-exports")
-                val pkg: String = mainClass.substring(0, lastDot)
-                argsList.add("$pkg/$pkg=ALL-UNNAMED")
-            }
-        }
+        // Minecraft's main class is loaded from the class path (the unnamed
+        // module). Do not manufacture --add-exports from its package name:
+        // `net.minecraft.client.main/net.minecraft.client.main` is not a module
+        // export and Java 25 correctly warns that the module is unknown.
 
         if (Tools.resolveLwjglMode(versionInfo) == Tools.LwjglMode.NEW_SDL) {
+            // Android ships the LWJGL core native through the launcher AAR, not
+            // a desktop jemalloc natives classifier. Force the system allocator
+            // before GLFW/MemoryUtil initializes so the hook bootstrap cannot
+            // accidentally select linux-x64 jemalloc on an aarch64 guest.
+            argsList.add("-Dorg.lwjgl.system.allocator=system")
+
             val pinnedSdl3 = File(PathManager.DIR_NATIVE_LIB, "libSDL3.so")
             if (pinnedSdl3.isFile) {
                 argsList.add("-Dorg.lwjgl.sdl.libname=${pinnedSdl3.absolutePath}")
@@ -318,7 +319,12 @@ class LaunchArgs(
                 argsList.add("--add-exports=java.desktop/sun.awt.event=ALL-UNNAMED")
                 argsList.add("--add-exports=java.desktop/sun.awt.datatransfer=ALL-UNNAMED")
                 argsList.add("--add-exports=java.desktop/sun.font=ALL-UNNAMED")
-                argsList.add("--add-exports=java.base/sun.security.action=ALL-UNNAMED")
+                // sun.security.action is not present in Java 25's java.base;
+                // passing this export produces a warning and can break strict
+                // launchers. Java 8/17/21 keep the compatibility export.
+                if (javaVersion < 25) {
+                    argsList.add("--add-exports=java.base/sun.security.action=ALL-UNNAMED")
+                }
                 argsList.add("--add-opens=java.base/java.util=ALL-UNNAMED")
                 argsList.add("--add-opens=java.desktop/java.awt=ALL-UNNAMED")
                 argsList.add("--add-opens=java.desktop/sun.font=ALL-UNNAMED")

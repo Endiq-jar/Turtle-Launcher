@@ -562,6 +562,11 @@ public final class Tools {
             if (libName == null || !libName.startsWith("org.lwjgl:lwjgl:")) {
                 if (libName == null || !libName.startsWith("org.lwjgl:lwjgl-")) continue;
             }
+            // Natives classifier artifacts are extracted separately and must
+            // never be put on the Java class path. On Android, leaving a
+            // natives-linux-x64 jar here makes LWJGL report a platform mismatch
+            // on the aarch64 guest before the GLFW hook can install.
+            if (libName.split(":").length != 3) continue;
 
             // GLFW and Vulkan are supplied by the Android bridge payload: GLFW is
             // patched to call pojavexec and Vulkan's VK class exposes the bridge's
