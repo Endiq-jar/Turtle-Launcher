@@ -486,7 +486,7 @@
     <string name="main_open_main_dir">Open main directory</string>
     <string name="main_install_jar_file">Execute .jar file</string>
     <string name="main_share_logs">Share log files</string>
-    <string name="main_terracotta">Friends / LAN play</string>
+    <string name="main_terracotta">Multiplayer</string>
     <!-- Screen transition animation pickers -->
     <string name="anim_slide_up">Slide up</string>
     <string name="anim_slide_down">Slide down</string>
