@@ -49,9 +49,10 @@ object RendererCatalog {
             maxMinecraftVersion = "1.21.4",
             badge = Badge.STABLE
         ),
-        // LTW: actively maintained upstream (MojoLauncher's own featured renderer,
-        // ongoing changelog entries), badged the same as Krypton Wrapper's old slot.
-        LTWRenderer.ID to Entry(badge = Badge.STABLE),
+        // LTW requires an OpenGL ES 3 context and is intended for 1.17+.
+        // Keep it selectable on compatible devices, but warn rather than
+        // silently changing an existing profile at launch.
+        LTWRenderer.ID to Entry(minMinecraftVersion = "1.17", badge = Badge.STABLE),
         MobileGluesRenderer.ID to Entry(badge = Badge.RECOMMENDED, supportsShaderPacks = true),
         NWRenderer.ID to Entry(badge = Badge.EXPERIMENTAL),
         VirGLRenderer.ID to Entry(badge = Badge.EXPERIMENTAL, supportsShaderPacks = true),

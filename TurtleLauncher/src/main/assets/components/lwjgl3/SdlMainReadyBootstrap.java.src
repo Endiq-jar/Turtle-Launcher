@@ -19,8 +19,9 @@ import java.lang.reflect.Method;
  * versions only (see LaunchArgs.kt): it calls SDL_SetMainReady() first, then
  * reflectively invokes the real main class Minecraft was supposed to run.
  *
- * IMPORTANT: this class must be plain Java, compiled directly into
- * lwjgl-glfw-classes.jar (see getLWJGL3ClassPath() in Tools.java), NOT part
+ * IMPORTANT: this class must be plain Java, compiled into the launcher
+ * LWJGL bridge payload (lwjgl-glfw-bridge.jar, with the legacy full payload
+ * kept for pre-SDL versions; see getLWJGL3ClassPath(versionInfo) in Tools.java), NOT part
  * of the Android app's own Kotlin/dex source. Minecraft runs in a separate,
  * real embedded-JRE subprocess with its own classpath - the Android app's
  * own compiled classes are never on that classpath and can't be referenced
@@ -38,11 +39,12 @@ import java.lang.reflect.Method;
  * ── Sept 2026 verification note (comments only - the compiled class in
  * lwjgl-glfw-classes.jar is unchanged; comments are not part of bytecode) ──
  * The wiring described above is now verified end-to-end statically:
- * assets/components/lwjgl3/lwjgl-glfw-classes.jar contains
+ * assets/components/lwjgl3/lwjgl-glfw-bridge.jar contains
  * com/endiq/turtlelauncher/launch/SdlMainReadyBootstrap.class (Java 8
  * bytecode), Components.kt unpacks the lwjgl3 component into
- * <gameHome>/lwjgl3/, Tools.getLWJGL3ClassPath() puts that jar on the game
- * -cp, and LaunchArgs routes every NEW_SDL launch's main class through here.
+ * <gameHome>/lwjgl3/, Tools.getLWJGL3ClassPath(versionInfo) puts that bridge
+ * jar on the SDL game -cp, and LaunchArgs routes every NEW_SDL launch's main
+ * class through here.
  *
  * DELIBERATELY does NOT load SDL3 itself, even though that would seem to
  * "pre-initialize" it: loading libSDL3.so from THIS (guest) JVM - by

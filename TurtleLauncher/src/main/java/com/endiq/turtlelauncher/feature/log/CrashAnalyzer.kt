@@ -112,13 +112,13 @@ object CrashAnalyzer {
                 matches = { has(it, "pojavInitOpenGL") && has(it, "SIGSEGV") },
                 diagnosis = fixed(
                     "Renderer's POJAV_RENDERER value isn't recognized by the native launcher (pojavInitOpenGL crash)",
-                    "libpojavexec.so only recognizes a fixed set of legacy POJAV_RENDERER strings. An " +
-                        "unrecognized value falls through its whole comparison chain into an unguarded call " +
-                        "through an uninitialized function pointer, crashing at pc=0x0 on every launch, " +
-                        "regardless of device or GPU.",
+                    "libpojavexec.so recognizes the legacy renderer names plus the opengles* family. An " +
+                        "unknown value outside those families can fall through its dispatch chain into an " +
+                        "unguarded call through an uninitialized function pointer, crashing at pc=0x0 on every " +
+                        "launch, regardless of device or GPU.",
                     listOf(
                         "If you're on a built-in renderer (Holy GL4ES, LTW, MobileGlues, VirGL, Zink, Freedreno, VGPU), update to the latest TurtleLauncher build — this is fixed in RendererInterface.getNativeRendererId().",
-                        "If you're on a renderer plugin: check the plugin's declared POJAV_RENDERER value against the six libpojavexec.so recognizes (opengles, custom_gallium, vulkan_zink, gallium_freedreno, gallium_panfrost, gallium_virgl) and report a mismatch to the plugin's author.",
+                        "If you're on a renderer plugin: check the plugin's declared POJAV_RENDERER value against the native bridge's supported families (opengles*, custom_gallium, vulkan_zink, gallium_freedreno, gallium_panfrost, gallium_virgl) and report a mismatch to the plugin's author.",
                         "As an immediate workaround, reset this version's renderer override below, or pick a different one manually in Settings → Video → Renderer."
                     ),
                     repairActions = listOf(RepairAction(RepairActionType.RESET_RENDERER_OVERRIDE, "Reset renderer override"))

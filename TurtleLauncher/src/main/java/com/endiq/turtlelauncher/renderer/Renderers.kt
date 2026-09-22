@@ -54,6 +54,27 @@ object Renderers {
          
             if (renderer.getRendererId() == ZinkRenderer.ID && !deviceHasVulkan) return@forEach
 
+            // LTW creates an OpenGL ES 3 context. Showing it on an ES 2-only
+            // device lets the picker select a renderer that will inevitably
+            // fail inside eglCreateContext during RenderSystem initialization.
+            if (renderer.getRendererId() == LTWRenderer.ID) {
+                val gles3Unavailable = runCatching { Tools.getDetectedVersion() < 3 }.getOrDefault(true)
+                val powerVrLtwFailure = File("/vendor/lib64/libsrv_um.so").exists() ||
+                    File("/vendor/lib/libsrv_um.so").exists()
+                if (gles3Unavailable) {
+                    Logging.w("Renderers", "LTW requires OpenGL ES 3; excluding it on this device")
+                    return@forEach
+                }
+                // LTW is known to leave no current context on PowerVR Rogue
+                // devices. Exclude it before the picker can persist a renderer
+                // that will crash during RenderSystem initialization; MobileGlues
+                // remains available as the safe GLES fallback.
+                if (powerVrLtwFailure) {
+                    Logging.w("Renderers", "LTW is disabled on PowerVR devices because it cannot create a current GL context")
+                    return@forEach
+                }
+            }
+
             if (!hasRequiredLibrary(renderer)) {
                 Logging.w("Renderers", "${renderer.getRendererName()} (${renderer.getRendererId()}) references a library not found in this ABI's jniLibs - excluding it from the picker")
                 return@forEach
