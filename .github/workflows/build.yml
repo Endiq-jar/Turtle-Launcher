@@ -66,6 +66,10 @@ jobs:
       - name: Grant execute permission to gradlew
         run: chmod +x "${{ steps.locate.outputs.dir }}/gradlew"
 
+      - name: Regenerate LWJGL bridge payload
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: ./gradlew :jre_lwjgl3glfw:bridgeJar --no-daemon
+
       - name: Build debug APK
         working-directory: ${{ steps.locate.outputs.dir }}
         env:
@@ -77,3 +81,9 @@ jobs:
         with:
           name: TurtleLauncher-debug-apk
           path: "**/build/outputs/apk/debug/*.apk"
+
+      - name: Upload generated LWJGL bridge
+        uses: actions/upload-artifact@v6
+        with:
+          name: lwjgl-glfw-bridge
+          path: "TurtleLauncher/src/main/assets/components/lwjgl3/lwjgl-glfw-bridge.jar"
