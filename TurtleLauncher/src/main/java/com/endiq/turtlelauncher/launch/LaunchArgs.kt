@@ -114,7 +114,7 @@ class LaunchArgs(
             }
         }
 
-        argsList.addAll(getCacioJavaArgs(runtime.javaVersion == 8))
+        argsList.addAll(getCacioJavaArgs(runtime.javaVersion))
 
         val is7 = VersionNumber.compare(VersionNumber.asVersion(versionInfo.id ?: "0.0").canonical, "1.12") < 0
         val configFilePath = if (is7) LibPath.LOG4J_XML_1_7 else LibPath.LOG4J_XML_1_12
@@ -280,7 +280,20 @@ class LaunchArgs(
 
         @JvmStatic
         fun getCacioJavaArgs(isJava8: Boolean): List<String> {
+            return getCacioJavaArgs(if (isJava8) 8 else 17)
+        }
+
+        /**
+         * Builds the Cacio arguments for the selected runtime. Java 25 removed
+         * sun.java2d.SurfaceManagerFactory, so Java 25+ uses the bundled
+         * software-only Cacio variant and never installs the Java 17 premain
+         * agent. The regular Java 8/17/21 path keeps its existing toolkit and
+         * agent setup.
+         */
+        @JvmStatic
+        fun getCacioJavaArgs(javaVersion: Int): List<String> {
             val argsList: MutableList<String> = ArrayList()
+            val isJava8 = javaVersion == 8
 
             argsList.add("-Djava.awt.headless=false")
             argsList.add("-Dcacio.managed.screensize=" + AWTCanvasView.AWT_CANVAS_WIDTH + "x" + AWTCanvasView.AWT_CANVAS_HEIGHT)
@@ -293,7 +306,9 @@ class LaunchArgs(
             } else {
                 argsList.add("-Dawt.toolkit=com.github.caciocavallosilano.cacio.ctc.CTCToolkit")
                 argsList.add("-Djava.awt.graphicsenv=com.github.caciocavallosilano.cacio.ctc.CTCGraphicsEnvironment")
-                argsList.add("-javaagent:" + LibPath.CACIO_17_AGENT.getAbsolutePath())
+                if (javaVersion < 25) {
+                    argsList.add("-javaagent:" + LibPath.CACIO_17_AGENT.getAbsolutePath())
+                }
                 argsList.add("--add-exports=java.desktop/java.awt=ALL-UNNAMED")
                 argsList.add("--add-exports=java.desktop/java.awt.peer=ALL-UNNAMED")
                 argsList.add("--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED")
@@ -314,7 +329,11 @@ class LaunchArgs(
 
             val cacioClassPath = StringBuilder()
             cacioClassPath.append("-Xbootclasspath/").append(if (isJava8) "p" else "a")
-            val cacioFiles = if (isJava8) LibPath.CACIO_8 else LibPath.CACIO_17
+            val cacioFiles = when {
+                isJava8 -> LibPath.CACIO_8
+                javaVersion >= 25 -> LibPath.CACIO_25
+                else -> LibPath.CACIO_17
+            }
             cacioFiles.listFiles()?.onEach {
                 if (it.name.endsWith(".jar")) cacioClassPath.append(":").append(it.absolutePath)
             }
