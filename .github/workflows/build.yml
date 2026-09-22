@@ -68,7 +68,16 @@ jobs:
 
       - name: Regenerate LWJGL bridge payload
         working-directory: ${{ steps.locate.outputs.dir }}
-        run: ./gradlew :jre_lwjgl3glfw:bridgeJar --no-daemon
+        run: |
+          set -o pipefail
+          ./gradlew :jre_lwjgl3glfw:bridgeJar --no-daemon --stacktrace --info 2>&1 | tee bridge-build.log
+
+      - name: Upload bridge build log
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: lwjgl-glfw-bridge-build-log
+          path: "bridge-build.log"
 
       - name: Build debug APK
         working-directory: ${{ steps.locate.outputs.dir }}
