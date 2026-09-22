@@ -13,6 +13,7 @@ import com.endiq.turtlelauncher.renderer.renderers.VirGLRenderer
 import com.endiq.turtlelauncher.renderer.renderers.ZinkRenderer
 import com.endiq.turtlelauncher.utils.path.PathManager
 import net.endiq.launcher.Tools
+import net.endiq.launcher.utils.JREUtils
 import java.io.File
 
 
@@ -58,7 +59,7 @@ object Renderers {
             // device lets the picker select a renderer that will inevitably
             // fail inside eglCreateContext during RenderSystem initialization.
             if (renderer.getRendererId() == LTWRenderer.ID) {
-                val gles3Unavailable = runCatching { Tools.getDetectedVersion() < 3 }.getOrDefault(true)
+                val gles3Unavailable = runCatching { JREUtils.getDetectedVersion() < 3 }.getOrDefault(true)
                 val powerVrLtwFailure = File("/vendor/lib64/libsrv_um.so").exists() ||
                     File("/vendor/lib/libsrv_um.so").exists()
                 if (gles3Unavailable) {
