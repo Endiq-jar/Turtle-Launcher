@@ -8,16 +8,13 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.head_ref || github.ref }}
 
       - name: Set up JDK 21
         uses: actions/setup-java@v5
@@ -74,58 +71,7 @@ jobs:
 
       - name: Regenerate LWJGL bridge payload
         working-directory: ${{ steps.locate.outputs.dir }}
-        run: |
-          set -o pipefail
-          ./gradlew :jre_lwjgl3glfw:bridgeJar --no-daemon --no-configuration-cache --stacktrace --info 2>&1 | tee bridge-build.log
-
-      - name: Commit regenerated LWJGL bridge payload
-        if: success() && github.event_name == 'pull_request'
-        working-directory: ${{ steps.locate.outputs.dir }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euxo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add TurtleLauncher/src/main/assets/components/lwjgl3/lwjgl-glfw-bridge.jar \
-            TurtleLauncher/src/main/assets/components/lwjgl3/lwjgl-glfw-classes.jar
-          if git diff --cached --quiet; then
-            echo "Generated bridge payload is already current."
-            exit 0
-          fi
-          git commit -m "Regenerate LWJGL bridge payload [skip ci]"
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push origin "HEAD:${{ github.head_ref }}" 2>&1 | tee bridge-push.log
-
-      - name: Report bridge build diagnostics
-        if: failure()
-        working-directory: ${{ steps.locate.outputs.dir }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          {
-            echo '### LWJGL bridge regeneration diagnostics'
-            echo '```text'
-            tail -300 bridge-build.log
-            if [ -f bridge-push.log ]; then
-              echo
-              echo '--- git push ---'
-              tail -100 bridge-push.log
-            fi
-            echo '```'
-          } | tee -a "$GITHUB_STEP_SUMMARY" > bridge-diagnostics.md
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            gh pr comment "${{ github.event.pull_request.number }}" \
-              --repo "${{ github.repository }}" \
-              --body-file bridge-diagnostics.md || true
-          fi
-
-      - name: Upload bridge build log
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: lwjgl-glfw-bridge-build-log
-          path: "bridge-build.log"
+        run: ./gradlew :jre_lwjgl3glfw:bridgeJar --no-daemon --no-configuration-cache
 
       - name: Build debug APK
         working-directory: ${{ steps.locate.outputs.dir }}
