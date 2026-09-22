@@ -75,13 +75,20 @@ jobs:
       - name: Report bridge build diagnostics
         if: failure()
         working-directory: ${{ steps.locate.outputs.dir }}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           {
             echo '### LWJGL bridge regeneration diagnostics'
             echo '```text'
             tail -300 bridge-build.log
             echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+          } | tee -a "$GITHUB_STEP_SUMMARY" > bridge-diagnostics.md
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            gh pr comment "${{ github.event.pull_request.number }}" \
+              --repo "${{ github.repository }}" \
+              --body-file bridge-diagnostics.md || true
+          fi
 
       - name: Upload bridge build log
         if: always()
