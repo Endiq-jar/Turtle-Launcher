@@ -93,7 +93,7 @@ jobs:
           fi
           git commit -m "Regenerate LWJGL bridge payload [skip ci]"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push origin "HEAD:${{ github.head_ref }}"
+          git push origin "HEAD:${{ github.head_ref }}" 2>&1 | tee bridge-push.log
 
       - name: Report bridge build diagnostics
         if: failure()
@@ -105,6 +105,11 @@ jobs:
             echo '### LWJGL bridge regeneration diagnostics'
             echo '```text'
             tail -300 bridge-build.log
+            if [ -f bridge-push.log ]; then
+              echo
+              echo '--- git push ---'
+              tail -100 bridge-push.log
+            fi
             echo '```'
           } | tee -a "$GITHUB_STEP_SUMMARY" > bridge-diagnostics.md
           if [ "${{ github.event_name }}" = "pull_request" ]; then
