@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
@@ -75,6 +75,21 @@ jobs:
         run: |
           set -o pipefail
           ./gradlew :jre_lwjgl3glfw:bridgeJar --no-daemon --no-configuration-cache --stacktrace --info 2>&1 | tee bridge-build.log
+
+      - name: Commit regenerated LWJGL bridge payload
+        if: success() && github.event_name == 'pull_request'
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add TurtleLauncher/src/main/assets/components/lwjgl3/lwjgl-glfw-bridge.jar \
+            TurtleLauncher/src/main/assets/components/lwjgl3/lwjgl-glfw-classes.jar
+          if git diff --cached --quiet; then
+            echo "Generated bridge payload is already current."
+            exit 0
+          fi
+          git commit -m "Regenerate LWJGL bridge payload [skip ci]"
+          git push origin "HEAD:${{ github.head_ref }}"
 
       - name: Report bridge build diagnostics
         if: failure()
