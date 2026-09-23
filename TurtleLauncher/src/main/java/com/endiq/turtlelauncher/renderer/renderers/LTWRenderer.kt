@@ -25,7 +25,9 @@ class LTWRenderer : RendererInterface {
         // passed to pojavexec.
         mapOf(
             "LIBGL_EGL" to "libEGL.so",
-            "LIBGL_GLES" to "libGLESv2.so",
+            // Do not set LIBGL_GLES here: this launcher's EGL bridge uses that
+            // variable as its provider handle and would try to resolve EGL
+            // entry points from libGLESv2.so instead of libEGL.so.
             "force_glsl_extensions_warn" to "true",
             "allow_higher_compat_version" to "true",
             "allow_glsl_extension_directive_midshader" to "true",
