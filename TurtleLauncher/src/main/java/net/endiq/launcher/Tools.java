@@ -499,6 +499,18 @@ public final class Tools {
             library.downloads = new DependentLibrary.LibraryDownloads(new MinecraftLibraryArtifact());
     }
 
+    private static final String SDL_GLFW_VERSION = "3.4.3+4";
+    private static final String SDL_GLFW_COORDINATE = "org.lwjgl:lwjgl-glfw:" + SDL_GLFW_VERSION;
+    private static final String SDL_GLFW_PATH =
+            "org/lwjgl/lwjgl-glfw/" + SDL_GLFW_VERSION + "/lwjgl-glfw-" + SDL_GLFW_VERSION + ".jar";
+    // Maven Central has the released 3.4.3 bytecode, while the game-side
+    // 3.4.3+4 coordinate is a launcher-pinned revision. Keep the download URL
+    // explicit rather than relying on the incomplete 26.3 manifest. The file
+    // is stored under the exact +4 coordinate so classpath resolution cannot
+    // silently fall back to an older LWJGL generation.
+    private static final String SDL_GLFW_DOWNLOAD_URL =
+            "https://repo1.maven.org/maven2/org/lwjgl/lwjgl-glfw/3.4.3/lwjgl-glfw-3.4.3.jar";
+
     public static boolean versionUsesLwjglSdl(JMinecraftVersionList.Version info) {
         if (info == null || info.libraries == null) return false;
         for (DependentLibrary libItem : info.libraries) {
@@ -506,6 +518,36 @@ public final class Tools {
             if (libItem.name != null && libItem.name.startsWith("org.lwjgl:lwjgl-sdl:")) return true;
         }
         return false;
+    }
+
+    /**
+     * Mojang's 26.3 JSON omits GLFW even though the game resolves
+     * GLFWErrorCallback during startup. Add the exact launcher-pinned GLFW
+     * coordinate before either downloading or constructing the class path.
+     * Older SDL releases retain their manifest-declared dependency set.
+     */
+    public static void ensureSdlGlfwDependency(JMinecraftVersionList.Version info) {
+        if (info == null || info.libraries == null || !versionUsesLwjglSdl(info)) return;
+
+        boolean is343Sdl = false;
+        for (DependentLibrary library : info.libraries) {
+            if (library == null || library.name == null) continue;
+            if (library.name.equals(SDL_GLFW_COORDINATE)) return;
+            if (library.name.startsWith("org.lwjgl:lwjgl-sdl:3.4.3")) is343Sdl = true;
+        }
+        if (!is343Sdl) return;
+
+        DependentLibrary glfw = new DependentLibrary();
+        glfw.name = SDL_GLFW_COORDINATE;
+        glfw.downloads = new DependentLibrary.LibraryDownloads(new MinecraftLibraryArtifact());
+        glfw.downloads.artifact.path = SDL_GLFW_PATH;
+        glfw.downloads.artifact.url = SDL_GLFW_DOWNLOAD_URL;
+        // Leave sha1 unset: DownloaderTask obtains the repository's checksum
+        // from the explicit URL before verifying the downloaded file.
+        DependentLibrary[] libraries = Arrays.copyOf(info.libraries, info.libraries.length + 1);
+        libraries[libraries.length - 1] = glfw;
+        info.libraries = libraries;
+        Logging.i("Tools", "Added required " + SDL_GLFW_COORDINATE + " for SDL 3.4.3");
     }
 
     public enum LwjglMode { NEW_SDL, LEGACY }
@@ -748,6 +790,7 @@ public final class Tools {
                     customVer.javaVersion.majorVersion = 25;
                 }
             }
+            ensureSdlGlfwDependency(customVer);
             return customVer;
         } catch (Exception e) {
             throw new RuntimeException(e);

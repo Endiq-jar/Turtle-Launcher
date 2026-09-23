@@ -290,6 +290,11 @@ public class MinecraftDownloader {
         MinecraftClientInfo minecraftClientInfo = getClientInfo(verInfo);
         if(minecraftClientInfo != null) scheduleGameJarDownload(minecraftClientInfo, versionName);
 
+        // Mojang's 26.3 metadata omits GLFW although the game resolves
+        // GLFWErrorCallback. Add the pinned 3.4.3+4 game-side artifact before
+        // scheduling downloads; this also makes the same entry available to
+        // the launch classpath builder later.
+        Tools.ensureSdlGlfwDependency(verInfo);
         if(verInfo.libraries != null) scheduleLibraryDownloads(verInfo.libraries);
 
         if(Tools.isValidString(verInfo.inheritsFrom)) {
