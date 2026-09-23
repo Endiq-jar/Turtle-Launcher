@@ -29,7 +29,7 @@ tasks.jar {
         }
     })
     // The checked-in bridge carries the released Vulkan/support payload and
-    // Callback.Descriptor ABI shim. Include it in the full legacy jar before
+    // Callback ABI shims. Include them in the full legacy jar before
     // patchCallbackDescriptor runs; otherwise the patch task has no descriptor
     // class to update and bridgeJar cannot be regenerated from source.
     from(zipTree(file("$buildDir/bridge-input/lwjgl-glfw-bridge.jar")))
@@ -67,7 +67,11 @@ tasks.register<Jar>("bridgeJar") {
         include("org/lwjgl/glfw/**")
         include("org/lwjgl/input/InfdevMouse.class")
         include("org/lwjgl/opengl/PojavRendererInit.class")
-        include("org/lwjgl/system/Callback\$Descriptor.class")
+        // Keep the legacy Callback API while routing its handler lookup to
+        // the native library's Upcalls JNI symbol. Include all generated
+        // nested classes because the callback registry is implemented there.
+        include("org/lwjgl/system/Callback*.class")
+        include("org/lwjgl/system/Upcalls.class")
         include("com/endiq/turtlelauncher/**")
     }
     from({
@@ -107,7 +111,8 @@ tasks.register<Jar>("bridgeJar") {
         }
     })
     // The checked-in full payload is patched before this task runs. Keep only
-    // its nested Descriptor ABI shim; never copy Callback.class or the core.
+    // its nested Descriptor ABI shim here; the source-set Callback/Upcalls
+    // compatibility classes above are the only system classes in the bridge.
     from(zipTree(file("../TurtleLauncher/src/main/assets/components/lwjgl3/lwjgl-glfw-classes.jar")).matching {
         include("org/lwjgl/system/Callback\$Descriptor.class")
     })
