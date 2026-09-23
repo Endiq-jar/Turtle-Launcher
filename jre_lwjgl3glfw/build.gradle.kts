@@ -84,7 +84,24 @@ tasks.register<Jar>("bridgeJar") {
     from({
         configurations.getByName("runtimeClasspath").map {
             zipTree(it).matching {
+                // The source set above contains the Android GLFW replacement.
+                // Do not let the desktop LWJGL GLFW classes overwrite it: the
+                // desktop class tries to load libglfw.so, while Android exposes
+                // the hook through libpojavexec.so.
                 include("org/lwjgl/glfw/**")
+                exclude("org/lwjgl/glfw/CallbackBridge.class")
+                exclude("org/lwjgl/glfw/Callbacks.class")
+                exclude("org/lwjgl/glfw/GLFW.class")
+                exclude("org/lwjgl/glfw/GLFWImage.class")
+                exclude("org/lwjgl/glfw/GLFWNativeCocoa.class")
+                exclude("org/lwjgl/glfw/GLFWNativeEGL.class")
+                exclude("org/lwjgl/glfw/GLFWNativeNSGL.class")
+                exclude("org/lwjgl/glfw/GLFWNativeOSMesa.class")
+                exclude("org/lwjgl/glfw/GLFWNativeWGL.class")
+                exclude("org/lwjgl/glfw/GLFWNativeWayland.class")
+                exclude("org/lwjgl/glfw/GLFWNativeWin32.class")
+                exclude("org/lwjgl/glfw/GLFWNativeX11.class")
+                exclude("org/lwjgl/glfw/GLFWWindowProperties.class")
                 include("org/lwjgl/vulkan/**")
             }
         }
