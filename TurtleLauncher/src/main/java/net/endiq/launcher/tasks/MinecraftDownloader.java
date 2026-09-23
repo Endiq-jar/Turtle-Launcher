@@ -349,8 +349,22 @@ public class MinecraftDownloader {
     private void scheduleLibraryDownloads(DependentLibrary[] dependentLibraries) throws IOException {
         Tools.preProcessLibraries(dependentLibraries);
         growDownloadList(dependentLibraries.length);
+
+        // New SDL versions need the exact version's lwjgl-glfw Java callbacks
+        // after the Android GLFW bridge. Legacy versions keep using the complete
+        // bundled LWJGL payload and do not need this extra download.
+        boolean hasSdl = false;
+        for (DependentLibrary library : dependentLibraries) {
+            if (library != null && library.name != null &&
+                    library.name.startsWith("org.lwjgl:lwjgl-sdl:")) {
+                hasSdl = true;
+                break;
+            }
+        }
+
         for(DependentLibrary dependentLibrary : dependentLibraries) {
-            if(dependentLibrary.name.startsWith("org.lwjgl:lwjgl-glfw")) continue;
+            if (dependentLibrary == null || dependentLibrary.name == null) continue;
+            if (dependentLibrary.name.startsWith("org.lwjgl:lwjgl-glfw") && !hasSdl) continue;
             // Special handling for JNA Android natives
             if(dependentLibrary.name.startsWith("net.java.dev.jna:jna:")) {
                 scheduleNativeLibraryDownload(MAVEN_CENTRAL_REPO1, dependentLibrary);

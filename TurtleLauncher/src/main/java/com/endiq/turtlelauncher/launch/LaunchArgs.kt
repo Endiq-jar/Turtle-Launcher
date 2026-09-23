@@ -55,10 +55,10 @@ class LaunchArgs(
         argsList.add("-cp")
         val launcherLwjglClasspath = Tools.getLWJGL3ClassPath(versionInfo)
         val launcherLwjglSegment = if (launcherLwjglClasspath.isNotEmpty()) "$launcherLwjglClasspath:" else ""
-        // The bridge must come first: it owns the Android GLFW/Vulkan shims and
-        // the tiny Callback.Descriptor ABI shim. Its LWJGL core is intentionally
-        // absent, so the version-specific core/SDL jars still provide all core
-        // implementation classes without being shadowed.
+        // The bridge must come first: it owns the Android GLFW/Vulkan shims.
+        // Its LWJGL core and callback APIs are intentionally absent, so the
+        // exact version-specific core/GLFW/SDL jars provide every LWJGL API
+        // implementation without being shadowed.
         argsList.add("$launcherLwjglSegment$lwjglClasspathPrefix$launchClassPath")
 
         val lwjglNativeOverride = Tools.getLwjglNativeLibraryOverride(versionInfo)

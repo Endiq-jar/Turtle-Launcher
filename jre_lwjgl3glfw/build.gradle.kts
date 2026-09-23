@@ -49,10 +49,9 @@ tasks.jar {
             }
         }
     })
-    // The checked-in bridge carries the released Vulkan/support payload and
-    // Callback ABI shims. Include them in the full legacy jar before
-    // patchCallbackDescriptor runs; otherwise the patch task has no descriptor
-    // class to update and bridgeJar cannot be regenerated from source.
+    // The checked-in bridge carries the released Vulkan/support payload. Include
+    // it in the full legacy jar while keeping the SDL bridge isolated from the
+    // legacy LWJGL core.
     from(zipTree(file("$buildDir/bridge-input/lwjgl-glfw-bridge.jar")))
     exclude("net/java/openjdk/cacio/ctc/**")
     manifest {
@@ -61,22 +60,11 @@ tasks.jar {
     }
 }
 
-// Minecraft 26.x supplies its own version-specific LWJGL core and SDL jars.  A
-// second payload keeps the Android GLFW/Vulkan bridge classes without copying
-// org.lwjgl.system (or another LWJGL core) into the SDL class path.  Legacy
-// versions continue to use lwjgl-glfw-classes.jar above.
-val patchCallbackDescriptor = tasks.register<Exec>("patchCallbackDescriptor") {
-    dependsOn(tasks.jar)
-    commandLine(
-        "python3",
-        file("patch_callback_descriptor.py").absolutePath,
-        file("../TurtleLauncher/src/main/assets/components/lwjgl3/lwjgl-glfw-classes.jar").absolutePath
-    )
-}
-
+// Minecraft 26.x supplies its own version-specific LWJGL core, GLFW and SDL
+// jars. The bridge contains only Android GLFW/Vulkan support classes; it must
+// not contribute org.lwjgl.system callback classes to the SDL class path.
 tasks.register<Jar>("bridgeJar") {
     dependsOn(tasks.classes)
-    dependsOn(patchCallbackDescriptor)
     dependsOn(bridgePayloadSnapshot)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveBaseName.set("lwjgl-glfw-bridge")
@@ -119,12 +107,6 @@ tasks.register<Jar>("bridgeJar") {
                 include("org/lwjgl/vulkan/**")
             }
         }
-    })
-    // Keep only the nested Descriptor ABI shim from the full legacy payload.
-    // The exact SDL core owns Callback and Upcalls; this descriptor remains
-    // binary-compatible with the newer three-argument callback ABI.
-    from(zipTree(file("../TurtleLauncher/src/main/assets/components/lwjgl3/lwjgl-glfw-classes.jar")).matching {
-        include("org/lwjgl/system/Callback\$Descriptor.class")
     })
     // Preserve bridge modules that are not present in the legacy build-time
     // dependency set (notably Vulkan) without copying the full old core.

@@ -19,7 +19,19 @@ class LTWRenderer : RendererInterface {
 
     override fun getRendererName(): String = "LTW (All Version Fast)"
 
-    override fun getRendererEnv(): Lazy<Map<String, String>> = lazy { emptyMap() }
+    override fun getRendererEnv(): Lazy<Map<String, String>> = lazy {
+        // Match MJLauncher’s GLES provider: LTW wraps Android’s system EGL/GLES
+        // implementation while its own libltw.so remains the EGL entry point
+        // passed to pojavexec.
+        mapOf(
+            "LIBGL_EGL" to "libEGL.so",
+            "LIBGL_GLES" to "libGLESv2.so",
+            "force_glsl_extensions_warn" to "true",
+            "allow_higher_compat_version" to "true",
+            "allow_glsl_extension_directive_midshader" to "true",
+            "LIBGL_NOERROR" to "1"
+        )
+    }
 
     override fun getDlopenLibrary(): Lazy<List<String>> = lazy { emptyList() }
 

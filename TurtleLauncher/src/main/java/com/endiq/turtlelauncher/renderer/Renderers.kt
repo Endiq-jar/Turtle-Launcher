@@ -60,24 +60,18 @@ object Renderers {
             // fail inside eglCreateContext during RenderSystem initialization.
             if (renderer.getRendererId() == LTWRenderer.ID) {
                 val gles3Unavailable = runCatching { JREUtils.getDetectedVersion() < 3 }.getOrDefault(true)
-                val powerVrLtwFailure = File("/vendor/lib64/libsrv_um.so").exists() ||
-                    File("/vendor/lib/libsrv_um.so").exists()
                 if (gles3Unavailable) {
                     Logging.w("Renderers", "LTW requires OpenGL ES 3; excluding it on this device")
                     return@forEach
                 }
-                // LTW is known to leave no current context on PowerVR Rogue
-                // devices. Exclude it before the picker can persist a renderer
-                // that will crash during RenderSystem initialization; MobileGlues
-                // remains available as the safe GLES fallback.
-                if (powerVrLtwFailure) {
-                    Logging.w("Renderers", "LTW is disabled on PowerVR devices because it cannot create a current GL context")
-                    return@forEach
-                }
+                // Do not blacklist PowerVR here. MJLauncher supports LTW on
+                // PowerVR devices, and the bundled LTW AAR is the same GLES 3
+                // backend. A blanket vendor-file blacklist made LTW appear
+                // broken in this launcher even when the device could run it.
             }
 
             if (!hasRequiredLibrary(renderer)) {
-                Logging.w("Renderers", "${renderer.getRendererName()} (${renderer.getRendererId()}) references a library not found in this ABI's jniLibs - excluding it from the picker")
+                Logging.w("Renderers", "${renderer.getRendererName()} (${renderer.getRendererId()}) references a native library not packaged for this ABI - excluding it from the picker")
                 return@forEach
             }
             compatibleRenderers1.add(renderer)

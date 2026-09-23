@@ -43,10 +43,10 @@ import java.lang.reflect.Method;
  * bytecode), Components.kt unpacks the lwjgl3 component into
  * <gameHome>/lwjgl3/, Tools.getLWJGL3ClassPath(versionInfo) puts the bridge
  * jar first on the SDL game -cp, and LaunchArgs routes every NEW_SDL launch's
- * main class through here. The bridge's Callback/Descriptor ABI shim is also
- * selected before Minecraft's version-specific core, so a hook linkage failure
- * now aborts before Minecraft can load SDL3 through an uninitialized guest-VM
- * instance.
+ * main class through here. The bridge contains only Android GLFW/Vulkan support
+ * classes; Minecraft's version-specific LWJGL jars own the complete callback
+ * and core APIs, so a hook linkage failure now aborts before Minecraft can load
+ * SDL3 through an uninitialized guest-VM instance.
  *
  * DELIBERATELY does NOT load SDL3 itself, even though that would seem to
  * "pre-initialize" it: loading libSDL3.so from THIS (guest) JVM - by
