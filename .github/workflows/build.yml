@@ -2,13 +2,13 @@ name: Build APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, arena/01a0be41-turtlelauncher ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -116,6 +116,21 @@ jobs:
         with:
           name: sdl-glfw-3.4.3-plus4
           path: release/lwjgl-glfw-3.4.3-plus4.jar
+
+      - name: Publish pinned SDL GLFW release artifact
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/arena/01a0be41-turtlelauncher' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: sdl-glfw-3.4.3-4
+          name: SDL GLFW 3.4.3+4
+          body: |
+            Auditable launcher-pinned Java-side GLFW artifact for Minecraft 26.3.
+            The classes are the upstream LWJGL 3.4.3 release used by the 3.4.3
+            core, repackaged with the 3.4.3+4 coordinate and metadata. It is
+            intentionally a game-side artifact; the Android bridge contains no
+            generated LWJGL callback classes.
+          files: release/lwjgl-glfw-3.4.3-plus4.jar
+          overwrite_files: true
 
       - name: Upload generated LWJGL bridge
         uses: actions/upload-artifact@v6
