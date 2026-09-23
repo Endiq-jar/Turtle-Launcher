@@ -85,6 +85,38 @@ jobs:
           name: TurtleLauncher-debug-apk
           path: "**/build/outputs/apk/debug/*.apk"
 
+      - name: Prepare pinned SDL GLFW artifact
+        run: |
+          set -eux
+          mkdir -p release
+          curl --fail --location --retry 5 \
+            https://repo1.maven.org/maven2/org/lwjgl/lwjgl-glfw/3.4.3/lwjgl-glfw-3.4.3.jar \
+            --output release/lwjgl-glfw-3.4.3-plus4.jar
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile
+          source = Path("release/lwjgl-glfw-3.4.3-plus4.jar")
+          temporary = source.with_suffix(".tmp")
+          properties = b"artifactId=lwjgl-glfw\ngroupId=org.lwjgl\nversion=3.4.3+4\n"
+          with zipfile.ZipFile(source, "r") as old, zipfile.ZipFile(temporary, "w", zipfile.ZIP_DEFLATED) as new:
+              replaced = False
+              for entry in old.infolist():
+                  if entry.filename == "META-INF/maven/org.lwjgl/lwjgl-glfw/pom.properties":
+                      new.writestr(entry, properties)
+                      replaced = True
+                  else:
+                      new.writestr(entry, old.read(entry.filename))
+              if not replaced:
+                  new.writestr("META-INF/maven/org.lwjgl/lwjgl-glfw/pom.properties", properties)
+          temporary.replace(source)
+          PY
+
+      - name: Upload pinned SDL GLFW artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: sdl-glfw-3.4.3-plus4
+          path: release/lwjgl-glfw-3.4.3-plus4.jar
+
       - name: Upload generated LWJGL bridge
         uses: actions/upload-artifact@v6
         with:
