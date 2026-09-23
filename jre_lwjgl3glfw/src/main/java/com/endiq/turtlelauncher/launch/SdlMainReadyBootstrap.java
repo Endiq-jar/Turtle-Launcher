@@ -78,14 +78,15 @@ public class SdlMainReadyBootstrap {
             );
         }
 
-        // DroidBridge's GLFW bridge installs the LWJGL ndlopen hook from its
-        // static initializer. SDL 3.2 moved Minecraft's window creation from
-        // GLFW into SDL, so SDL launches otherwise never load libpojavexec in
-        // the guest JVM and the game can receive a second, uninitialized SDL
-        // linker instance. This only touches GLFW; it deliberately does not
-        // load SDL3 from the guest VM.
+        // SDL 3.2 moved Minecraft's window creation from GLFW into SDL. The
+        // old bootstrap forced org.lwjgl.glfw.GLFW to initialize only to load
+        // libpojavexec; that class is not part of official 26.3's SDL classpath
+        // and its bridge GLFW class then failed on GLFW callback ownership.
+        // Load the native bridge directly instead. libpojavexec's JNI_OnLoad
+        // installs the DynamicLinkLoader hook without touching any GLFW Java
+        // class, and therefore works with SDL-only LWJGL distributions.
         try {
-            Class.forName("org.lwjgl.glfw.GLFW", true, SdlMainReadyBootstrap.class.getClassLoader());
+            System.loadLibrary("pojavexec");
             System.out.println("TurtleSDL3: guest libpojavexec loaded, LWJGL dlopen hook installed");
         } catch (Throwable t) {
             // Continuing here lets LWJGL load SDL3 through a second guest-VM

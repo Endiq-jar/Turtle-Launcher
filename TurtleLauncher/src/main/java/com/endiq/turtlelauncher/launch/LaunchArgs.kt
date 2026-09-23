@@ -56,9 +56,9 @@ class LaunchArgs(
         val launcherLwjglClasspath = Tools.getLWJGL3ClassPath(versionInfo)
         val launcherLwjglSegment = if (launcherLwjglClasspath.isNotEmpty()) "$launcherLwjglClasspath:" else ""
         // The bridge must come first: it owns the Android GLFW/Vulkan shims.
-        // Its LWJGL core and callback APIs are intentionally absent, so the
-        // exact version-specific core/GLFW/SDL jars provide every LWJGL API
-        // implementation without being shadowed.
+        // Its LWJGL core and callback APIs are intentionally absent. SDL
+        // versions provide their exact core/SDL APIs here; the bootstrap loads
+        // libpojavexec directly and never initializes the optional GLFW shim.
         argsList.add("$launcherLwjglSegment$lwjglClasspathPrefix$launchClassPath")
 
         val lwjglNativeOverride = Tools.getLwjglNativeLibraryOverride(versionInfo)

@@ -93,17 +93,6 @@ class LaunchGame {
                 }
             }.onFailure { e -> Logging.e("LaunchGame", "Renderer/MC-version compatibility check failed", e) }
 
-            runCatching {
-                val rendererUniqueId = version.getRenderer()
-                val isLtw = rendererUniqueId == com.endiq.turtlelauncher.renderer.renderers.LTWRenderer().getUniqueIdentifier()
-                val isPowerVr = File("/vendor/lib64/libsrv_um.so").exists() || File("/vendor/lib/libsrv_um.so").exists()
-                if (isLtw && isPowerVr) {
-                    Logging.w("LaunchGame", "LTW selected on a PowerVR GPU - it failed to create a GL context on this GPU family (no context current at RenderSystem init)")
-                    Toast.makeText(context, "LTW can fail to create a GL context on PowerVR GPUs. If the game crashes at startup, switch this version to MobileGlues.", Toast.LENGTH_LONG).show()
-                }
-            }.onFailure { e -> Logging.e("LaunchGame", "PowerVR/LTW check failed", e) }
-
-
             val networkAvailable = NetworkUtils.isNetworkAvailable(context)
 
             fun launch(setOfflineAccount: Boolean = false) {

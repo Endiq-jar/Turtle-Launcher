@@ -164,8 +164,9 @@ public final class Tools {
      * pre-SDL Minecraft versions do not declare their LWJGL jars in a usable Android
      * form.  SDL Minecraft versions are different: their version-specific LWJGL core
      * and SDL jars must be the only providers of the LWJGL core or callback
-     * implementation. The Android bridge contributes only its GLFW/Vulkan
-     * integration classes; the exact game-provided GLFW jar owns GLFW callbacks.
+     * implementation. The Android bridge contributes only its Android
+     * integration classes; if a version declares GLFW, its exact game-provided
+     * GLFW artifact owns the callback classes.
      */
     public static String getLWJGL3ClassPath() {
         return getLWJGL3ClassPath(false);
