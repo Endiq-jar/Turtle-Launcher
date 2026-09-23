@@ -550,6 +550,17 @@ public final class Tools {
         return libDir.toArray(new String[0]);
     }
 
+    private static boolean isLwjglNativeArtifact(DependentLibrary library) {
+        if (library == null || library.name == null) return false;
+        if (library.name.split(":").length > 3) return true;
+
+        if (library.downloads != null && library.downloads.artifact != null) {
+            String path = library.downloads.artifact.path;
+            if (path != null && path.contains("-natives-")) return true;
+        }
+        return false;
+    }
+
     public static String getLwjglAbiOverrideClasspath(JMinecraftVersionList.Version info) {
         List<String> paths = new ArrayList<>();
         if (info == null || info.libraries == null) return "";
@@ -565,8 +576,11 @@ public final class Tools {
             // Natives classifier artifacts are extracted separately and must
             // never be put on the Java class path. On Android, leaving a
             // natives-linux-x64 jar here makes LWJGL report a platform mismatch
-            // on the aarch64 guest before the GLFW hook can install.
-            if (libName.split(":").length != 3) continue;
+            // on the aarch64 guest before the GLFW hook can install. Check both
+            // the Maven coordinate and the resolved artifact path: some version
+            // manifests keep a three-part name while their downloads.artifact
+            // path still points at a classifier jar.
+            if (isLwjglNativeArtifact(libItem)) continue;
 
             // GLFW and Vulkan are supplied by the Android bridge payload: GLFW is
             // patched to call pojavexec and Vulkan's VK class exposes the bridge's

@@ -64,6 +64,12 @@ import java.lang.reflect.Method;
  */
 public class SdlMainReadyBootstrap {
     public static void main(String[] args) throws Exception {
+        // Keep the bootstrap safe even when an older launcher argument builder
+        // or a version JSON supplies no allocator override. This must happen
+        // before GLFW initializes MemoryUtil; Android has no usable desktop
+        // jemalloc classifier for the guest JVM.
+        System.setProperty("org.lwjgl.system.allocator", "system");
+
         String realMainClass = System.getProperty("turtlelauncher.realMainClass");
         if (realMainClass == null) {
             throw new IllegalStateException(

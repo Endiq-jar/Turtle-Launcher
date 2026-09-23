@@ -44,6 +44,14 @@ class LaunchArgs(
         val lwjglAbiOverrideClasspath = Tools.getLwjglAbiOverrideClasspath(versionInfo)
         val lwjglClasspathPrefix = if (lwjglAbiOverrideClasspath.isNotEmpty()) "$lwjglAbiOverrideClasspath:" else ""
 
+        if (Tools.resolveLwjglMode(versionInfo) == Tools.LwjglMode.NEW_SDL) {
+            // Set this before -cp and before any LWJGL class can initialize.
+            // Minecraft's version arguments may contain their own allocator
+            // setting; this launcher-owned value must be the final effective
+            // configuration for Android's system allocator path.
+            argsList.add("-Dorg.lwjgl.system.allocator=system")
+        }
+
         argsList.add("-cp")
         val launcherLwjglClasspath = Tools.getLWJGL3ClassPath(versionInfo)
         val launcherLwjglSegment = if (launcherLwjglClasspath.isNotEmpty()) "$launcherLwjglClasspath:" else ""
@@ -64,12 +72,6 @@ class LaunchArgs(
         // export and Java 25 correctly warns that the module is unknown.
 
         if (Tools.resolveLwjglMode(versionInfo) == Tools.LwjglMode.NEW_SDL) {
-            // Android ships the LWJGL core native through the launcher AAR, not
-            // a desktop jemalloc natives classifier. Force the system allocator
-            // before GLFW/MemoryUtil initializes so the hook bootstrap cannot
-            // accidentally select linux-x64 jemalloc on an aarch64 guest.
-            argsList.add("-Dorg.lwjgl.system.allocator=system")
-
             val pinnedSdl3 = File(PathManager.DIR_NATIVE_LIB, "libSDL3.so")
             if (pinnedSdl3.isFile) {
                 argsList.add("-Dorg.lwjgl.sdl.libname=${pinnedSdl3.absolutePath}")
