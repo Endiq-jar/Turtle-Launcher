@@ -582,14 +582,14 @@ public final class Tools {
             // path still points at a classifier jar.
             if (isLwjglNativeArtifact(libItem)) continue;
 
-            // GLFW and Vulkan are supplied by the Android bridge payload: GLFW is
-            // patched to call pojavexec and Vulkan's VK class exposes the bridge's
-            // native callbacks.  Putting their desktop jars first would silently
-            // hide those Android implementations.  All other LWJGL modules,
-            // including core and SDL, must come from this exact version's library
-            // set so Callback/FFICIF/SDL cannot be mixed with the bundled payload.
-            if (libName.startsWith("org.lwjgl:lwjgl-glfw:") ||
-                libName.startsWith("org.lwjgl:lwjgl-vulkan:")) continue;
+            // The bridge supplies only the Android GLFW entry class and its
+            // small support types. Keep the exact version's lwjgl-glfw jar so
+            // its callback classes match the exact core/Upcalls ABI; the bridge
+            // is first on the class path, so its Android GLFW.class still wins.
+            // Vulkan remains supplied by the bridge because its Android callback
+            // implementation is part of that payload. All other LWJGL modules,
+            // including core and SDL, come from this exact version's libraries.
+            if (libName.startsWith("org.lwjgl:lwjgl-vulkan:")) continue;
 
             String libArtifactPath = artifactToPath(libItem);
             if (libArtifactPath == null) continue;

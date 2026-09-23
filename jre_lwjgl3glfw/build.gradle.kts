@@ -77,26 +77,25 @@ val patchCallbackDescriptor = tasks.register<Exec>("patchCallbackDescriptor") {
 tasks.register<Jar>("bridgeJar") {
     dependsOn(tasks.classes)
     dependsOn(patchCallbackDescriptor)
-    dependsOn(patchGL32C)
     dependsOn(bridgePayloadSnapshot)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveBaseName.set("lwjgl-glfw-bridge")
     destinationDirectory.set(file("../TurtleLauncher/src/main/assets/components/lwjgl3/"))
 
-    from(patchedGL32C) {
-        into("org/lwjgl/opengl")
-    }
     from(sourceSets.main.get().output) {
         include("android/**")
         include("net/java/openjdk/**")
-        include("org/lwjgl/glfw/**")
+        include("org/lwjgl/glfw/CallbackBridge.class")
+        include("org/lwjgl/glfw/Callbacks.class")
+        include("org/lwjgl/glfw/GLFW.class")
+        include("org/lwjgl/glfw/GLFW\$Functions.class")
+        include("org/lwjgl/glfw/GLFWWindowProperties.class")
         include("org/lwjgl/input/InfdevMouse.class")
         include("org/lwjgl/opengl/PojavRendererInit.class")
-        // Keep the legacy Callback API while routing its handler lookup to
-        // the native library's Upcalls JNI symbol. Include all generated
-        // nested classes because the callback registry is implemented there.
-        include("org/lwjgl/system/Callback*.class")
-        include("org/lwjgl/system/Upcalls.class")
+        // Keep only the Android bridge classes. The exact SDL Minecraft
+        // version supplies its own GLFW callback/core classes after this jar;
+        // copying the legacy callback implementation here would mix LWJGL
+        // 3.3.x classes with the 3.4.x SDL ABI.
         include("com/endiq/turtlelauncher/**")
     }
     from({
@@ -110,34 +109,20 @@ tasks.register<Jar>("bridgeJar") {
             }
         }
     })
+    // Keep only bridge Vulkan classes that are absent from the legacy build
+    // dependencies. The exact SDL version's lwjgl-glfw jar is added after
+    // this bridge by Tools.getLwjglAbiOverrideClasspath; the bridge's custom
+    // GLFW class wins while its matching callback classes remain intact.
     from({
         configurations.getByName("runtimeClasspath").map {
             zipTree(it).matching {
-                // The source set above contains the Android GLFW replacement.
-                // Do not let the desktop LWJGL GLFW classes overwrite it: the
-                // desktop class tries to load libglfw.so, while Android exposes
-                // the hook through libpojavexec.so.
-                include("org/lwjgl/glfw/**")
-                exclude("org/lwjgl/glfw/CallbackBridge.class")
-                exclude("org/lwjgl/glfw/Callbacks.class")
-                exclude("org/lwjgl/glfw/GLFW.class")
-                exclude("org/lwjgl/glfw/GLFWImage.class")
-                exclude("org/lwjgl/glfw/GLFWNativeCocoa.class")
-                exclude("org/lwjgl/glfw/GLFWNativeEGL.class")
-                exclude("org/lwjgl/glfw/GLFWNativeNSGL.class")
-                exclude("org/lwjgl/glfw/GLFWNativeOSMesa.class")
-                exclude("org/lwjgl/glfw/GLFWNativeWGL.class")
-                exclude("org/lwjgl/glfw/GLFWNativeWayland.class")
-                exclude("org/lwjgl/glfw/GLFWNativeWin32.class")
-                exclude("org/lwjgl/glfw/GLFWNativeX11.class")
-                exclude("org/lwjgl/glfw/GLFWWindowProperties.class")
                 include("org/lwjgl/vulkan/**")
             }
         }
     })
-    // The checked-in full payload is patched before this task runs. Keep only
-    // its nested Descriptor ABI shim here; the source-set Callback/Upcalls
-    // compatibility classes above are the only system classes in the bridge.
+    // Keep only the nested Descriptor ABI shim from the full legacy payload.
+    // The exact SDL core owns Callback and Upcalls; this descriptor remains
+    // binary-compatible with the newer three-argument callback ABI.
     from(zipTree(file("../TurtleLauncher/src/main/assets/components/lwjgl3/lwjgl-glfw-classes.jar")).matching {
         include("org/lwjgl/system/Callback\$Descriptor.class")
     })
