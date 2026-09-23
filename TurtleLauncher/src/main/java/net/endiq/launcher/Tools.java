@@ -503,11 +503,12 @@ public final class Tools {
     private static final String SDL_GLFW_COORDINATE = "org.lwjgl:lwjgl-glfw:" + SDL_GLFW_VERSION;
     private static final String SDL_GLFW_PATH =
             "org/lwjgl/lwjgl-glfw/" + SDL_GLFW_VERSION + "/lwjgl-glfw-" + SDL_GLFW_VERSION + ".jar";
-    // Maven Central provides the released 3.4.3 bytecode used by the 3.4.3
-    // core. The launcher stores that exact-generation game-side artifact under
-    // the pinned 3.4.3+4 coordinate because the 26.3 manifest omits GLFW.
+    // This public release is generated from the upstream 3.4.3 binding and
+    // stamped with the launcher-pinned 3.4.3+4 coordinate. Keep the download
+    // URL explicit rather than relying on the incomplete 26.3 manifest.
     private static final String SDL_GLFW_DOWNLOAD_URL =
-            "https://repo1.maven.org/maven2/org/lwjgl/lwjgl-glfw/3.4.3/lwjgl-glfw-3.4.3.jar";
+            "https://github.com/Endiq-jar/TurtleLauncher/releases/download/" +
+            "sdl-glfw-3.4.3-4/lwjgl-glfw-3.4.3-plus4.jar";
 
     public static boolean versionUsesLwjglSdl(JMinecraftVersionList.Version info) {
         if (info == null || info.libraries == null) return false;
