@@ -380,7 +380,10 @@ public class MinecraftDownloader {
 
             String sha1 = null, url = null;
             long size = 0;
-            boolean skipIfFailed = true;
+            // The synthetic 26.3 GLFW artifact is mandatory: silently skipping
+            // it would produce a late bootstrap NoClassDefFoundError instead of
+            // reporting the real download failure to the installer.
+            boolean skipIfFailed = !dependentLibrary.name.equals("org.lwjgl:lwjgl-glfw:3.4.3+4");
             if(dependentLibrary.downloads != null) {
                 if(dependentLibrary.downloads.artifact != null) {
                     MinecraftLibraryArtifact artifact = dependentLibrary.downloads.artifact;

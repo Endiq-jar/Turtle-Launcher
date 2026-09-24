@@ -631,6 +631,15 @@ public final class Tools {
             String fullPath = ProfilePathHome.getLibrariesHome() + "/" + libArtifactPath;
             if (FileUtils.exists(fullPath) && !paths.contains(fullPath)) paths.add(fullPath);
         }
+
+        // Keep launch-time classpath construction robust for installations that
+        // were created before 26.3's synthetic GLFW entry was added to the
+        // local version metadata. The downloader still owns fetching it; this
+        // fallback only admits the exact-version file when it is already there.
+        String exactGlfwPath = ProfilePathHome.getLibrariesHome() + "/" + SDL_GLFW_PATH;
+        if (FileUtils.exists(exactGlfwPath) && !paths.contains(exactGlfwPath)) {
+            paths.add(exactGlfwPath);
+        }
         return String.join(":", paths);
     }
 
