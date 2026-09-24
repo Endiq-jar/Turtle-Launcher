@@ -152,6 +152,30 @@ Shizuku is completely optional — Turtle Launcher works fine without it.
 ### No. Turtle Launcher supports Microsoft, offline, Battly and Ely.by accounts, so you can play the way you prefer.
 ---
 
+## 🧪 Build the patched Flame migration APK
+
+The repository keeps the Flame migration isolated from the production Turtle
+project. To reproduce the pinned target locally, install JDK 17+, Android SDK
+platform 36, build-tools 36.0.0, NDK 27.0.12077973, and CMake 3.22.1, then run:
+
+```bash
+chmod +x migration/build-flame.sh
+migration/build-flame.sh --build
+```
+
+The debug APK is written to
+`/tmp/turtle-flame-v220/app/build/outputs/apk/debug/`. The same build runs in
+GitHub Actions through **Build patched Flame migration APK**; download the APK
+artifact from the completed workflow run to install it on an Android test
+device. This artifact is for testing and is not a signed release/update APK.
+
+The existing Turtle app can still be built with `./gradlew
+:TurtleLauncher:assembleDebug`. Do not switch the default target until the
+runtime, renderer, feature, ABI, lifecycle, and upgrade gates in
+`docs/FLAME_TURTLE_MIGRATION.md` pass.
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Feel free to submit issues, feature requests, or pull requests.

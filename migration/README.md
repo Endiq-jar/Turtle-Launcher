@@ -159,5 +159,32 @@ git -C /tmp/turtle-flame-baseline apply \
 
 The complete patch chain (0001 through 0005) applies cleanly to a fresh pinned
 Flame checkout. Resource XML was parsed again after the chain was applied, and
-`git diff --check` passed. Gradle compilation remains pending because this
-environment does not currently provide `java` or `javac`.
+`git diff --check` passed. Gradle compilation remains pending in this workspace
+because it does not currently provide `java` or `javac`.
+
+## Build and download a test APK
+
+The reproducible builder is `migration/build-flame.sh`. It creates an isolated
+checkout, verifies the pinned commit, applies every migration patch in order, and
+can assemble the debug APK without modifying this repository:
+
+```bash
+chmod +x migration/build-flame.sh
+migration/build-flame.sh --build
+```
+
+The script prints the resulting APK path under:
+
+```text
+/tmp/turtle-flame-v220/app/build/outputs/apk/debug/
+```
+
+A JDK 17 or newer, Android SDK platform 36, build tools 36.0.0, NDK
+27.0.12077973, and CMake 3.22.1 are required for a local build.
+
+For a hosted build, `.github/workflows/build-flame-migration.yml` runs on pushes
+to the migration branch, pull requests, or manual dispatch. Open the completed
+GitHub Actions run and download the artifact named
+`TurtleLauncher-flame-v220-debug-<commit>`. Install the debug APK with Android
+platform tools or copy it to the device for testing. This is intentionally a
+debug artifact and is not a signed release/update package.
