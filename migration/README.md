@@ -126,3 +126,38 @@ The patch contains 124 Turtle color resources and 1,306 string/plural resources.
 The XML files were parsed and validated after applying the patch to a clean Flame
 checkout. Feature slices will consume the namespaced strings as their screens
 are ported; no existing Flame string IDs are replaced in this stage.
+
+## Step 6: port Turtle Compose motion
+
+`patches/0005-port-turtle-compose-motion.patch` adds a reusable Compose motion
+layer and wires it into Flame's existing shell rather than replacing navigation
+or duplicating screens. `TurtleMotion` provides:
+
+- configurable screen enter/exit, horizontal section/tab, sheet, dialog, and
+  staggered list-item transitions;
+- zoom/scale dialog motion, pulse, wobble, shake, and low-allocation press
+  feedback;
+- centralized durations/easing and a cap on staggered list work for low-end
+  devices;
+- animated selection colors/borders for the sidebar, tabs, version cards, and
+  installed-instance cards;
+- animated section-content changes, bottom launch-bar entry/exit, loader and
+  Terracotta overlay entry, and launch-progress dialog content.
+
+The patch preserves Flame's callbacks and state paths. It does not animate an
+active game session or alter the SDL/LWJGL launch path. Compose's platform motion
+scale remains the system-level reduced-motion gate; callers can pass `enabled =
+false` to the auxiliary effects when a screen is migrated with an explicit
+low-power policy.
+
+Apply it after patch 0004:
+
+```bash
+git -C /tmp/turtle-flame-baseline apply \
+  "$OLDPWD/migration/patches/0005-port-turtle-compose-motion.patch"
+```
+
+The complete patch chain (0001 through 0005) applies cleanly to a fresh pinned
+Flame checkout. Resource XML was parsed again after the chain was applied, and
+`git diff --check` passed. Gradle compilation remains pending because this
+environment does not currently provide `java` or `javac`.

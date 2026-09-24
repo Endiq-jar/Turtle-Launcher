@@ -1,0 +1,633 @@
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/components/LoaderSelectDialog.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/components/LoaderSelectDialog.kt
+index 846578b..ebcb0d8 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/components/LoaderSelectDialog.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/components/LoaderSelectDialog.kt
+@@ -1,6 +1,7 @@
+ package kr.co.donghyun.flamelauncher.presentation.ui.components
+ 
+ import androidx.compose.ui.platform.LocalContext
++import androidx.compose.animation.AnimatedVisibility
+ import androidx.compose.foundation.background
+ import androidx.compose.foundation.border
+ import androidx.compose.foundation.clickable
+@@ -24,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.launch
+ import kotlinx.coroutines.withContext
+ import kr.co.donghyun.flamelauncher.presentation.ui.theme.*
++import kr.co.donghyun.flamelauncher.presentation.ui.motion.TurtleMotion
+ import kr.co.donghyun.flamelauncher.presentation.util.fabric.FabricLoaderEntry
+ import kr.co.donghyun.flamelauncher.presentation.util.fabric.FabricMetaAPI
+ import kr.co.donghyun.flamelauncher.presentation.util.forge.ForgeLoaderEntry
+@@ -132,9 +134,14 @@ fun LoaderSelectDialog(
+         onDismissRequest = onDismiss,
+         properties = DialogProperties(usePlatformDefaultWidth = false)
+     ) {
+-        Column(
+-            modifier = Modifier
+-                .fillMaxWidth(0.92f)
++        AnimatedVisibility(
++            visible = true,
++            enter = TurtleMotion.dialogEnter,
++            exit = TurtleMotion.dialogExit,
++        ) {
++            Column(
++                modifier = Modifier
++                    .fillMaxWidth(0.92f)
+                 .background(BgSurface, RoundedCornerShape(16.dp))
+                 .border(1.dp, BgBorder, RoundedCornerShape(16.dp))
+                 .padding(if (compact) 12.dp else 20.dp),
+@@ -330,6 +337,7 @@ fun LoaderSelectDialog(
+             }
+         }
+     }
++    }
+ }
+ 
+ @Composable
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/motion/TurtleMotion.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/motion/TurtleMotion.kt
+new file mode 100644
+index 0000000..9e475d8
+--- /dev/null
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/motion/TurtleMotion.kt
+@@ -0,0 +1,167 @@
++package kr.co.donghyun.flamelauncher.presentation.ui.motion
++
++import androidx.compose.animation.ContentTransform
++import androidx.compose.animation.core.animateFloat
++import androidx.compose.animation.core.animateFloatAsState
++import androidx.compose.animation.core.infiniteRepeatable
++import androidx.compose.animation.core.RepeatMode
++import androidx.compose.foundation.LocalIndication
++import androidx.compose.foundation.clickable
++import androidx.compose.foundation.interaction.MutableInteractionSource
++import androidx.compose.foundation.interaction.collectIsPressedAsState
++import androidx.compose.runtime.getValue
++import androidx.compose.runtime.remember
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.composed
++import androidx.compose.ui.graphics.graphicsLayer
++import androidx.compose.animation.EnterTransition
++import androidx.compose.animation.ExitTransition
++import androidx.compose.animation.fadeIn
++import androidx.compose.animation.fadeOut
++import androidx.compose.animation.scaleIn
++import androidx.compose.animation.scaleOut
++import androidx.compose.animation.slideInHorizontally
++import androidx.compose.animation.slideInVertically
++import androidx.compose.animation.slideOutHorizontally
++import androidx.compose.animation.slideOutVertically
++import androidx.compose.animation.togetherWith
++import androidx.compose.animation.core.FastOutSlowInEasing
++import androidx.compose.animation.core.LinearOutSlowInEasing
++import androidx.compose.animation.core.tween
++
++/**
++ * Compose equivalents of Turtle's AnimPlayer/TurtleTransitions contract.
++ *
++ * The motion is centralized so migrated screens do not invent different
++ * durations or easing curves. Callers may skip these transitions when the
++ * user disables animation or when the game is active.
++ */
++object TurtleMotion {
++    const val screenDurationMillis = 320
++    const val dialogDurationMillis = 260
++    const val listStepMillis = 28
++
++    val screenEnter: EnterTransition
++        get() = fadeIn(tween(screenDurationMillis, easing = FastOutSlowInEasing)) +
++            slideInVertically(
++                initialOffsetY = { it / 8 },
++                animationSpec = tween(screenDurationMillis, easing = FastOutSlowInEasing),
++            )
++
++    val screenExit: ExitTransition
++        get() = fadeOut(tween(240, easing = LinearOutSlowInEasing)) +
++            slideOutVertically(
++                targetOffsetY = { -it / 12 },
++                animationSpec = tween(240, easing = LinearOutSlowInEasing),
++            )
++
++    val sheetEnter: EnterTransition
++        get() = fadeIn(tween(dialogDurationMillis)) +
++            slideInVertically(
++                initialOffsetY = { it },
++                animationSpec = tween(dialogDurationMillis, easing = FastOutSlowInEasing),
++            )
++
++    val sheetExit: ExitTransition
++        get() = fadeOut(tween(220)) +
++            slideOutVertically(
++                targetOffsetY = { it },
++                animationSpec = tween(220, easing = LinearOutSlowInEasing),
++            )
++
++    val dialogEnter: EnterTransition
++        get() = fadeIn(tween(dialogDurationMillis)) +
++            scaleIn(
++                initialScale = 0.92f,
++                animationSpec = tween(dialogDurationMillis, easing = FastOutSlowInEasing),
++            )
++
++    val dialogExit: ExitTransition
++        get() = fadeOut(tween(200)) +
++            scaleOut(
++                targetScale = 0.96f,
++                animationSpec = tween(200, easing = LinearOutSlowInEasing),
++            )
++
++    /** Turtle's auxiliary effects, expressed as cheap graphics-layer transforms. */
++    fun pulse(enabled: Boolean = true): Modifier = Modifier.composed {
++        if (!enabled) return@composed Modifier
++        val transition = androidx.compose.animation.core.rememberInfiniteTransition()
++        val scale by transition.animateFloat(
++            initialValue = 0.98f,
++            targetValue = 1.02f,
++            animationSpec = infiniteRepeatable(tween(900), RepeatMode.Reverse),
++        )
++        Modifier.graphicsLayer { scaleX = scale; scaleY = scale }
++    }
++
++    fun wobble(enabled: Boolean = true): Modifier = Modifier.composed {
++        if (!enabled) return@composed Modifier
++        val transition = androidx.compose.animation.core.rememberInfiniteTransition()
++        val rotation by transition.animateFloat(
++            initialValue = -1.5f,
++            targetValue = 1.5f,
++            animationSpec = infiniteRepeatable(tween(380), RepeatMode.Reverse),
++        )
++        Modifier.graphicsLayer { rotationZ = rotation }
++    }
++
++    fun shake(enabled: Boolean = true): Modifier = Modifier.composed {
++        if (!enabled) return@composed Modifier
++        val transition = androidx.compose.animation.core.rememberInfiniteTransition()
++        val offset by transition.animateFloat(
++            initialValue = -2f,
++            targetValue = 2f,
++            animationSpec = infiniteRepeatable(tween(70), RepeatMode.Reverse),
++        )
++        Modifier.graphicsLayer { translationX = offset }
++    }
++
++    /** Adds Turtle's subtle press compression without allocating a ripple on every frame. */
++    fun pressClickable(onClick: () -> Unit): Modifier = Modifier.composed {
++        val interactionSource = remember { MutableInteractionSource() }
++        val pressed by interactionSource.collectIsPressedAsState()
++        val scale by animateFloatAsState(
++            targetValue = if (pressed) 0.97f else 1f,
++            animationSpec = tween(120),
++            label = "turtle-press-scale",
++        )
++        Modifier
++            .graphicsLayer {
++                scaleX = scale
++                scaleY = scale
++            }
++            .clickable(
++                interactionSource = interactionSource,
++                indication = LocalIndication.current,
++                onClick = onClick,
++            )
++    }
++
++    fun tabTransform(forward: Boolean = true): ContentTransform {
++        val enterOffset = if (forward) 1 else -1
++        val exitOffset = -enterOffset
++        return (
++            fadeIn(tween(260)) + slideInHorizontally(
++                initialOffsetX = { it / 5 * enterOffset },
++                animationSpec = tween(260, easing = FastOutSlowInEasing),
++            )
++        ) togetherWith (
++            fadeOut(tween(190)) + slideOutHorizontally(
++                targetOffsetX = { it / 6 * exitOffset },
++                animationSpec = tween(190, easing = LinearOutSlowInEasing),
++            )
++        )
++    }
++
++    fun listItemEnter(index: Int): EnterTransition =
++        fadeIn(tween(260, delayMillis = (index.coerceAtMost(8)) * listStepMillis)) +
++            slideInVertically(
++                initialOffsetY = { it / 10 },
++                animationSpec = tween(
++                    260,
++                    delayMillis = (index.coerceAtMost(8)) * listStepMillis,
++                    easing = FastOutSlowInEasing,
++                ),
++            )
++}
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt
+index 8aac222..d53f0dc 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt
+@@ -3,7 +3,10 @@ package kr.co.donghyun.flamelauncher.presentation.ui.screen
+ import android.app.Activity
+ import android.content.pm.ActivityInfo
+ import android.graphics.BitmapFactory
++import androidx.compose.animation.AnimatedContent
+ import androidx.compose.animation.AnimatedVisibility
++import androidx.compose.animation.animateColorAsState
++import androidx.compose.animation.core.animateDpAsState
+ import androidx.compose.foundation.Image
+ import androidx.compose.foundation.background
+ import androidx.compose.foundation.border
+@@ -59,6 +62,7 @@ import kr.co.donghyun.flamelauncher.data.mojang.VersionEntry
+ import kr.co.donghyun.flamelauncher.presentation.ui.components.LoaderSelectDialog
+ import kr.co.donghyun.flamelauncher.presentation.ui.components.TerracottaEntry
+ import kr.co.donghyun.flamelauncher.presentation.ui.theme.*
++import kr.co.donghyun.flamelauncher.presentation.ui.motion.TurtleMotion
+ import kr.co.donghyun.flamelauncher.presentation.util.isVersionSupported
+ import kr.co.donghyun.flamelauncher.presentation.util.window.isTablet
+ import kr.co.donghyun.flamelauncher.presentation.util.window.isCompact
+@@ -219,44 +223,51 @@ fun MainScreen(
+                     Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(BgBorder))
+ 
+                     Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
+-                        if (selectedSection == MainSection.NOTES) {
+-                            ReleaseNotesPane()
+-                        } else {
+-                            MainTabBar(
+-                                selected = selectedTab,
+-                                installedCount = instances.size,
+-                                releaseCount = versions.count { it.type == "release" },
+-                                allCount = versions.size,
+-                                onSelect = { selectedTab = it },
+-                            )
+-                            when {
+-                                isLoading && selectedTab != MainTab.INSTALLED ->
+-                                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+-                                        CircularProgressIndicator(color = FlamePrimary)
+-                                    }
+-                                else -> Column(modifier = Modifier.fillMaxSize()) {
+-                                    Box(modifier = Modifier.weight(1f)) {
++                        AnimatedContent(
++                            targetState = selectedSection,
++                            transitionSpec = { TurtleMotion.tabTransform() },
++                            modifier = Modifier.fillMaxSize(),
++                            label = "turtle-main-section",
++                        ) { section ->
++                            if (section == MainSection.NOTES) {
++                                ReleaseNotesPane()
++                            } else {
++                                MainTabBar(
++                                    selected = selectedTab,
++                                    installedCount = instances.size,
++                                    releaseCount = versions.count { it.type == "release" },
++                                    allCount = versions.size,
++                                    onSelect = { selectedTab = it },
++                                )
++                                when {
++                                    isLoading && selectedTab != MainTab.INSTALLED ->
++                                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
++                                            CircularProgressIndicator(color = FlamePrimary)
++                                        }
++                                    else -> Column(modifier = Modifier.fillMaxSize()) {
++                                        Box(modifier = Modifier.weight(1f)) {
++                                            if (selectedTab == MainTab.INSTALLED) {
++                                                InstancesList(
++                                                    isLoggedIn = isLoggedIn,
++                                                    instances = instances,
++                                                    selectedInstanceId = selectedInstanceId,
++                                                    onSelect = { selectedInstanceId = it.id },
++                                                    onOpenSettings = onOpenInstanceSettings,
++                                                )
++                                            } else {
++                                                VersionsList(filteredVersions, selectedVersion, onVersionSelect)
++                                            }
++                                        }
++                                        // ⚠️ 정식·전체 탭에는 아래 띠를 두지 않는다. 거기서 고를 게
++                                        //    없기 때문이다 — 실행 대상은 설치됨 탭이 갖는다.
+                                         if (selectedTab == MainTab.INSTALLED) {
+-                                            InstancesList(
++                                            InstalledPanel(
++                                                selected = selectedInstance,
+                                                 isLoggedIn = isLoggedIn,
+-                                                instances = instances,
+-                                                selectedInstanceId = selectedInstanceId,
+-                                                onSelect = { selectedInstanceId = it.id },
+-                                                onOpenSettings = onOpenInstanceSettings,
++                                                onLaunch = { selectedInstance?.let { onLaunchInstance(it) } },
+                                             )
+-                                        } else {
+-                                            VersionsList(filteredVersions, selectedVersion, onVersionSelect)
+                                         }
+                                     }
+-                                    // ⚠️ 정식·전체 탭에는 아래 띠를 두지 않는다. 거기서 고를 게
+-                                    //    없기 때문이다 — 실행 대상은 설치됨 탭이 갖는다.
+-                                    if (selectedTab == MainTab.INSTALLED) {
+-                                        InstalledPanel(
+-                                            selected = selectedInstance,
+-                                            isLoggedIn = isLoggedIn,
+-                                            onLaunch = { selectedInstance?.let { onLaunchInstance(it) } },
+-                                        )
+-                                    }
+                                 }
+                             }
+                         }
+@@ -267,7 +278,12 @@ fun MainScreen(
+ 
+         // 폰: 태블릿의 BottomPanel/InstanceLaunchBar(각각 다른 모양)를 버리고,
+         //   버전 탭에서 쓰는 얇은 단일 하단바. 설치됨 탭은 InstalledPanel 이 맡는다.
+-        if (showBottomBar) {
++        AnimatedVisibility(
++            visible = showBottomBar,
++            enter = TurtleMotion.sheetEnter,
++            exit = TurtleMotion.sheetExit,
++            modifier = Modifier.align(Alignment.BottomCenter),
++        ) {
+             MobileBottomBar(
+                 selectedTab = selectedTab,
+                 selectedVersion = selectedVersion,
+@@ -278,7 +294,7 @@ fun MainScreen(
+                 onPlayVersion = { showLoaderDialog = true },
+                 onPlayInstance = { selectedInstance?.let { onLaunchInstance(it) } },
+                 onLogin = onLogin,
+-                modifier = Modifier.align(Alignment.BottomCenter),
++                modifier = Modifier,
+             )
+         }
+ 
+@@ -347,17 +363,28 @@ private fun SectionSidebar(
+ 
+ @Composable
+ private fun SectionRow(section: MainSection, selected: Boolean, onClick: () -> Unit) {
++    val surface by animateColorAsState(
++        targetValue = if (selected) FlameDark else BgItem,
++        animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++        label = "turtle-section-surface",
++    )
++    val outline by animateColorAsState(
++        targetValue = if (selected) FlamePrimary else BgBorder,
++        animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++        label = "turtle-section-outline",
++    )
++    val outlineWidth by animateDpAsState(
++        targetValue = if (selected) 1.5.dp else 1.dp,
++        animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++        label = "turtle-section-outline-width",
++    )
+     Row(
+         modifier = Modifier
+             .fillMaxWidth()
+             .clip(RoundedCornerShape(10.dp))
+-            .background(if (selected) FlameDark else BgItem)
+-            .border(
+-                if (selected) 1.5.dp else 1.dp,
+-                if (selected) FlamePrimary else BgBorder,
+-                RoundedCornerShape(10.dp),
+-            )
+-            .clickable(onClick = onClick)
++            .background(surface)
++            .border(outlineWidth, outline, RoundedCornerShape(10.dp))
++            .then(TurtleMotion.pressClickable(onClick))
+             .padding(horizontal = 12.dp, vertical = 10.dp),
+         verticalAlignment = Alignment.CenterVertically,
+         horizontalArrangement = Arrangement.spacedBy(10.dp),
+@@ -368,10 +395,20 @@ private fun SectionRow(section: MainSection, selected: Boolean, onClick: () -> U
+             tint = if (selected) Color.White else FlamePrimary,
+             modifier = Modifier.size(18.dp),
+         )
++        val titleColor by animateColorAsState(
++            targetValue = if (selected) Color.White else TextPrimary,
++            animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++            label = "turtle-section-title",
++        )
++        val subtitleColor by animateColorAsState(
++            targetValue = if (selected) Color.White.copy(alpha = 0.75f) else TextSecondary,
++            animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++            label = "turtle-section-subtitle",
++        )
+         Column(modifier = Modifier.weight(1f)) {
+             Text(
+                 text = section.title,
+-                color = if (selected) Color.White else TextPrimary,
++                color = titleColor,
+                 fontSize = 13.sp,
+                 fontWeight = FontWeight.Bold,
+                 maxLines = 1,
+@@ -379,7 +416,7 @@ private fun SectionRow(section: MainSection, selected: Boolean, onClick: () -> U
+             )
+             Text(
+                 text = section.subtitle,
+-                color = if (selected) Color.White.copy(alpha = 0.75f) else TextSecondary,
++                color = subtitleColor,
+                 fontSize = 10.sp,
+                 maxLines = 1,
+                 overflow = TextOverflow.Ellipsis,
+@@ -408,17 +445,28 @@ private fun MainTabBar(
+                 MainTab.RELEASE -> releaseCount
+                 MainTab.ALL -> allCount
+             }
++            val tabSurface by animateColorAsState(
++                targetValue = if (isSelected) FlameDark else BgSurface,
++                animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++                label = "turtle-tab-surface",
++            )
++            val tabOutline by animateColorAsState(
++                targetValue = if (isSelected) FlamePrimary else BgBorder,
++                animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++                label = "turtle-tab-outline",
++            )
++            val tabOutlineWidth by animateDpAsState(
++                targetValue = if (isSelected) 1.5.dp else 1.dp,
++                animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++                label = "turtle-tab-outline-width",
++            )
+             Column(
+                 modifier = Modifier
+                     .weight(1f)
+                     .clip(RoundedCornerShape(10.dp))
+-                    .background(if (isSelected) FlameDark else BgSurface)
+-                    .border(
+-                        if (isSelected) 1.5.dp else 1.dp,
+-                        if (isSelected) FlamePrimary else BgBorder,
+-                        RoundedCornerShape(10.dp),
+-                    )
+-                    .clickable { onSelect(tab) }
++                    .background(tabSurface)
++                    .border(tabOutlineWidth, tabOutline, RoundedCornerShape(10.dp))
++                    .then(TurtleMotion.pressClickable { onSelect(tab) })
+                     .padding(vertical = 7.dp),
+                 horizontalAlignment = Alignment.CenterHorizontally,
+             ) {
+@@ -565,18 +613,29 @@ private fun InstanceItem(
+ ) {
+     val tablet = isTablet()
+     val compact = isCompact()
++    val cardSurface by animateColorAsState(
++        targetValue = if (selected) FlameDark else BgSurface,
++        animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++        label = "turtle-instance-surface",
++    )
++    val cardOutline by animateColorAsState(
++        targetValue = if (selected) FlamePrimary else BgBorder,
++        animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++        label = "turtle-instance-outline",
++    )
++    val cardOutlineWidth by animateDpAsState(
++        targetValue = if (selected) 1.5.dp else 1.dp,
++        animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++        label = "turtle-instance-outline-width",
++    )
+ 
+     Row(
+         modifier = Modifier
+             .fillMaxWidth()
+             .clip(RoundedCornerShape(10.dp))
+-            .background(if (selected) FlameDark else BgSurface)
+-            .border(
+-                if (selected) 1.5.dp else 1.dp,
+-                if (selected) FlamePrimary else BgBorder,
+-                RoundedCornerShape(10.dp)
+-            )
+-            .clickable { onSelect() }
++            .background(cardSurface)
++            .border(cardOutlineWidth, cardOutline, RoundedCornerShape(10.dp))
++            .then(TurtleMotion.pressClickable { onSelect() })
+             .padding(
+                 horizontal = if (tablet) 14.dp else if (compact) 8.dp else 10.dp,
+                 vertical = if (tablet) 12.dp else if (compact) 7.dp else 8.dp,
+@@ -736,26 +795,34 @@ private fun LaunchingDialog(meta: InstanceMeta, tablet: Boolean) {
+         onDismissRequest = { /* 사용자가 닫지 못함 — 화면 전환 시 자동 제거 */ },
+         containerColor = BgSurface,
+         title = {
+-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+-                CircularProgressIndicator(color = FlamePrimary, strokeWidth = 2.5.dp, modifier = Modifier.size(20.dp))
+-                Text(context.getString(R.string.game_running), color = TextPrimary, fontSize = if (tablet) 16.sp else 14.sp, fontWeight = FontWeight.Bold)
++            AnimatedVisibility(visible = true, enter = TurtleMotion.dialogEnter) {
++                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
++                    CircularProgressIndicator(
++                        color = FlamePrimary,
++                        strokeWidth = 2.5.dp,
++                        modifier = Modifier.size(20.dp).then(TurtleMotion.pulse()),
++                    )
++                    Text(context.getString(R.string.game_running), color = TextPrimary, fontSize = if (tablet) 16.sp else 14.sp, fontWeight = FontWeight.Bold)
++                }
+             }
+         },
+         text = {
+-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+-                Text(
+-                    meta.name,
+-                    color = TextPrimary,
+-                    fontSize = if (tablet) 14.sp else 12.sp,
+-                    fontWeight = FontWeight.Bold,
+-                    maxLines = 2,
+-                    overflow = TextOverflow.Ellipsis,
+-                )
+-                Text(
+-                    context.getString(R.string.mc_preparing_wait),
+-                    color = TextSecondary,
+-                    fontSize = if (tablet) 12.sp else 10.sp,
+-                )
++            AnimatedVisibility(visible = true, enter = TurtleMotion.sheetEnter) {
++                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
++                    Text(
++                        meta.name,
++                        color = TextPrimary,
++                        fontSize = if (tablet) 14.sp else 12.sp,
++                        fontWeight = FontWeight.Bold,
++                        maxLines = 2,
++                        overflow = TextOverflow.Ellipsis,
++                    )
++                    Text(
++                        context.getString(R.string.mc_preparing_wait),
++                        color = TextSecondary,
++                        fontSize = if (tablet) 12.sp else 10.sp,
++                    )
++                }
+             }
+         },
+         confirmButton = {},
+@@ -1077,6 +1144,22 @@ fun VersionItem(version: VersionEntry, isSelected: Boolean, onClick: () -> Unit)
+         else -> "Alpha"
+     }
+     val isSupported = remember(version.id) { isVersionSupported(version.id) }
++    val versionSurface by animateColorAsState(
++        targetValue = if (isSelected) Color(0xFF2D0A20)
++        else BgSurface.copy(alpha = if (isSupported) 1f else 0.6f),
++        animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++        label = "turtle-version-surface",
++    )
++    val versionOutline by animateColorAsState(
++        targetValue = if (isSelected) FlamePrimary else BgBorder,
++        animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++        label = "turtle-version-outline",
++    )
++    val versionOutlineWidth by animateDpAsState(
++        targetValue = if (isSelected) 1.5.dp else 1.dp,
++        animationSpec = androidx.compose.animation.core.tween(TurtleMotion.dialogDurationMillis),
++        label = "turtle-version-outline-width",
++    )
+ 
+     // ── 폰/태블릿 별 디멘션 ─────────────────────────────────
+     val idSize       = if (tablet) 14.sp else 10.sp
+@@ -1093,16 +1176,13 @@ fun VersionItem(version: VersionEntry, isSelected: Boolean, onClick: () -> Unit)
+         modifier = Modifier
+             .fillMaxWidth()
+             .clip(RoundedCornerShape(8.dp))
+-            .background(
+-                if (isSelected) Color(0xFF2D0A20)
+-                else BgSurface.copy(alpha = if (isSupported) 1f else 0.6f)
+-            )
++            .background(versionSurface)
+             .border(
+-                width = if (isSelected) 1.5.dp else 1.dp,
+-                color = if (isSelected) FlamePrimary else BgBorder,
++                width = versionOutlineWidth,
++                color = versionOutline,
+                 shape = RoundedCornerShape(8.dp)
+             )
+-            .clickable(onClick = onClick)
++            .then(TurtleMotion.pressClickable(onClick))
+             .padding(horizontal = padH, vertical = padV),
+         verticalAlignment = Alignment.CenterVertically,
+         horizontalArrangement = Arrangement.SpaceBetween
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/TerracottaScreen.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/TerracottaScreen.kt
+index a3c1c09..9d6b631 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/TerracottaScreen.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/TerracottaScreen.kt
+@@ -17,6 +17,7 @@ import android.content.ClipData
+ import android.content.ClipboardManager
+ import android.content.Context
+ import android.widget.Toast
++import androidx.compose.animation.AnimatedVisibility
+ import androidx.compose.foundation.background
+ import androidx.compose.foundation.border
+ import androidx.compose.foundation.clickable
+@@ -47,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
+ import kr.co.donghyun.flamelauncher.presentation.util.terracota.TerracottaController
+ import kr.co.donghyun.flamelauncher.presentation.util.terracota.TerracottaState
+ import androidx.compose.ui.res.stringResource
++import kr.co.donghyun.flamelauncher.presentation.ui.motion.TurtleMotion
+ import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgBorder
+ import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgItem
+ import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgSurface
+@@ -78,9 +80,14 @@ fun TerracottaDialog(
+         onDismissRequest = onClose,
+         properties = DialogProperties(usePlatformDefaultWidth = false),
+     ) {
+-        Column(
+-            modifier = Modifier
+-                .fillMaxWidth(if (compact) 0.96f else 0.92f)
++        AnimatedVisibility(
++            visible = true,
++            enter = TurtleMotion.dialogEnter,
++            exit = TurtleMotion.dialogExit,
++        ) {
++            Column(
++                modifier = Modifier
++                    .fillMaxWidth(if (compact) 0.96f else 0.92f)
+                 // 세로가 짧은 휴대폰(가로 모드)에서 내용이 많아지면(룸 코드 입력 등)
+                 // 화면 높이를 넘겨 하단 버튼이 잘리므로 최대 높이를 제한하고 스크롤을 허용한다.
+                 .heightIn(max = maxDialogHeight)
+@@ -121,6 +128,8 @@ fun TerracottaDialog(
+             ) { Text(context.getString(R.string.close_button), color = Color.White) }
+ 
+         }
++        }
++    }
+     }
+ }
+ 
