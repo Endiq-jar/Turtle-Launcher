@@ -72,7 +72,6 @@ jobs:
           else
             echo '::error title=Gradle failure::Gradle produced no diagnostic log.'
           fi
-          fi
 
       - name: Upload patched Flame APK
         if: success()
