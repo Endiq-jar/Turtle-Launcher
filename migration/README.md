@@ -106,3 +106,23 @@ git -C /tmp/turtle-flame-baseline apply \
 cd /tmp/turtle-flame-baseline
 ./gradlew :app:testDebugUnitTest
 ```
+
+## Step 5: port Turtle design tokens
+
+`patches/0004-port-turtle-design-tokens.patch` ports Turtle's visual foundation
+without overwriting Flame's resource IDs:
+
+- copies all Turtle color values into `turtle_colors.xml` with collision-safe
+  `turtle_` names;
+- copies all Turtle strings and plurals into `turtle_strings.xml` with the same
+  collision-safe namespace;
+- changes Flame's existing Compose theme tokens to Turtle's dark palette,
+  including the green accent, dark surfaces, text colors, borders, and semantic
+  states;
+- keeps Flame's existing resource files and screen wiring intact so this stage
+  cannot remove a working screen.
+
+The patch contains 124 Turtle color resources and 1,306 string/plural resources.
+The XML files were parsed and validated after applying the patch to a clean Flame
+checkout. Feature slices will consume the namespaced strings as their screens
+are ported; no existing Flame string IDs are replaced in this stage.
