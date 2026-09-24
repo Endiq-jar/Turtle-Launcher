@@ -52,6 +52,14 @@ jobs:
           cd "$FLAME_WORKTREE"
           ./gradlew :app:assembleDebug --no-daemon 2>&1 | tee /tmp/flame-gradle-build.log
 
+      - name: Print Gradle diagnostics
+        if: always()
+        run: |
+          if [ -f /tmp/flame-gradle-build.log ]; then
+            echo '--- last 300 Gradle log lines ---'
+            tail -300 /tmp/flame-gradle-build.log
+          fi
+
       - name: Upload patched Flame APK
         if: success()
         uses: actions/upload-artifact@v6
