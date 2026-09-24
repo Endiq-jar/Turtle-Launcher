@@ -57,3 +57,24 @@ cd /tmp/turtle-flame-baseline
 This patch is intentionally not copied into Turtle's production launcher. Turtle
 already has its own tested classpath implementation and must remain unchanged
 until the isolated Flame runtime passes its baseline and test gates.
+
+## Step 3: provision the exact SDL callback artifact
+
+`patches/0002-provision-exact-sdl-glfw-callback-artifact.patch` adds the pinned
+coordinate `org.lwjgl:lwjgl-glfw:3.4.3+4` only for SDL versions. It downloads the
+upstream LWJGL 3.4.3 GLFW binding into the exact `3.4.3+4` library path, checks
+that the required `GLFWErrorCallback.class` is present, rejects an HTTP failure,
+and removes a corrupt cached copy before retrying.
+
+Apply it after patch 0001:
+
+```bash
+git -C /tmp/turtle-flame-baseline apply \
+  "$OLDPWD/migration/patches/0002-provision-exact-sdl-glfw-callback-artifact.patch"
+```
+
+The exact dependency is added for Minecraft 26.3/snapshot SDL versions only;
+pre-26.3 versions keep their original dependency and legacy GLFW path. The
+Flame ViewModel already converts download exceptions into an install/launch
+error state, so a missing callback artifact is reported instead of starting a
+known-invalid JVM.

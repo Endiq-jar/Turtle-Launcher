@@ -1,0 +1,155 @@
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/util/minecraft/LwjglSdlDependency.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/util/minecraft/LwjglSdlDependency.kt
+new file mode 100644
+index 0000000..cc6d29b
+--- /dev/null
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/util/minecraft/LwjglSdlDependency.kt
+@@ -0,0 +1,29 @@
++package kr.co.donghyun.flamelauncher.presentation.util.minecraft
++
++import kr.co.donghyun.flamelauncher.data.mojang.DownloadItem
++import kr.co.donghyun.flamelauncher.data.mojang.Library
++import kr.co.donghyun.flamelauncher.data.mojang.LibraryDownloads
++import kr.co.donghyun.flamelauncher.presentation.util.usesSdl
++
++/**
++ * Minecraft 26.3's metadata can omit the GLFW callback classes even though
++ * the game-side bootstrap still resolves them before switching to SDL3.
++ * Keep this exact artifact separate from the legacy Pojav GLFW payload.
++ */
++internal object LwjglSdlDependency {
++    const val COORDINATE = "org.lwjgl:lwjgl-glfw:3.4.3+4"
++    const val PATH = "org/lwjgl/lwjgl-glfw/3.4.3+4/lwjgl-glfw-3.4.3+4.jar"
++    const val URL =
++        "https://repo1.maven.org/maven2/org/lwjgl/lwjgl-glfw/3.4.3/" +
++            "lwjgl-glfw-3.4.3.jar"
++
++    fun isRequired(versionId: String): Boolean = usesSdl(versionId)
++
++    fun asLibrary(): Library = Library(
++        name = COORDINATE,
++        downloads = LibraryDownloads(
++            artifact = DownloadItem(url = URL, size = 0L, sha1 = ""),
++            classifiers = null
++        )
++    )
++}
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/util/minecraft/MinecraftDownloader.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/util/minecraft/MinecraftDownloader.kt
+index 999bedb..985aad9 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/util/minecraft/MinecraftDownloader.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/util/minecraft/MinecraftDownloader.kt
+@@ -44,7 +44,17 @@ class MinecraftDownloader(
+ 
+         // 라이브러리
+         val librariesDir = File(instanceDir, "libraries")
+-        val artifacts = manifest.libraries.mapNotNull { lib ->
++        // Mojang's 26.3 metadata can omit the game-side GLFW callback jar.
++        // Add the exact pinned artifact before downloading so the launch
++        // classpath cannot silently fall back to a stale GLFW generation.
++        val libraries = if (LwjglSdlDependency.isRequired(manifest.id) &&
++            manifest.libraries.none { it.name == LwjglSdlDependency.COORDINATE }
++        ) {
++            manifest.libraries + LwjglSdlDependency.asLibrary()
++        } else {
++            manifest.libraries
++        }
++        val artifacts = libraries.mapNotNull { lib ->
+             lib.downloads.artifact?.let { lib to it }
+         }
+         artifacts.forEachIndexed { index, (lib, artifact) ->
+@@ -56,7 +66,12 @@ class MinecraftDownloader(
+                 total = artifacts.size,
+                 fileName = libFile.name
+             ))
+-            downloadFile(artifact.url, libFile, artifact.sha1)
++            downloadFile(
++                artifact.url,
++                libFile,
++                artifact.sha1,
++                required = lib.name == LwjglSdlDependency.COORDINATE
++            )
+         }
+ 
+         // 에셋 오브젝트
+@@ -78,19 +93,45 @@ class MinecraftDownloader(
+         }
+     }
+ 
+-    private fun downloadFile(url: String, destFile: File, expectedSha1: String?) {
+-        if (destFile.exists() && destFile.length() > 0) return
++    private fun downloadFile(
++        url: String,
++        destFile: File,
++        expectedSha1: String?,
++        required: Boolean = false
++    ) {
++        if (destFile.exists() && destFile.length() > 0) {
++            if (!required || containsGlfwCallbackClasses(destFile)) return
++            Log.w("FLAME_LAUNCHER", "필수 GLFW 콜백 jar 캐시가 불완전하여 다시 다운로드합니다: $destFile")
++            destFile.delete()
++        }
+         destFile.parentFile?.mkdirs()
+         val request = Request.Builder().url(url).build()
+         client.newCall(request).execute().use { response ->
+             if (!response.isSuccessful) {
+-                Log.w("FLAME_LAUNCHER", "다운로드 실패 (${response.code}): $url")
++                val message = "다운로드 실패 (${response.code}): $url"
++                if (required) throw IllegalStateException(message)
++                Log.w("FLAME_LAUNCHER", message)
+                 return
+             }
+             response.body?.byteStream()?.use { input ->
+                 FileOutputStream(destFile).use { input.copyTo(it) }
+             }
+         }
++        if (required && !containsGlfwCallbackClasses(destFile)) {
++            destFile.delete()
++            throw IllegalStateException("필수 GLFW 콜백 클래스가 없는 jar: $destFile")
++        }
++    }
++
++    private fun containsGlfwCallbackClasses(file: File): Boolean {
++        return try {
++            java.util.zip.ZipFile(file).use { zip ->
++                zip.getEntry("org/lwjgl/glfw/GLFWErrorCallback.class") != null
++            }
++        } catch (error: Exception) {
++            Log.w("FLAME_LAUNCHER", "필수 GLFW 콜백 jar 검증 실패: $file", error)
++            false
++        }
+     }
+ 
+     private fun downloadAssets(assetIndexFile: File, objectsDir: File) {
+diff --git a/app/src/test/java/kr/co/donghyun/flamelauncher/presentation/util/minecraft/LwjglSdlDependencyTest.kt b/app/src/test/java/kr/co/donghyun/flamelauncher/presentation/util/minecraft/LwjglSdlDependencyTest.kt
+new file mode 100644
+index 0000000..21e0e95
+--- /dev/null
++++ b/app/src/test/java/kr/co/donghyun/flamelauncher/presentation/util/minecraft/LwjglSdlDependencyTest.kt
+@@ -0,0 +1,28 @@
++package kr.co.donghyun.flamelauncher.presentation.util.minecraft
++
++import org.junit.Assert.assertEquals
++import org.junit.Assert.assertFalse
++import org.junit.Assert.assertTrue
++import org.junit.Test
++
++class LwjglSdlDependencyTest {
++    @Test
++    fun dependencyIsOnlyRequiredForSdlVersions() {
++        assertTrue(LwjglSdlDependency.isRequired("26.3"))
++        assertTrue(LwjglSdlDependency.isRequired("26.3-snapshot-4"))
++        assertFalse(LwjglSdlDependency.isRequired("26.2"))
++        assertFalse(LwjglSdlDependency.isRequired("1.21.11"))
++    }
++
++    @Test
++    fun dependencyKeepsExactCoordinateAndCallbackArtifact() {
++        val library = LwjglSdlDependency.asLibrary()
++        assertEquals(LwjglSdlDependency.COORDINATE, library.name)
++        assertEquals(LwjglSdlDependency.URL, library.downloads.artifact?.url)
++        assertEquals(
++            "3.4.3+4",
++            LwjglSdlDependency.PATH.substringAfterLast('/').removeSuffix(".jar")
++                .removePrefix("lwjgl-glfw-")
++        )
++    }
++}
