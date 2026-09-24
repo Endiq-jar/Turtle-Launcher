@@ -619,7 +619,7 @@ index 8aac222..d53f0dc 100644
          verticalAlignment = Alignment.CenterVertically,
          horizontalArrangement = Arrangement.SpaceBetween
 diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/TerracottaScreen.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/TerracottaScreen.kt
-index a3c1c09..3f185cf 100644
+index a3c1c09..7b17345 100644
 --- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/TerracottaScreen.kt
 +++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/TerracottaScreen.kt
 @@ -17,6 +17,7 @@ import android.content.ClipData
@@ -656,3 +656,11 @@ index a3c1c09..3f185cf 100644
                  // 세로가 짧은 휴대폰(가로 모드)에서 내용이 많아지면(룸 코드 입력 등)
                  // 화면 높이를 넘겨 하단 버튼이 잘리므로 최대 높이를 제한하고 스크롤을 허용한다.
                  .heightIn(max = maxDialogHeight)
+@@ -123,6 +130,7 @@ fun TerracottaDialog(
+         }
+     }
+ }
++}
+ 
+ @Composable
+ private fun WaitingContent(
