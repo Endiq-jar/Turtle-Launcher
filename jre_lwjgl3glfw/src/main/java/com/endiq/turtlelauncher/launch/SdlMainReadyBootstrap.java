@@ -79,13 +79,19 @@ public class SdlMainReadyBootstrap {
         }
 
         // SDL 3.2 moved Minecraft's window creation from GLFW into SDL. The
-        // bridge must not initialize its Android GLFW shim, but the exact
-        // game-side LWJGL GLFW artifact must still own and resolve the callback
-        // class before the native hook is installed. Resolve without running
-        // GLFW's static initializer, then load libpojavexec directly.
+        // Android bridge must not initialize its GLFW shim. Prefer resolving
+        // the exact game-side GLFWErrorCallback so callback ownership remains
+        // correct, but do not block SDL-only 26.3 launches if an older local
+        // library cache is missing that optional class. The native hook itself
+        // is installed independently by libpojavexec.
         try {
-            Class.forName("org.lwjgl.glfw.GLFWErrorCallback", false,
-                SdlMainReadyBootstrap.class.getClassLoader());
+            try {
+                Class.forName("org.lwjgl.glfw.GLFWErrorCallback", false,
+                    SdlMainReadyBootstrap.class.getClassLoader());
+                System.out.println("TurtleSDL3: game-side GLFWErrorCallback resolved");
+            } catch (Throwable callbackFailure) {
+                System.out.println("TurtleSDL3: GLFWErrorCallback unavailable; continuing with SDL-only bootstrap (" + callbackFailure + ")");
+            }
             System.loadLibrary("pojavexec");
             System.out.println("TurtleSDL3: guest libpojavexec loaded, LWJGL dlopen hook installed");
         } catch (Throwable t) {
