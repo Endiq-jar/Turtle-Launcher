@@ -78,3 +78,31 @@ pre-26.3 versions keep their original dependency and legacy GLFW path. The
 Flame ViewModel already converts download exceptions into an install/launch
 error state, so a missing callback artifact is reported instead of starting a
 known-invalid JVM.
+
+## Step 4: preserve LTW and MobileGlues
+
+`patches/0003-preserve-ltw-renderer.patch` keeps Turtle's LTW renderer in the
+Flame target instead of silently reducing the renderer set to GL4ES, Zink,
+Krypton, and MobileGlues. It:
+
+- adds LTW to Flame's renderer model and renderer-selection UI;
+- uses `POJAV_RENDERER=opengles3_ltw`;
+- keeps `libltw.so` as both the LWJGL GL library and the EGL entry point;
+- sets `POJAVEXEC_EGL=libltw.so` and the safe LTW environment flags;
+- loads `libltw.so` before the game JVM and fails through Flame's existing error
+  path if the required native library is unavailable;
+- adds pure unit coverage for LTW and MobileGlues EGL/provider ordering.
+
+MobileGlues remains Flame's existing SDL fallback and keeps its
+`libmobileglues_info_getter.so,libmobileglues.so` load order. The patch does not
+replace MobileGlues with LTW for SDL launches; that decision requires device
+validation because SDL's GL backend must use the same EGL provider as LWJGL.
+
+Apply it after patches 0001 and 0002, then run:
+
+```bash
+git -C /tmp/turtle-flame-baseline apply \
+  "$OLDPWD/migration/patches/0003-preserve-ltw-renderer.patch"
+cd /tmp/turtle-flame-baseline
+./gradlew :app:testDebugUnitTest
+```

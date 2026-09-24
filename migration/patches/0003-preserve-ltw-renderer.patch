@@ -1,0 +1,108 @@
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MinecraftActivity.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MinecraftActivity.kt
+@@ -1059,6 +1059,13 @@
+                     Log.d("FLAME_LAUNCHER", "✅ 렌더러: Zink")
+                 }
+             }
++            "ltw" -> {
++                // LTW is a bundled renderer. Load it before the game JVM so
++                // its EGL entry points are available to the native bridge.
++                if (loadSoSafely(File(nativesDir, "libltw.so"), required = true)) {
++                    Log.d("FLAME_LAUNCHER", "✅ 렌더러: LTW (libltw.so)")
++                }
++            }
+             "krypton" -> {
+                 // Krypton(NG-GL4ES) 은 내부 번들 렌더러 — 런처 자신의 nativeLibraryDir 에서 로드.
+                 // (GL4ES 와 동일 방식. 외부 플러그인 아님. libng_gl4es.so 를 jniLibs 에 번들해 둔다.)
+@@ -2521,6 +2528,7 @@
+             //    glGetError 주소를 비교하므로 그 순간 "glGetError mismatch" 로 거절한다.
+             "mobileglues" -> File(applicationInfo.nativeLibraryDir, "libmobileglues.so").absolutePath
+             "krypton"     -> "libng_gl4es.so"   // 내부 번들 (jniLibs)
++            "ltw"          -> File(applicationInfo.nativeLibraryDir, "libltw.so").absolutePath
+             "gl4es", "gl4es_desktop" -> "libgl4es_114.so"
+             "zink" -> "libOSMesa.so"
+             else   -> "libgl4es_114.so"
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/data/renderer/RendererManager.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/data/renderer/RendererManager.kt
+index 3fa2dae..b55f8d1 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/data/renderer/RendererManager.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/data/renderer/RendererManager.kt
+@@ -97,6 +97,32 @@ enum class Renderer(
+         )
+     ),
+ 
++    /**
++     * LTW — the GLES/EGL translation layer used by Turtle Launcher for the
++     * fast all-version path. It must remain a selectable renderer instead of
++     * being silently replaced by GL4ES during the migration.
++     */
++    LTW(
++        id = "ltw",
++        displayName = "LTW (All Version Fast)",
++        description = "Fast GLES/EGL translation layer for supported Minecraft versions.",
++        pojavRenderer = "opengles3_ltw",
++        libglName = "libltw.so",
++        libglString = "LTW",
++        libglEs = "3",
++        emoji = "⚡",
++        extraEnv = mapOf(
++            // LTW owns the EGL entry point; using libEGL.so here only selects
++            // Android's GLES provider behind LTW.
++            "LIBGL_EGL" to "libEGL.so",
++            "POJAVEXEC_EGL" to "libltw.so",
++            "force_glsl_extensions_warn" to "true",
++            "allow_higher_compat_version" to "true",
++            "allow_glsl_extension_directive_midshader" to "true",
++            "LIBGL_NOERROR" to "1",
++        )
++    ),
++
+     /**
+      * Krypton Wrapper (aka NG-GL4ES) — gl4es / gl4es-114-extra 의 포크.
+      * GL4ES 계열이지만 더 고급 셰이더(Iris/Sodium)와 폭넓은 버전(1.16.5- 및 1.17+)을 지원한다.
+@@ -191,6 +217,7 @@ enum class Renderer(
+             add(ZINK)
+             add(GL4ES)
+             add(KRYPTON)      // 내부 번들(libng_gl4es.so)
++            add(LTW)          // 내부 번들(libltw.so)
+             add(MOBILEGLUES)  // 내부 번들(libmobileglues.so)
+         }
+     }
+diff --git a/app/src/test/java/kr/co/donghyun/flamelauncher/data/renderer/RendererCompatibilityTest.kt b/app/src/test/java/kr/co/donghyun/flamelauncher/data/renderer/RendererCompatibilityTest.kt
+new file mode 100644
+index 0000000..26fd51f
+--- /dev/null
++++ b/app/src/test/java/kr/co/donghyun/flamelauncher/data/renderer/RendererCompatibilityTest.kt
+@@ -0,0 +1,33 @@
++package kr.co.donghyun.flamelauncher.data.renderer
++
++import org.junit.Assert.assertEquals
++import org.junit.Assert.assertTrue
++import org.junit.Test
++
++class RendererCompatibilityTest {
++    @Test
++    fun ltwUsesItsEglEntryPointAndNativeRendererId() {
++        val env = Renderer.LTW.buildEnv("/tmp/cache", "/tmp/native")
++        assertEquals("opengles3_ltw", env["POJAV_RENDERER"])
++        assertEquals("libltw.so", env["LIBGL_NAME"])
++        assertEquals("libltw.so", env["DLOPEN"])
++        assertEquals("libltw.so", env["POJAVEXEC_EGL"])
++        assertEquals("libEGL.so", env["LIBGL_EGL"])
++    }
++
++    @Test
++    fun ltwIsAvailableInGlobalRendererChoices() {
++        assertTrue(Renderer.selectableRenderers().contains(Renderer.LTW))
++    }
++
++    @Test
++    fun mobileGluesKeepsItsEglProviderAndDependencyOrder() {
++        val env = Renderer.MOBILEGLUES.buildEnv("/tmp/cache", "/tmp/native")
++        assertEquals("opengles3", env["POJAV_RENDERER"])
++        assertEquals("libmobileglues.so", env["POJAVEXEC_EGL"])
++        assertEquals(
++            "libmobileglues_info_getter.so,libmobileglues.so",
++            env["DLOPEN"]
++        )
++    }
++}
