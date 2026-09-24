@@ -30,3 +30,30 @@ application tasks and make it too easy to ship a partially migrated build.
 After this gate, migration work is applied as small, reviewable patches under
 `migration/patches/` and validated against both targets. Large generated binaries
 remain outside this repository unless they are required by the final Turtle build.
+
+## Step 2: protect the Flame SDL classpath
+
+`patches/0001-reject-stale-glfw-from-sdl-classpath.patch` is the first runtime
+patch. It adds a pure, unit-testable `LwjglClasspathPolicy` and removes stale
+`lwjgl-glfw-classes*.jar` files from the SDL/26.3 classpath while retaining them
+for the legacy GLFW path. This prevents an old Pojav GLFW fat jar from shadowing
+Minecraft's LWJGL 3.4.3 SDL classes after an upgrade or when an instance carries
+extra jars.
+
+Apply it only to the pinned Flame checkout:
+
+```bash
+git -C /tmp/turtle-flame-baseline apply \
+  "$OLDPWD/migration/patches/0001-reject-stale-glfw-from-sdl-classpath.patch"
+```
+
+Then run Flame's unit test task before integrating any UI:
+
+```bash
+cd /tmp/turtle-flame-baseline
+./gradlew :app:testDebugUnitTest
+```
+
+This patch is intentionally not copied into Turtle's production launcher. Turtle
+already has its own tested classpath implementation and must remain unchanged
+until the isolated Flame runtime passes its baseline and test gates.
