@@ -37,16 +37,33 @@ jobs:
             "ndk;27.0.12077973" \
             "cmake;3.22.1"
 
-      - name: Apply patches and build patched Flame debug APK
+      - name: Apply complete pinned patch chain
         env:
           FLAME_WORKTREE: /tmp/turtle-flame-v220
         run: |
           chmod +x migration/build-flame.sh
-          migration/build-flame.sh --build
+          migration/build-flame.sh
+
+      - name: Build patched Flame debug APK
+        env:
+          FLAME_WORKTREE: /tmp/turtle-flame-v220
+        run: |
+          set -o pipefail
+          cd "$FLAME_WORKTREE"
+          ./gradlew :app:assembleDebug --no-daemon 2>&1 | tee /tmp/flame-gradle-build.log
 
       - name: Upload patched Flame APK
+        if: success()
         uses: actions/upload-artifact@v6
         with:
           name: TurtleLauncher-flame-v220-debug-${{ github.sha }}
           path: /tmp/turtle-flame-v220/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+
+      - name: Upload build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: TurtleLauncher-flame-v220-diagnostics-${{ github.sha }}
+          path: /tmp/flame-gradle-build.log
+          if-no-files-found: ignore
