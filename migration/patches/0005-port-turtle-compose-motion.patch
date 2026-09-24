@@ -46,10 +46,10 @@ index 846578b..ebcb0d8 100644
  @Composable
 diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/motion/TurtleMotion.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/motion/TurtleMotion.kt
 new file mode 100644
-index 0000000..9e475d8
+index 0000000..e3dd0c2
 --- /dev/null
 +++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/motion/TurtleMotion.kt
-@@ -0,0 +1,167 @@
+@@ -0,0 +1,201 @@
 +package kr.co.donghyun.flamelauncher.presentation.ui.motion
 +
 +import androidx.compose.animation.ContentTransform
@@ -57,6 +57,7 @@ index 0000000..9e475d8
 +import androidx.compose.animation.core.animateFloatAsState
 +import androidx.compose.animation.core.infiniteRepeatable
 +import androidx.compose.animation.core.RepeatMode
++import androidx.compose.animation.core.spring
 +import androidx.compose.foundation.LocalIndication
 +import androidx.compose.foundation.clickable
 +import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -106,6 +107,39 @@ index 0000000..9e475d8
 +                targetOffsetY = { -it / 12 },
 +                animationSpec = tween(240, easing = LinearOutSlowInEasing),
 +            )
++
++    /** Resolves Turtle's persisted transition keys without coupling Compose to settings storage. */
++    fun enter(key: String?): EnterTransition = when (key) {
++        "slide_down" -> fadeIn(tween(screenDurationMillis)) +
++            slideInVertically(initialOffsetY = { -it / 8 }, animationSpec = tween(screenDurationMillis))
++        "slide_left" -> fadeIn(tween(screenDurationMillis)) +
++            slideInHorizontally(initialOffsetX = { -it / 8 }, animationSpec = tween(screenDurationMillis))
++        "slide_right" -> fadeIn(tween(screenDurationMillis)) +
++            slideInHorizontally(initialOffsetX = { it / 8 }, animationSpec = tween(screenDurationMillis))
++        "bounce" -> fadeIn(tween(screenDurationMillis)) +
++            scaleIn(initialScale = 0.82f, animationSpec = spring(dampingRatio = 0.58f))
++        "fade_in" -> fadeIn(tween(screenDurationMillis))
++        "zoom_in", "zoom" -> fadeIn(tween(screenDurationMillis)) +
++            scaleIn(initialScale = if (key == "zoom") 0.84f else 0.72f, animationSpec = tween(screenDurationMillis))
++        "sheet" -> sheetEnter
++        else -> screenEnter
++    }
++
++    fun exit(key: String?): ExitTransition = when (key) {
++        "slide_down" -> fadeOut(tween(240)) +
++            slideOutVertically(targetOffsetY = { it / 12 }, animationSpec = tween(240))
++        "slide_left" -> fadeOut(tween(240)) +
++            slideOutHorizontally(targetOffsetX = { it / 12 }, animationSpec = tween(240))
++        "slide_right" -> fadeOut(tween(240)) +
++            slideOutHorizontally(targetOffsetX = { -it / 12 }, animationSpec = tween(240))
++        "bounce" -> fadeOut(tween(220)) +
++            scaleOut(targetScale = 0.82f, animationSpec = spring(dampingRatio = 0.7f))
++        "fade_out", "fade_in" -> fadeOut(tween(220))
++        "zoom_out", "zoom" -> fadeOut(tween(220)) +
++            scaleOut(targetScale = if (key == "zoom") 0.84f else 0.72f, animationSpec = tween(220))
++        "sheet" -> sheetExit
++        else -> screenExit
++    }
 +
 +    val sheetEnter: EnterTransition
 +        get() = fadeIn(tween(dialogDurationMillis)) +
