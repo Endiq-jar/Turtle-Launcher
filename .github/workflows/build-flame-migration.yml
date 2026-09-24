@@ -58,6 +58,12 @@ jobs:
           if [ -f /tmp/flame-gradle-build.log ]; then
             echo '--- last 300 Gradle log lines ---'
             tail -300 /tmp/flame-gradle-build.log
+            {
+              echo '## Flame Gradle diagnostics'
+              echo '```text'
+              tail -300 /tmp/flame-gradle-build.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Upload patched Flame APK
