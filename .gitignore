@@ -1,0 +1,66 @@
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log/OS Files
+*.log
+
+# Android Studio generated files and folders
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+output.json
+
+# IntelliJ
+*.iml
+.idea/
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# Keystore files
+*.jks
+*.keystore
+# ⚠️ 예외를 없앴다. 예전에는 고정 release keystore 를 **의도적으로 커밋**했는데
+#    (빌드마다 서명이 달라지면 업데이트 설치가 거부되므로), 저장소가 공개로
+#    바뀐 지금은 그게 곧 서명 키 유출이다. build.gradle.kts 에 비밀번호까지
+#    평문으로 들어 있어서, 키가 같이 올라가면 누구나 이 앱의 '업데이트'로
+#    설치되는 APK 에 서명할 수 있다.
+#    → 키는 CI 시크릿(base64)으로 주입하고 저장소에는 두지 않는다.
+
+# Google Services (e.g. APIs or Firebase)
+google-services.json
+
+# Android Profiling
+*.hprof
+
+# macOS
+**/.DS_Store
+.DS_Store
+
+# 릴리스 빌드 산출물 (output-metadata.json / baselineProfiles) — 빌드마다 바뀌므로 추적 안 함
+app/release/
+
+# ── 비밀 ────────────────────────────────────────────────────────────────────
+# CurseForge API 키 등. local.properties 에 두고 BuildConfig 로 넘긴다.
+# (local.properties 는 위에서 이미 무시하지만, 별도 파일을 쓰는 경우를 대비해 남긴다)
+secrets.properties
+keystore.properties
+
+# ── 네이티브 산출물 ─────────────────────────────────────────────────────────
+# jniLibs 의 .so 는 **커밋한다** — 빌드 스크립트가 없어서 저장소가 유일한 출처다.
+# 그 외 네이티브 빌드 부산물만 무시한다.
+.cxx/
+obj/
+
+# ── 도구 부산물 ─────────────────────────────────────────────────────────────
+*.swp
+local.gradle
+.kotlin/
+
+# 서명 재료 — 환경변수(CI) 또는 이 파일(로컬)로 주입한다. 절대 커밋하지 않는다.
+keystore.properties

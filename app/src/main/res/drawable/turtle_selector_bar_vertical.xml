@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="start" android:top="@dimen/turtle_sdp_8" android:bottom="@dimen/turtle_sdp_8" android:width="@dimen/turtle_sdp_3">
+        <shape>
+            <corners android:radius="@dimen/turtle_sdp_4" />
+            <solid android:color="@color/turtle_accent_primary" />
+        </shape>
+    </item>
+</layer-list>

@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string-array name="turtle_all_font_family">
+        <item>@string/turtle_setting_font_family_default</item>
+        <item>@string/turtle_setting_font_family_sans</item>
+        <item>@string/turtle_setting_font_family_condensed</item>
+        <item>@string/turtle_setting_font_family_serif</item>
+        <item>@string/turtle_setting_font_family_monospace</item>
+    </string-array>
+    <string-array name="turtle_all_font_family_value">
+        <item>default</item>
+        <item>sans-serif</item>
+        <item>sans-serif-condensed</item>
+        <item>serif</item>
+        <item>monospace</item>
+    </string-array>
+</resources>

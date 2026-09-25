@@ -1,0 +1,65 @@
+FlameLauncher for Android
+Copyright (C) 2026 Donghyun Yang
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version. See LICENSE for the full text.
+
+
+WHY AGPL-3.0
+============
+
+This project is not AGPL by preference; it is AGPL by obligation. The licence
+of a combined work is decided by the strongest copyleft it links against, and
+here that is Terracotta's AGPL-3.0.
+
+    Component                     Licence        How it is used
+    ----------------------------  -------------  -----------------------------
+    Terracotta                    AGPL-3.0       bundled native library
+                                                 (jniLibs/arm64-v8a/
+                                                  libterracotta.so) + JNI
+                                                 binding
+    PojavLauncher core            GPL-3.0        JNI / EGL / OSMesa context
+                                                 bridges, LWJGL and exec hooks,
+                                                 Caciocavallo AWT stubs
+    ZalithLauncher 2              GPL-3.0        launch-flow handling
+                                                 (NeoForge classpath, Forge
+                                                  processors, GLFW 3.4 stubs)
+    EasyTier                      LGPL-3.0       inside Terracotta
+    LWJGL (Pojav-patched)         BSD-3-Clause   lwjgl3/
+    LWJGL 3.4.3 (self-built)      BSD-3-Clause   assets/lwjgl341/ (26.3)
+    MobileGlues                   LGPL-2.1       libmobileglues.so,
+                                                 libmobileglues_info_getter.so
+                                                 (unmodified, dynamically loaded;
+                                                  source: github.com/MobileGL-Dev)
+    SDL3 (patched)                Zlib           libSDL3.so (26.3)
+    shaderc / glslang / SPIRV     Apache-2.0     assets/lwjgl341/libshaderc.so
+    OpenJDK (Temurin)             GPL-2.0 + CE   bundled JRE
+    authlib-injector 1.2.8        AGPL-3.0       assets/authlib-injector.jar
+                                                 (runtime Java agent; upstream
+                                                  license notices are embedded)
+
+GPL-3.0 code may be combined into an AGPL-3.0 work -- GPLv3 section 13 permits
+exactly this -- and the result must be distributed under AGPL-3.0. That is what
+this repository does.
+
+
+CORRECTION TO EARLIER RELEASES
+==============================
+
+Earlier builds shipped an LGPL-3.0 LICENSE file, and the README described this
+project's own code as "licence not declared". Both were wrong: the tree already
+contained PojavLauncher core (GPL-3.0) and shipped libterracotta.so
+(AGPL-3.0), so LGPL-3.0 was weaker than the combination allowed and leaving the
+project's own code undeclared left the whole work ambiguous. The licence is now
+AGPL-3.0, which is what the combination has required all along.
+
+
+TRADEMARKS
+==========
+
+Minecraft is a trademark of Mojang AB. This project is not affiliated with,
+endorsed by, or connected to Mojang AB or Microsoft. It ships no Minecraft
+game assets; the game is downloaded from Mojang's own servers by the user,
+using the user's own account.
