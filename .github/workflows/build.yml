@@ -1,4 +1,4 @@
-name: Build FlameLauncher
+name: Build TurtleLauncher
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
             ndk;27.0.12077973
             cmake;3.22.1
 
-      - name: Build default Flame target
+      - name: Build default Turtle target
         run: |
           chmod +x ./gradlew
           set +e
@@ -51,8 +51,8 @@ jobs:
             exit "$build_status"
           fi
 
-      - name: Upload Flame debug APK
+      - name: Upload Turtle debug APK
         uses: actions/upload-artifact@v6
         with:
-          name: FlameLauncher-debug-apk
+          name: TurtleLauncher-debug-apk
           path: app/build/outputs/apk/debug/*.apk

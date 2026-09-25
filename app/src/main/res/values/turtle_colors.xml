@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Turtle Launcher design tokens ported for the Flame Compose target.
-     Names are prefixed to avoid collisions with Flame resources. -->
+<!-- Turtle Launcher design tokens ported for the Turtle Compose target.
+     Names are prefixed to avoid collisions with Turtle resources. -->
 <resources>
 
     <!-- ── Core ─────────────────────────────────────────────────────── -->

@@ -311,10 +311,10 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
     }
 
     /** onCreate 에서 한 번 확정한다(중간에 바뀌면 상태가 꼬인다). */
-    private boolean mFlameSDLEnabled = true;
+    private boolean mTurtleSDLEnabled = true;
 
-    private boolean flameSkip() {
-        return !mFlameSDLEnabled;
+    private boolean turtleSkip() {
+        return !mTurtleSDLEnabled;
     }
 
     protected boolean startsSDLMainThread() {
@@ -380,8 +380,8 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
         super.onCreate(savedInstanceState);
 
         // TurtleLauncher: SDL 을 안 쓰는 버전이면 여기서 끝낸다. 화면은 액티비티가 직접 만든다.
-        mFlameSDLEnabled = usesSDL();
-        if (!mFlameSDLEnabled) {
+        mTurtleSDLEnabled = usesSDL();
+        if (!mTurtleSDLEnabled) {
             Log.v(TAG, "TurtleLauncher: SDL 비활성 — 업스트림 onCreate 를 건너뛴다");
             return;
         }
@@ -561,7 +561,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
     // Events
     @Override
     protected void onPause() {
-        if (flameSkip()) { super.onPause(); return; }
+        if (turtleSkip()) { super.onPause(); return; }
         Log.v(TAG, "onPause()");
         super.onPause();
 
@@ -576,7 +576,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
 
     @Override
     protected void onResume() {
-        if (flameSkip()) { super.onResume(); return; }
+        if (turtleSkip()) { super.onResume(); return; }
         Log.v(TAG, "onResume()");
         super.onResume();
 
@@ -591,7 +591,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
 
     @Override
     protected void onStop() {
-        if (flameSkip()) { super.onStop(); return; }
+        if (turtleSkip()) { super.onStop(); return; }
         Log.v(TAG, "onStop()");
         super.onStop();
         if (mHasMultiWindow) {
@@ -601,7 +601,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
 
     @Override
     protected void onStart() {
-        if (flameSkip()) { super.onStart(); return; }
+        if (turtleSkip()) { super.onStart(); return; }
         Log.v(TAG, "onStart()");
         super.onStart();
         if (mHasMultiWindow) {
@@ -655,7 +655,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-        if (flameSkip()) { super.onWindowFocusChanged(hasFocus); return; }
+        if (turtleSkip()) { super.onWindowFocusChanged(hasFocus); return; }
         super.onWindowFocusChanged(hasFocus);
         Log.v(TAG, "onWindowFocusChanged(): " + hasFocus);
 
@@ -690,7 +690,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
 
     @Override
     public void onTrimMemory(int level) {
-        if (flameSkip()) { super.onTrimMemory(level); return; }
+        if (turtleSkip()) { super.onTrimMemory(level); return; }
         Log.v(TAG, "onTrimMemory()");
         super.onTrimMemory(level);
 
@@ -703,7 +703,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        if (flameSkip()) { super.onConfigurationChanged(newConfig); return; }
+        if (turtleSkip()) { super.onConfigurationChanged(newConfig); return; }
         Log.v(TAG, "onConfigurationChanged()");
         super.onConfigurationChanged(newConfig);
 
@@ -728,7 +728,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
 
     @Override
     protected void onDestroy() {
-        if (flameSkip()) { super.onDestroy(); return; }
+        if (turtleSkip()) { super.onDestroy(); return; }
         Log.v(TAG, "onDestroy()");
 
         if (mHIDDeviceManager != null) {
@@ -767,7 +767,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
 
     @Override
     public void onBackPressed() {
-        if (flameSkip()) { super.onBackPressed(); return; }
+        if (turtleSkip()) { super.onBackPressed(); return; }
         // Check if we want to block the back button in case of mouse right click.
         //
         // If we do, the normal hardware back button will no longer work and people have to use home,
@@ -787,7 +787,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (flameSkip()) { super.onActivityResult(requestCode, resultCode, data); return; }
+        if (turtleSkip()) { super.onActivityResult(requestCode, resultCode, data); return; }
         super.onActivityResult(requestCode, resultCode, data);
 
         if (mFileDialogState != null && mFileDialogState.requestCode == requestCode) {
@@ -847,7 +847,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (flameSkip()) { return super.dispatchKeyEvent(event); }
+        if (turtleSkip()) { return super.dispatchKeyEvent(event); }
 
         if (SDLActivity.mBrokenLibraries) {
            return false;
@@ -1185,7 +1185,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
         // 그러면 UI 스레드가 화면을 다시 배치하면서 SDL 의 액티비티 락을 기다리고,
         // 창 생성 중인 게임 스레드는 그 배치를 기다리게 돼 둘 다 멈췄다(실측: 창 생성
         // 시점에 메인 스레드가 정지, 화면이 안 뜸). SDL 이 방향에 손대지 못하게 한다.
-        if (flameSkip() == false) {
+        if (turtleSkip() == false) {
             return;
         }
         int orientation_landscape = -1;
@@ -1838,7 +1838,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
     };
 
     public void onSystemUiVisibilityChange(int visibility) {
-        if (flameSkip()) { return; }
+        if (turtleSkip()) { return; }
         if (SDLActivity.mFullscreenModeActive && ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0 || (visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0)) {
 
             Handler handler = getWindow().getDecorView().getHandler();
@@ -2016,7 +2016,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (flameSkip()) { super.onRequestPermissionsResult(requestCode, permissions, grantResults); return; }
+        if (turtleSkip()) { super.onRequestPermissionsResult(requestCode, permissions, grantResults); return; }
         boolean result = (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
         nativePermissionResult(requestCode, result);
     }

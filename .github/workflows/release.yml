@@ -1,7 +1,7 @@
 name: 릴리스 APK
 
 # ⚠️ 서명 키는 **저장소에 없다.** 러너에서만 시크릿으로 복원해 쓴다:
-#      FLAME_KEYSTORE_BASE64 · FLAME_KEYSTORE_PASSWORD · FLAME_KEY_ALIAS · FLAME_KEY_PASSWORD
+#      TURTLE_KEYSTORE_BASE64 · TURTLE_KEYSTORE_PASSWORD · TURTLE_KEY_ALIAS · TURTLE_KEY_PASSWORD
 #    로컬에서 서명하려면 keystore 파일과 비밀번호를 손으로 두어야 하는데, 그러면
 #    비밀번호가 사람 손을 타고 셸 이력에 남는다. 여기서 하면 그럴 일이 없다.
 on:
@@ -35,15 +35,15 @@ jobs:
       # 시크릿을 파일로 되돌린다. 러너는 매번 새로 만들어지므로 남지 않는다.
       - name: 서명 키 복원
         run: |
-          echo "${{ secrets.FLAME_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.keystore"
+          echo "${{ secrets.TURTLE_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.keystore"
           test -s "$RUNNER_TEMP/release.keystore"
 
       - name: 릴리스 APK 빌드
         env:
-          FLAME_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
-          FLAME_KEYSTORE_PASSWORD: ${{ secrets.FLAME_KEYSTORE_PASSWORD }}
-          FLAME_KEY_PASSWORD: ${{ secrets.FLAME_KEY_PASSWORD }}
-          FLAME_KEY_ALIAS: ${{ secrets.FLAME_KEY_ALIAS }}
+          TURTLE_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
+          TURTLE_KEYSTORE_PASSWORD: ${{ secrets.TURTLE_KEYSTORE_PASSWORD }}
+          TURTLE_KEY_PASSWORD: ${{ secrets.TURTLE_KEY_PASSWORD }}
+          TURTLE_KEY_ALIAS: ${{ secrets.TURTLE_KEY_ALIAS }}
           # ⚠️ 로컬은 local.properties, CI 는 이 시크릿에서 읽는다.
           #    이 키는 APK 안에 평문으로 들어간다 — 받은 사람은 누구나 꺼낼 수 있다.
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
@@ -65,7 +65,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          cp "${{ steps.apk.outputs.path }}" FlameLauncher.apk
+          cp "${{ steps.apk.outputs.path }}" TurtleLauncher.apk
           gh release view "$TAG" >/dev/null 2>&1 \
-            && gh release upload "$TAG" FlameLauncher.apk --clobber \
-            || gh release create "$TAG" --title "$TAG" --generate-notes FlameLauncher.apk
+            && gh release upload "$TAG" TurtleLauncher.apk --clobber \
+            || gh release create "$TAG" --title "$TAG" --generate-notes TurtleLauncher.apk

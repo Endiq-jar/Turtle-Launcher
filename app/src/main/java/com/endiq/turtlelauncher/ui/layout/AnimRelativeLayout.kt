@@ -8,7 +8,7 @@ import android.graphics.drawable.RippleDrawable
 import android.util.AttributeSet
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
-import kr.co.donghyun.flamelauncher.R
+import kr.co.donghyun.turtlelauncher.R
 
 @SuppressLint("Recycle")
 class AnimRelativeLayout @JvmOverloads constructor(

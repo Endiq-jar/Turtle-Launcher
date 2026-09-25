@@ -12,7 +12,7 @@
  * libglfw.so/libpojavexec.so 안에서도) 호출 가능하다.
  *
  * 자바 쪽(게임 JVM 안에서 도는, 클래스패스에 추가되는 순수 자바 브릿지 jar)은
- * kr.co.donghyun.flamelauncher.audio.FlameMicNative 클래스의 native 메서드를
+ * kr.co.donghyun.turtlelauncher.audio.TurtleMicNative 클래스의 native 메서드를
  * 통해 이 함수들을 호출하고, javax.sound.sampled.TargetDataLine 구현체로
  * 감싸서 모드가 표준 자바 오디오 API 로 마이크를 쓸 수 있게 한다.
  */
@@ -38,7 +38,7 @@ static uint8_t *g_scratch_buffer = NULL;
 static size_t g_scratch_buffer_size = 0;
 
 JNIEXPORT jboolean JNICALL
-Java_kr_co_donghyun_flamelauncher_audio_FlameMicNative_nativeOpen(
+Java_kr_co_donghyun_turtlelauncher_audio_TurtleMicNative_nativeOpen(
         JNIEnv *env, jclass clazz, jint sampleRate, jint channelCount) {
     (void) env; (void) clazz;
     pthread_mutex_lock(&g_mic_lock);
@@ -107,7 +107,7 @@ Java_kr_co_donghyun_flamelauncher_audio_FlameMicNative_nativeOpen(
 // TargetDataLine.read(byte[] b, int off, int len) 에서 호출 — 캡처된 PCM(16bit) 을 채워서
 // 실제로 읽은 "바이트 수"를 돌려준다(실패/미오픈 시 -1).
 JNIEXPORT jint JNICALL
-Java_kr_co_donghyun_flamelauncher_audio_FlameMicNative_nativeRead(
+Java_kr_co_donghyun_turtlelauncher_audio_TurtleMicNative_nativeRead(
         JNIEnv *env, jclass clazz, jbyteArray buffer, jint offset, jint length) {
     (void) clazz;
     pthread_mutex_lock(&g_mic_lock);
@@ -153,7 +153,7 @@ Java_kr_co_donghyun_flamelauncher_audio_FlameMicNative_nativeRead(
 }
 
 JNIEXPORT void JNICALL
-Java_kr_co_donghyun_flamelauncher_audio_FlameMicNative_nativeClose(JNIEnv *env, jclass clazz) {
+Java_kr_co_donghyun_turtlelauncher_audio_TurtleMicNative_nativeClose(JNIEnv *env, jclass clazz) {
     (void) env; (void) clazz;
     pthread_mutex_lock(&g_mic_lock);
     if (g_mic_stream != NULL) {
@@ -171,7 +171,7 @@ Java_kr_co_donghyun_flamelauncher_audio_FlameMicNative_nativeClose(JNIEnv *env, 
 }
 
 JNIEXPORT jboolean JNICALL
-Java_kr_co_donghyun_flamelauncher_audio_FlameMicNative_nativeIsAvailable(JNIEnv *env, jclass clazz) {
+Java_kr_co_donghyun_turtlelauncher_audio_TurtleMicNative_nativeIsAvailable(JNIEnv *env, jclass clazz) {
     (void) env; (void) clazz;
     // AAudio 자체는 API 26+ 에서 항상 존재(이 프로젝트 minSdk=26) — 실제 사용 가능
     //   여부(권한 등)는 nativeOpen() 이 성공하는지로 판단한다. 이 함수는 단순히

@@ -150,7 +150,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <service
-            android:name="kr.co.donghyun.flamelauncher.presentation.util.terracota.TerracottaVPNService"
+            android:name="kr.co.donghyun.turtlelauncher.presentation.util.terracota.TerracottaVPNService"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:exported="false"
             android:foregroundServiceType="connectedDevice"

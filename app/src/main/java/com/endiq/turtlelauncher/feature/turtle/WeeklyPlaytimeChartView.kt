@@ -6,7 +6,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
-import kr.co.donghyun.flamelauncher.R
+import kr.co.donghyun.turtlelauncher.R
 import java.util.Locale
 
 class WeeklyPlaytimeChartView @JvmOverloads constructor(

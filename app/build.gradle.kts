@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "kr.co.donghyun.flamelauncher"
+    namespace = "kr.co.donghyun.turtlelauncher"
     compileSdk = 36
     ndkVersion = "27.0.12077973"   // NDK r27 LTS (CMake 3.22.1 호환)
 
@@ -19,7 +19,7 @@ android {
     //    (컴파일러도 "Variable 'localProperties' is never used" 로 경고하고 있었다)
 
     defaultConfig {
-        applicationId = "kr.co.donghyun.flamelauncher"
+        applicationId = "kr.co.donghyun.turtlelauncher"
         minSdk = 26
         targetSdk = 34
         // ⚠ GitHub 릴리스 태그를 새로 찍기 전에 반드시 이 두 값을 함께 올릴 것.
@@ -87,10 +87,10 @@ android {
     fun secret(env: String, prop: String): String? =
         System.getenv(env) ?: keystoreProps?.getProperty(prop)
 
-    val storePasswordValue = secret("FLAME_KEYSTORE_PASSWORD", "storePassword")
-    val keyPasswordValue   = secret("FLAME_KEY_PASSWORD", "keyPassword")
-    val keystorePath       = secret("FLAME_KEYSTORE_PATH", "storeFile")
-        ?: "keystore/flamelauncher-release.keystore"
+    val storePasswordValue = secret("TURTLE_KEYSTORE_PASSWORD", "storePassword")
+    val keyPasswordValue   = secret("TURTLE_KEY_PASSWORD", "keyPassword")
+    val keystorePath       = secret("TURTLE_KEYSTORE_PATH", "storeFile")
+        ?: "keystore/turtlelauncher-release.keystore"
     val keystoreFile       = file(keystorePath)
 
     val canSignRelease = storePasswordValue != null && keyPasswordValue != null && keystoreFile.exists()
@@ -100,7 +100,7 @@ android {
             create("release") {
                 storeFile = keystoreFile
                 storePassword = storePasswordValue
-                keyAlias = secret("FLAME_KEY_ALIAS", "keyAlias") ?: "flamelauncher"
+                keyAlias = secret("TURTLE_KEY_ALIAS", "keyAlias") ?: "turtlelauncher"
                 keyPassword = keyPasswordValue
             }
         }
@@ -190,7 +190,7 @@ android {
 // 위치: app/build.gradle.kts 의 android { ... } 블록 "바깥", 파일 하단에 추가.
 // ========================================================================
 
-val processorLauncherSrc = file("src/main/java/kr/co/donghyun/flamelauncher/forge/ProcessorLauncher.java")
+val processorLauncherSrc = file("src/main/java/kr/co/donghyun/turtlelauncher/forge/ProcessorLauncher.java")
 val processorLauncherJar = file("src/main/assets/forge-runtime/processor-launcher.jar")
 val processorLauncherClassesDir = layout.buildDirectory.dir("processor-launcher/classes")
 

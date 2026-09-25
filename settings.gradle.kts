@@ -20,5 +20,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FlameLauncher"
+rootProject.name = "TurtleLauncher"
 include(":app")

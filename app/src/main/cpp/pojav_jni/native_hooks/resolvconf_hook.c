@@ -97,7 +97,7 @@ static FILE* custom_fopen(const char* pathname, const char* mode) {
  * resolv.conf 리다이렉트 — KR 도메인 SRV 레코드 조회용
  */
 JNIEXPORT void JNICALL
-Java_kr_co_donghyun_flamelauncher_presentation_util_dns_DnsHookNative_installResolvConfRedirect(
+Java_kr_co_donghyun_turtlelauncher_presentation_util_dns_DnsHookNative_installResolvConfRedirect(
         JNIEnv* env, jclass clazz, jstring jpath) {
     const char* path = (*env)->GetStringUTFChars(env, jpath, NULL);
     strncpy(g_resolv_redirect, path, sizeof(g_resolv_redirect) - 1);
@@ -112,7 +112,7 @@ Java_kr_co_donghyun_flamelauncher_presentation_util_dns_DnsHookNative_installRes
  * hosts 리다이렉트 — Hamachi/LAN 등 수동 호스트 매핑용
  */
 JNIEXPORT void JNICALL
-Java_kr_co_donghyun_flamelauncher_presentation_util_dns_DnsHookNative_installHostsRedirect(
+Java_kr_co_donghyun_turtlelauncher_presentation_util_dns_DnsHookNative_installHostsRedirect(
         JNIEnv* env, jclass clazz, jstring jpath) {
     const char* path = (*env)->GetStringUTFChars(env, jpath, NULL);
     strncpy(g_hosts_redirect, path, sizeof(g_hosts_redirect) - 1);

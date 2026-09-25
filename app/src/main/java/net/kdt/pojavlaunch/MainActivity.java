@@ -10,7 +10,7 @@ import androidx.core.content.FileProvider;
 
 import java.io.File;
 
-import kr.co.donghyun.flamelauncher.presentation.MinecraftActivity;
+import kr.co.donghyun.turtlelauncher.presentation.MinecraftActivity;
 
 public class MainActivity {
     private static final String TAG = "PojavStubMainActivity";

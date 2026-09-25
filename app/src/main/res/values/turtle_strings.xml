@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Turtle Launcher string catalog ported for the Flame Compose target.
+<!-- Turtle Launcher string catalog ported for the Turtle Compose target.
      Names are prefixed to avoid collisions; feature slices will consume these
      IDs as their screens are migrated. -->
 <resources>
@@ -1380,7 +1380,7 @@
     <string name="turtle_skin_cape_open_site">Open skin website</string>
 
 
-<!-- Phase 4: animation settings consumed by the Flame settings screen. -->
+<!-- Phase 4: animation settings consumed by the Turtle settings screen. -->
 <string name="turtle_animation_settings_title">Launcher animations</string>
 <string name="turtle_animation_settings_desc">Use Turtle transitions, dialog motion, and press feedback</string>
 
