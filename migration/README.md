@@ -194,7 +194,17 @@ This slice is wired to Flame's existing repositories and lifecycle; it does not
 replace the Minecraft launch path or hide any renderer. The assistant is
 explicitly offline and therefore remains safe on devices without network access.
 
-The complete patch chain (0001 through 0007) applies cleanly to a fresh pinned
+## Step 8: port the launcher background flow
+
+`patches/0008-port-turtle-background-picker-and-persistence.patch` connects
+Turtle's custom background behavior to Flame's settings instead of merely
+shipping unused image resources. It uses Android's persistable `OpenDocument`
+contract, stores the selected URI in Flame's existing settings file, restores
+that permission when available, renders the image dimmed below the Turtle UI,
+and provides a clear action. A missing or revoked URI safely falls back to the
+normal low-end dark surface.
+
+The complete patch chain (0001 through 0008) applies cleanly to a fresh pinned
 Flame checkout. Resource XML was parsed again after the chain was applied, and
 `git diff --check` passed. The patched target has also assembled successfully in
 GitHub Actions. Gradle compilation is not available in this workspace because it

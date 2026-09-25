@@ -1,0 +1,174 @@
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MainActivity.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MainActivity.kt
+index cde498f..c317d5c 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MainActivity.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MainActivity.kt
+@@ -155,6 +155,7 @@ class MainActivity : BaseActivity() {
+                     onOpenSettings = { SettingsActivity.start(this@MainActivity) },
+                     onOpenRendererSettings = { SettingsActivity.start(this@MainActivity) },
+                     onOpenAssistant = { AssistantActivity.start(this@MainActivity) },
++                    backgroundUri = launcherSetting.backgroundUri,
+                     uuid = session?.uuid,
+                     isLoggedIn = session != null,
+                     username = session?.username,
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/SettingsActivity.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/SettingsActivity.kt
+index 17805aa..094c3d5 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/SettingsActivity.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/SettingsActivity.kt
+@@ -4,6 +4,7 @@ import android.app.ActivityManager
+ import android.content.Context
+ import android.content.Intent
+ import androidx.activity.SystemBarStyle
++import androidx.activity.result.contract.ActivityResultContracts
+ import androidx.activity.compose.setContent
+ import androidx.activity.enableEdgeToEdge
+ import androidx.activity.viewModels
+@@ -25,6 +26,20 @@ class SettingsActivity : BaseActivity() {
+ 
+     private val viewModel: SettingsViewModel by viewModels()
+ 
++    private val backgroundPicker = registerForActivityResult(
++        ActivityResultContracts.OpenDocument()
++    ) { uri ->
++        if (uri != null) {
++            runCatching {
++                contentResolver.takePersistableUriPermission(
++                    uri,
++                    android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION,
++                )
++            }
++            viewModel.setBackgroundUri(uri.toString())
++        }
++    }
++
+     override fun onCreated() {
+         enableEdgeToEdge(
+             statusBarStyle = SystemBarStyle.dark(scrim = android.graphics.Color.TRANSPARENT)
+@@ -56,6 +71,8 @@ class SettingsActivity : BaseActivity() {
+                     onGlobalRendererChange = { viewModel.setGlobalRenderer(it) },
+                     launcherSetting = launcherSetting,
+                     onAnimationsEnabledChange = { viewModel.setAnimationsEnabled(it) },
++                    onPickBackground = { backgroundPicker.launch(arrayOf("image/*")) },
++                    onClearBackground = { viewModel.setBackgroundUri(null) },
+                 )
+             }
+         }
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/settings/SettingsViewModel.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/settings/SettingsViewModel.kt
+index bb38cf1..04e5aa4 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/settings/SettingsViewModel.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/settings/SettingsViewModel.kt
+@@ -85,4 +85,10 @@ class SettingsViewModel @Inject constructor(
+         _launcherSetting.value = updated
+         viewModelScope.launch(Dispatchers.IO) { SettingManager.save(context, updated) }
+     }
++
++    fun setBackgroundUri(uri: String?) {
++        val updated = _launcherSetting.value.copy(backgroundUri = uri)
++        _launcherSetting.value = updated
++        viewModelScope.launch(Dispatchers.IO) { SettingManager.save(context, updated) }
++    }
+ }
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt
+index f418248..632e038 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt
+@@ -35,6 +35,7 @@ import androidx.compose.runtime.*
+ import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.draw.clip
++import androidx.compose.ui.draw.alpha
+ import androidx.compose.ui.graphics.Brush
+ import androidx.compose.ui.graphics.Color
+ import androidx.compose.ui.graphics.ImageBitmap
+@@ -137,6 +138,7 @@ fun MainScreen(
+     onOpenSettings: () -> Unit,
+     onOpenRendererSettings: () -> Unit,
+     onOpenAssistant: () -> Unit = {},
++    backgroundUri: String? = null,
+     uuid: String?,
+     isLoggedIn: Boolean,
+     username: String?,
+@@ -186,6 +188,15 @@ fun MainScreen(
+         selectedSection != MainSection.NOTES
+ 
+     Box(modifier = Modifier.fillMaxSize().background(BgDark)) {
++        if (!backgroundUri.isNullOrBlank()) {
++            AsyncImage(
++                model = backgroundUri,
++                contentDescription = null,
++                contentScale = ContentScale.Crop,
++                modifier = Modifier.fillMaxSize().alpha(0.28f),
++            )
++            Box(Modifier.fillMaxSize().background(BgDark.copy(alpha = 0.78f)))
++        }
+         Column(modifier = Modifier.fillMaxSize().padding(bottom = if (showBottomBar) 56.dp else 0.dp)) {
+             if (tablet) {
+                 ProfileHeader(
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/SettingsScreen.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/SettingsScreen.kt
+index 0f4bd87..717e225 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/SettingsScreen.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/SettingsScreen.kt
+@@ -72,6 +72,8 @@ fun SettingsScreen(
+     onGlobalRendererChange: (Renderer) -> Unit,
+     launcherSetting: Setting = Setting(),
+     onAnimationsEnabledChange: (Boolean) -> Unit = {},
++    onPickBackground: () -> Unit = {},
++    onClearBackground: () -> Unit = {},
+ ) {
+     val context = LocalContext.current
+     val tablet = isTablet()
+@@ -192,6 +194,39 @@ fun SettingsScreen(
+                 )
+             }
+ 
++            // 실제 SAF 이미지 선택을 통해 Turtle의 사용자 배경을 보존한다.
++            Column(
++                modifier = Modifier
++                    .fillMaxWidth()
++                    .background(BgSurface, RoundedCornerShape(12.dp))
++                    .border(1.dp, BgBorder, RoundedCornerShape(12.dp))
++                    .padding(if (tablet) 16.dp else if (compact) 9.dp else 12.dp),
++                verticalArrangement = Arrangement.spacedBy(8.dp)
++            ) {
++                Text(
++                    context.getString(R.string.turtle_background_settings_title),
++                    color = TextMain, fontSize = if (tablet) 15.sp else 12.sp, fontWeight = FontWeight.Bold
++                )
++                Text(
++                    if (launcherSetting.backgroundUri.isNullOrBlank())
++                        context.getString(R.string.turtle_background_settings_none)
++                    else context.getString(R.string.turtle_background_settings_selected),
++                    color = TextSub, fontSize = if (tablet) 12.sp else 10.sp
++                )
++                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
++                    Button(
++                        onClick = onPickBackground,
++                        colors = ButtonDefaults.buttonColors(containerColor = Flame),
++                        shape = RoundedCornerShape(8.dp),
++                    ) { Text(context.getString(R.string.turtle_background_choose), color = Color.White, fontSize = 11.sp) }
++                    if (!launcherSetting.backgroundUri.isNullOrBlank()) {
++                        TextButton(onClick = onClearBackground) {
++                            Text(context.getString(R.string.turtle_background_clear), color = Color(0xFFFF8A8A), fontSize = 11.sp)
++                        }
++                    }
++                }
++            }
++
+             // 화면 설정 섹션
+             Column(
+                 modifier = Modifier
+diff --git a/app/src/main/res/values/turtle_strings.xml b/app/src/main/res/values/turtle_strings.xml
+index 097ce80..dfb0f4a 100644
+--- a/app/src/main/res/values/turtle_strings.xml
++++ b/app/src/main/res/values/turtle_strings.xml
+@@ -1383,4 +1383,11 @@
+ <!-- Phase 4: animation settings consumed by the Flame settings screen. -->
+ <string name="turtle_animation_settings_title">Launcher animations</string>
+ <string name="turtle_animation_settings_desc">Use Turtle transitions, dialog motion, and press feedback</string>
++
++<!-- Phase 4: SAF-backed launcher background. -->
++<string name="turtle_background_settings_title">Launcher background</string>
++<string name="turtle_background_settings_none">No custom image selected</string>
++<string name="turtle_background_settings_selected">Custom image selected; it is kept locally</string>
++<string name="turtle_background_choose">Choose image</string>
++<string name="turtle_background_clear">Clear</string>
+ </resources>
