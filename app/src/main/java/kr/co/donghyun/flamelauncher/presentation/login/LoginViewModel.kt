@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kr.co.donghyun.flamelauncher.data.auth.ThirdPartyLoginRequest
 import kr.co.donghyun.flamelauncher.domain.repository.AuthRepository
 import javax.inject.Inject
 
@@ -51,6 +52,20 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 repository.login(code)
+                _events.send(LoginEvent.Success)
+            } catch (e: Exception) {
+                _isLoading.value = false
+                _events.send(LoginEvent.Failure(e.message))
+            }
+        }
+    }
+
+    fun loginThirdParty(request: ThirdPartyLoginRequest) {
+        _isLoading.value = true
+        _statusMessage.value = "Signing in to ${request.displayName}..."
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                repository.loginThirdParty(request)
                 _events.send(LoginEvent.Success)
             } catch (e: Exception) {
                 _isLoading.value = false

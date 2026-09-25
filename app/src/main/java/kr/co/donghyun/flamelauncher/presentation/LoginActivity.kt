@@ -2,6 +2,7 @@ package kr.co.donghyun.flamelauncher.presentation
 
 import kr.co.donghyun.flamelauncher.R
 import android.content.Intent
+import android.net.Uri
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -22,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import dagger.hilt.android.AndroidEntryPoint
+import kr.co.donghyun.flamelauncher.data.auth.ThirdPartyAuthManager
+import kr.co.donghyun.flamelauncher.data.auth.ThirdPartyLoginRequest
 import kr.co.donghyun.flamelauncher.presentation.base.BaseActivity
 import kr.co.donghyun.flamelauncher.presentation.login.LoginEvent
 import kr.co.donghyun.flamelauncher.presentation.login.LoginViewModel
@@ -53,6 +56,11 @@ class LoginActivity : BaseActivity() {
                 val statusMessage by viewModel.statusMessage.collectAsState()
                 var offlineDialog by remember { mutableStateOf(false) }
                 var offlineName by remember { mutableStateOf("") }
+                var thirdPartyDialog by remember { mutableStateOf(false) }
+                var thirdPartyProvider by remember { mutableStateOf(ThirdPartyAuthManager.ELY_BY) }
+                var thirdPartyServer by remember { mutableStateOf(ThirdPartyAuthManager.ELY_BY_URL) }
+                var thirdPartyUsername by remember { mutableStateOf("") }
+                var thirdPartyPassword by remember { mutableStateOf("") }
 
                 LaunchedEffect(Unit) {
                     viewModel.events.collect { event ->
@@ -138,11 +146,16 @@ class LoginActivity : BaseActivity() {
                     }
 
                     if (!isLoading) {
-                        TextButton(
-                            onClick = { offlineDialog = true },
-                            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 18.dp),
+                        Column(
+                            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 10.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            Text("Play offline", color = Flame, fontWeight = FontWeight.Bold)
+                            TextButton(onClick = { thirdPartyDialog = true }) {
+                                Text("ely.by / Battly / other account", color = Flame, fontWeight = FontWeight.Bold)
+                            }
+                            TextButton(onClick = { offlineDialog = true }) {
+                                Text("Play offline", color = Flame, fontWeight = FontWeight.Bold)
+                            }
                         }
                     }
 
@@ -168,6 +181,106 @@ class LoginActivity : BaseActivity() {
                             },
                             dismissButton = {
                                 TextButton(onClick = { offlineDialog = false }) { Text("Cancel", color = TextSub) }
+                            },
+                        )
+                    }
+
+                    if (thirdPartyDialog) {
+                        AlertDialog(
+                            onDismissRequest = { thirdPartyDialog = false },
+                            title = { Text("Third-party account", color = TextMain) },
+                            text = {
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Text(
+                                        "Use a Yggdrasil/authlib-injector account. Passwords are sent only to the server you choose.",
+                                        color = TextSub,
+                                        fontSize = 12.sp,
+                                    )
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceEvenly,
+                                    ) {
+                                        TextButton(onClick = {
+                                            thirdPartyProvider = ThirdPartyAuthManager.ELY_BY
+                                            thirdPartyServer = ThirdPartyAuthManager.ELY_BY_URL
+                                        }) { Text("ely.by", color = Flame) }
+                                        TextButton(onClick = {
+                                            thirdPartyProvider = ThirdPartyAuthManager.BATLLY
+                                            thirdPartyServer = ThirdPartyAuthManager.BATLLY_URL
+                                        }) { Text("Battly", color = Flame) }
+                                        TextButton(onClick = { thirdPartyProvider = ThirdPartyAuthManager.CUSTOM }) {
+                                            Text("Custom", color = Flame)
+                                        }
+                                    }
+                                    OutlinedTextField(
+                                        value = thirdPartyServer,
+                                        onValueChange = { thirdPartyServer = it },
+                                        singleLine = true,
+                                        label = { Text("Authentication server URL") },
+                                        supportingText = {
+                                            Text(
+                                                when (thirdPartyProvider) {
+                                                    ThirdPartyAuthManager.ELY_BY -> "ely.by: authserver.ely.by"
+                                                    ThirdPartyAuthManager.BATLLY -> "Battly: api.battlylauncher.com"
+                                                    else -> "Any authlib-injector/Yggdrasil server"
+                                                },
+                                                color = TextSub,
+                                            )
+                                        },
+                                    )
+                                    OutlinedTextField(
+                                        value = thirdPartyUsername,
+                                        onValueChange = { thirdPartyUsername = it },
+                                        singleLine = true,
+                                        label = { Text("Email or username") },
+                                    )
+                                    OutlinedTextField(
+                                        value = thirdPartyPassword,
+                                        onValueChange = { thirdPartyPassword = it },
+                                        singleLine = true,
+                                        label = { Text("Password") },
+                                        visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                                    )
+                                    if (thirdPartyProvider == ThirdPartyAuthManager.ELY_BY ||
+                                        thirdPartyProvider == ThirdPartyAuthManager.BATLLY) {
+                                        TextButton(onClick = {
+                                            val registerUrl = if (thirdPartyProvider == ThirdPartyAuthManager.ELY_BY) {
+                                                ThirdPartyAuthManager.ELY_BY_REGISTER_URL
+                                            } else ThirdPartyAuthManager.BATLLY_REGISTER_URL
+                                            runCatching {
+                                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(registerUrl)))
+                                            }
+                                        }) { Text("Create an account", color = Flame) }
+                                    }
+                                }
+                            },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    val displayName = when (thirdPartyProvider) {
+                                        ThirdPartyAuthManager.ELY_BY -> "ely.by"
+                                        ThirdPartyAuthManager.BATLLY -> "Battly"
+                                        else -> "Custom auth server"
+                                    }
+                                    val registerUrl = when (thirdPartyProvider) {
+                                        ThirdPartyAuthManager.ELY_BY -> ThirdPartyAuthManager.ELY_BY_REGISTER_URL
+                                        ThirdPartyAuthManager.BATLLY -> ThirdPartyAuthManager.BATLLY_REGISTER_URL
+                                        else -> null
+                                    }
+                                    viewModel.loginThirdParty(
+                                        ThirdPartyLoginRequest(
+                                            providerId = thirdPartyProvider,
+                                            serverUrl = thirdPartyServer,
+                                            username = thirdPartyUsername,
+                                            password = thirdPartyPassword,
+                                            displayName = displayName,
+                                            registerUrl = registerUrl,
+                                        )
+                                    )
+                                    thirdPartyDialog = false
+                                }) { Text("Sign in", color = Flame) }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { thirdPartyDialog = false }) { Text("Cancel", color = TextSub) }
                             },
                         )
                     }

@@ -46,6 +46,8 @@ import kr.co.donghyun.flamelauncher.data.auth.LocalAccountManager
 import kr.co.donghyun.flamelauncher.data.auth.LocalSkinManager
 import kr.co.donghyun.flamelauncher.data.auth.LocalSkinServer
 import kr.co.donghyun.flamelauncher.data.auth.MicrosoftAuthManager
+import kr.co.donghyun.flamelauncher.data.auth.ThirdPartyAuthManager
+import kr.co.donghyun.flamelauncher.data.auth.ThirdPartyAccount
 import kr.co.donghyun.flamelauncher.data.instance.InstanceManager
 import kr.co.donghyun.flamelauncher.data.instance.InstanceType
 import kr.co.donghyun.flamelauncher.data.jvm.JvmSettings
@@ -684,6 +686,7 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
     private fun currentPlayerName(): String? =
         try {
             MicrosoftAuthManager.loadSession(this)?.username
+                ?: ThirdPartyAuthManager.load(this)?.profileName
                 ?: LocalAccountManager.load(this)?.username
         } catch (_: Exception) { null }
 
@@ -2714,6 +2717,13 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
             } else emptyArray()
         } else emptyArray()
 
+        // Third-party auth is resolved on the game thread below. Keep the saved
+        // record here so preparing JVM arguments never performs network IO on the
+        // activity thread (Battly's agent may need a manifest download).
+        val thirdPartyForLaunch: ThirdPartyAccount? = if (
+            MicrosoftAuthManager.loadSession(this) == null && localAccountForSkin == null
+        ) ThirdPartyAuthManager.load(this) else null
+
         val jvmArgs = jvm8CompatArgs +
                 localSkinArgs +
                 jniDebugArgs +
@@ -2795,14 +2805,39 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
                     } catch (_: Exception) { microsoftSession }
                 } else microsoftSession
                 val localAccount = if (validMicrosoftSession == null) LocalAccountManager.load(this) else null
+                val thirdPartyAccount = if (validMicrosoftSession == null && localAccount == null) {
+                    thirdPartyForLaunch?.let { ThirdPartyAuthManager.refreshIfPossible(this, it) }
+                } else null
+                val thirdPartyJvmArgs: Array<String> = thirdPartyAccount?.let {
+                    runCatching {
+                        val bundled = extractAuthlibInjector()
+                        if (bundled == null) emptyArray<String>()
+                        else ThirdPartyAuthManager.jvmArgs(this, it, bundled)
+                    }.onFailure { error ->
+                        Log.w("FLAME_LAUNCHER", "Third-party authlib could not be prepared", error)
+                    }.getOrDefault(emptyArray())
+                } ?: emptyArray()
 
                 // Offline accounts are explicit: they use a stable UUID and zero token, never
-                // a fabricated Microsoft credential. Online accounts keep Flame's refresh path.
-                val username    = validMicrosoftSession?.username ?: localAccount?.username ?: "Player"
-                val uuid        = validMicrosoftSession?.uuid ?: localAccount?.uuid
+                // a fabricated Microsoft credential. Third-party accounts use their own
+                // Yggdrasil token/profile and authlib-injector agent.
+                val username = validMicrosoftSession?.username
+                    ?: thirdPartyAccount?.profileName
+                    ?: localAccount?.username
+                    ?: "Player"
+                val uuid = validMicrosoftSession?.uuid
+                    ?: thirdPartyAccount?.profileId
+                    ?: localAccount?.uuid
                     ?: "00000000-0000-0000-0000-000000000000"
-                val accessToken = validMicrosoftSession?.accessToken ?: "0"
-                val userType    = if (validMicrosoftSession != null) "msa" else "mojang"
+                val accessToken = validMicrosoftSession?.accessToken
+                    ?: thirdPartyAccount?.accessToken
+                    ?: "0"
+                val userType = when {
+                    validMicrosoftSession != null -> "msa"
+                    thirdPartyAccount != null -> "mojang"
+                    else -> "legacy"
+                }
+                val launchJvmArgs = jvmArgs + thirdPartyJvmArgs
 
                 // 매니페스트가 minecraftArguments(=공백 구분 단일 문자열)를 줬다면 그게 1.12 이하 레거시 포맷이다.
                 // gameArgs 안에 ${...} placeholder가 있다는 사실 자체가 그 시그널.
@@ -2899,7 +2934,7 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
                 }
 
                 val normalizedJvmArgs = normalizeJvmArgsForJni(
-                    jvmArgs,
+                    launchJvmArgs,
                     freetypeLibPath = if (freetypeSo.exists()) freetypeSo.absolutePath else null,
                     jnaBootPath = jnaBootPath,
                     jnaTmpDir = cacheDir.absolutePath,

@@ -1,5 +1,6 @@
 package kr.co.donghyun.flamelauncher.domain.repository
 
+import kr.co.donghyun.flamelauncher.data.auth.ThirdPartyLoginRequest
 import kr.co.donghyun.flamelauncher.domain.model.UserSession
 
 /** 로그인 세션 조회 + 로그인 플로우 계약. SAF/웹뷰 자체는 여전히 LoginActivity 몫. */
@@ -18,4 +19,7 @@ interface AuthRepository {
 
     /** Creates/updates an explicitly offline account without contacting a server. */
     fun loginOffline(username: String): UserSession
+
+    /** Logs in through a standard authlib-injector/Yggdrasil account server. */
+    suspend fun loginThirdParty(request: ThirdPartyLoginRequest): UserSession
 }

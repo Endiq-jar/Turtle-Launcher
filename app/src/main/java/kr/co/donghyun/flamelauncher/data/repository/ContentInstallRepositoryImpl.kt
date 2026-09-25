@@ -13,7 +13,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import kr.co.donghyun.flamelauncher.BuildConfig
+import kr.co.donghyun.flamelauncher.data.auth.LocalAccountManager
 import kr.co.donghyun.flamelauncher.data.auth.MicrosoftAuthManager
+import kr.co.donghyun.flamelauncher.data.auth.ThirdPartyAuthManager
 import kr.co.donghyun.flamelauncher.data.instance.InstanceManager
 import kr.co.donghyun.flamelauncher.data.instance.InstanceMeta
 import kr.co.donghyun.flamelauncher.data.instance.InstanceType
@@ -2024,7 +2026,9 @@ class ContentInstallRepositoryImpl @Inject constructor(
      */
     suspend fun launchMod(mod: ContentItem): kr.co.donghyun.flamelauncher.domain.model.LaunchParams? {
         val session = MicrosoftAuthManager.loadSession(context)
-        val isLoggedIn = session != null && session.refreshToken.isNotEmpty()
+        val isLoggedIn = (session != null && session.refreshToken.isNotEmpty()) ||
+            ThirdPartyAuthManager.load(context) != null ||
+            LocalAccountManager.load(context) != null
 
         if (!isLoggedIn) {
             Toast.makeText(context, "로그인 이후에 플레이가 가능합니다.", Toast.LENGTH_SHORT).show()

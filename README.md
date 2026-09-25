@@ -126,7 +126,8 @@ mice and gamepads are picked up the moment they connect — nothing to configure
 
 This repository now builds the patched Flame target from the root `:app` module.
 The launcher shell uses Turtle's visual tokens, transitions, animation settings,
-background picker, offline assistant, account flow, file manager, crash-log
+background picker, offline assistant, account flow (offline, ely.by, Battly,
+custom authlib-injector/Yggdrasil, and Microsoft), file manager, crash-log
 styling, offline skins, content-pack browser, renderer controls, Terracotta, and
 low-end Minecraft launch safeguards. The original Turtle implementation remains
 under `TurtleLauncher/` as a rollback/reference module, while Gradle exposes only
@@ -144,12 +145,12 @@ Java runtimes, and the low-end native launch path. `TurtleLauncher/` is retained
 only as the old source tree; it is not included by `settings.gradle.kts` and is
 not part of the default build.
 
-The final device parity gate still covers online account variants, Microsoft
-skin/cape upload, renderer packaging, ABI/device coverage, lifecycle, and
-upgrade behavior. Those are runtime validation requirements, not silently
-claimed placeholders. The offline skin/account path, local assistant, and
-content/file-management paths are present; online skin/cape upload and full
-provider parity remain explicitly unsupported until tested and implemented.
+The final device parity gate still covers Microsoft skin/cape upload, renderer
+packaging, ABI/device coverage, lifecycle, and upgrade behavior. Those are
+runtime validation requirements, not silently claimed placeholders. The offline,
+ely.by, Battly, custom Yggdrasil, and Microsoft login paths are present; online
+skin/cape upload and provider-specific multi-profile edge cases remain explicitly
+unsupported until tested and implemented.
 
 ## 3. Licence
 
