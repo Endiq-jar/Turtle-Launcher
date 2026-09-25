@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "kr.co.donghyun.turtlelauncher"
+    namespace = "com.endiq.turtlelauncher"
     compileSdk = 36
     ndkVersion = "27.0.12077973"   // NDK r27 LTS (CMake 3.22.1 호환)
 
@@ -19,7 +19,7 @@ android {
     //    (컴파일러도 "Variable 'localProperties' is never used" 로 경고하고 있었다)
 
     defaultConfig {
-        applicationId = "kr.co.donghyun.turtlelauncher"
+        applicationId = "com.endiq.turtlelauncher"
         minSdk = 26
         targetSdk = 34
         // ⚠ GitHub 릴리스 태그를 새로 찍기 전에 반드시 이 두 값을 함께 올릴 것.
@@ -190,7 +190,7 @@ android {
 // 위치: app/build.gradle.kts 의 android { ... } 블록 "바깥", 파일 하단에 추가.
 // ========================================================================
 
-val processorLauncherSrc = file("src/main/java/kr/co/donghyun/turtlelauncher/forge/ProcessorLauncher.java")
+val processorLauncherSrc = file("src/main/java/com/endiq/turtlelauncher/forge/ProcessorLauncher.java")
 val processorLauncherJar = file("src/main/assets/forge-runtime/processor-launcher.jar")
 val processorLauncherClassesDir = layout.buildDirectory.dir("processor-launcher/classes")
 

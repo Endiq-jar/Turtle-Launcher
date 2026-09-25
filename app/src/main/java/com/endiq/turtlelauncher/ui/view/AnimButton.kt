@@ -8,7 +8,7 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import kr.co.donghyun.turtlelauncher.R
+import com.endiq.turtlelauncher.R
 
 open class AnimButton @JvmOverloads constructor(
     context: Context,

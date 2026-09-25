@@ -1014,7 +1014,7 @@ Java_org_lwjgl_glfw_CallbackBridge_nativeCreateGamepadAxisBuffer(JNIEnv *env, jc
     return (*env)->NewDirectByteBuffer(env, &pojav_environ->gamepadState.axes, sizeof(pojav_environ->gamepadState.axes));
 }
 JNIEXPORT void JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeSendKey(
+Java_com_endiq_turtlelauncher_presentation_MinecraftActivity_nativeSendKey(
         JNIEnv* env, jobject thiz, jint key, jint scancode, jint action, jint mods) {
     (void)env; (void)thiz;
     pojav_environ->isInputReady = JNI_TRUE;
@@ -1023,7 +1023,7 @@ Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeSendKey(
 }
 
 JNIEXPORT void JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeSendMouseButton(
+Java_com_endiq_turtlelauncher_presentation_MinecraftActivity_nativeSendMouseButton(
         JNIEnv* env, jobject thiz, jint button, jint action, jint mods) {
     (void)env; (void)thiz;
     pojav_environ->isInputReady = JNI_TRUE;
@@ -1032,7 +1032,7 @@ Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeSendMous
 }
 
 JNIEXPORT void JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeSendCursorPos(
+Java_com_endiq_turtlelauncher_presentation_MinecraftActivity_nativeSendCursorPos(
         JNIEnv* env, jobject thiz, jfloat x, jfloat y) {
     (void)env; (void)thiz;
     pojav_environ->isInputReady = JNI_TRUE;

@@ -95,7 +95,7 @@ static uint16_t turtle_sdlMods;
 /// 우리 프레임버퍼 크기(해상도 배율 적용 후). 절대 좌표를 창 좌표로 되돌릴 때 쓴다.
 static int turtle_fbWidth, turtle_fbHeight;
 
-#define J(name) Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_##name
+#define J(name) Java_com_endiq_turtlelauncher_presentation_MinecraftActivity_##name
 
 JNIEXPORT jboolean JNICALL J(nativeSdlSendKey)(JNIEnv *env, jobject thiz, jint scancode, jint action) {
     (void)env; (void)thiz;

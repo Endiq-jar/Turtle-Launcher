@@ -320,14 +320,14 @@ extern "C" jobjectArray pingLookupAllHostAddr_v2(
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeSetGuiScale(
+Java_com_endiq_turtlelauncher_presentation_MinecraftActivity_nativeSetGuiScale(
         JNIEnv* env, jobject thiz, jint scale) {
     g_guiScale = scale;
     LOGI("GUI Scale 설정: %d", scale);
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeGetGuiScale(
+Java_com_endiq_turtlelauncher_presentation_MinecraftActivity_nativeGetGuiScale(
         JNIEnv* env, jobject thiz) {
     return g_guiScale;
 }
@@ -640,13 +640,13 @@ Java_org_lwjgl_glfw_CallbackBridge_nativeSetGrabbing(
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeIsGrabbing(
+Java_com_endiq_turtlelauncher_presentation_MinecraftActivity_nativeIsGrabbing(
         JNIEnv* env, jobject thiz) {
     return g_isGrabbing ? JNI_TRUE : JNI_FALSE;
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeSetupBridgeWindow(
+Java_com_endiq_turtlelauncher_presentation_MinecraftActivity_nativeSetupBridgeWindow(
         JNIEnv* env, jobject thiz, jobject surface) {
     LOGI("nativeSetupBridgeWindow 호출됨");
     typedef void (*SetupBridgeWindow_t)(JNIEnv*, jclass, jobject);
@@ -724,7 +724,7 @@ static void printJavaException(JNIEnv* env, jthrowable ex, int depth) {
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_util_jni_JavaNativeLauncher_preloadAwtStubs(
+Java_com_endiq_turtlelauncher_presentation_util_jni_JavaNativeLauncher_preloadAwtStubs(
         JNIEnv* env, jclass clazz, jstring nativeLibDir) {
     const char* dir = env->GetStringUTFChars(nativeLibDir, nullptr);
     std::string path = std::string(dir) + "/libpojavexec.so";
@@ -739,7 +739,7 @@ Java_kr_co_donghyun_turtlelauncher_presentation_util_jni_JavaNativeLauncher_prel
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_util_jni_JavaNativeLauncher_nativeSetEnv(
+Java_com_endiq_turtlelauncher_presentation_util_jni_JavaNativeLauncher_nativeSetEnv(
         JNIEnv* env, jobject thiz, jstring key, jstring value) {
     const char* k = env->GetStringUTFChars(key, nullptr);
     const char* v = env->GetStringUTFChars(value, nullptr);
@@ -814,14 +814,14 @@ static bool zink_probe_vulkan_works() {
 
 // JNI 진입점
 extern "C" JNIEXPORT jboolean JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_util_renderer_RendererProbe_nativeZinkCompatible(
+Java_com_endiq_turtlelauncher_presentation_util_renderer_RendererProbe_nativeZinkCompatible(
         JNIEnv* /*env*/, jclass /*clazz*/)
 {
     return zink_probe_vulkan_works() ? JNI_TRUE : JNI_FALSE;
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_util_jni_JavaNativeLauncher_bootMinecraftJVM(
+Java_com_endiq_turtlelauncher_presentation_util_jni_JavaNativeLauncher_bootMinecraftJVM(
         JNIEnv* env, jobject thiz, jstring lib_jvm_path, jobjectArray jvm_args, jobjectArray mc_args) {
 
     // ── Renderer 환경변수 기본값 ─────────────────────────────────
@@ -1165,7 +1165,7 @@ Java_kr_co_donghyun_turtlelauncher_presentation_util_jni_JavaNativeLauncher_boot
 
 // 한 방에 처리: environ 에서 mainWindowBundle 꺼내서 nglfwSetShowingWindow 호출
 extern "C" JNIEXPORT jboolean JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeTrySetupShowingWindow(
+Java_com_endiq_turtlelauncher_presentation_MinecraftActivity_nativeTrySetupShowingWindow(
         JNIEnv* env, jobject thiz) {
 
     // 1) environ 확인
@@ -1209,7 +1209,7 @@ Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeTrySetup
 
 // 현재 environ 의 상태를 한 번에 덤프
 extern "C" JNIEXPORT void JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeDumpInputState(
+Java_com_endiq_turtlelauncher_presentation_MinecraftActivity_nativeDumpInputState(
         JNIEnv* env, jobject thiz) {
     const char* env_str = getenv("POJAV_ENVIRON");
     if (!env_str) {
@@ -1231,7 +1231,7 @@ Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeDumpInpu
     LOGI("DUMP: pojavWindow      = %p", *(void**)environ_ptr);
 }
 extern "C" JNIEXPORT void JNICALL
-Java_kr_co_donghyun_turtlelauncher_presentation_MinecraftActivity_nativeDumpCharCallback(
+Java_com_endiq_turtlelauncher_presentation_MinecraftActivity_nativeDumpCharCallback(
         JNIEnv* env, jobject thiz) {
     const char* env_str = getenv("POJAV_ENVIRON");
     if (!env_str) { LOGI("DUMP: no POJAV_ENVIRON"); return; }

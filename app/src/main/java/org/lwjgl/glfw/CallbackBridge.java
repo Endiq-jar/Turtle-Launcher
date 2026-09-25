@@ -5,8 +5,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.util.Log;
 
-import kr.co.donghyun.turtlelauncher.presentation.MinecraftActivity;
-import kr.co.donghyun.turtlelauncher.presentation.util.MinecraftActivityBridge;
+import com.endiq.turtlelauncher.presentation.MinecraftActivity;
+import com.endiq.turtlelauncher.presentation.util.MinecraftActivityBridge;
 
 /**
  * PojavLauncher의 CallbackBridge — 안드로이드 측 진입점.
