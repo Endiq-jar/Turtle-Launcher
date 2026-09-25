@@ -1,0 +1,235 @@
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+index 9db77d2..05d0d61 100644
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -90,6 +90,10 @@
+             android:windowSoftInputMode="adjustNothing"
+             android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
+             android:process=":minecraft" />
++        <activity
++            android:name=".presentation.FileManagerActivity"
++            android:exported="false"
++            android:configChanges="orientation|screenSize|keyboard|keyboardHidden" />
+         <activity
+             android:name=".presentation.AssistantActivity"
+             android:exported="false"
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/FileManagerActivity.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/FileManagerActivity.kt
+new file mode 100644
+index 0000000..6d83159
+--- /dev/null
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/FileManagerActivity.kt
+@@ -0,0 +1,47 @@
++package kr.co.donghyun.flamelauncher.presentation
++
++import android.content.Context
++import android.content.Intent
++import androidx.activity.compose.setContent
++import androidx.compose.runtime.getValue
++import androidx.compose.runtime.mutableStateOf
++import androidx.compose.runtime.setValue
++import kr.co.donghyun.flamelauncher.data.instance.InstanceManager
++import kr.co.donghyun.flamelauncher.presentation.base.BaseActivity
++import kr.co.donghyun.flamelauncher.presentation.ui.screen.FileBrowserScreen
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.FlameLauncherTheme
++import java.io.File
++
++class FileManagerActivity : BaseActivity() {
++    companion object {
++        fun start(context: Context) = context.startActivity(Intent(context, FileManagerActivity::class.java))
++    }
++
++    private lateinit var root: File
++    private var current by mutableStateOf<File?>(null)
++
++    override fun onCreated() {
++        root = InstanceManager.instancesDir(this).also { it.mkdirs() }
++        current = root
++        setContent {
++            FlameLauncherTheme {
++                current?.let { directory ->
++                    FileBrowserScreen(
++                        root = root,
++                        directory = directory,
++                        onNavigate = { next ->
++                            // Only allow navigation below the instances root.
++                            val safe = runCatching { next.canonicalPath.startsWith(root.canonicalPath) }.getOrDefault(false)
++                            if (safe) current = next
++                        },
++                        onBack = { finish() },
++                        onDelete = { target ->
++                            val safe = runCatching { target.canonicalPath.startsWith(root.canonicalPath) }.getOrDefault(false)
++                            if (safe) target.deleteRecursively()
++                        },
++                    )
++                }
++            }
++        }
++    }
++}
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MainActivity.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MainActivity.kt
+index c317d5c..2d71d64 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MainActivity.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MainActivity.kt
+@@ -155,6 +155,7 @@ class MainActivity : BaseActivity() {
+                     onOpenSettings = { SettingsActivity.start(this@MainActivity) },
+                     onOpenRendererSettings = { SettingsActivity.start(this@MainActivity) },
+                     onOpenAssistant = { AssistantActivity.start(this@MainActivity) },
++                    onOpenFiles = { FileManagerActivity.start(this@MainActivity) },
+                     backgroundUri = launcherSetting.backgroundUri,
+                     uuid = session?.uuid,
+                     isLoggedIn = session != null,
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/FileBrowserScreen.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/FileBrowserScreen.kt
+new file mode 100644
+index 0000000..1c3ac36
+--- /dev/null
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/FileBrowserScreen.kt
+@@ -0,0 +1,112 @@
++package kr.co.donghyun.flamelauncher.presentation.ui.screen
++
++import androidx.compose.foundation.background
++import androidx.compose.foundation.border
++import androidx.compose.foundation.clickable
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.Row
++import androidx.compose.foundation.layout.Spacer
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.fillMaxWidth
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.layout.width
++import androidx.compose.foundation.lazy.LazyColumn
++import androidx.compose.foundation.lazy.items
++import androidx.compose.foundation.shape.RoundedCornerShape
++import androidx.compose.material3.AlertDialog
++import androidx.compose.material3.Text
++import androidx.compose.material3.TextButton
++import androidx.compose.runtime.Composable
++import androidx.compose.runtime.getValue
++import androidx.compose.runtime.mutableIntStateOf
++import androidx.compose.runtime.mutableStateOf
++import androidx.compose.runtime.remember
++import androidx.compose.runtime.setValue
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.text.font.FontWeight
++import androidx.compose.ui.unit.dp
++import androidx.compose.ui.unit.sp
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgBorder
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgDark
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgSurface
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.Flame
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.TextMain
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.TextSub
++import java.io.File
++
++/** A bounded, real file browser for instance files, logs, saves, packs, and screenshots. */
++@Composable
++fun FileBrowserScreen(
++    root: File,
++    directory: File,
++    onNavigate: (File) -> Unit,
++    onBack: () -> Unit,
++    onDelete: (File) -> Unit,
++) {
++    var deleteTarget by remember { mutableStateOf<File?>(null) }
++    var refreshTick by remember { mutableIntStateOf(0) }
++    val entries = remember(directory, directory.lastModified(), refreshTick) {
++        directory.listFiles()?.sortedWith(compareByDescending<File> { it.isDirectory }.thenBy { it.name.lowercase() })
++            ?: emptyList()
++    }
++    val canGoUp = directory != root && directory.parentFile?.canonicalFile?.path?.startsWith(root.canonicalPath) == true
++
++    Column(Modifier.fillMaxSize().background(BgDark)) {
++        Row(
++            Modifier.fillMaxWidth().background(BgSurface).padding(horizontal = 10.dp, vertical = 8.dp),
++            verticalAlignment = Alignment.CenterVertically,
++        ) {
++            TextButton(onClick = onBack) { Text("Back", color = TextSub) }
++            Spacer(Modifier.width(8.dp))
++            Column(Modifier.weight(1f)) {
++                Text("Files", color = TextMain, fontWeight = FontWeight.Bold)
++                Text(directory.relativeToOrNull(root)?.path ?: "Instances", color = TextSub, fontSize = 10.sp)
++            }
++            if (canGoUp) TextButton(onClick = { directory.parentFile?.let(onNavigate) }) { Text("Up", color = Flame) }
++        }
++        if (entries.isEmpty()) {
++            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
++                Text("This folder is empty", color = TextSub)
++            }
++        } else {
++            LazyColumn(Modifier.fillMaxSize().padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
++                items(entries, key = { it.absolutePath }) { entry ->
++                    Row(
++                        Modifier.fillMaxWidth().background(BgSurface, RoundedCornerShape(10.dp))
++                            .border(1.dp, BgBorder, RoundedCornerShape(10.dp))
++                            .clickable { if (entry.isDirectory) onNavigate(entry) }
++                            .padding(horizontal = 12.dp, vertical = 10.dp),
++                        verticalAlignment = Alignment.CenterVertically,
++                    ) {
++                        Text(if (entry.isDirectory) "📁" else "📄", fontSize = 18.sp)
++                        Spacer(Modifier.width(10.dp))
++                        Column(Modifier.weight(1f)) {
++                            Text(entry.name, color = TextMain, maxLines = 1)
++                            Text(if (entry.isDirectory) "Folder" else "${entry.length()} bytes", color = TextSub, fontSize = 10.sp)
++                        }
++                        if (!entry.isDirectory || entry.listFiles().isNullOrEmpty()) {
++                            TextButton(onClick = { deleteTarget = entry }) { Text("Delete", color = TextSub, fontSize = 10.sp) }
++                        }
++                    }
++                }
++            }
++        }
++    }
++
++    deleteTarget?.let { target ->
++        AlertDialog(
++            onDismissRequest = { deleteTarget = null },
++            title = { Text("Delete file?", color = TextMain) },
++            text = { Text("Remove ${target.name}? This cannot be undone.", color = TextSub) },
++            confirmButton = {
++                TextButton(onClick = { onDelete(target); refreshTick++; deleteTarget = null }) {
++                    Text("Delete", color = Flame)
++                }
++            },
++            dismissButton = { TextButton(onClick = { deleteTarget = null }) { Text("Cancel", color = TextSub) } },
++        )
++    }
++}
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt
+index 632e038..1dc7d7f 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt
+@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.GridView
+ import androidx.compose.material.icons.filled.Verified
+ import androidx.compose.material.icons.filled.UnfoldMore
+ import androidx.compose.material.icons.filled.Inventory2
++import androidx.compose.material.icons.filled.Folder
+ import androidx.compose.material.icons.filled.Keyboard
+ import androidx.compose.material.icons.filled.Tune
+ import androidx.compose.material.icons.automirrored.filled.Article
+@@ -114,6 +115,8 @@ enum class MainSection(
+         androidx.compose.material.icons.Icons.Filled.Keyboard, false),
+     ASSISTANT("AI 어시스턴트", "오프라인 도움말 · 진단",
+         androidx.compose.material.icons.Icons.Filled.Chat, false),
++    FILES("파일 관리", "로그 · 저장 · 팩 파일",
++        androidx.compose.material.icons.Icons.Filled.Folder, false),
+     NOTES("업데이트 노트", "저장소 README",
+         androidx.compose.material.icons.Icons.AutoMirrored.Filled.Article, true),
+ }
+@@ -138,6 +141,7 @@ fun MainScreen(
+     onOpenSettings: () -> Unit,
+     onOpenRendererSettings: () -> Unit,
+     onOpenAssistant: () -> Unit = {},
++    onOpenFiles: () -> Unit = {},
+     backgroundUri: String? = null,
+     uuid: String?,
+     isLoggedIn: Boolean,
+@@ -232,6 +236,7 @@ fun MainScreen(
+                                 MainSection.SETTINGS -> onOpenSettings()
+                                 MainSection.KEYBOARD -> onOpenKeySettings()
+                                 MainSection.ASSISTANT -> onOpenAssistant()
++                                MainSection.FILES -> onOpenFiles()
+                                 else -> selectedSection = section
+                             }
+                         },

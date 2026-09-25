@@ -219,7 +219,16 @@ behavior to Flame without weakening Microsoft authentication:
   zero token and never fabricates an online credential;
 - the existing Microsoft refresh and SDL/LWJGL launch path remains unchanged.
 
-The complete patch chain (0001 through 0009) applies cleanly to a fresh pinned
+## Step 10: port instance file management
+
+`patches/0010-port-instance-file-manager.patch` adds a bounded file browser to
+the Turtle-style home sidebar. It browses each Flame instance's logs, saves,
+mods, resource packs, shader packs, screenshots, and metadata, supports safe
+folder navigation and deletion confirmation, and refuses paths outside the
+instances root. Empty folders and deleted files have explicit UI states rather
+than crashing or silently doing nothing.
+
+The complete patch chain (0001 through 0010) applies cleanly to a fresh pinned
 Flame checkout. Resource XML was parsed again after the chain was applied, and
 `git diff --check` passed. The patched target has also assembled successfully in
 GitHub Actions. Gradle compilation is not available in this workspace because it
