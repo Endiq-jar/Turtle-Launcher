@@ -60,8 +60,10 @@ open a room, share the code, they join with it.
 
 ### Account
 
-Microsoft sign-in only. **No game files ship with the app** — you download them from
-Mojang's own servers with your own account.
+Microsoft sign-in and a clearly marked local/offline account path are available.
+Offline accounts do not receive fake Microsoft tokens and are intended for
+single-player/offline-compatible use. **No game files ship with the app** —
+you download them from Mojang's own servers with your own account.
 
 ---
 
