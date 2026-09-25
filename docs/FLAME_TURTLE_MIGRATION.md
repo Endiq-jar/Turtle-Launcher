@@ -152,8 +152,9 @@ Completed in the applied chain so far:
   assistant, crash-log styling, and offline account behavior;
 - the complete target assembles successfully in GitHub Actions.
 
-The next vertical slices are skin application/cape behavior, file and profile
-management, fuller account management, and a renderer packaging/ABI audit. Only
-after those are usable and tested should the vendored Flame tree become the
-repository's default root target; Turtle remains the rollback target until the
-upgrade and device gates pass.
+The next vertical slices are online Microsoft skin upload/cape behavior,
+fuller account management, and a renderer packaging/ABI audit. Offline skin
+selection now works through the local Yggdrasil path; this does not claim online
+skin/cape parity. Only after the remaining slices are usable and tested should
+the vendored Flame tree become the repository's default root target; Turtle
+remains the rollback target until the upgrade and device gates pass.
