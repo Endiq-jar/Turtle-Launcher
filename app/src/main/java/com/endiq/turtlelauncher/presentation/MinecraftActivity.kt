@@ -75,6 +75,7 @@ import com.endiq.turtlelauncher.presentation.util.jni.JavaNativeLauncher
 import com.endiq.turtlelauncher.presentation.util.minecraft.MinecraftJREPreparer
 import com.endiq.turtlelauncher.presentation.util.resources.ResourcePackImporter
 import com.endiq.turtlelauncher.feature.turtle.DailyPlaytimeStats
+import com.endiq.turtlelauncher.feature.mod.NanoVGNativesFix
 import com.endiq.turtlelauncher.launch.AutoSettingsOptimizer
 import org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER
 import org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE
@@ -2044,6 +2045,15 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
                 || mainClass.contains("fabric", ignoreCase = true)
                 || instanceMeta?.loaderType == "fabric"
         Log.d("TURTLE_LAUNCHER", "isFabric=$isFabric, loaderType=${instanceMeta?.loaderType}, mainClass=$mainClass")
+
+        // Original Turtle compatibility payload: Fabric/Quilt NanoVG natives must be present
+        // before the classpath is assembled. It is a no-op for vanilla and Forge/NeoForge.
+        NanoVGNativesFix.ensureInstalled(
+            context = this,
+            loaderType = instanceMeta?.loaderType,
+            mainClass = mainClass,
+            modsDir = File(mcDir, "mods"),
+        )
 
         // ★ 추가 — Forge/NeoForge 의 BootstrapLauncher 경유 부팅 감지
         //   libraries 워커 / versionJar 분기에서 동시에 쓰기 위해 여기서 한 번만 계산

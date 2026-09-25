@@ -66,6 +66,9 @@
         <activity android:name=".presentation.SettingsActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>
+        <activity android:name=".presentation.TerracottaActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>
         <activity android:name=".presentation.LoginActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>

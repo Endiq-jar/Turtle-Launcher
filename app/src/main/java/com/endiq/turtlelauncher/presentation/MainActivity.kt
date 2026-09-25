@@ -5,8 +5,11 @@ import android.net.Uri
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import java.io.File
+import java.util.zip.GZIPInputStream
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,8 +23,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.endiq.turtlelauncher.BuildConfig
 import com.endiq.turtlelauncher.R
+import coil.ImageLoader
+import coil.request.ImageRequest
 import com.endiq.turtlelauncher.data.setting.Setting
 import com.endiq.turtlelauncher.data.setting.SettingManager
+import com.endiq.turtlelauncher.data.instance.InstanceManager
 import com.endiq.turtlelauncher.data.update.GithubUpdateChecker
 import com.endiq.turtlelauncher.domain.model.DownloadPhase
 import com.endiq.turtlelauncher.domain.model.Instance
@@ -31,6 +37,9 @@ import com.endiq.turtlelauncher.presentation.base.BaseActivity
 import com.endiq.turtlelauncher.presentation.main.MainViewModel
 import com.endiq.turtlelauncher.presentation.ui.motion.TurtleMotion
 import com.endiq.turtlelauncher.launch.AutoSettingsOptimizer
+import com.endiq.turtlelauncher.plugins.feature.FeaturePluginManager
+import com.endiq.turtlelauncher.feature.turtle.DailyPlaytimeStats
+import com.endiq.turtlelauncher.feature.turtle.WeeklyPlaytimeChartView
 
 /**
  * Turtle Launcher home entry point.
@@ -51,6 +60,22 @@ class MainActivity : BaseActivity() {
     private val minecraftLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { }
+
+    private val jarPicker = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri == null) return@registerForActivityResult
+        runCatching {
+            startActivity(Intent(this, ShareImportActivity::class.java).apply {
+                action = Intent.ACTION_SEND
+                type = "application/java-archive"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            })
+        }.onFailure {
+            Toast.makeText(this, it.message ?: "Unable to import file", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     private val loginLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -79,6 +104,7 @@ class MainActivity : BaseActivity() {
         // version card, launcher rail, and right-side launch panel.
         setContentView(R.layout.fragment_launcher)
         bindOriginalTurtleHome()
+        refreshHomeDashboard()
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -87,12 +113,14 @@ class MainActivity : BaseActivity() {
                         currentVersion = versions.firstOrNull { it.id == MinecraftSupport.SUPPORTED_VERSION }
                             ?: versions.firstOrNull()
                         updateVersionCard()
+                        refreshHomeDashboard()
                     }
                 }
                 launch {
                     viewModel.instances.collect { instances ->
                         currentInstances = instances
                         updateVersionCard()
+                        refreshHomeDashboard()
                     }
                 }
                 launch {
@@ -108,8 +136,9 @@ class MainActivity : BaseActivity() {
                 }
                 launch {
                     viewModel.session.collect { session ->
-                        findViewById<ImageButton>(R.id.top_bar_account_button)?.contentDescription =
-                            session?.username ?: getString(R.string.main_nav_account)
+                        val accountButton = findViewById<ImageButton>(R.id.top_bar_account_button)
+                        accountButton?.contentDescription = session?.username ?: getString(R.string.main_nav_account)
+                        updateAccountAvatar(session?.uuid)
                     }
                 }
             }
@@ -166,27 +195,39 @@ class MainActivity : BaseActivity() {
         val openControls = { KeyboardLayoutEditorActivity.start(this) }
         val openAssistant = { AssistantActivity.start(this) }
 
-        // Original Turtle top bar.
+        // Preserve the complete original Turtle navigation rail, but route each action to the
+        // current activity so account, files, downloads, controls, and settings share state.
         findViewById<View>(R.id.top_bar_account_button).setOnClickListener { login() }
         findViewById<View>(R.id.top_bar_storage_button).setOnClickListener { openFiles() }
         findViewById<View>(R.id.top_bar_download_button).setOnClickListener { openContents() }
         findViewById<View>(R.id.top_bar_cursor_button).setOnClickListener { openControls() }
         findViewById<View>(R.id.top_bar_ai_button).setOnClickListener { openAssistant() }
         findViewById<View>(R.id.top_bar_settings_button).setOnClickListener { openSettings() }
-        findViewById<View>(R.id.top_bar_tasks_button).setOnClickListener { openFiles() }
+        findViewById<View>(R.id.top_bar_tasks_button).setOnClickListener { showTaskStatus() }
 
-        // Original Turtle quick-action rail.
-        findViewById<View>(R.id.about_button).setOnClickListener { openContents() }
+        findViewById<View>(R.id.about_button).setOnClickListener { showAbout() }
         findViewById<View>(R.id.custom_control_button).setOnClickListener { openControls() }
-        findViewById<View>(R.id.install_jar_button).setOnClickListener { openFiles() }
-        findViewById<View>(R.id.share_logs_button).setOnClickListener { openFiles() }
+        findViewById<View>(R.id.install_jar_button).setOnClickListener {
+            jarPicker.launch(arrayOf("application/java-archive", "application/zip", "application/octet-stream"))
+        }
+        findViewById<View>(R.id.share_logs_button).setOnClickListener { openLatestLog() }
         findViewById<View>(R.id.modpack_import_button).setOnClickListener { openContents() }
         findViewById<View>(R.id.terracotta_button).setOnClickListener {
-            Toast.makeText(this, getString(R.string.terracotta_enable), Toast.LENGTH_SHORT).show()
+            TerracottaActivity.start(this, viewModel.session.value?.username)
+        }
+        findViewById<View>(R.id.last_log_card).setOnClickListener { openLatestLog() }
+
+        // Keep the exact community destinations from the old Turtle home.
+        findViewById<View>(R.id.link_discord_button).setOnClickListener {
+            openUrl("https://discord.gg/8TfuMhM8tD")
+        }
+        findViewById<View>(R.id.link_website_button).setOnClickListener {
+            openUrl("https://endiq-jar.github.io/endiq-shop/")
+        }
+        findViewById<View>(R.id.link_youtube_button).setOnClickListener {
+            openUrl("https://youtube.com/@endiq-jar?si=9sb9OnKDJG2kUnO1")
         }
 
-        // There is exactly one supported release in this build, so the original version card
-        // remains a selector without exposing an unsupported-version list.
         findViewById<View>(R.id.version).setOnClickListener {
             currentVersion?.let(viewModel::selectVersion)
         }
@@ -202,10 +243,124 @@ class MainActivity : BaseActivity() {
                 ?: Toast.makeText(this, getString(R.string.version_no_versions), Toast.LENGTH_SHORT).show()
         }
         findViewById<View>(R.id.footer_github_button).setOnClickListener {
-            runCatching {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Endiq-jar/TurtleLauncher")))
-            }
+            openUrl("https://github.com/Endiq-jar/TurtleLauncher")
         }
+        findViewById<View>(R.id.footer_version_text).setOnClickListener { showAbout() }
+    }
+
+    private fun updateAccountAvatar(uuid: String?) {
+        val button = findViewById<ImageButton>(R.id.top_bar_account_button) ?: return
+        if (uuid.isNullOrBlank()) {
+            button.setImageResource(R.drawable.ic_add)
+            button.imageTintList = androidx.core.content.ContextCompat.getColorStateList(
+                this,
+                R.color.turtle_text_secondary,
+            )
+            return
+        }
+        button.imageTintList = null
+        button.setImageResource(R.drawable.ic_help)
+        val cleanUuid = uuid.replace("-", "")
+        val request = ImageRequest.Builder(this)
+            .data("https://mc-heads.net/avatar/$cleanUuid/64")
+            .target(
+                onSuccess = { drawable -> button.setImageDrawable(drawable) },
+                onError = { button.setImageResource(R.drawable.ic_help) },
+            )
+            .build()
+        ImageLoader(this).enqueue(request)
+    }
+
+    private fun refreshHomeDashboard() {
+        val chart = findViewById<WeeklyPlaytimeChartView>(R.id.stats_chart)
+        chart?.setData(DailyPlaytimeStats.thisWeekMs(this).map { it / 3_600_000f }.toFloatArray())
+
+        findViewById<TextView>(R.id.footer_app_name)?.text = getString(R.string.app_name)
+        findViewById<TextView>(R.id.footer_version_text)?.text = "v${BuildConfig.VERSION_NAME}"
+
+        val log = latestLogFile()
+        val preview = findViewById<TextView>(R.id.last_log_preview)
+        preview?.text = log?.let { readLogPreview(it) } ?: getString(R.string.main_last_log_none)
+
+        val pluginContainer = findViewById<android.view.ViewGroup>(R.id.feature_plugins_container)
+        val plugins = FeaturePluginManager.scan(this)
+        pluginContainer?.removeAllViews()
+        pluginContainer?.visibility = if (plugins.isEmpty()) View.GONE else View.VISIBLE
+        plugins.forEach { plugin ->
+            val item = layoutInflater.inflate(R.layout.item_feature_plugin, pluginContainer, false)
+            item.findViewById<TextView>(R.id.feature_plugin_title)?.text = plugin.displayName
+            item.findViewById<TextView>(R.id.feature_plugin_desc)?.text = plugin.description
+            item.findViewById<ImageView>(R.id.feature_plugin_icon)?.setImageDrawable(
+                packageManager.getApplicationIcon(plugin.applicationInfo),
+            )
+            item.setOnClickListener {
+                val launchIntent = packageManager.getLaunchIntentForPackage(plugin.packageName)
+                if (launchIntent == null) {
+                    Toast.makeText(this, "Unable to open feature", Toast.LENGTH_SHORT).show()
+                } else {
+                    runCatching { startActivity(launchIntent) }
+                        .onFailure { Toast.makeText(this, it.message ?: "Unable to open feature", Toast.LENGTH_SHORT).show() }
+                }
+            }
+            pluginContainer?.addView(item)
+        }
+    }
+
+    private fun latestLogFile(): File? {
+        val roots = currentInstances.firstOrNull()?.let { instance ->
+            val dir = InstanceManager.instanceDir(this, instance.id)
+            listOf(File(dir, "logs"), File(dir, ".minecraft/logs"))
+        }.orEmpty()
+        return roots.asSequence()
+            .flatMap { root -> root.listFiles()?.asSequence().orEmpty() }
+            .filter { it.isFile && (it.extension == "log" || it.extension == "gz") }
+            .maxByOrNull { it.lastModified() }
+    }
+
+    private fun readLogPreview(file: File): String = runCatching {
+        if (file.extension == "gz") {
+            GZIPInputStream(file.inputStream()).bufferedReader().useLines { lines ->
+                lines.toList().takeLast(6).joinToString("\\n").takeLast(900)
+            }
+        } else {
+            file.readLines().takeLast(6).joinToString("\\n").takeLast(900)
+        }
+    }.getOrDefault(getString(R.string.main_last_log_none))
+
+    private fun openLatestLog() {
+        val instance = currentInstances.firstOrNull()
+        if (instance == null) {
+            Toast.makeText(this, getString(R.string.main_last_log_none), Toast.LENGTH_SHORT).show()
+            return
+        }
+        CrashReportActivity.start(this, InstanceManager.instanceDir(this, instance.id).absolutePath)
+    }
+
+    private fun showTaskStatus() {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(getString(R.string.main_tasks_dialog_title))
+            .setMessage(
+                if (viewModel.progress.value.phase == DownloadPhase.IDLE) {
+                    getString(R.string.main_tasks_dialog_empty)
+                } else {
+                    "${viewModel.progress.value.phase}: ${viewModel.progress.value.percent}%"
+                },
+            )
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+    }
+
+    private fun showAbout() {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(getString(R.string.about_tab, getString(R.string.app_name)))
+            .setMessage("${getString(R.string.app_name)}\\n${BuildConfig.VERSION_NAME}")
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+    }
+
+    private fun openUrl(url: String) {
+        runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+            .onFailure { Toast.makeText(this, it.message ?: "Unable to open link", Toast.LENGTH_SHORT).show() }
     }
 
     private fun updateVersionCard() {
@@ -224,6 +379,10 @@ class MainActivity : BaseActivity() {
 
     private fun updateProgress(phase: DownloadPhase, percent: Int) {
         val play = findViewById<Button>(R.id.play_button) ?: return
+        val badge = findViewById<TextView>(R.id.top_bar_tasks_badge)
+        val running = phase != DownloadPhase.IDLE && phase != DownloadPhase.DONE && phase != DownloadPhase.ERROR
+        badge?.visibility = if (running) View.VISIBLE else View.GONE
+        if (running) badge?.text = "1"
         when (phase) {
             DownloadPhase.IDLE, DownloadPhase.DONE -> updateVersionCard()
             DownloadPhase.ERROR -> play.isEnabled = true
