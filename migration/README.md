@@ -173,7 +173,28 @@ git -C /tmp/turtle-flame-baseline apply \
   "$OLDPWD/migration/patches/0005-port-turtle-compose-motion.patch"
 ```
 
-The complete patch chain (0001 through 0006) applies cleanly to a fresh pinned
+## Step 7: port assistant, log presentation, and animation settings
+
+`patches/0007-port-assistant-log-coloring-and-animation-settings.patch` ports a
+complete, usable Turtle support slice instead of adding screen-only placeholders:
+
+- adds the offline Turtle Assistant to the Flame home sidebar, with deterministic
+  status, renderer, memory, controls, content-pack, Terracotta, and crash-log
+  guidance; unknown questions are reported as unknown and no cloud API key is
+  required;
+- adds error and warning line styling to the crash viewer while leaving normal
+  log lines unhighlighted, with unit coverage for classification and line
+  preservation;
+- persists Turtle's global animation switch, exposes it in settings, and makes
+  all migrated screen/dialog/tab/list/press motion honor the switch;
+- refreshes the setting when the main Activity resumes, so changing the switch
+  does not require a reinstall or a stale process restart.
+
+This slice is wired to Flame's existing repositories and lifecycle; it does not
+replace the Minecraft launch path or hide any renderer. The assistant is
+explicitly offline and therefore remains safe on devices without network access.
+
+The complete patch chain (0001 through 0007) applies cleanly to a fresh pinned
 Flame checkout. Resource XML was parsed again after the chain was applied, and
 `git diff --check` passed. The patched target has also assembled successfully in
 GitHub Actions. Gradle compilation is not available in this workspace because it

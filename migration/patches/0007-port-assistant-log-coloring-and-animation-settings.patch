@@ -1,0 +1,766 @@
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+index 24e60fa..9db77d2 100644
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -90,6 +90,10 @@
+             android:windowSoftInputMode="adjustNothing"
+             android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
+             android:process=":minecraft" />
++        <activity
++            android:name=".presentation.AssistantActivity"
++            android:exported="false"
++            android:configChanges="orientation|screenSize|keyboard|keyboardHidden" />
+         <activity
+             android:name=".presentation.MainActivity"
+             android:exported="true"
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/data/setting/SettingManager.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/data/setting/SettingManager.kt
+index bff558d..b60a988 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/data/setting/SettingManager.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/data/setting/SettingManager.kt
+@@ -8,7 +8,13 @@ import java.io.File
+ data class Setting(
+     val neverShowCautionAgain : Boolean = false,
+     // 사용자가 "이 버전 건너뛰기"를 누른 업데이트 태그(예: "v2.0.0"). 이 버전은 다시 안내하지 않음.
+-    val skippedUpdateVersion : String? = null
++    val skippedUpdateVersion : String? = null,
++    // Turtle의 전역 애니메이션 설정. 누락된 구버전 JSON은 Gson 기본값을 사용한다.
++    val animationsEnabled: Boolean = true,
++    val animationStyle: String = "fade_in",
++    // 선택된 런처 배경/스킨 URI는 다음 UI 단계가 소비할 수 있도록 저장한다.
++    val backgroundUri: String? = null,
++    val skinUri: String? = null,
+ )
+ 
+ object SettingManager {
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/AssistantActivity.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/AssistantActivity.kt
+new file mode 100644
+index 0000000..2182a15
+--- /dev/null
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/AssistantActivity.kt
+@@ -0,0 +1,18 @@
++package kr.co.donghyun.flamelauncher.presentation
++
++import android.content.Context
++import android.content.Intent
++import androidx.activity.compose.setContent
++import kr.co.donghyun.flamelauncher.presentation.base.BaseActivity
++import kr.co.donghyun.flamelauncher.presentation.ui.screen.AssistantScreen
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.FlameLauncherTheme
++
++class AssistantActivity : BaseActivity() {
++    companion object {
++        fun start(context: Context) = context.startActivity(Intent(context, AssistantActivity::class.java))
++    }
++
++    override fun onCreated() {
++        setContent { FlameLauncherTheme { AssistantScreen(onBack = { finish() }) } }
++    }
++}
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MainActivity.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MainActivity.kt
+index ec9efb5..cde498f 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MainActivity.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/MainActivity.kt
+@@ -33,12 +33,14 @@ import kotlinx.coroutines.launch
+ import kr.co.donghyun.flamelauncher.data.mapper.toData
+ import kr.co.donghyun.flamelauncher.data.mapper.toDomain
+ import kr.co.donghyun.flamelauncher.BuildConfig
++import kr.co.donghyun.flamelauncher.data.setting.Setting
+ import kr.co.donghyun.flamelauncher.data.setting.SettingManager
+ import kr.co.donghyun.flamelauncher.data.update.GithubRelease
+ import kr.co.donghyun.flamelauncher.data.update.GithubUpdateChecker
+ import kr.co.donghyun.flamelauncher.presentation.base.BaseActivity
+ import kr.co.donghyun.flamelauncher.presentation.main.MainViewModel
+ import kr.co.donghyun.flamelauncher.presentation.ui.components.UpdateAvailableDialog
++import kr.co.donghyun.flamelauncher.presentation.ui.motion.TurtleMotion
+ import kr.co.donghyun.flamelauncher.presentation.ui.screen.MainScreen
+ import kr.co.donghyun.flamelauncher.presentation.ui.theme.FlameLauncherTheme
+ 
+@@ -57,6 +59,7 @@ class MainActivity : BaseActivity() {
+     private val viewModel: MainViewModel by viewModels()
+ 
+     private var loginErrorMessage by mutableStateOf<String?>(null)
++    private var launcherSetting by mutableStateOf(Setting())
+ 
+     private val minecraftLauncher = registerForActivityResult(
+         ActivityResultContracts.StartActivityForResult()
+@@ -77,6 +80,8 @@ class MainActivity : BaseActivity() {
+ 
+     @OptIn(ExperimentalMaterial3Api::class)
+     override fun onCreated() {
++        launcherSetting = SettingManager.load(this)
++        TurtleMotion.configure(launcherSetting.animationsEnabled)
+         hideNavigation()
+         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(scrim = android.graphics.Color.TRANSPARENT))
+ 
+@@ -98,6 +103,9 @@ class MainActivity : BaseActivity() {
+         }
+ 
+         setContent {
++            // Reconfigure on state changes so the accessibility/low-end switch takes effect
++            // without recreating the Activity. Existing screen call sites stay source-compatible.
++            TurtleMotion.configure(launcherSetting.animationsEnabled)
+             FlameLauncherTheme {
+                 val versions by viewModel.versions.collectAsState()
+                 val progress by viewModel.progress.collectAsState()
+@@ -146,6 +154,7 @@ class MainActivity : BaseActivity() {
+                     onOpenKeySettings = { KeyboardLayoutEditorActivity.start(this@MainActivity) },
+                     onOpenSettings = { SettingsActivity.start(this@MainActivity) },
+                     onOpenRendererSettings = { SettingsActivity.start(this@MainActivity) },
++                    onOpenAssistant = { AssistantActivity.start(this@MainActivity) },
+                     uuid = session?.uuid,
+                     isLoggedIn = session != null,
+                     username = session?.username,
+@@ -181,6 +190,8 @@ class MainActivity : BaseActivity() {
+ 
+     override fun onResume() {
+         super.onResume()
++        launcherSetting = SettingManager.load(this)
++        TurtleMotion.configure(launcherSetting.animationsEnabled)
+         viewModel.refreshLoginState()
+         viewModel.refreshInstances()
+     }
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/SettingsActivity.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/SettingsActivity.kt
+index 3e1155a..17805aa 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/SettingsActivity.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/SettingsActivity.kt
+@@ -41,6 +41,7 @@ class SettingsActivity : BaseActivity() {
+                 val settings by viewModel.settings.collectAsState()
+                 val saved by viewModel.saved.collectAsState()
+                 val globalRenderer by viewModel.globalRenderer.collectAsState()
++                val launcherSetting by viewModel.launcherSetting.collectAsState()
+ 
+                 SettingsScreen(
+                     onBack = { finish() },
+@@ -53,6 +54,8 @@ class SettingsActivity : BaseActivity() {
+                     onReset = { viewModel.resetSettings() },
+                     onSave = { viewModel.saveExplicitly() },
+                     onGlobalRendererChange = { viewModel.setGlobalRenderer(it) },
++                    launcherSetting = launcherSetting,
++                    onAnimationsEnabledChange = { viewModel.setAnimationsEnabled(it) },
+                 )
+             }
+         }
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/assistant/TurtleAssistant.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/assistant/TurtleAssistant.kt
+new file mode 100644
+index 0000000..7a0b179
+--- /dev/null
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/assistant/TurtleAssistant.kt
+@@ -0,0 +1,120 @@
++package kr.co.donghyun.flamelauncher.presentation.assistant
++
++import android.content.Context
++import android.os.Build
++import kr.co.donghyun.flamelauncher.presentation.util.crash.CrashLogParser
++import java.io.File
++import java.util.Locale
++
++/**
++ * Turtle's offline assistant contract adapted to Flame's repositories.
++ *
++ * It intentionally does not call a cloud model or require an API key. Answers are
++ * deterministic, based on launcher capabilities and the optional local crash log;
++ * an unknown question is reported as unknown rather than invented.
++ */
++object TurtleAssistant {
++    data class Reply(val text: String, val suggestions: List<String> = emptyList())
++
++    fun greeting(): Reply = Reply(
++        "Hi! I am the launcher assistant. I work on this device without an account or API key. " +
++            "Ask about renderers, memory, controls, mods, accounts, LAN, or a crash log.",
++        listOf("Status", "Best renderer?", "Why did my game crash?", "Not enough RAM?"),
++    )
++
++    fun respond(context: Context, input: String, logText: String? = null): Reply {
++        val raw = input.trim()
++        if (raw.isEmpty()) return Reply("Type a question or choose a suggestion.", suggestions())
++        return when (raw.lowercase(Locale.ROOT)) {
++            "/help", "help" -> help()
++            "/status", "status" -> status(context)
++            "/diagnose", "diagnose", "why did my game crash?" -> diagnose(logText)
++            "/renderer", "/renderers", "best renderer?" -> Reply(
++                "Start with MobileGlues for the 26.3 SDL path when it is available. " +
++                    "Use LTW when you need its OpenGL ES bridge, Zink for Vulkan shader workloads, " +
++                    "and GL4ES for older or very low-end devices.",
++                listOf("Not enough RAM?", "Status"),
++            )
++            "/tips", "not enough ram?" -> Reply(
++                "On low-end devices leave headroom for Android: lower the Java heap, render distance, " +
++                    "resolution scale, and shader quality before raising memory. Keep one renderer " +
++                    "selected instead of loading several native stacks.",
++                listOf("Best renderer?", "Status"),
++            )
++            else -> keywordReply(raw.lowercase(Locale.ROOT), logText)
++        }
++    }
++
++    fun suggestions(): List<String> = listOf(
++        "Status", "Best renderer?", "Why did my game crash?", "Not enough RAM?",
++        "How do I install mods?", "Controls", "Friends / LAN",
++    )
++
++    private fun keywordReply(input: String, logText: String?): Reply = when {
++        input.contains("crash") || input.contains("error") -> diagnose(logText)
++        input.contains("mod") || input.contains("pack") -> Reply(
++            "Open Modpacks from the home menu to search CurseForge or Modrinth. " +
++                "The same browser supports mods, resource packs, shader packs, datapacks, and worlds; " +
++                "choose an installed instance before installing content.",
++            listOf("Best renderer?", "Status"),
++        )
++        input.contains("control") || input.contains("keyboard") || input.contains("gamepad") -> Reply(
++            "Use Keyboard editor to place the on-screen controls. Hardware keyboards and gamepads " +
++                "are handled by the runtime; keep the editor profile small on low-end devices.",
++            listOf("Status"),
++        )
++        input.contains("lan") || input.contains("friend") -> Reply(
++            "Terracotta provides the launcher's online-LAN path. Open Terracotta from the home menu, " +
++                "select a node/profile, and grant the Android VPN consent when requested.",
++            listOf("Status"),
++        )
++        else -> Reply(
++            "I do not know that yet. I can explain renderers, crashes, memory, controls, content packs, " +
++                "accounts, and Terracotta LAN. Try /help for the complete list.",
++            suggestions(),
++        )
++    }
++
++    private fun help() = Reply(
++        "I can help with renderers, SDL/LWJGL compatibility, crash logs, memory, performance, " +
++            "controls, mods, resource packs, shader packs, worlds, accounts, versions, files, " +
++            "and Terracotta LAN. Commands: /status, /diagnose, /renderer, /tips.",
++        suggestions(),
++    )
++
++    private fun status(context: Context): Reply {
++        val memoryMb = (Runtime.getRuntime().maxMemory() / 1024 / 1024).coerceAtLeast(0)
++        val abi = Build.SUPPORTED_ABIS.firstOrNull() ?: "unknown ABI"
++        return Reply(
++            "Device: ${Build.MANUFACTURER} ${Build.MODEL}\n" +
++                "Android: ${Build.VERSION.SDK_INT}\n" +
++                "ABI: $abi\n" +
++                "Launcher process heap ceiling: ${memoryMb} MB\n" +
++                "Runtime features: Minecraft 26.3 SDL path, LTW, MobileGlues, content packs, " +
++                "Terracotta, crash reports, and offline assistant.",
++            listOf("Best renderer?", "Not enough RAM?"),
++        )
++    }
++
++    private fun diagnose(logText: String?): Reply {
++        if (logText.isNullOrBlank()) {
++            return Reply(
++                "There is no crash log open. Open Logs/Crash report first, then ask again or share the " +
++                    "log with this assistant; I will show only rules that match it.",
++                listOf("Status", "Best renderer?"),
++            )
++        }
++        val tail = logText.takeLast(200_000)
++        val suspects = CrashLogParser.parseSuspects(tail, File("."))
++        return if (suspects.isEmpty()) Reply(
++            "I read the log but found no identifiable third-party jar. Check the first ERROR/FATAL " +
++                "line and the renderer/native section; I will not guess beyond the evidence.",
++            listOf("Status", "Best renderer?"),
++        ) else Reply(
++            "The log mentions these non-core jars near the failure: " +
++                suspects.take(5).joinToString { it.displayName } + ". Disable one at a time and retry; " +
++                "the list is evidence, not proof of the root cause.",
++            listOf("Best renderer?", "Status"),
++        )
++    }
++}
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/settings/SettingsViewModel.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/settings/SettingsViewModel.kt
+index 916f866..bb38cf1 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/settings/SettingsViewModel.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/settings/SettingsViewModel.kt
+@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
+ import kotlinx.coroutines.launch
+ import kr.co.donghyun.flamelauncher.data.renderer.Renderer
+ import kr.co.donghyun.flamelauncher.data.renderer.RendererManager
++import kr.co.donghyun.flamelauncher.data.setting.Setting
++import kr.co.donghyun.flamelauncher.data.setting.SettingManager
+ import kr.co.donghyun.flamelauncher.domain.model.JvmSettings
+ import kr.co.donghyun.flamelauncher.domain.usecase.GetJvmSettingsUseCase
+ import kr.co.donghyun.flamelauncher.domain.usecase.ResetJvmSettingsUseCase
+@@ -43,6 +45,9 @@ class SettingsViewModel @Inject constructor(
+     private val _globalRenderer = MutableStateFlow(RendererManager.load(context))
+     val globalRenderer: StateFlow<Renderer> = _globalRenderer.asStateFlow()
+ 
++    private val _launcherSetting = MutableStateFlow(SettingManager.load(context))
++    val launcherSetting: StateFlow<Setting> = _launcherSetting.asStateFlow()
++
+     init {
+         viewModelScope.launch(Dispatchers.IO) {
+             _settings.value = getJvmSettingsUseCase()
+@@ -74,4 +79,10 @@ class SettingsViewModel @Inject constructor(
+         _globalRenderer.value = renderer
+         viewModelScope.launch(Dispatchers.IO) { RendererManager.save(context, renderer) }
+     }
++
++    fun setAnimationsEnabled(enabled: Boolean) {
++        val updated = _launcherSetting.value.copy(animationsEnabled = enabled)
++        _launcherSetting.value = updated
++        viewModelScope.launch(Dispatchers.IO) { SettingManager.save(context, updated) }
++    }
+ }
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/motion/TurtleMotion.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/motion/TurtleMotion.kt
+index e3dd0c2..5a152ed 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/motion/TurtleMotion.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/motion/TurtleMotion.kt
+@@ -38,26 +38,35 @@ import androidx.compose.animation.core.tween
+  * user disables animation or when the game is active.
+  */
+ object TurtleMotion {
++    /** Updated by the launcher settings screen; volatile keeps Activity recreation safe. */
++    @Volatile private var animationsEnabled = true
++
++    fun configure(enabled: Boolean) {
++        animationsEnabled = enabled
++    }
++
+     const val screenDurationMillis = 320
+     const val dialogDurationMillis = 260
+     const val listStepMillis = 28
+ 
+     val screenEnter: EnterTransition
+-        get() = fadeIn(tween(screenDurationMillis, easing = FastOutSlowInEasing)) +
++        get() = if (!animationsEnabled) EnterTransition.None else fadeIn(tween(screenDurationMillis, easing = FastOutSlowInEasing)) +
+             slideInVertically(
+                 initialOffsetY = { it / 8 },
+                 animationSpec = tween(screenDurationMillis, easing = FastOutSlowInEasing),
+             )
+ 
+     val screenExit: ExitTransition
+-        get() = fadeOut(tween(240, easing = LinearOutSlowInEasing)) +
++        get() = if (!animationsEnabled) ExitTransition.None else fadeOut(tween(240, easing = LinearOutSlowInEasing)) +
+             slideOutVertically(
+                 targetOffsetY = { -it / 12 },
+                 animationSpec = tween(240, easing = LinearOutSlowInEasing),
+             )
+ 
+     /** Resolves Turtle's persisted transition keys without coupling Compose to settings storage. */
+-    fun enter(key: String?): EnterTransition = when (key) {
++    fun enter(key: String?): EnterTransition {
++        if (!animationsEnabled) return EnterTransition.None
++        return when (key) {
+         "slide_down" -> fadeIn(tween(screenDurationMillis)) +
+             slideInVertically(initialOffsetY = { -it / 8 }, animationSpec = tween(screenDurationMillis))
+         "slide_left" -> fadeIn(tween(screenDurationMillis)) +
+@@ -71,9 +80,12 @@ object TurtleMotion {
+             scaleIn(initialScale = if (key == "zoom") 0.84f else 0.72f, animationSpec = tween(screenDurationMillis))
+         "sheet" -> sheetEnter
+         else -> screenEnter
++        }
+     }
+ 
+-    fun exit(key: String?): ExitTransition = when (key) {
++    fun exit(key: String?): ExitTransition {
++        if (!animationsEnabled) return ExitTransition.None
++        return when (key) {
+         "slide_down" -> fadeOut(tween(240)) +
+             slideOutVertically(targetOffsetY = { it / 12 }, animationSpec = tween(240))
+         "slide_left" -> fadeOut(tween(240)) +
+@@ -87,31 +99,32 @@ object TurtleMotion {
+             scaleOut(targetScale = if (key == "zoom") 0.84f else 0.72f, animationSpec = tween(220))
+         "sheet" -> sheetExit
+         else -> screenExit
++        }
+     }
+ 
+     val sheetEnter: EnterTransition
+-        get() = fadeIn(tween(dialogDurationMillis)) +
++        get() = if (!animationsEnabled) EnterTransition.None else fadeIn(tween(dialogDurationMillis)) +
+             slideInVertically(
+                 initialOffsetY = { it },
+                 animationSpec = tween(dialogDurationMillis, easing = FastOutSlowInEasing),
+             )
+ 
+     val sheetExit: ExitTransition
+-        get() = fadeOut(tween(220)) +
++        get() = if (!animationsEnabled) ExitTransition.None else fadeOut(tween(220)) +
+             slideOutVertically(
+                 targetOffsetY = { it },
+                 animationSpec = tween(220, easing = LinearOutSlowInEasing),
+             )
+ 
+     val dialogEnter: EnterTransition
+-        get() = fadeIn(tween(dialogDurationMillis)) +
++        get() = if (!animationsEnabled) EnterTransition.None else fadeIn(tween(dialogDurationMillis)) +
+             scaleIn(
+                 initialScale = 0.92f,
+                 animationSpec = tween(dialogDurationMillis, easing = FastOutSlowInEasing),
+             )
+ 
+     val dialogExit: ExitTransition
+-        get() = fadeOut(tween(200)) +
++        get() = if (!animationsEnabled) ExitTransition.None else fadeOut(tween(200)) +
+             scaleOut(
+                 targetScale = 0.96f,
+                 animationSpec = tween(200, easing = LinearOutSlowInEasing),
+@@ -119,7 +132,7 @@ object TurtleMotion {
+ 
+     /** Turtle's auxiliary effects, expressed as cheap graphics-layer transforms. */
+     fun pulse(enabled: Boolean = true): Modifier = Modifier.composed {
+-        if (!enabled) return@composed Modifier
++        if (!enabled || !animationsEnabled) return@composed Modifier
+         val transition = androidx.compose.animation.core.rememberInfiniteTransition()
+         val scale by transition.animateFloat(
+             initialValue = 0.98f,
+@@ -130,7 +143,7 @@ object TurtleMotion {
+     }
+ 
+     fun wobble(enabled: Boolean = true): Modifier = Modifier.composed {
+-        if (!enabled) return@composed Modifier
++        if (!enabled || !animationsEnabled) return@composed Modifier
+         val transition = androidx.compose.animation.core.rememberInfiniteTransition()
+         val rotation by transition.animateFloat(
+             initialValue = -1.5f,
+@@ -141,7 +154,7 @@ object TurtleMotion {
+     }
+ 
+     fun shake(enabled: Boolean = true): Modifier = Modifier.composed {
+-        if (!enabled) return@composed Modifier
++        if (!enabled || !animationsEnabled) return@composed Modifier
+         val transition = androidx.compose.animation.core.rememberInfiniteTransition()
+         val offset by transition.animateFloat(
+             initialValue = -2f,
+@@ -156,7 +169,7 @@ object TurtleMotion {
+         val interactionSource = remember { MutableInteractionSource() }
+         val pressed by interactionSource.collectIsPressedAsState()
+         val scale by animateFloatAsState(
+-            targetValue = if (pressed) 0.97f else 1f,
++            targetValue = if (animationsEnabled && pressed) 0.97f else 1f,
+             animationSpec = tween(120),
+             label = "turtle-press-scale",
+         )
+@@ -173,6 +186,7 @@ object TurtleMotion {
+     }
+ 
+     fun tabTransform(forward: Boolean = true): ContentTransform {
++        if (!animationsEnabled) return EnterTransition.None togetherWith ExitTransition.None
+         val enterOffset = if (forward) 1 else -1
+         val exitOffset = -enterOffset
+         return (
+@@ -188,8 +202,9 @@ object TurtleMotion {
+         )
+     }
+ 
+-    fun listItemEnter(index: Int): EnterTransition =
+-        fadeIn(tween(260, delayMillis = (index.coerceAtMost(8)) * listStepMillis)) +
++    fun listItemEnter(index: Int): EnterTransition = if (!animationsEnabled) {
++        EnterTransition.None
++    } else fadeIn(tween(260, delayMillis = (index.coerceAtMost(8)) * listStepMillis)) +
+             slideInVertically(
+                 initialOffsetY = { it / 10 },
+                 animationSpec = tween(
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/AssistantScreen.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/AssistantScreen.kt
+new file mode 100644
+index 0000000..73d6f45
+--- /dev/null
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/AssistantScreen.kt
+@@ -0,0 +1,119 @@
++package kr.co.donghyun.flamelauncher.presentation.ui.screen
++
++import androidx.compose.animation.AnimatedVisibility
++import androidx.compose.foundation.background
++import androidx.compose.foundation.border
++import androidx.compose.foundation.clickable
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.Row
++import androidx.compose.foundation.layout.Spacer
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.fillMaxWidth
++import androidx.compose.foundation.layout.height
++import androidx.compose.foundation.layout.imePadding
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.layout.width
++import androidx.compose.foundation.lazy.LazyColumn
++import androidx.compose.foundation.lazy.items
++import androidx.compose.foundation.shape.RoundedCornerShape
++import androidx.compose.foundation.text.BasicTextField
++import androidx.compose.material3.Text
++import androidx.compose.material3.TextButton
++import androidx.compose.runtime.Composable
++import androidx.compose.runtime.getValue
++import androidx.compose.runtime.mutableStateListOf
++import androidx.compose.runtime.mutableStateOf
++import androidx.compose.runtime.remember
++import androidx.compose.runtime.setValue
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.graphics.SolidColor
++import androidx.compose.ui.platform.LocalContext
++import androidx.compose.ui.text.TextStyle
++import androidx.compose.ui.text.font.FontWeight
++import androidx.compose.ui.unit.dp
++import androidx.compose.ui.unit.sp
++import kr.co.donghyun.flamelauncher.presentation.assistant.TurtleAssistant
++import kr.co.donghyun.flamelauncher.presentation.ui.motion.TurtleMotion
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgBorder
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgDark
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgSurface
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.Flame
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.TextMain
++import kr.co.donghyun.flamelauncher.presentation.ui.theme.TextSub
++
++private data class AssistantMessage(val fromUser: Boolean, val text: String)
++
++@Composable
++fun AssistantScreen(onBack: () -> Unit) {
++    val context = LocalContext.current
++    val messages = remember { mutableStateListOf(AssistantMessage(false, TurtleAssistant.greeting().text)) }
++    var input by remember { mutableStateOf("") }
++    var suggestions by remember { mutableStateOf(TurtleAssistant.greeting().suggestions) }
++
++    fun send(question: String) {
++        val trimmed = question.trim()
++        if (trimmed.isEmpty()) return
++        messages += AssistantMessage(true, trimmed)
++        val reply = TurtleAssistant.respond(context, trimmed)
++        messages += AssistantMessage(false, reply.text)
++        suggestions = reply.suggestions
++        input = ""
++    }
++
++    Column(Modifier.fillMaxSize().background(BgDark).imePadding()) {
++        Row(
++            Modifier.fillMaxWidth().background(BgSurface).padding(horizontal = 12.dp, vertical = 8.dp),
++            verticalAlignment = Alignment.CenterVertically,
++        ) {
++            TextButton(onClick = onBack) { Text("Back", color = TextSub) }
++            Spacer(Modifier.width(8.dp))
++            Column(Modifier.weight(1f)) {
++                Text("Turtle Assistant", color = TextMain, fontWeight = FontWeight.Bold)
++                Text("Offline guidance; no API key or cloud upload", color = TextSub, fontSize = 10.sp)
++            }
++        }
++        LazyColumn(
++            Modifier.weight(1f).fillMaxWidth().padding(horizontal = 12.dp),
++            verticalArrangement = Arrangement.spacedBy(8.dp),
++            reverseLayout = false,
++        ) {
++            items(messages) { message ->
++                AnimatedVisibility(visible = true, enter = TurtleMotion.dialogEnter) {
++                    Box(
++                        Modifier.fillMaxWidth().padding(start = if (message.fromUser) 48.dp else 0.dp, end = if (message.fromUser) 0.dp else 48.dp)
++                            .background(if (message.fromUser) Flame.copy(alpha = 0.18f) else BgSurface, RoundedCornerShape(12.dp))
++                            .border(1.dp, if (message.fromUser) Flame else BgBorder, RoundedCornerShape(12.dp))
++                            .padding(10.dp),
++                    ) { Text(message.text, color = TextMain, fontSize = 12.sp) }
++                }
++            }
++        }
++        Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
++            suggestions.take(4).forEach { suggestion ->
++                Text(
++                    suggestion,
++                    color = Flame,
++                    fontSize = 10.sp,
++                    modifier = Modifier.clickable { send(suggestion) }.padding(vertical = 5.dp),
++                )
++            }
++        }
++        Row(
++            Modifier.fillMaxWidth().padding(10.dp),
++            verticalAlignment = Alignment.CenterVertically,
++            horizontalArrangement = Arrangement.spacedBy(8.dp),
++        ) {
++            BasicTextField(
++                value = input,
++                onValueChange = { input = it },
++                textStyle = TextStyle(color = TextMain, fontSize = 12.sp),
++                cursorBrush = SolidColor(Flame),
++                modifier = Modifier.weight(1f).background(BgSurface, RoundedCornerShape(10.dp)).border(1.dp, BgBorder, RoundedCornerShape(10.dp)).padding(12.dp),
++            )
++            TextButton(onClick = { send(input) }) { Text("Send", color = Flame, fontWeight = FontWeight.Bold) }
++        }
++    }
++}
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/CrashReportScreen.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/CrashReportScreen.kt
+index 879f8e6..7a82111 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/CrashReportScreen.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/CrashReportScreen.kt
+@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.text.font.FontFamily
++import kr.co.donghyun.flamelauncher.presentation.util.log.LogLineStyle
+ import androidx.compose.ui.text.font.FontWeight
+ import androidx.compose.ui.text.style.TextOverflow
+ import androidx.compose.ui.unit.dp
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt
+index d53f0dc..f418248 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/MainScreen.kt
+@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
+ import androidx.compose.foundation.shape.RoundedCornerShape
+ import androidx.compose.material.icons.Icons
+ import androidx.compose.material.icons.filled.Check
++import androidx.compose.material.icons.filled.Chat
+ import androidx.compose.material.icons.filled.Dashboard
+ import androidx.compose.material.icons.filled.GridView
+ import androidx.compose.material.icons.filled.Verified
+@@ -110,6 +111,8 @@ enum class MainSection(
+         androidx.compose.material.icons.Icons.Filled.Tune, false),
+     KEYBOARD("키보드 편집", "화면 버튼 배치",
+         androidx.compose.material.icons.Icons.Filled.Keyboard, false),
++    ASSISTANT("AI 어시스턴트", "오프라인 도움말 · 진단",
++        androidx.compose.material.icons.Icons.Filled.Chat, false),
+     NOTES("업데이트 노트", "저장소 README",
+         androidx.compose.material.icons.Icons.AutoMirrored.Filled.Article, true),
+ }
+@@ -133,6 +136,7 @@ fun MainScreen(
+     onOpenKeySettings: () -> Unit,
+     onOpenSettings: () -> Unit,
+     onOpenRendererSettings: () -> Unit,
++    onOpenAssistant: () -> Unit = {},
+     uuid: String?,
+     isLoggedIn: Boolean,
+     username: String?,
+@@ -216,6 +220,7 @@ fun MainScreen(
+                                 MainSection.MODPACKS -> onOpenContents()
+                                 MainSection.SETTINGS -> onOpenSettings()
+                                 MainSection.KEYBOARD -> onOpenKeySettings()
++                                MainSection.ASSISTANT -> onOpenAssistant()
+                                 else -> selectedSection = section
+                             }
+                         },
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/SettingsScreen.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/SettingsScreen.kt
+index 505e628..0f4bd87 100644
+--- a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/SettingsScreen.kt
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/ui/screen/SettingsScreen.kt
+@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
+ import androidx.compose.ui.unit.dp
+ import androidx.compose.ui.unit.sp
+ import kr.co.donghyun.flamelauncher.data.renderer.Renderer
++import kr.co.donghyun.flamelauncher.data.setting.Setting
+ import kr.co.donghyun.flamelauncher.domain.model.JvmSettings
+ import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgBorder
+ import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgDark
+@@ -69,6 +70,8 @@ fun SettingsScreen(
+     onReset: () -> Unit,
+     onSave: () -> Unit,
+     onGlobalRendererChange: (Renderer) -> Unit,
++    launcherSetting: Setting = Setting(),
++    onAnimationsEnabledChange: (Boolean) -> Unit = {},
+ ) {
+     val context = LocalContext.current
+     val tablet = isTablet()
+@@ -170,6 +173,25 @@ fun SettingsScreen(
+                 }
+             }
+ 
++            // Turtle의 전역 애니메이션 스위치. 비활성화하면 screen/dialog/list motion과
++            // press compression이 모두 즉시 전환되어 저사양 기기와 접근성을 함께 지원한다.
++            Column(
++                modifier = Modifier
++                    .fillMaxWidth()
++                    .background(BgSurface, RoundedCornerShape(12.dp))
++                    .border(1.dp, BgBorder, RoundedCornerShape(12.dp))
++                    .padding(if (tablet) 16.dp else if (compact) 9.dp else 12.dp),
++                verticalArrangement = Arrangement.spacedBy(8.dp)
++            ) {
++                SettingToggleRow(
++                    emoji = "✨",
++                    title = context.getString(R.string.turtle_animation_settings_title),
++                    subtitle = context.getString(R.string.turtle_animation_settings_desc),
++                    checked = launcherSetting.animationsEnabled,
++                    onCheckedChange = onAnimationsEnabledChange,
++                )
++            }
++
+             // 화면 설정 섹션
+             Column(
+                 modifier = Modifier
+diff --git a/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/util/log/LogLineStyle.kt b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/util/log/LogLineStyle.kt
+new file mode 100644
+index 0000000..76721f5
+--- /dev/null
++++ b/app/src/main/java/kr/co/donghyun/flamelauncher/presentation/util/log/LogLineStyle.kt
+@@ -0,0 +1,44 @@
++package kr.co.donghyun.flamelauncher.presentation.util.log
++
++import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.text.AnnotatedString
++import androidx.compose.ui.text.SpanStyle
++import androidx.compose.ui.text.buildAnnotatedString
++import androidx.compose.ui.text.withStyle
++
++/**
++ * Minimal, deterministic log highlighting shared by the crash viewer and assistant.
++ *
++ * Normal lines deliberately receive no span style. This keeps long logs cheap to render
++ * and avoids turning harmless INFO/DEBUG output into a wall of highlighted text.
++ */
++enum class LogSeverity { NORMAL, WARNING, ERROR }
++
++object LogLineStyle {
++    private val errorPattern = Regex(
++        "(^|\\s)(E/|F/|ERROR|FATAL|SEVERE|EXCEPTION|CRASH|CRASHED)(\\b|:)",
++        RegexOption.IGNORE_CASE,
++    )
++    private val warningPattern = Regex(
++        "(^|\\s)(W/|WARN|WARNING)(\\b|:)",
++        RegexOption.IGNORE_CASE,
++    )
++
++    fun severity(line: String): LogSeverity = when {
++        errorPattern.containsMatchIn(line) -> LogSeverity.ERROR
++        warningPattern.containsMatchIn(line) -> LogSeverity.WARNING
++        else -> LogSeverity.NORMAL
++    }
++
++    /** Preserve line breaks while styling only error and warning lines. */
++    fun styled(text: String): AnnotatedString = buildAnnotatedString {
++        text.split('\n').forEachIndexed { index, line ->
++            if (index > 0) append('\n')
++            when (severity(line)) {
++                LogSeverity.ERROR -> withStyle(SpanStyle(color = Color(0xFFFF7777))) { append(line) }
++                LogSeverity.WARNING -> withStyle(SpanStyle(color = Color(0xFFFFC857))) { append(line) }
++                LogSeverity.NORMAL -> append(line)
++            }
++        }
++    }
++}
+diff --git a/app/src/main/res/values/turtle_strings.xml b/app/src/main/res/values/turtle_strings.xml
+index 48dbde7..097ce80 100644
+--- a/app/src/main/res/values/turtle_strings.xml
++++ b/app/src/main/res/values/turtle_strings.xml
+@@ -1379,4 +1379,8 @@
+     <string name="turtle_skin_cape_other_login_message">This account logs in through %s, which serves its own skins - the launcher cannot inject one at launch. The skin was saved locally; to wear it on this account, upload it on the server\'s website.</string>
+     <string name="turtle_skin_cape_open_site">Open skin website</string>
+ 
++
++<!-- Phase 4: animation settings consumed by the Flame settings screen. -->
++<string name="turtle_animation_settings_title">Launcher animations</string>
++<string name="turtle_animation_settings_desc">Use Turtle transitions, dialog motion, and press feedback</string>
+ </resources>
+diff --git a/app/src/test/java/kr/co/donghyun/flamelauncher/presentation/util/log/LogLineStyleTest.kt b/app/src/test/java/kr/co/donghyun/flamelauncher/presentation/util/log/LogLineStyleTest.kt
+new file mode 100644
+index 0000000..cb37ba2
+--- /dev/null
++++ b/app/src/test/java/kr/co/donghyun/flamelauncher/presentation/util/log/LogLineStyleTest.kt
+@@ -0,0 +1,24 @@
++package kr.co.donghyun.flamelauncher.presentation.util.log
++
++import org.junit.Assert.assertEquals
++import org.junit.Test
++
++class LogLineStyleTest {
++    @Test
++    fun errorsAndWarningsAreDistinct() {
++        assertEquals(LogSeverity.ERROR, LogLineStyle.severity("E/AndroidRuntime: FATAL EXCEPTION"))
++        assertEquals(LogSeverity.WARNING, LogLineStyle.severity("WARN: shader fallback"))
++    }
++
++    @Test
++    fun ordinaryLinesRemainUnhighlighted() {
++        assertEquals(LogSeverity.NORMAL, LogLineStyle.severity("[main/INFO]: Loading 42 assets"))
++        assertEquals(LogSeverity.NORMAL, LogLineStyle.severity("the word warning appears as prose"))
++    }
++
++    @Test
++    fun styledTextPreservesEveryLine() {
++        val source = "INFO hello\nWARN slow\nERROR failed"
++        assertEquals(source, LogLineStyle.styled(source).text)
++    }
++}
