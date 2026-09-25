@@ -1,6 +1,6 @@
 # FlameLauncher base / Turtle Launcher UI migration
 
-Status: **Phase 0 — safety plan and inventory only. No launcher behavior has been replaced.**
+Status: **Phase 4 in progress — the pinned Flame target has eight applied migration slices and a ninth account slice. The production root is not switched until the full parity/release gates pass.**
 
 This document defines the migration order for a FlameLauncher-based build that preserves Turtle Launcher’s UI, animations, feature set, Minecraft 26.3 SDL support, LTW, and MobileGlues support.
 
@@ -130,6 +130,30 @@ Only after this gate should the Flame-based target become the default. Turtle re
 
 ## Current decision
 
-The safest implementation is **not** a destructive replacement. Flame provides the compatibility reference and the isolated migration target; Turtle remains the fallback until runtime, renderer, feature, UI, animation, ABI, and upgrade parity are demonstrated.
+The requested end state is a Flame-based root target with Turtle UI and feature
+parity. The user selected full Flame vendoring despite the large source/native
+payload, so this is not a permanent submodule or UI-only rewrite decision.
 
-The next code change should be Phase 1: add an isolated Flame migration target and prove its unmodified baseline builds. The current Turtle launcher and its 26.3 fix must not be edited as part of that first change.
+The current repository keeps the production Turtle module as a rollback target
+while the pinned Flame target is reproduced by `migration/build-flame.sh` and its
+ordered patches. This is a deliberate safety boundary, not a parity claim: the
+patched Flame APK builds, but root replacement and final vendoring remain gated
+on the unfinished account, skin, file-manager, renderer-package, ABI, lifecycle,
+and device validation work. Do not describe the migration as complete until
+those gates pass.
+
+Completed in the applied chain so far:
+
+- Flame's Minecraft 26.3-safe SDL/LWJGL path, callback artifact, LTW, and
+  MobileGlues ordering are preserved;
+- Turtle colors, strings, dimensions, styles, drawables, animations, font, and
+  motion primitives are available under collision-safe names;
+- the home/settings shell consumes Turtle motion, background selection, offline
+  assistant, crash-log styling, and offline account behavior;
+- the complete target assembles successfully in GitHub Actions.
+
+The next vertical slices are skin application/cape behavior, file and profile
+management, fuller account management, and a renderer packaging/ABI audit. Only
+after those are usable and tested should the vendored Flame tree become the
+repository's default root target; Turtle remains the rollback target until the
+upgrade and device gates pass.
