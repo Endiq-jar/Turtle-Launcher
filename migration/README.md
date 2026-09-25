@@ -182,6 +182,16 @@ The script prints the resulting APK path under:
 A JDK 17 or newer, Android SDK platform 36, build tools 36.0.0, NDK
 27.0.12077973, and CMake 3.22.1 are required for a local build.
 
+Before deleting this repository, export a standalone copy containing the
+baseline pin, build script, documentation, and all patches:
+
+```bash
+migration/export-patch-bundle.sh /path/to/turtle-flame-migration.tar.gz
+```
+
+Extracting that archive preserves the same `migration/build-flame.sh` workflow;
+it does not depend on this Git checkout or its Git history.
+
 For a hosted build, `.github/workflows/build-flame-migration.yml` runs on pushes
 to the migration branch, pull requests, or manual dispatch. Open the completed
 GitHub Actions run and download the artifact named

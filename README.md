@@ -169,6 +169,12 @@ GitHub Actions through **Build patched Flame migration APK**; download the APK
 artifact from the completed workflow run to install it on an Android test
 device. This artifact is for testing and is not a signed release/update APK.
 
+Before deleting this repository, preserve the portable patch bundle:
+
+```bash
+migration/export-patch-bundle.sh ~/turtle-flame-migration.tar.gz
+```
+
 The existing Turtle app can still be built with `./gradlew
 :TurtleLauncher:assembleDebug`. Do not switch the default target until the
 runtime, renderer, feature, ABI, lifecycle, and upgrade gates in
