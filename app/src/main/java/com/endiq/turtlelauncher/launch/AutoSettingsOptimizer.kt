@@ -27,9 +27,12 @@ object AutoSettingsOptimizer {
         if (autoRenderer) selectRenderer(context, mcVersionId)
 
         val fastBoot = prefs.getBoolean("fast_boot", true)
-        if (fastBoot && mcVersionId.isNotBlank() && prefs.getString("last_version", null) == mcVersionId) {
-            Log.i(TAG, "Fast Boot: performance tier already applied for $mcVersionId")
-            return
+        val sameVersion = fastBoot && mcVersionId.isNotBlank() &&
+            prefs.getString("last_version", null) == mcVersionId
+        if (sameVersion) {
+            // Keep the cheap cached renderer decision, but do not skip thermal/power checks:
+            // those can change between launches and must be allowed to lower the frame cap.
+            Log.i(TAG, "Fast Boot: cached version tier; checking current thermal/power state")
         }
 
         val totalRamMb = totalRamMb(context)
