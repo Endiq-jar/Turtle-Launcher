@@ -262,6 +262,10 @@ dependencies {
     implementation(libs.androidx.foundation)
     implementation(libs.asm)
 
+    // Dependencies used by the copied Turtle Launcher XML layouts.
+    implementation("com.github.Mathias-Boulay:ExtendedView:1.0.0")
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
