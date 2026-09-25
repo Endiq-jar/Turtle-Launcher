@@ -8,4 +8,10 @@ import dagger.hilt.android.HiltAndroidApp
  * @AndroidEntryPoint / @HiltViewModel 이 동작한다.
  */
 @HiltAndroidApp
-class TurtleLauncherApplication : Application()
+class TurtleLauncherApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        // Original Turtle diagnostics/warm-start features run silently in the process.
+        kr.co.donghyun.turtlelauncher.feature.turtle.TurtleRuntimeSupport.start(this)
+    }
+}

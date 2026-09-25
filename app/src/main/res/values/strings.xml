@@ -1677,4 +1677,6 @@
     <string name="update_available_title">Update available</string>
     <string name="later_button">Later</string>
     <string name="skip_button">Skip</string>
+    <string name="control_preset_label">Turtle control preset</string>
+    <string name="control_preset_desc">Tap to cycle the original Default and Survival layouts.</string>
 </resources>

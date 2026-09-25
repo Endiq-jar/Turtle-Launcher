@@ -30,6 +30,7 @@ import kr.co.donghyun.turtlelauncher.domain.model.MinecraftSupport
 import kr.co.donghyun.turtlelauncher.presentation.base.BaseActivity
 import kr.co.donghyun.turtlelauncher.presentation.main.MainViewModel
 import kr.co.donghyun.turtlelauncher.presentation.ui.motion.TurtleMotion
+import kr.co.donghyun.turtlelauncher.launch.AutoSettingsOptimizer
 
 /**
  * Turtle Launcher home entry point.
@@ -64,6 +65,9 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onCreated() {
+        // Apply the old Turtle automatic renderer/performance policy before the first launch.
+        // It only changes persisted game settings; the original Turtle home remains untouched.
+        AutoSettingsOptimizer.apply(this, MinecraftSupport.SUPPORTED_VERSION)
         launcherSetting = SettingManager.load(this)
         TurtleMotion.configure(launcherSetting.animationsEnabled)
         hideNavigation()

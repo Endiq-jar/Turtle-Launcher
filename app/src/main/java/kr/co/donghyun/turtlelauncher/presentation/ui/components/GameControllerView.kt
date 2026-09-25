@@ -128,7 +128,27 @@ class GameControllerView(context: Context) : View(context) {
 
     private val activity = context as MinecraftActivity
     private var buttons: List<KeyButton> = KeyLayoutManager.load(context)
+    private var virtualMouseEnabled = false
     private val buttonRects = mutableMapOf<String, RectF>()
+
+    /** Reloads the selected original Turtle preset without recreating the game Activity. */
+    fun cycleControlPreset(): String {
+        val (name, layout) = kr.co.donghyun.turtlelauncher.data.key.ControlPresetManager.cycle(context)
+        if (layout.isNotEmpty()) {
+            releaseAllPressed()
+            buttons = layout
+            recalcRects(width, height)
+            invalidate()
+        }
+        return name
+    }
+
+    fun reloadControlLayout() {
+        releaseAllPressed()
+        buttons = KeyLayoutManager.load(context)
+        recalcRects(width, height)
+        invalidate()
+    }
     private val pressedButtons = mutableMapOf<String, Int>()
     private val forwardedPids = mutableSetOf<Int>()  // 우리가 SurfaceView 로 떠넘긴 pointer
     private var surfaceViewCached: View? = null
@@ -497,7 +517,7 @@ class GameControllerView(context: Context) : View(context) {
                 // 이동키(WASD)는 개별 버튼 대신 조이스틱으로 그린다.
                 if (button.glfwCode in MOVE_KEYS) return@forEach
                 // ESC 전용 모드면 ESC(256) + 키보드 토글(-6) 만 그린다(나머지 숨김).
-                if (escOnlyMode && button.glfwCode != 256 && button.glfwCode != -6) return@forEach
+                if (escOnlyMode && button.glfwCode !in setOf(256, -6, -8, -9)) return@forEach
                 val rect = buttonRects[button.id] ?: return@forEach
                 val isPressed = pressedButtons.containsKey(button.id)
 
@@ -516,8 +536,31 @@ class GameControllerView(context: Context) : View(context) {
                 }
                 val border = if (button.isAccent || isCombatToggleActive) borderAccentPaint else borderPaint
 
-                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, fill)
-                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, border)
+                // Bundled Turtle layouts carry their original ARGB/opacity/radius metadata.
+                // User-created layouts leave these nullable and keep the current Turtle styling.
+                if (button.backgroundColor == null) {
+                    fill.color = when {
+                        fill === bgAccentPressedPaint -> if (button.isAccent || isCombatToggleActive) Color.argb(255, 233, 30, 140) else Color.argb(255, 156, 16, 96)
+                        fill === bgAccentPaint -> Color.argb(217, 107, 0, 64)
+                        fill === bgPressedPaint -> Color.argb(255, 156, 16, 96)
+                        else -> Color.argb(217, 26, 10, 20)
+                    }
+                } else if (!showPressed && !button.isAccent) {
+                    fill.color = applyOpacity(button.backgroundColor, button.opacity)
+                }
+                if (button.strokeColor == null) {
+                    border.color = if (button.isAccent || isCombatToggleActive) Color.argb(178, 255, 107, 181) else Color.argb(178, 122, 40, 85)
+                } else if (!button.isAccent && !isCombatToggleActive) {
+                    border.color = applyOpacity(button.strokeColor, button.opacity)
+                }
+                fill.strokeWidth = 3f
+                border.strokeWidth = (if (button.strokeColor != null) button.cornerRadius.coerceAtLeast(1f) else 3f)
+                    .coerceIn(1f, 6f) * resources.displayMetrics.density / 2f
+                val radius = if (button.backgroundColor != null)
+                    button.cornerRadius * resources.displayMetrics.density
+                else cornerRadius
+                canvas.drawRoundRect(rect, radius, radius, fill)
+                canvas.drawRoundRect(rect, radius, radius, border)
 
                 // 라벨도 모드에 따라 바꾸기
                 val labelText = when {
@@ -673,7 +716,7 @@ class GameControllerView(context: Context) : View(context) {
             // 이동키(WASD)는 조이스틱이 처리하므로 일반 버튼 탭에서 제외.
             if (button.glfwCode in MOVE_KEYS) return@forEach
             // ESC 전용 모드면 ESC(256) + 키보드 토글(-6) 만 입력 받는다.
-            if (escOnlyMode && button.glfwCode != 256 && button.glfwCode != -6) return@forEach
+            if (escOnlyMode && button.glfwCode !in setOf(256, -6, -8, -9)) return@forEach
             val rect = buttonRects[button.id] ?: return@forEach
             if (rect.contains(x, y)) return button
         }
@@ -740,6 +783,11 @@ class GameControllerView(context: Context) : View(context) {
         joystickKnob.set(joystickBase)
     }
 
+    private fun applyOpacity(color: Int, opacity: Float): Int {
+        val alpha = (((color ushr 24) * opacity.coerceIn(0f, 1f)).toInt()).coerceIn(0, 255)
+        return (color and 0x00ffffff) or (alpha shl 24)
+    }
+
     private fun handlePress(glfwCode: Int, action: Int) {
         when {
             // 앉기(Shift, 340)는 토글 — 누를 때마다 ON/OFF 전환, 손 떼는 동작은 무시
@@ -754,6 +802,21 @@ class GameControllerView(context: Context) : View(context) {
             glfwCode == -1 -> activity.sendMouseButton(0, action)
             glfwCode == -2 -> activity.sendMouseButton(1, action)
             glfwCode == -3 -> activity.sendMouseButton(2, action)
+            // Original Turtle special controls: GUI toggles controls, MENU opens the launcher
+            // overlay, and VIRTUALMOUSE switches the touch-pointer mode. Ordinary surface
+            // touches are already forwarded to Minecraft, so the latter is an explicit state
+            // switch rather than a second competing touch dispatcher.
+            glfwCode == -8 && action == GLFW_PRESS -> {
+                toggleControllerVisible()
+            }
+            glfwCode == -9 && action == GLFW_PRESS -> {
+                onMenuClick?.invoke()
+            }
+            glfwCode == -5 && action == GLFW_PRESS -> {
+                virtualMouseEnabled = !virtualMouseEnabled
+                Log.d("TURTLE_LAUNCHER", "Original Turtle virtual mouse: $virtualMouseEnabled")
+                invalidate()
+            }
             // glfwCode == -6 분기 전체 교체
             glfwCode == -6 && action == GLFW_PRESS -> {
                 val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE)

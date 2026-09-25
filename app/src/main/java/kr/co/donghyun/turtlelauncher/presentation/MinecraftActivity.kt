@@ -499,6 +499,12 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
                             userName = currentPlayerName(),
                             controllerVisible = gameControllerView?.isControllerVisible ?: true,
                             onToggleController = { gameControllerView?.toggleControllerVisible() },
+                            onControlPresetChange = {
+                                val preset = gameControllerView?.cycleControlPreset()
+                                if (preset != null) {
+                                    Toast.makeText(this@MinecraftActivity, "Control preset: $preset", Toast.LENGTH_SHORT).show()
+                                }
+                            },
                             onClose = { showInGameMenu = false },
                         )
                     }
@@ -2407,7 +2413,9 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
         // disableUnsupportedMods 로 .pingdisabled 처리된 것도 실제 로드되진 않지만,
         // 메모리/로딩 부담은 "설치된 모드 수" 기준으로 보는 게 안전하므로 .jar / .jar.pingdisabled 둘 다 센다.
         val installedModCount = countInstalledMods(File(mcDir, "mods"))
-        syncOptionsTxt(File(mcDir, "options.txt"), jvmSettings, installedModCount, versionId)
+        val optionsFile = File(mcDir, "options.txt")
+        ensureBundledTurtleOptions(optionsFile)
+        syncOptionsTxt(optionsFile, jvmSettings, installedModCount, versionId)
         // Iris 셰이더 그림자 렌더 거리 최소(최초 1회) — config/iris.properties 의 maxShadowRenderDistance.
         syncIrisProperties(File(mcDir, "config/iris.properties"))
         // Forge/NeoForge early loading window(망치/여우 로딩 화면) 설정.
@@ -3617,6 +3625,18 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
         val m = Regex("""^1\.(\d+)""").find(versionId) ?: return true  // 스냅샷 등은 최신 가정
         val major = m.groupValues[1].toIntOrNull() ?: return true
         return major >= 18
+    }
+
+    /** Seed a new instance with the original Turtle options before applying runtime-safe patches. */
+    private fun ensureBundledTurtleOptions(optionsFile: File) {
+        if (optionsFile.exists()) return
+        runCatching {
+            optionsFile.parentFile?.mkdirs()
+            assets.open("options.txt").use { input ->
+                optionsFile.outputStream().use { output -> input.copyTo(output) }
+            }
+            Log.d("TURTLE_LAUNCHER", "📝 original Turtle options.txt installed: ${optionsFile.absolutePath}")
+        }.onFailure { Log.w("TURTLE_LAUNCHER", "Bundled options.txt unavailable; using generated defaults", it) }
     }
 
     private fun syncOptionsTxt(optionsFile: File, settings: JvmSettings, modCount: Int = 0, versionId: String = "") {

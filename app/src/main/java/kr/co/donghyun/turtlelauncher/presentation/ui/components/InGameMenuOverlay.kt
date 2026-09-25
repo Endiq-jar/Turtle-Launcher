@@ -66,6 +66,7 @@ fun InGameMenuOverlay(
     userName: String?,
     controllerVisible: Boolean,
     onToggleController: () -> Unit,
+    onControlPresetChange: () -> Unit = {},
     onClose: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -188,7 +189,25 @@ fun InGameMenuOverlay(
                         )
                     }
 
-                    // ── 2) 핫바 터치 영역 크기 ──
+                    // ── 2) Original Turtle control presets ──
+                    // The bundled default and survival layouts are live layouts, not unused
+                    // resources: selecting this row cycles the installed preset and reloads the
+                    // in-game controller without restarting Minecraft.
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(BgItem)
+                            .border(1.dp, BgBorder, RoundedCornerShape(10.dp))
+                            .clickable { onControlPresetChange() }
+                            .padding(14.dp),
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(context.getString(R.string.control_preset_label), color = TextMain, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        Text(context.getString(R.string.control_preset_desc), color = TextSub, fontSize = 11.sp)
+                    }
+
+                    // ── 3) 핫바 터치 영역 크기 ──
                     //   화면 핫바 크기는 마인크래프트 옵션(GUI Scale)에서 바꾸고,
                     //   여기선 "핫바를 터치로 인식하는 영역"만 거기에 맞춘다.
                     //   Auto 가 안 맞으면 1~4 로 직접 맞춤(마인크래프트 GUI Scale 단위와 동일).

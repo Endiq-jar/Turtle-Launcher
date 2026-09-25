@@ -14,7 +14,18 @@ data class KeyButton(
     val size: Float = 52f,       // 하위 호환용 (width/height 없을 때)
     val width: Float = size,
     val height: Float = size,
-    val isAccent: Boolean = false
+    val isAccent: Boolean = false,
+    // Original Turtle control metadata. Older key_layout.json files omit these fields and
+    // therefore continue to use the current view defaults.
+    val backgroundColor: Int? = null,
+    val strokeColor: Int? = null,
+    val opacity: Float = 0.82f,
+    val cornerRadius: Float = 20f,
+    val isSwipeable: Boolean = false,
+    val displayInGame: Boolean = true,
+    val displayInMenu: Boolean = false,
+    val passThruEnabled: Boolean = false,
+    val isToggle: Boolean = false,
 )
 
 object KeyLayoutManager {
@@ -43,14 +54,23 @@ object KeyLayoutManager {
     fun load(context: Context): List<KeyButton> {
         return try {
             val file = File(context.filesDir, FILE_NAME)
-            if (!file.exists()) return DEFAULT_LAYOUT
-            val type = object : TypeToken<List<KeyButton>>() {}.type
-            gson.fromJson<List<KeyButton>>(file.readText(), type)?.map { btn ->
-                // 하위 호환: width/height 없으면 size로 채움
-                if (btn.width == btn.size && btn.height == btn.size)
-                    btn.copy(width = btn.size, height = btn.size)
-                else btn
-            } ?: DEFAULT_LAYOUT
+            if (!file.exists()) {
+                // The original Turtle default is the first-run layout. It is converted once and
+                // then treated exactly like a user layout, so the editor can modify it normally.
+                val imported = ControlPresetManager.load(context, ControlPresetManager.DEFAULT_PRESET)
+                if (imported.isNotEmpty()) {
+                    save(context, imported)
+                    imported
+                } else DEFAULT_LAYOUT
+            } else {
+                val type = object : TypeToken<List<KeyButton>>() {}.type
+                gson.fromJson<List<KeyButton>>(file.readText(), type)?.map { btn ->
+                    // 하위 호환: width/height 없으면 size로 채움
+                    if (btn.width == btn.size && btn.height == btn.size)
+                        btn.copy(width = btn.size, height = btn.size)
+                    else btn
+                } ?: DEFAULT_LAYOUT
+            }
         } catch (_: Exception) {
             DEFAULT_LAYOUT
         }
