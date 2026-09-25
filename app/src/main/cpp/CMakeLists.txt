@@ -6,7 +6,14 @@ find_package(bytehook REQUIRED CONFIG)
 
 # ── libadrenotools (사용자가 제공한 커스텀 Vulkan 드라이버(Turnip 등)를
 #    루트 없이 로드하기 위한 서드파티 라이브러리, BSD-2-Clause) ──────
-add_subdirectory(libadrenotools)
+# The upstream helper is arm64-only. Keep the target name on legacy ABIs as
+# an empty interface so the rest of the launcher JNI still builds and the
+# bundled legacy renderer/native matrix can be packaged for those devices.
+if (CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
+    add_subdirectory(libadrenotools)
+else()
+    add_library(adrenotools INTERFACE)
+endif()
 
 # ── 시스템 라이브러리 ─────────────────────────────────────────
 find_library(log-lib log)
