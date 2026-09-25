@@ -34,7 +34,23 @@ jobs:
       - name: Build default Flame target
         run: |
           chmod +x ./gradlew
-          ./gradlew :app:assembleDebug --no-daemon --no-configuration-cache
+          set +e
+          ./gradlew :app:assembleDebug --no-daemon --no-configuration-cache 2>&1 | tee build-output.log
+          build_status=${PIPESTATUS[0]}
+          set -e
+          if [ "$build_status" -ne 0 ]; then
+            {
+              echo "### Gradle build failure"
+              echo
+              echo '```text'
+              tail -n 160 build-output.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            grep -E 'ERROR|error:|FAILURE|FAILED|Duplicate|AAPT|What went wrong|Execution failed' build-output.log | tail -n 40 | while IFS= read -r line; do
+              echo "::error title=Gradle build output::$line"
+            done
+            exit "$build_status"
+          fi
 
       - name: Upload Flame debug APK
         uses: actions/upload-artifact@v6
