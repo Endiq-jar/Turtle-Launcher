@@ -204,7 +204,22 @@ that permission when available, renders the image dimmed below the Turtle UI,
 and provides a clear action. A missing or revoked URI safely falls back to the
 normal low-end dark surface.
 
-The complete patch chain (0001 through 0008) applies cleanly to a fresh pinned
+## Step 9: port offline/local account login
+
+`patches/0009-port-offline-account-login.patch` adds Turtle's local account
+behavior to Flame without weakening Microsoft authentication:
+
+- the login screen has an explicit offline-account flow with validation and no
+  network/API-key requirement;
+- the local name receives a stable UUID and is stored separately from Microsoft
+  refresh tokens;
+- selecting offline mode clears the Microsoft session, while a successful
+  Microsoft login clears the local account;
+- the Minecraft argument builder consumes the selected offline name/UUID with a
+  zero token and never fabricates an online credential;
+- the existing Microsoft refresh and SDL/LWJGL launch path remains unchanged.
+
+The complete patch chain (0001 through 0009) applies cleanly to a fresh pinned
 Flame checkout. Resource XML was parsed again after the chain was applied, and
 `git diff --check` passed. The patched target has also assembled successfully in
 GitHub Actions. Gradle compilation is not available in this workspace because it
