@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/account_detail_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_grid_card"
+    android:padding="@dimen/space_l">
+
+    <ImageView
+        android:id="@+id/detail_icon"
+        android:layout_width="@dimen/_72sdp"
+        android:layout_height="@dimen/_72sdp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_help"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/detail_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_m"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textSize="@dimen/_18ssp"
+        android:textStyle="bold"
+        android:textColor="@color/turtle_text_primary"
+        app:layout_constraintStart_toEndOf="@id/detail_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/detail_icon"
+        tools:text="PikachuMCsilent" />
+
+    <TextView
+        android:id="@+id/detail_type"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_m"
+        android:layout_marginTop="@dimen/space_xs"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textSize="@dimen/_12ssp"
+        android:textColor="@color/accent_primary"
+        app:layout_constraintStart_toEndOf="@id/detail_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detail_name"
+        tools:text="Microsoft Account" />
+
+    <!-- UUID row -->
+    <View
+        android:id="@+id/divider_top"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/space_m"
+        android:background="@color/turtle_divider"
+        app:layout_constraintTop_toBottomOf="@id/detail_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/uuid_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_m"
+        android:text="@string/account_detail_uuid"
+        android:textSize="@dimen/_10ssp"
+        android:textColor="@color/turtle_text_secondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_top" />
+
+    <TextView
+        android:id="@+id/detail_uuid"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_xs"
+        android:singleLine="true"
+        android:ellipsize="middle"
+        android:textSize="@dimen/_12ssp"
+        android:textColor="@color/turtle_text_primary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/copy_uuid"
+        app:layout_constraintTop_toBottomOf="@id/uuid_label"
+        tools:text="e3c8f3e1-c0d3-48f8-a8b1-e3d9c6f4b2a7" />
+
+    <ImageView
+        android:id="@+id/copy_uuid"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_copy"
+        android:tint="@color/accent_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/detail_uuid"
+        app:layout_constraintBottom_toBottomOf="@id/detail_uuid"
+        tools:ignore="ContentDescription" />
+
+    <View
+        android:id="@+id/detail_skin_preview"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_160sdp"
+        android:layout_marginTop="@dimen/space_m"
+        app:layout_constraintTop_toBottomOf="@id/detail_uuid"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Action buttons -->
+    <LinearLayout
+        android:id="@+id/action_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_l"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/detail_skin_preview">
+
+        <com.endiq.turtlelauncher.ui.view.AnimButton
+            android:id="@+id/detail_play"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.4"
+            android:layout_marginEnd="@dimen/space_xs"
+            android:background="@drawable/bg_launch_button"
+            android:text="@string/account_detail_play"
+            android:textColor="@color/turtle_text_primary"
+            android:textStyle="bold"
+            android:textAllCaps="true" />
+
+        <com.endiq.turtlelauncher.ui.view.AnimButton
+            android:id="@+id/detail_refresh"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="@dimen/space_xs"
+            android:background="@drawable/background_grid_card"
+            android:text="@string/generic_refresh" />
+
+        <com.endiq.turtlelauncher.ui.view.AnimButton
+            android:id="@+id/detail_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="@dimen/space_xs"
+            android:background="@drawable/background_grid_card"
+            android:text="@string/generic_edit" />
+
+        <com.endiq.turtlelauncher.ui.view.AnimButton
+            android:id="@+id/detail_remove"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/space_xs"
+            android:background="@drawable/background_grid_card"
+            android:textColor="@color/turtle_error"
+            android:text="@string/generic_delete" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

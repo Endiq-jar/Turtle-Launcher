@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+      ⚠️ 다크 전용이다. 예전에는 android:Theme.Material.Light.NoActionBar 였는데,
+         그러면 Compose 가 그리기 전 **창 배경이 흰색**이라 실행할 때마다 흰 번쩍임이 났다.
+         배경색도 팔레트의 가장 어두운 값으로 맞춰 두어야 그 틈이 안 보인다.
+    -->
+    <style name="Theme.TurtleLauncher" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/bg_dark</item>
+        <item name="android:colorBackground">@color/bg_dark</item>
+        <item name="android:statusBarColor">@color/bg_dark</item>
+        <item name="android:navigationBarColor">@color/bg_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+</resources>

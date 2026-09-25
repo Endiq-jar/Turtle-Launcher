@@ -13,6 +13,7 @@ import com.endiq.turtlelauncher.renderer.renderers.VirGLRenderer
 import com.endiq.turtlelauncher.renderer.renderers.ZinkRenderer
 import com.endiq.turtlelauncher.utils.path.PathManager
 import net.endiq.launcher.Tools
+import net.endiq.launcher.utils.JREUtils
 import java.io.File
 
 
@@ -54,8 +55,23 @@ object Renderers {
          
             if (renderer.getRendererId() == ZinkRenderer.ID && !deviceHasVulkan) return@forEach
 
+            // LTW creates an OpenGL ES 3 context. Showing it on an ES 2-only
+            // device lets the picker select a renderer that will inevitably
+            // fail inside eglCreateContext during RenderSystem initialization.
+            if (renderer.getRendererId() == LTWRenderer.ID) {
+                val gles3Unavailable = runCatching { JREUtils.getDetectedVersion() < 3 }.getOrDefault(true)
+                if (gles3Unavailable) {
+                    Logging.w("Renderers", "LTW requires OpenGL ES 3; excluding it on this device")
+                    return@forEach
+                }
+                // Do not blacklist PowerVR here. MJLauncher supports LTW on
+                // PowerVR devices, and the bundled LTW AAR is the same GLES 3
+                // backend. A blanket vendor-file blacklist made LTW appear
+                // broken in this launcher even when the device could run it.
+            }
+
             if (!hasRequiredLibrary(renderer)) {
-                Logging.w("Renderers", "${renderer.getRendererName()} (${renderer.getRendererId()}) references a library not found in this ABI's jniLibs - excluding it from the picker")
+                Logging.w("Renderers", "${renderer.getRendererName()} (${renderer.getRendererId()}) references a native library not packaged for this ABI - excluding it from the picker")
                 return@forEach
             }
             compatibleRenderers1.add(renderer)

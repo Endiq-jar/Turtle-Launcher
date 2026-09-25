@@ -1,0 +1,26 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Top working surface -->
+    <path
+        android:fillColor="#3A3A3A"
+        android:pathData="M5.25,6.5 H16.5 V11.25 H6 Z" />
+    <!-- Horn -->
+    <path
+        android:fillColor="#3A3A3A"
+        android:pathData="M16.5,8 L21.5,10 L16.5,12.5 Z" />
+    <!-- Waist -->
+    <path
+        android:fillColor="#3A3A3A"
+        android:pathData="M8.5,11.25 H13 V15 H8.5 Z" />
+    <!-- Base -->
+    <path
+        android:fillColor="#3A3A3A"
+        android:pathData="M4.25,15 H17.75 V19 H4.25 Z" />
+    <!-- Foot -->
+    <path
+        android:fillColor="#2A2A2A"
+        android:pathData="M3,19.5 H19 V21 H3 Z" />
+</vector>

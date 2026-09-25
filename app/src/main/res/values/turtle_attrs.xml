@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <declare-styleable name="turtle_AnimConstraintLayout">
+        <attr name="turtle_ripple_for_constraint" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="turtle_AnimRelativeLayout">
+        <attr name="turtle_ripple_for_relative" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="turtle_AnimTextView">
+        <attr name="turtle_ripple_for_text" format="boolean" />
+    </declare-styleable>
+</resources>

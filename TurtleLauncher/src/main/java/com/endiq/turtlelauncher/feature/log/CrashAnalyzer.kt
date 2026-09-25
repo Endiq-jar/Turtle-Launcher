@@ -112,13 +112,13 @@ object CrashAnalyzer {
                 matches = { has(it, "pojavInitOpenGL") && has(it, "SIGSEGV") },
                 diagnosis = fixed(
                     "Renderer's POJAV_RENDERER value isn't recognized by the native launcher (pojavInitOpenGL crash)",
-                    "libpojavexec.so only recognizes a fixed set of legacy POJAV_RENDERER strings. An " +
-                        "unrecognized value falls through its whole comparison chain into an unguarded call " +
-                        "through an uninitialized function pointer, crashing at pc=0x0 on every launch, " +
-                        "regardless of device or GPU.",
+                    "libpojavexec.so recognizes the legacy renderer names plus the opengles* family. An " +
+                        "unknown value outside those families can fall through its dispatch chain into an " +
+                        "unguarded call through an uninitialized function pointer, crashing at pc=0x0 on every " +
+                        "launch, regardless of device or GPU.",
                     listOf(
                         "If you're on a built-in renderer (Holy GL4ES, LTW, MobileGlues, VirGL, Zink, Freedreno, VGPU), update to the latest TurtleLauncher build — this is fixed in RendererInterface.getNativeRendererId().",
-                        "If you're on a renderer plugin: check the plugin's declared POJAV_RENDERER value against the six libpojavexec.so recognizes (opengles, custom_gallium, vulkan_zink, gallium_freedreno, gallium_panfrost, gallium_virgl) and report a mismatch to the plugin's author.",
+                        "If you're on a renderer plugin: check the plugin's declared POJAV_RENDERER value against the native bridge's supported families (opengles*, custom_gallium, vulkan_zink, gallium_freedreno, gallium_panfrost, gallium_virgl) and report a mismatch to the plugin's author.",
                         "As an immediate workaround, reset this version's renderer override below, or pick a different one manually in Settings → Video → Renderer."
                     ),
                     repairActions = listOf(RepairAction(RepairActionType.RESET_RENDERER_OVERRIDE, "Reset renderer override"))
@@ -592,7 +592,7 @@ object CrashAnalyzer {
                 matches = { has(it, "glDeleteFramebuffersEXT") && has(it, "libgl4es", "SIGSEGV") },
                 diagnosis = fixed(
                     "Holy GL4ES crashed deleting a framebuffer object (glDeleteFramebuffersEXT)",
-                    "A native SIGSEGV inside libgl4es_114.so itself, not a Java exception - happens right at " +
+                    "A native SIGSEGV inside the HolyGL4ES native library itself, not a Java exception - happens right at " +
                         "Minecraft startup, in the framebuffer create-then-resize sequence RenderTarget always " +
                         "runs once during init. It's a prebuilt upstream binary with no native source in this " +
                         "project to patch. The most directly implicated lever already in this launcher is FBO " +
@@ -620,20 +620,17 @@ object CrashAnalyzer {
                             "called into an SDL3 instance whose Android JNI glue was never initialized - SDL's " +
                             "JavaVM pointer was still NULL, so SDL's GetEnv returned NULL and its touch-init code " +
                             "dereferenced it. The launcher DOES initialize SDL's Android side before the game " +
-                            "starts (SdlAndroidJniPrep), which means the game loaded a second copy of the same " +
-                            "libSDL3.so under a different linker namespace (LWJGL's dlopen is a tail call, so " +
-                            "bionic files it under the anonymous namespace instead of the app's). Newer builds " +
-                            "install libpojavexec's dlopen hook in the game JVM before SDL loads, so the game " +
-                            "shares the initialized copy; this is decoded from real hs_err logs but not yet " +
-                            "confirmed fixed on a device. (The 'not accessible for the namespace' vendor-library " +
-                            "lines some devices print around game start are harmless OEM noise - ignore them.)",
+                            "starts (SdlAndroidJniPrep), which means the game tried to use an SDL3 instance " +
+                            "whose Android JNI state belongs to another linker namespace. The launcher now " +
+                            "prepares SDL in ART, installs the Amethyst SDL_InitSubSystem notification and " +
+                            "guards SDL3 JNI_OnLoad so the embedded JVM cannot replace that state. (The " +
+                            "'not accessible for the namespace' vendor-library lines some devices print around " +
+                            "game start are harmless OEM noise - ignore them.)",
                         fixSteps = listOf(
-                            "Update to the latest build and relaunch - newer builds make the game JVM load SDL3 " +
-                                "through the same linker namespace as the launcher, which addresses the decoded " +
-                                "cause of this crash.",
+                            "Update to the latest build and relaunch - SDL3 is prepared in the launcher VM and " +
+                                "the game-side SDL init is bridged through the Amethyst-compatible hook.",
                             "If it still crashes, share the log: the 'TurtleSDL3:' and 'SdlAndroidJniPrep' lines " +
-                                "now record exactly which SDL3 file was pinned and what was removed - that's " +
-                                "what's needed to finish this fix on the affected device.",
+                                "show whether the Android-side SDL host and the game-side notification completed.",
                             "Also try Settings → Video → Renderer: on MC 26.3-snapshot4+, Amethyst-Android's own " +
                                 "notes flag MobileGlues and Krypton Wrapper as crashing 'due to changes in how " +
                                 "SDL creates EGL window' - Zink or LTW are the safer picks.",

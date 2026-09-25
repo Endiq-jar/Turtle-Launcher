@@ -1,0 +1,71 @@
+name: 릴리스 APK
+
+# ⚠️ 서명 키는 **저장소에 없다.** 러너에서만 시크릿으로 복원해 쓴다:
+#      TURTLE_KEYSTORE_BASE64 · TURTLE_KEYSTORE_PASSWORD · TURTLE_KEY_ALIAS · TURTLE_KEY_PASSWORD
+#    로컬에서 서명하려면 keystore 파일과 비밀번호를 손으로 두어야 하는데, 그러면
+#    비밀번호가 사람 손을 타고 셸 이력에 남는다. 여기서 하면 그럴 일이 없다.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '릴리스 태그 (예: v2.1.0)'
+        required: true
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          # ⚠️ Gradle 8.11 은 JDK 25/26 을 못 다룬다. 17 로 고정한다.
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # 시크릿을 파일로 되돌린다. 러너는 매번 새로 만들어지므로 남지 않는다.
+      - name: 서명 키 복원
+        run: |
+          echo "${{ secrets.TURTLE_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.keystore"
+          test -s "$RUNNER_TEMP/release.keystore"
+
+      - name: 릴리스 APK 빌드
+        env:
+          TURTLE_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
+          TURTLE_KEYSTORE_PASSWORD: ${{ secrets.TURTLE_KEYSTORE_PASSWORD }}
+          TURTLE_KEY_PASSWORD: ${{ secrets.TURTLE_KEY_PASSWORD }}
+          TURTLE_KEY_ALIAS: ${{ secrets.TURTLE_KEY_ALIAS }}
+          # ⚠️ 로컬은 local.properties, CI 는 이 시크릿에서 읽는다.
+          #    이 키는 APK 안에 평문으로 들어간다 — 받은 사람은 누구나 꺼낼 수 있다.
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+        run: ./gradlew :app:assembleRelease --no-daemon
+
+      # ⚠️ 서명이 안 된 채로 릴리스에 올라가면 사용자는 설치조차 못 한다.
+      #    gradle 의 signingConfig 는 키가 없으면 **조용히 건너뛰고**
+      #    app-release-unsigned.apk 를 내놓으므로 여기서 확인한다.
+      - name: 서명 확인
+        id: apk
+        run: |
+          apk=$(find app/build/outputs/apk/release -name '*.apk' ! -name '*unsigned*' | head -1)
+          [ -n "$apk" ] || { echo "::error::서명된 APK 가 없습니다 (시크릿을 확인하세요)"; exit 1; }
+          keytool -printcert -jarfile "$apk" | head -5
+          echo "path=$apk" >> "$GITHUB_OUTPUT"
+
+      - name: 릴리스에 올리기
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          cp "${{ steps.apk.outputs.path }}" TurtleLauncher.apk
+          gh release view "$TAG" >/dev/null 2>&1 \
+            && gh release upload "$TAG" TurtleLauncher.apk --clobber \
+            || gh release create "$TAG" --title "$TAG" --generate-notes TurtleLauncher.apk

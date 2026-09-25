@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-files-path name="ext_files" path="." />
+    <files-path name="int_files" path="." />
+    <external-path name="external" path="." />
+    <cache-path name="cache" path="." />
+</paths>

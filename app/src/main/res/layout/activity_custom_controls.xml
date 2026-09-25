@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/customctrl_drawerlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentEnd="true">
+
+    <ImageView
+        android:id="@+id/background_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="@string/controls_tip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <net.endiq.launcher.customcontrols.ControlLayout
+            android:id="@+id/customctrl_controllayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </net.endiq.launcher.customcontrols.ControlLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/customctrl_navigation_view"
+        android:layout_width="@dimen/_260sdp"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/_12sdp"
+        android:layout_gravity="end"
+        android:elevation="@dimen/_8sdp"
+        android:translationZ="4dp"
+        android:fitsSystemWindows="false" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

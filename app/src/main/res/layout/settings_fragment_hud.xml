@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_app"
+    tools:ignore="UseSwitchCompatOrMaterialXml">
+
+    <LinearLayout
+        android:id="@+id/sub_settings_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/space_l"
+        android:paddingVertical="@dimen/space_m">
+
+        <ImageButton
+            android:id="@+id/sub_settings_back_button"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_chevron_down"
+            android:rotation="90"
+            android:tint="@color/turtle_text_secondary"
+            android:contentDescription="@string/generic_return"/>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="@dimen/space_s"
+            android:src="@drawable/ic_setting_hud"
+            android:tint="@color/accent_primary"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_s"
+            android:text="@string/setting_category_hud"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/turtle_text_primary"/>
+    </LinearLayout>
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:ignore="UseSwitchCompatOrMaterialXml">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_12sdp"
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/_12sdp">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/game_menu_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_card"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/_2sdp"
+                android:paddingVertical="@dimen/_12sdp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_12sdp"
+                    android:text="@string/setting_category_game_menu"
+                    android:textColor="@color/accent_primary" />
+
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/gameMenuShowMemory_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+
+                    <TextView
+                        android:id="@+id/gameMenuShowMemory_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/gameMenuShowMemory"
+                        android:text="@string/setting_game_menu_show_memory_title"
+                        android:textColor="@color/turtle_primary_text" />
+
+                    <TextView
+                        android:id="@+id/gameMenuShowMemory_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/gameMenuShowMemory_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/gameMenuShowMemory"
+                        android:text="@string/setting_game_menu_show_memory_desc" />
+
+                    <Switch
+                        android:id="@+id/gameMenuShowMemory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/gameMenuShowNativeMemory_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+
+                    <TextView
+                        android:id="@+id/gameMenuShowNativeMemory_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/gameMenuShowNativeMemory"
+                        android:text="@string/setting_game_menu_show_native_memory_title"
+                        android:textColor="@color/turtle_primary_text" />
+
+                    <TextView
+                        android:id="@+id/gameMenuShowNativeMemory_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/gameMenuShowNativeMemory_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/gameMenuShowNativeMemory"
+                        android:text="@string/setting_game_menu_show_native_memory_desc" />
+
+                    <Switch
+                        android:id="@+id/gameMenuShowNativeMemory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/gameMenuShowFPS_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+
+                    <TextView
+                        android:id="@+id/gameMenuShowFPS_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/gameMenuShowFPS"
+                        android:text="@string/setting_game_menu_show_fps_title"
+                        android:textColor="@color/turtle_primary_text" />
+
+                    <TextView
+                        android:id="@+id/gameMenuShowFPS_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/gameMenuShowFPS_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/gameMenuShowFPS"
+                        android:text="@string/setting_game_menu_show_fps_desc" />
+
+                    <Switch
+                        android:id="@+id/gameMenuShowFPS"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/gameMenuMemoryText_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+
+                    <TextView
+                        android:id="@+id/gameMenuMemoryText_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentEnd="true"
+                        android:text="@string/setting_game_menu_memory_text_title"
+                        android:textColor="@color/turtle_primary_text" />
+
+                    <TextView
+                        android:id="@+id/gameMenuMemoryText_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/gameMenuMemoryText_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentEnd="true"
+                        android:text="@string/setting_game_menu_memory_text_desc" />
+
+                    <com.endiq.turtlelauncher.ui.view.AnimEditText
+                        android:id="@+id/gameMenuMemoryText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/gameMenuMemoryText_summary"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        android:background="@drawable/background_edit_box"
+                        android:paddingHorizontal="@dimen/_8sdp" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/gameMenuLocation_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+
+                    <TextView
+                        android:id="@+id/gameMenuLocation_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentEnd="true"
+                        android:text="@string/setting_game_menu_location_title"
+                        android:textColor="@color/turtle_primary_text" />
+
+                    <TextView
+                        android:id="@+id/gameMenuLocation_value"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/gameMenuLocation_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentEnd="true"
+                        android:text="@string/setting_game_menu_location_center" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/gameMenuInfoRefreshRate_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <TextView
+                        android:id="@+id/gameMenuInfoRefreshRate_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginHorizontal="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_12sdp"
+                        android:text="@string/setting_game_menu_info_refresh_rate_title"
+                        android:textColor="@color/turtle_primary_text" />
+
+                    <TextView
+                        android:id="@+id/gameMenuInfoRefreshRate_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/gameMenuInfoRefreshRate_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginHorizontal="@dimen/_12sdp"
+                        android:text="@string/setting_game_menu_info_refresh_rate_desc" />
+
+                    <SeekBar
+                        android:id="@+id/gameMenuInfoRefreshRate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/gameMenuInfoRefreshRate_value"
+                        android:layout_alignBottom="@+id/gameMenuInfoRefreshRate_value"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@id/gameMenuInfoRefreshRate_value"
+                        android:max="5000"
+                        android:min="500" />
+
+                    <TextView
+                        android:id="@+id/gameMenuInfoRefreshRate_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/gameMenuInfoRefreshRate_summary"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginVertical="@dimen/_8sdp"
+                        android:layout_marginEnd="@dimen/_12sdp"
+                        tools:text="0" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/gameMenuAlpha_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <TextView
+                        android:id="@+id/gameMenuAlpha_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginHorizontal="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_12sdp"
+                        android:text="@string/setting_game_menu_alpha_title"
+                        android:textColor="@color/turtle_primary_text" />
+
+                    <TextView
+                        android:id="@+id/gameMenuAlpha_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/gameMenuAlpha_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginHorizontal="@dimen/_12sdp"
+                        android:text="@string/setting_game_menu_alpha_desc" />
+
+                    <SeekBar
+                        android:id="@+id/gameMenuAlpha"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/gameMenuAlpha_value"
+                        android:layout_alignBottom="@+id/gameMenuAlpha_value"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@id/gameMenuAlpha_value"
+                        android:max="100"
+                        android:min="20" />
+
+                    <TextView
+                        android:id="@+id/gameMenuAlpha_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/gameMenuAlpha_summary"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginVertical="@dimen/_8sdp"
+                        android:layout_marginEnd="@dimen/_12sdp"
+                        tools:text="0" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                <include
+                    android:id="@+id/game_menu_preview"
+                    layout="@layout/view_game_info_hud"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/hud_modules_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:background="@drawable/background_card"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/_2sdp"
+                android:paddingVertical="@dimen/_12sdp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_12sdp"
+                    android:text="@string/setting_category_hud_modules"
+                    android:textColor="@color/accent_primary" />
+
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/showCpsHud_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+                    <TextView
+                        android:id="@+id/showCpsHud_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showCpsHud"
+                        android:text="@string/setting_hud_cps_title"
+                        android:textColor="@color/turtle_primary_text" />
+                    <TextView
+                        android:id="@+id/showCpsHud_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/showCpsHud_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showCpsHud"
+                        android:text="@string/setting_hud_cps_desc" />
+                    <Switch
+                        android:id="@+id/showCpsHud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/showKeystrokesHud_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+                    <TextView
+                        android:id="@+id/showKeystrokesHud_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showKeystrokesHud"
+                        android:text="@string/setting_hud_keystrokes_title"
+                        android:textColor="@color/turtle_primary_text" />
+                    <TextView
+                        android:id="@+id/showKeystrokesHud_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/showKeystrokesHud_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showKeystrokesHud"
+                        android:text="@string/setting_hud_keystrokes_desc" />
+                    <Switch
+                        android:id="@+id/showKeystrokesHud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/showMousestrokesHud_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+                    <TextView
+                        android:id="@+id/showMousestrokesHud_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showMousestrokesHud"
+                        android:text="@string/setting_hud_mousestrokes_title"
+                        android:textColor="@color/turtle_primary_text" />
+                    <TextView
+                        android:id="@+id/showMousestrokesHud_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/showMousestrokesHud_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showMousestrokesHud"
+                        android:text="@string/setting_hud_mousestrokes_desc" />
+                    <Switch
+                        android:id="@+id/showMousestrokesHud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/showStopwatchHud_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+                    <TextView
+                        android:id="@+id/showStopwatchHud_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showStopwatchHud"
+                        android:text="@string/setting_hud_stopwatch_title"
+                        android:textColor="@color/turtle_primary_text" />
+                    <TextView
+                        android:id="@+id/showStopwatchHud_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/showStopwatchHud_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showStopwatchHud"
+                        android:text="@string/setting_hud_stopwatch_desc" />
+                    <Switch
+                        android:id="@+id/showStopwatchHud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/showPlaytimeHud_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+                    <TextView
+                        android:id="@+id/showPlaytimeHud_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showPlaytimeHud"
+                        android:text="@string/setting_hud_playtime_title"
+                        android:textColor="@color/turtle_primary_text" />
+                    <TextView
+                        android:id="@+id/showPlaytimeHud_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/showPlaytimeHud_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showPlaytimeHud"
+                        android:text="@string/setting_hud_playtime_desc" />
+                    <Switch
+                        android:id="@+id/showPlaytimeHud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/showSystemResourcesHud_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+                    <TextView
+                        android:id="@+id/showSystemResourcesHud_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showSystemResourcesHud"
+                        android:text="@string/setting_hud_system_resources_title"
+                        android:textColor="@color/turtle_primary_text" />
+                    <TextView
+                        android:id="@+id/showSystemResourcesHud_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/showSystemResourcesHud_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showSystemResourcesHud"
+                        android:text="@string/setting_hud_system_resources_desc" />
+                    <Switch
+                        android:id="@+id/showSystemResourcesHud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/showTimeHud_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+                    <TextView
+                        android:id="@+id/showTimeHud_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showTimeHud"
+                        android:text="@string/setting_hud_time_title"
+                        android:textColor="@color/turtle_primary_text" />
+                    <TextView
+                        android:id="@+id/showTimeHud_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/showTimeHud_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showTimeHud"
+                        android:text="@string/setting_hud_time_desc" />
+                    <Switch
+                        android:id="@+id/showTimeHud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/showRamGraphHud_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+                    <TextView
+                        android:id="@+id/showRamGraphHud_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showRamGraphHud"
+                        android:text="@string/setting_hud_ram_graph_title"
+                        android:textColor="@color/turtle_primary_text" />
+                    <TextView
+                        android:id="@+id/showRamGraphHud_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/showRamGraphHud_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showRamGraphHud"
+                        android:text="@string/setting_hud_ram_graph_desc" />
+                    <Switch
+                        android:id="@+id/showRamGraphHud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/showPingHud_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+                    <TextView
+                        android:id="@+id/showPingHud_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showPingHud"
+                        android:text="@string/setting_hud_ping_title"
+                        android:textColor="@color/turtle_primary_text" />
+                    <TextView
+                        android:id="@+id/showPingHud_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/showPingHud_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showPingHud"
+                        android:text="@string/setting_hud_ping_desc" />
+                    <Switch
+                        android:id="@+id/showPingHud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/showScreenshotButtonHud_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+                    <TextView
+                        android:id="@+id/showScreenshotButtonHud_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showScreenshotButtonHud"
+                        android:text="@string/setting_hud_screenshot_button_title"
+                        android:textColor="@color/turtle_primary_text" />
+                    <TextView
+                        android:id="@+id/showScreenshotButtonHud_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/showScreenshotButtonHud_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/showScreenshotButtonHud"
+                        android:text="@string/setting_hud_screenshot_button_desc" />
+                    <Switch
+                        android:id="@+id/showScreenshotButtonHud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/hudModuleScale_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_12sdp">
+                    <TextView
+                        android:id="@+id/hudModuleScale_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/setting_hud_module_scale_title"
+                        android:textColor="@color/turtle_primary_text" />
+                    <TextView
+                        android:id="@+id/hudModuleScale_summary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/hudModuleScale_title"
+                        android:text="@string/setting_hud_module_scale_desc" />
+                    <TextView
+                        android:id="@+id/hudModuleScale_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                    <SeekBar
+                        android:id="@+id/hudModuleScale"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/hudModuleScale_summary"
+                        android:max="150"
+                        android:min="50" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/pvpOverlayPreset_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/_12sdp">
+                    <TextView
+                        android:id="@+id/pvpOverlayPreset_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/pvpOverlayPreset"
+                        android:text="@string/setting_pvp_overlay_preset_title"
+                        android:textColor="@color/turtle_primary_text" />
+                    <TextView
+                        android:id="@+id/pvpOverlayPreset_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/pvpOverlayPreset_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:layout_toStartOf="@+id/pvpOverlayPreset"
+                        android:text="@string/setting_pvp_overlay_preset_desc" />
+                    <Switch
+                        android:id="@+id/pvpOverlayPreset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/hudAlpha_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <TextView
+                        android:id="@+id/hudAlpha_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginHorizontal="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_12sdp"
+                        android:text="@string/setting_hud_alpha_title"
+                        android:textColor="@color/turtle_primary_text" />
+
+                    <TextView
+                        android:id="@+id/hudAlpha_summary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/hudAlpha_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginHorizontal="@dimen/_12sdp"
+                        android:text="@string/setting_hud_alpha_desc" />
+
+                    <SeekBar
+                        android:id="@+id/hudAlpha"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/hudAlpha_value"
+                        android:layout_alignBottom="@+id/hudAlpha_value"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@id/hudAlpha_value"
+                        android:max="100"
+                        android:min="20" />
+
+                    <TextView
+                        android:id="@+id/hudAlpha_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/hudAlpha_summary"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginVertical="@dimen/_8sdp"
+                        android:layout_marginEnd="@dimen/_12sdp"
+                        tools:text="0" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </ScrollView>
+
+</LinearLayout>

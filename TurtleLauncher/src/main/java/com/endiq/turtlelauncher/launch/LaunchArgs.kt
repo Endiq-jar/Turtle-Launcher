@@ -44,23 +44,32 @@ class LaunchArgs(
         val lwjglAbiOverrideClasspath = Tools.getLwjglAbiOverrideClasspath(versionInfo)
         val lwjglClasspathPrefix = if (lwjglAbiOverrideClasspath.isNotEmpty()) "$lwjglAbiOverrideClasspath:" else ""
 
+        if (Tools.resolveLwjglMode(versionInfo) == Tools.LwjglMode.NEW_SDL) {
+            // Set this before -cp and before any LWJGL class can initialize.
+            // Minecraft's version arguments may contain their own allocator
+            // setting; this launcher-owned value must be the final effective
+            // configuration for Android's system allocator path.
+            argsList.add("-Dorg.lwjgl.system.allocator=system")
+        }
+
         argsList.add("-cp")
-        argsList.add("$lwjglClasspathPrefix${Tools.getLWJGL3ClassPath()}:$launchClassPath")
+        val launcherLwjglClasspath = Tools.getLWJGL3ClassPath(versionInfo)
+        val launcherLwjglSegment = if (launcherLwjglClasspath.isNotEmpty()) "$launcherLwjglClasspath:" else ""
+        // The bridge must come first: it owns the Android GLFW/Vulkan shims.
+        // Its LWJGL core and callback APIs are intentionally absent. SDL
+        // versions provide their exact core/SDL APIs here; the bootstrap loads
+        // libpojavexec directly and never initializes the optional GLFW shim.
+        argsList.add("$launcherLwjglSegment$lwjglClasspathPrefix$launchClassPath")
 
         val lwjglNativeOverride = Tools.getLwjglNativeLibraryOverride(versionInfo)
         if (lwjglNativeOverride != null) {
             argsList.add("-Dorg.lwjgl.libname=$lwjglNativeOverride")
         }
 
-        if (runtime.javaVersion > 8) {
-            val mainClass = versionInfo.mainClass ?: ""
-            val lastDot = mainClass.lastIndexOf(".")
-            if (lastDot > 0) {
-                argsList.add("--add-exports")
-                val pkg: String = mainClass.substring(0, lastDot)
-                argsList.add("$pkg/$pkg=ALL-UNNAMED")
-            }
-        }
+        // Minecraft's main class is loaded from the class path (the unnamed
+        // module). Do not manufacture --add-exports from its package name:
+        // `net.minecraft.client.main/net.minecraft.client.main` is not a module
+        // export and Java 25 correctly warns that the module is unknown.
 
         if (Tools.resolveLwjglMode(versionInfo) == Tools.LwjglMode.NEW_SDL) {
             val pinnedSdl3 = File(PathManager.DIR_NATIVE_LIB, "libSDL3.so")
@@ -108,7 +117,7 @@ class LaunchArgs(
             }
         }
 
-        argsList.addAll(getCacioJavaArgs(runtime.javaVersion == 8))
+        argsList.addAll(getCacioJavaArgs(runtime.javaVersion))
 
         val is7 = VersionNumber.compare(VersionNumber.asVersion(versionInfo.id ?: "0.0").canonical, "1.12") < 0
         val configFilePath = if (is7) LibPath.LOG4J_XML_1_7 else LibPath.LOG4J_XML_1_12
@@ -274,7 +283,20 @@ class LaunchArgs(
 
         @JvmStatic
         fun getCacioJavaArgs(isJava8: Boolean): List<String> {
+            return getCacioJavaArgs(if (isJava8) 8 else 17)
+        }
+
+        /**
+         * Builds the Cacio arguments for the selected runtime. Java 25 removed
+         * sun.java2d.SurfaceManagerFactory, so Java 25+ uses the bundled
+         * software-only Cacio variant and never installs the Java 17 premain
+         * agent. The regular Java 8/17/21 path keeps its existing toolkit and
+         * agent setup.
+         */
+        @JvmStatic
+        fun getCacioJavaArgs(javaVersion: Int): List<String> {
             val argsList: MutableList<String> = ArrayList()
+            val isJava8 = javaVersion == 8
 
             argsList.add("-Djava.awt.headless=false")
             argsList.add("-Dcacio.managed.screensize=" + AWTCanvasView.AWT_CANVAS_WIDTH + "x" + AWTCanvasView.AWT_CANVAS_HEIGHT)
@@ -287,7 +309,9 @@ class LaunchArgs(
             } else {
                 argsList.add("-Dawt.toolkit=com.github.caciocavallosilano.cacio.ctc.CTCToolkit")
                 argsList.add("-Djava.awt.graphicsenv=com.github.caciocavallosilano.cacio.ctc.CTCGraphicsEnvironment")
-                argsList.add("-javaagent:" + LibPath.CACIO_17_AGENT.getAbsolutePath())
+                if (javaVersion < 25) {
+                    argsList.add("-javaagent:" + LibPath.CACIO_17_AGENT.getAbsolutePath())
+                }
                 argsList.add("--add-exports=java.desktop/java.awt=ALL-UNNAMED")
                 argsList.add("--add-exports=java.desktop/java.awt.peer=ALL-UNNAMED")
                 argsList.add("--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED")
@@ -297,7 +321,12 @@ class LaunchArgs(
                 argsList.add("--add-exports=java.desktop/sun.awt.event=ALL-UNNAMED")
                 argsList.add("--add-exports=java.desktop/sun.awt.datatransfer=ALL-UNNAMED")
                 argsList.add("--add-exports=java.desktop/sun.font=ALL-UNNAMED")
-                argsList.add("--add-exports=java.base/sun.security.action=ALL-UNNAMED")
+                // sun.security.action is not present in Java 25's java.base;
+                // passing this export produces a warning and can break strict
+                // launchers. Java 8/17/21 keep the compatibility export.
+                if (javaVersion < 25) {
+                    argsList.add("--add-exports=java.base/sun.security.action=ALL-UNNAMED")
+                }
                 argsList.add("--add-opens=java.base/java.util=ALL-UNNAMED")
                 argsList.add("--add-opens=java.desktop/java.awt=ALL-UNNAMED")
                 argsList.add("--add-opens=java.desktop/sun.font=ALL-UNNAMED")
@@ -308,7 +337,11 @@ class LaunchArgs(
 
             val cacioClassPath = StringBuilder()
             cacioClassPath.append("-Xbootclasspath/").append(if (isJava8) "p" else "a")
-            val cacioFiles = if (isJava8) LibPath.CACIO_8 else LibPath.CACIO_17
+            val cacioFiles = when {
+                isJava8 -> LibPath.CACIO_8
+                javaVersion >= 25 -> LibPath.CACIO_25
+                else -> LibPath.CACIO_17
+            }
             cacioFiles.listFiles()?.onEach {
                 if (it.name.endsWith(".jar")) cacioClassPath.append(":").append(it.absolutePath)
             }

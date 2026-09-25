@@ -1,201 +1,188 @@
-# Turtle Launcher
-![Downloads](https://img.shields.io/github/downloads/Endiq-jar/TurtleLauncher/total?style=for-the-badge&logo=github)
-![Release](https://img.shields.io/github/v/release/Endiq-jar/TurtleLauncher?style=for-the-badge)
-![Stars](https://img.shields.io/github/stars/Endiq-jar/TurtleLauncher?style=for-the-badge)
-![Forks](https://img.shields.io/github/forks/Endiq-jar/TurtleLauncher?style=for-the-badge)
+<div align="center">
 
-![License](https://img.shields.io/github/license/Endiq-jar/TurtleLauncher?style=for-the-badge)
-![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android)
-![Last Commit](https://img.shields.io/github/last-commit/Endiq-jar/TurtleLauncher?style=for-the-badge)
+# 🐢 TurtleLauncher for Android
 
-<H1 ALIGN= "CENTER">A modern, high-performance Android launcher for Minecraft: Java Edition.</H1>
+**Run Minecraft: Java Edition on Android.**
 
-Turtle Launcher is a fast, beautiful, and feature-rich Minecraft Java launcher built for Android by **Endiq**. Based on the open-source **Turtle Launcher** project, it combines a modern Material 3 interface with powerful customization, performance optimizations, and extensive modding support.
+[![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)](#)
+[![ABI](https://img.shields.io/badge/ABI-arm64--v8a-orange)](#)
+[![AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
 
-![Minecraft](1.jpg)
+</div>
+
+---
 ---
 
-## ✨ Features
+## 1. What it does
 
-### 🎨 Modern UI
+This is **Java Edition**, not Bedrock. Join the servers your PC friends use, run the mods
+they run. A real OpenJDK boots inside the app process — this is not an emulator.
 
-* Material Design 3
-* Dynamic themes & accent colors
-* Smooth animations
-* Responsive phone & tablet layouts
-* Dark mode
-* Gaming-inspired interface
+### Supported game version and mods
 
-### 🚀 Performance
+| | |
+|---|---|
+| **Minecraft** | **26.3 only** — other versions are hidden and rejected by install/launch guards |
+| **Mod loaders** | Fabric · Forge · NeoForge · Quilt |
+| **Mods and modpacks** | Search and install straight from CurseForge and Modrinth |
+| **Dependencies** | Required mods are **installed alongside automatically** |
 
-* Fast startup
-* Low RAM usage
-* Optimized rendering
-* Hardware-accelerated UI
-* Intelligent memory management
-* Stable FPS & faster launches
+The Java runtime and SDL/LWJGL payload are **chosen automatically for Minecraft 26.3**. There is no version picker for older or newer releases in this build.
 
-### 🎮 Minecraft Support
+### Graphics
 
-* Release, Snapshot, Beta & Alpha
-* Fabric
-* Quilt
-* Forge
-* NeoForge
+| Renderer | How | Best for |
+|---|---|---|
+| **Zink** 🌋 | Vulkan → OpenGL (Mesa) | Modern GPUs, 1.17+ · **use this for shaders** |
+| **Krypton** ⚛️ | OpenGL → GLES 3.x | Broad version coverage, built in |
+| **GL4ES** 🕹️ | OpenGL → GLES 2.0 | Old versions (1.12 and below), devices Zink won't run on |
+| **MobileGlues** 🚀 | OpenGL 4.x → GLES 3.2 | Fastest for shaders · used by 26.3's OpenGL path |
 
-### 📦 Content Management
+If Zink fails it steps down on its own: **Freedreno (Adreno) → Panfrost (Mali) → GL4ES**.
+You can also import a **custom Vulkan driver** (Turnip and similar) as a zip, in the
+AdrenoTools format.
 
-* Mods
-* Resource Packs
-* Shader Packs
-* Datapacks
-* Worlds
-* Screenshots
-* Logs
+Shaders run on **Iris** — reflections, shadows, coloured light.
 
-### 🛠 Launcher Tools
+### Controls
 
-* Multiple instances
-* Java Manager
-* Microsoft, Offline, Battly & Ely.by accounts
-* Download Manager
-* Live launch & crash logs
-* Friends / LAN play (Terracotta over EasyTier) — host or join straight from the home screen
-* Chooseable screen transitions — slide, bounce, fade, or zoom, applied app-wide
-* Backup, import & export
+- **On-screen buttons** — you place and size them yourself
+- **Hardware keyboard** — picked up as soon as it connects
+- **Mouse** — Pointer Capture, so looking around isn't bounded by the screen edge.
+  Menus switch to an absolute cursor automatically; the wheel is the hotbar
+- **Gamepad** — sticks and triggers included
 
-### 🔓 Shizuku Support (optional)
+### Multiplayer
 
-* One-tap permission granting (all-files access, notifications, battery exemption)
-* Android 14+ phantom-process limit removed — fixes games being killed mid-session
-* Game process priority boost
-* Full system logcat for crash reports, not just the launcher's own lines
-* Works with both Shizuku (ADB or root) and Sui
+Ordinary servers, plus **Online LAN** for playing with a friend without renting a server:
+open a room, share the code, they join with it.
 
-Shizuku is completely optional — Turtle Launcher works fine without it.
+### Account
 
-### ⚙ Customization
-
-* Custom backgrounds
-* UI scaling
-* Animation controls
-* Performance profiles
-* JVM & RAM settings
+Microsoft sign-in and a clearly marked local/offline account path are available.
+Offline accounts do not receive fake Microsoft tokens and are intended for
+single-player/offline-compatible use. **No game files ship with the app** —
+you download them from Mojang's own servers with your own account.
 
 ---
 
-## 🏗 Built With
+## 2. Running it
 
-* Kotlin & Java
-* Jetpack Compose
-* Material Design 3
-* AndroidX
-* Coroutines & Flow
-* Coil
-* Lottie
-* LWJGL 3
-* GL4ES
-* Mesa3D
-* OpenJDK
+### What you need
 
----
+| | |
+|---|---|
+| **Android 8.0 or later** | API 26 |
+| **arm64-v8a** | Essentially any device from 2017 onward. 32-bit is **not supported** |
+| **4 GB free** | App, game and a Java runtime |
+| **4 GB RAM recommended** | Modpacks are a stretch below 3 GB |
+| **A paid account** | Minecraft Java Edition |
 
-## 🎯 Goals
+> Unlike iOS, **no JIT setup is needed.** Android doesn't stop apps from generating code at
+> runtime, so you install and go.
 
-* Faster startup
-* Lower memory usage
-* Better battery efficiency
-* Smooth gameplay
-* Stable frame pacing
-* Modern user experience
+### 2-1. Install
 
----
+1. Grab the latest APK from [Releases](https://github.com/Endiq-jar/TurtleLauncher/releases)
+2. Android asks you to allow installs from unknown sources — allow it
+3. Grant storage permission on first launch
 
-## 🗺 Roadmap
+### 2-2. First run
 
-### Completed
+1. **Sign in** — avatar at the top → Microsoft account
+2. **Select Minecraft 26.3** — it is the only available release
+3. **Pick a loader** — vanilla, Fabric, Forge or NeoForge
+4. **Download** — game files and a Java runtime; first time only, 5–15 minutes
+5. **Play** — select it under the installed tab and press play
 
-- [X] Modern UI
-- [x] Theme engine
-- [x] Instance Manager
-- [x] Ai intregation
-- [x] Performance improvements
-- [x] Mesa3D
-- [x] LTW Renderer
-- [x] MobileGlues Renderer
-- [x] Cleanroom Integration
-- [x] Terracotta Integration
-- [x] mclo.gs Integration
+### 2-3. Turning on shaders
 
-### Current
+1. Install **Fabric** on the instance
+2. Install **Iris Shaders** from the modpack browser — dependencies come along
+3. Switch the renderer to **Zink**
+4. In game: `Options → Video Settings → Shader Packs`
 
-- [ ] Cloud Sync
-- [x] Skin & Cape Manager
-- [x] Turtle Client integration
-- [x] Replace OSMesa with a real EGL implementation
-- [x] Shizuku Support
-- [x] Beryllium Integration
-- [x] Modpack Instance
-- [x] Animations/Transtions
-- [x] Emotes
+Heavy packs are a lot to ask of a phone. Start light — Complementary, or BSL on low.
+
+### 2-4. Controls
+
+The keyboard editor lets you place and resize the on-screen buttons. Hardware keyboards,
+mice and gamepads are picked up the moment they connect — nothing to configure.
+
+### 2-5. When it doesn't work
+
+| Symptom | What to check |
+|---|---|
+| Installs, then closes immediately | Confirm the device is **arm64-v8a**. 32-bit is unsupported |
+| Crashes mid-game | Out of RAM. **Lower the heap allocation** in options — counter-intuitive, but a smaller Java heap leaves room for textures. Lower the render distance too |
+| A modpack won't start | With many mods the first boot takes minutes. If it still fails, try another renderer; Zink and GL4ES differ in what they tolerate |
+| Shaders render garbage | Switch to **Zink**. GL4ES cannot drive shaders properly |
+| A shader pack switches itself off (Mali GPUs) | Packs that use `noperspective` — Complementary and its forks — can't compile on Mali, so Iris falls back to no shaders. Turn the pack off to skip the attempt and load faster |
 
 ---
 
-## FAQs
-## 1. Is Turtle Launcher Safe?
-### -> Yes — Turtle Launcher is safe to use. The source code is fully open on GitHub under the GPL-3.0 license. As always, only download the APK from trusted sources, like the official GitHub releases page..
-## 2. Is Turtle Launcher free?
-### -> Yes! Turtle Launcher is completely free to use, with no ads and no premium paywall.
-## 3. Does Turtle Launcher support Minecraft mods?
-### -> Yes. Turtle Launcher supports Fabric, Quilt, Forge and NeoForge, and you can install mods directly through the built-in mod Explorer.
-## Does it require a Microsoft account?
-### No. Turtle Launcher supports Microsoft, offline, Battly and Ely.by accounts, so you can play the way you prefer.
----
+## Turtle Launcher feature migration
 
-## 🤝 Contributing
+The root `:app` module now uses TurtleLauncher's original XML home layout and visual assets.
+The original launcher shell, panels, spacing, icons, animations, English string catalog,
+background picker, offline assistant, account flow (offline, ely.by, Battly, custom
+authlib-injector/Yggdrasil, and Microsoft), file manager, crash-log styling, offline
+skins, content-pack browser, renderer controls, Terracotta, and low-end safeguards are
+kept in the root APK. The old source tree under `TurtleLauncher/` remains as the reference
+implementation; Gradle exposes only `:app` as the visible/default application.
 
-Contributions are welcome! Feel free to submit issues, feature requests, or pull requests.
+The default build is:
 
----
+```bash
+./gradlew :app:assembleDebug
+```
 
-## 📄 License
+The root target carries the runtime payloads needed by TurtleLauncher: Minecraft 26.3-only
+SDL/LWJGL callbacks, LTW, MobileGlues, packaged renderer libraries, Terracotta,
+Java runtimes, and the low-end native launch path. `TurtleLauncher/` is retained
+only as the old source tree; it is not included by `settings.gradle.kts` and is
+not part of the default build.
 
-Licensed under **GPL-3.0**.
+The final device parity gate still covers Microsoft skin/cape upload, renderer
+packaging, ABI/device coverage, lifecycle, and upgrade behavior. Those are
+runtime validation requirements, not silently claimed placeholders. The offline,
+ely.by, Battly, custom Yggdrasil, and Microsoft login paths are present; online
+skin/cape upload and provider-specific multi-profile edge cases remain explicitly
+unsupported until tested and implemented.
 
----
+## 3. Licence
 
-## ❤️ Credits
+**[AGPL-3.0](LICENSE)**, by obligation rather than preference.
 
-Built upon ideas and technologies from:
+A combined work takes the **strongest copyleft** it contains, and the Terracotta bundled
+here is AGPL-3.0.
 
-* TurtleLauncher
-* HMCL
-* Boardwalk
-* OpenJDK
-* LWJGL
-* Mesa3D
-* GL4ES
+| Component | Licence | How it is used |
+|---|---|---|
+| **Terracotta** | **AGPL-3.0** | `libterracotta.so` + JNI binding (Online LAN) |
+| PojavLauncher core | GPL-3.0 | JNI / EGL / OSMesa bridges, LWJGL and exec hooks, AWT stubs |
+| ZalithLauncher 2 | GPL-3.0 | Launch flow (NeoForge classpath, Forge processors, GLFW 3.4 stubs) |
+| EasyTier | LGPL-3.0 | inside Terracotta |
+| libadrenotools | BSD-2-Clause | custom Vulkan driver loading |
+| LWJGL (Pojav-patched) | BSD-3-Clause | `lwjgl3/` |
+| OpenJDK (Temurin) | GPL-2.0 + Classpath Exception | bundled JRE |
 
-Special thanks to all open-source contributors who make Android Minecraft possible.
+GPL-3.0 code may be combined into an AGPL-3.0 work — GPLv3 section 13 permits exactly this
+— and the result must be distributed under AGPL-3.0.
 
----
+> **Correction to earlier releases.** The `LICENSE` file used to contain LGPL-3.0, and this
+> project's own code was listed as "no declared license". Both were wrong: the tree already
+> contained GPL-3.0 (PojavLauncher) and AGPL-3.0 (Terracotta), so LGPL-3.0 was weaker than
+> the combination allowed, and leaving the project's own code undeclared left the whole work
+> ambiguous.
 
-## ⚠ Disclaimer
+Custom Vulkan drivers (Turnip and similar) are **not distributed by this project.** Get
+them from a source you trust — official Mesa, K11MCH1/AdrenoToolsDrivers — and import them
+yourself.
 
-Turtle Launcher is an independent open-source project and is **not affiliated with Mojang Studios or Microsoft**.
+See [NOTICE](NOTICE) for the details.
 
-Minecraft is a trademark of Mojang Studios.
+> Minecraft is a trademark of Mojang AB. This project is not affiliated with, endorsed by,
+> or connected to Mojang AB or Microsoft.
 
----
-
-## ⭐ Support
-
-If you enjoy Turtle Launcher:
-
-* ⭐ Star the repository
-* 🐞 Report bugs
-* 💡 Suggest features
-* 🤝 Contribute code
-* 📢 Share the project
-
-Every contribution helps make Turtle Launcher better.
+<div align="right"><a href="#-turtlelauncher-for-android">⬆ Back to top</a></div>

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string-array name="turtle_all_ram_preset">
+        <item>@string/turtle_setting_ram_preset_low</item>
+        <item>@string/turtle_setting_ram_preset_balanced</item>
+        <item>@string/turtle_setting_ram_preset_high</item>
+        <item>@string/turtle_setting_ram_preset_custom</item>
+    </string-array>
+    <string-array name="turtle_all_ram_preset_value">
+        <item>low</item>
+        <item>balanced</item>
+        <item>high</item>
+        <item>custom</item>
+    </string-array>
+</resources>

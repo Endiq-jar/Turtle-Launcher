@@ -29,6 +29,7 @@ import com.endiq.turtlelauncher.plugins.renderer.RendererPlugin;
 import com.endiq.turtlelauncher.renderer.RendererInterface;
 import com.endiq.turtlelauncher.renderer.Renderers;
 import com.endiq.turtlelauncher.renderer.renderers.HolyGL4ESRenderer;
+import com.endiq.turtlelauncher.renderer.renderers.LTWRenderer;
 import com.endiq.turtlelauncher.renderer.renderers.ZinkRenderer;
 import com.endiq.turtlelauncher.setting.AllSettings;
 import com.endiq.turtlelauncher.ui.activity.ErrorActivity;
@@ -267,6 +268,7 @@ public final class JREUtils {
         String rendererId = currentRenderer.getRendererId();
 
         boolean isGl4esRenderer = rendererId.equals(HolyGL4ESRenderer.ID);
+        boolean isLtwRenderer = rendererId.equals(LTWRenderer.ID);
 
         if (isGl4esRenderer) {
             envMap.put("LIBGL_ES", "2");
@@ -283,6 +285,14 @@ public final class JREUtils {
                 envMap.put("LIBGL_SKIPTEXCOPIES", "1"); // skip a redundant texture copy on upload
             if (com.endiq.turtlelauncher.setting.AllSettings.getNativeObjectPooling().getValue())
                 envMap.put("LIBGL_RECYCLEFBO", "1"); // reuse framebuffer objects instead of recreating them
+        } else if (isLtwRenderer) {
+            // These are understood by LTW and keep noisy shader diagnostics
+            // from turning a recoverable translation warning into a startup
+            // failure. Do not pass GL4ES-only batching flags to LTW.
+            envMap.put("LIBGL_ES", "3");
+            envMap.put("LIBGL_NOERROR", "1");
+            envMap.put("LIBGL_NOINTOVLHACK", "1");
+            envMap.put("LIBGL_NORMALIZE", "1");
         }
 
         envMap.putAll(currentRenderer.getRendererEnv().getValue());
@@ -305,7 +315,7 @@ public final class JREUtils {
             envMap.put("allow_higher_compat_version", "true");
             envMap.put("allow_glsl_extension_directive_midshader", "true");
             envMap.put("LIB_MESA_NAME", loadGraphicsLibrary());
-        } else if (!isGl4esRenderer) {
+        } else if (!isGl4esRenderer && !isLtwRenderer) {
             // VirGL, VGPU, Freedreno - Mesa-gallium-based, need the cache dir/compat flags
             // but not the Zink driver override.
             if (shaderCacheEnabled) envMap.put("MESA_GLSL_CACHE_DIR", PathManager.DIR_CACHE.getAbsolutePath());
@@ -523,8 +533,13 @@ public final class JREUtils {
         chdir(gameVersion == null ? ProfilePathHome.getGameHome() : gameVersion.getGameDir().getAbsolutePath());
         userArgs.add(0,"java");
         if (gameVersion != null && Tools.resolveLwjglMode(Tools.getVersionInfo(gameVersion)) == Tools.LwjglMode.NEW_SDL) {
+            // Apply DroidBridge's pre4 renderer workaround before either ART or
+            // the embedded JVM can load SDL3. The Amethyst JNI hook below then
+            // keeps the two VMs from registering SDL twice.
+            com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.applyDroidBridgeSnapshot4Patch(gameVersion.getVersionName());
+            com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.forcePowerVrOpenGl(
+                    gameVersion.getVersionName(), gameVersion.getGameDir());
             com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.ensureSingleSdl3Source(gameVersion.getVersionName());
-            com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.ensureMobileGluesShaderErrorIgnore();
             com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.setup(activity);
         }
 

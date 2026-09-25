@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_menu_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_app"
+    tools:ignore="ContentDescription">
+
+    <!-- TOP APP BAR: launcher title/subtitle on the left, quick-action icons on the right -
+         spans the full width above both the left content panel and the right play panel. -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/home_top_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/space_l"
+        android:paddingTop="@dimen/space_m"
+        android:paddingBottom="@dimen/space_xs"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/home_top_bar_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/main_top_bar_title"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/turtle_primary_text"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/home_top_bar_actions"/>
+
+        <TextView
+            android:id="@+id/home_top_bar_subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/main_top_bar_subtitle"
+            android:textSize="12sp"
+            android:textColor="@color/turtle_text_secondary"
+            app:layout_constraintTop_toBottomOf="@id/home_top_bar_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/home_top_bar_actions"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <LinearLayout
+            android:id="@+id/home_top_bar_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageButton
+                android:id="@+id/top_bar_account_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_help"
+                android:padding="9dp"
+                android:tint="@color/turtle_text_secondary"
+                android:contentDescription="@string/main_nav_account"/>
+
+            <ImageButton
+                android:id="@+id/top_bar_storage_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_folder"
+                android:padding="9dp"
+                android:tint="@color/turtle_text_secondary"
+                android:contentDescription="@string/main_nav_files"/>
+
+            <ImageButton
+                android:id="@+id/top_bar_download_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_download"
+                android:padding="9dp"
+                android:tint="@color/turtle_text_secondary"
+                android:contentDescription="@string/main_nav_download"/>
+
+            <FrameLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp">
+
+                <ImageButton
+                    android:id="@+id/top_bar_tasks_button"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_tasks"
+                    android:padding="9dp"
+                    android:tint="@color/turtle_text_secondary"
+                    android:contentDescription="@string/main_nav_tasks"/>
+
+                <TextView
+                    android:id="@+id/top_bar_tasks_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:minWidth="14dp"
+                    android:minHeight="14dp"
+                    android:background="@drawable/background_task_badge"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:textSize="9sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/turtle_text_on_accent"
+                    android:paddingHorizontal="3dp"
+                    android:visibility="gone"
+                    tools:text="2"/>
+
+            </FrameLayout>
+
+            <ImageButton
+                android:id="@+id/top_bar_cursor_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_cursor"
+                android:padding="9dp"
+                android:tint="@color/turtle_text_secondary"
+                android:contentDescription="@string/main_nav_cursor"/>
+
+            <ImageButton
+                android:id="@+id/top_bar_ai_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_ai_assistant"
+                android:padding="9dp"
+                android:tint="@color/turtle_text_secondary"
+                android:contentDescription="@string/main_nav_assistant"/>
+
+            <ImageButton
+                android:id="@+id/top_bar_settings_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_menu_settings"
+                android:padding="9dp"
+                android:tint="@color/turtle_text_secondary"
+                android:contentDescription="@string/main_nav_settings"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- LEFT PANEL -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/background_app"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/play_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/home_top_bar">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/launcher_content_row"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/launcher_footer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Quick actions rail: small squares, scrollable, left-docked -->
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/quick_actions_rail"
+                android:layout_width="52dp"
+                android:layout_height="0dp"
+                android:scrollbars="none"
+                android:paddingTop="@dimen/space_xs"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/space_xs">
+
+                    <!-- Browse Mods -->
+                    <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                        android:id="@+id/about_button"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginBottom="@dimen/space_xs"
+                        android:background="@drawable/background_grid_card"
+                        app:ripple_for_relative="true">
+                        <ImageView
+                            android:id="@+id/about_icon"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/ic_puzzle_piece"
+                            android:tint="@color/accent_primary"/>
+                        <TextView
+                            android:id="@+id/about_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/turtle_primary_text"/>
+                    </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                    <!-- Custom Controls -->
+                    <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                        android:id="@+id/custom_control_button"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginBottom="@dimen/space_xs"
+                        android:background="@drawable/background_grid_card"
+                        app:ripple_for_relative="true">
+                        <ImageView
+                            android:id="@+id/custom_control_icon"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/ic_gamepad"
+                            android:tint="@color/accent_primary"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            android:text="@string/custom_control_title"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/turtle_primary_text"/>
+                    </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                    <!-- Install JAR -->
+                    <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                        android:id="@+id/install_jar_button"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginBottom="@dimen/space_xs"
+                        android:background="@drawable/background_grid_card"
+                        app:ripple_for_relative="true">
+                        <ImageView
+                            android:id="@+id/install_jar_icon"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/ic_java"
+                            android:tint="@color/accent_primary"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            android:text="@string/main_install_jar_file"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/turtle_primary_text"/>
+                    </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                    <!-- Share Logs -->
+                    <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                        android:id="@+id/share_logs_button"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginBottom="@dimen/space_xs"
+                        android:background="@drawable/background_grid_card"
+                        app:ripple_for_relative="true">
+                        <ImageView
+                            android:id="@+id/share_logs_icon"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/ic_share"
+                            android:tint="@color/accent_primary"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            android:text="@string/main_share_logs"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/turtle_primary_text"/>
+                    </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                    <!-- Modpack Importer -->
+                    <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                        android:id="@+id/modpack_import_button"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginBottom="@dimen/space_xs"
+                        android:background="@drawable/background_grid_card"
+                        app:ripple_for_relative="true">
+                        <ImageView
+                            android:id="@+id/modpack_import_icon"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/ic_zip"
+                            android:tint="@color/accent_primary"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            android:text="@string/main_modpack_import"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/turtle_primary_text"/>
+                    </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/launcher_menu"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scrollbars="none"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/quick_actions_rail"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/space_m"
+                    android:paddingBottom="@dimen/space_l">
+
+                    <!-- TODAY'S STATISTICS header -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/main_section_statistics"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/turtle_text_secondary"
+                        android:letterSpacing="0.08"
+                        android:layout_marginBottom="@dimen/space_s"
+                        android:paddingHorizontal="4dp"/>
+
+                    <!-- Row 1: weekly playtime chart + community links -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/space_s">
+
+                        <!-- Play Time (Last 7 Days) -->
+                        <LinearLayout
+                            android:id="@+id/stats_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="@dimen/space_s"
+                            android:orientation="vertical"
+                            android:padding="@dimen/space_m"
+                            android:background="@drawable/background_grid_card">
+
+                            <com.endiq.turtlelauncher.feature.turtle.WeeklyPlaytimeChartView
+                                android:id="@+id/stats_chart"
+                                android:layout_width="match_parent"
+                                android:layout_height="90dp"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/space_xs"
+                                android:text="@string/main_stats_weekly_label"
+                                android:textSize="12sp"
+                                android:textColor="@color/turtle_text_secondary"/>
+
+                        </LinearLayout>
+
+                        <!-- Friends / LAN (Terracotta over EasyTier) -->
+                        <LinearLayout
+                            android:id="@+id/terracotta_button"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="@dimen/space_s"
+                            android:orientation="vertical"
+                            android:gravity="center_horizontal"
+                            android:padding="@dimen/space_m"
+                            android:background="@drawable/background_grid_card"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true">
+
+                            <ImageView
+                                android:id="@+id/terracotta_icon"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_marginTop="@dimen/space_xs"
+                                android:src="@drawable/ic_globe"
+                                android:tint="@color/accent_primary"
+                                android:contentDescription="@string/main_terracotta"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/space_s"
+                                android:text="@string/main_terracotta"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/turtle_text_secondary"
+                                android:gravity="center"/>
+
+                        </LinearLayout>
+
+                        <!-- Community -->
+                        <LinearLayout
+                            android:id="@+id/community_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:padding="@dimen/space_m"
+                            android:background="@drawable/background_grid_card">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/main_section_community"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:letterSpacing="0.08"
+                                android:textColor="@color/turtle_text_secondary"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:layout_marginTop="@dimen/space_s"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <ImageButton
+                                    android:id="@+id/link_discord_button"
+                                    android:layout_width="0dp"
+                                    android:layout_height="36dp"
+                                    android:layout_weight="1"
+                                    android:background="?attr/selectableItemBackgroundBorderless"
+                                    android:src="@drawable/ic_git_branch"
+                                    android:padding="7dp"
+                                    android:tint="@color/accent_primary"
+                                    android:contentDescription="Discord"/>
+
+                                <ImageButton
+                                    android:id="@+id/link_website_button"
+                                    android:layout_width="0dp"
+                                    android:layout_height="36dp"
+                                    android:layout_weight="1"
+                                    android:background="?attr/selectableItemBackgroundBorderless"
+                                    android:src="@drawable/ic_globe"
+                                    android:padding="7dp"
+                                    android:tint="@color/turtle_success"
+                                    android:contentDescription="Website"/>
+
+                                <ImageButton
+                                    android:id="@+id/link_youtube_button"
+                                    android:layout_width="0dp"
+                                    android:layout_height="36dp"
+                                    android:layout_weight="1"
+                                    android:background="?attr/selectableItemBackgroundBorderless"
+                                    android:src="@drawable/ic_play_circle"
+                                    android:padding="7dp"
+                                    android:tint="@color/turtle_error"
+                                    android:contentDescription="YouTube"/>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Row 2: last game log -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/space_l">
+
+                        <!-- Last Game Log -->
+                        <LinearLayout
+                            android:id="@+id/last_log_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:padding="@dimen/space_m"
+                            android:background="@drawable/background_grid_card">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/main_last_log_label"
+                                android:textSize="12sp"
+                                android:textColor="@color/turtle_text_secondary"/>
+
+                            <TextView
+                                android:id="@+id/last_log_preview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="@string/main_last_log_none"
+                                android:textSize="12sp"
+                                android:maxLines="3"
+                                android:ellipsize="end"
+                                android:textColor="@color/turtle_text_secondary"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Feature plugins (populated at runtime by MainMenuFragment - see
+                         FeaturePluginManager; empty/GONE unless a feature-plugin app is installed) -->
+                    <LinearLayout
+                        android:id="@+id/feature_plugins_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        tools:ignore="UselessParent"/>
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Footer -->
+        <LinearLayout
+            android:id="@+id/launcher_footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="@dimen/space_l"
+            android:paddingVertical="@dimen/space_s"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/footer_app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="@color/turtle_text_primary"
+                tools:text="TurtleLauncher"/>
+
+            <TextView
+                android:id="@+id/footer_version_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/space_s"
+                android:textSize="12sp"
+                android:textColor="@color/turtle_text_secondary"
+                tools:text="v1.0.0.0"/>
+
+            <ImageButton
+                android:id="@+id/footer_github_button"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_git_branch"
+                android:padding="6dp"
+                android:tint="@color/turtle_text_secondary"
+                android:contentDescription="GitHub"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- RIGHT PANEL -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/play_layout"
+        android:layout_width="200dp"
+        android:layout_height="0dp"
+        android:background="@color/background_menu_element"
+        android:paddingHorizontal="@dimen/space_m"
+        android:paddingTop="@dimen/space_m"
+        android:paddingBottom="@dimen/space_m"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/home_top_bar">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/play_buttons_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <!-- SELECTED VERSION header -->
+            <TextView
+                android:id="@+id/selected_version_header"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/main_section_selected_version"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@color/turtle_text_secondary"
+                android:letterSpacing="0.08"
+                android:layout_marginBottom="@dimen/space_s"
+                app:layout_constraintBottom_toTopOf="@+id/version"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <!-- Version selector -->
+            <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                android:id="@+id/version"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginBottom="@dimen/space_s"
+                android:background="@drawable/background_item"
+                android:paddingHorizontal="10dp"
+                app:layout_constraintBottom_toTopOf="@+id/play_button"
+                app:layout_constraintEnd_toStartOf="@+id/manager_profile_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/selected_version_header">
+                <ImageView
+                    android:id="@+id/version_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_minecraft"/>
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_chevron_down"
+                    android:tint="@color/turtle_text_secondary"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/version_icon"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="20dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/version_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/turtle_primary_text"
+                        android:text="@string/version_no_versions"/>
+                    <TextView
+                        android:id="@+id/version_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="11sp"
+                        android:textColor="@color/turtle_text_secondary"
+                        android:visibility="gone"/>
+                </LinearLayout>
+            </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+            <ImageButton
+                android:id="@+id/manager_profile_button"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginBottom="@dimen/space_s"
+                android:background="@drawable/background_item"
+                android:padding="12dp"
+                android:src="@drawable/ic_setting"
+                android:tint="@color/turtle_text_secondary"
+                app:layout_constraintBottom_toTopOf="@+id/play_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/version"/>
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/play_button"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_launch_button"
+                android:text="@string/main_launch"
+                android:textAllCaps="true"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="@color/turtle_text_on_accent"
+                android:letterSpacing="0.1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

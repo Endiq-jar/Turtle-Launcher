@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />  <!-- ★ 추가 -->
+    <!-- 음성채팅 모드(Simple Voice Chat 등)가 표준 자바 오디오 API 로 마이크를
+         열 때 실제로 쓰인다(mic_bridge.c, AAudio). 없어도 게임 자체는 정상 동작한다. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- (A) <manifest> 바로 아래 권한들 ───────────────────────── -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- VpnService 자체는 별도 uses-permission 불필요(서비스에 BIND_VPN_SERVICE 로 보호) -->
+
+    <!-- (A-2) Android 11+(targetSdk 30+) 패키지 가시성 ─────────────────
+         외부 렌더러 플러그인(MobileGlues) APK 를 queryIntentActivities(MAIN) 로
+         감지하려면 아래 <queries> 가 있어야 한다. MobileGlues 패키지를 명시하고,
+         FCL/Zalith 계열 렌더러 플러그인을 폭넓게 보기 위해 MAIN intent 도 함께 둔다. -->
+    <queries>
+        <package android:name="com.fcl.plugin.mobileglues" />
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".TurtleLauncherApplication"
+        android:allowBackup="true"
+        android:allowNativeHeapPointerTagging="false"
+        android:extractNativeLibs="true"
+        android:appCategory="game"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:memtagMode="off"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TurtleLauncher"
+        tools:targetApi="31">
+        <property
+            android:name="android.window.PROPERTY_COMPAT_ALLOW_ORIENTATION_OVERRIDE"
+            android:value="false" />
+        <property
+            android:name="android.window.PROPERTY_COMPAT_ALLOW_MIN_ASPECT_RATIO_OVERRIDE"
+            android:value="false" />
+        <property
+            android:name="android.window.PROPERTY_COMPAT_ALLOW_RESIZEABLE_ACTIVITY_OVERRIDES"
+            android:value="false" />
+        <property
+            android:name="android.window.PROPERTY_COMPAT_IGNORE_REQUESTED_ORIENTATION"
+            android:value="false" />
+        <activity
+            android:name=".presentation.NetworkSettingsActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>
+        <activity android:name=".presentation.SettingsActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>
+        <activity android:name=".presentation.TerracottaActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>
+        <activity android:name=".presentation.LoginActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>
+        <activity android:name=".presentation.CrashReportActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>
+        <activity android:name=".presentation.InstanceSettingsActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>
+        <activity android:name=".presentation.ContentPackBrowserActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>
+        <activity android:name=".presentation.KeyboardLayoutEditorActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>
+        <activity android:name=".presentation.ContentPackDetailActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>
+        <activity
+            android:name=".presentation.MinecraftActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustNothing"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
+            android:process=":minecraft" />
+        <activity
+            android:name=".presentation.FileManagerActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden" />
+        <activity
+            android:name=".presentation.AssistantActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden" />
+        <activity
+            android:name=".presentation.MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.TurtleLauncher">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".presentation.ShareImportActivity"
+            android:exported="true"
+            android:label="Ping 인스턴스에 추가"
+            android:theme="@style/Theme.TurtleLauncher"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:configChanges="orientation|screenSize|keyboardHidden">
+
+            <!-- 단일 파일 공유 -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/java-archive" />
+                <data android:mimeType="application/x-java-archive" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-zip-compressed" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+
+            <!-- 여러 파일 공유 -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/java-archive" />
+                <data android:mimeType="application/x-java-archive" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-zip-compressed" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+        </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <service
+            android:name="com.endiq.turtlelauncher.presentation.util.terracota.TerracottaVPNService"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice"
+            tools:ignore="VpnServicePolicy">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".presentation.util.forge.ForgeBuilderService"
+            android:process=":forgebuilder"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Installing Forge/NeoForge game components" />
+        </service>
+    </application>
+
+</manifest>

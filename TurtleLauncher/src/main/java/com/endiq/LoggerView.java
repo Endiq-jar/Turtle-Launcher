@@ -28,8 +28,10 @@ public class LoggerView extends ConstraintLayout {
 
     // TurtleLauncher v10: raw, unfiltered log lines kept separately so the regex/text
     // filter can be applied and cleared without losing history that arrived before it.
+    private static final int MAX_VISIBLE_LOG_LINES = 4000;
     private final StringBuilder rawLogBuffer = new StringBuilder();
     private java.util.regex.Pattern activeFilter = null;
+    private int visibleLogLines = 0;
 
     public LoggerView(@NonNull Context context) {
         this(context, null);
@@ -90,6 +92,7 @@ public class LoggerView extends ConstraintLayout {
                         Logger.setLogListener(mLogListener);
                     } else {
                         binding.logView.setText("");
+                        visibleLogLines = 0;
                         rawLogBuffer.setLength(0);
                         Logger.setLogListener(null); // Makes the JNI code be able to skip expensive logger callbacks
                         // NOTE: was tested by rapidly smashing the log on/off button, no sync issues found :)
@@ -157,7 +160,10 @@ public class LoggerView extends ConstraintLayout {
                     rawLogBuffer.delete(0, rawLogBuffer.length() - 1_500_000);
                 }
                 if (activeFilter == null || activeFilter.matcher(text).find()) {
-                    binding.logView.append(text + '\n');
+                    binding.logView.append(com.endiq.turtlelauncher.feature.log.LogLineStyle.style(getContext(), text));
+                    binding.logView.append("\n");
+                    visibleLogLines++;
+                    trimVisibleLogLines();
                     if (binding.scroll.isKeepFocusing())
                         binding.scroll.fullScroll(View.FOCUS_DOWN);
                 }
@@ -165,17 +171,41 @@ public class LoggerView extends ConstraintLayout {
         };
     }
 
+    /** Keeps the live TextView bounded so long sessions cannot exhaust low-end devices. */
+    private void trimVisibleLogLines() {
+        while (visibleLogLines > MAX_VISIBLE_LOG_LINES) {
+            CharSequence text = binding.logView.getText();
+            int firstBreak = android.text.TextUtils.indexOf(text, '\n');
+            if (firstBreak < 0) {
+                binding.logView.setText("");
+                visibleLogLines = 0;
+                return;
+            }
+            android.text.Editable editable = binding.logView.getEditableText();
+            if (editable != null) {
+                editable.delete(0, firstBreak + 1);
+            } else {
+                binding.logView.setText(text.subSequence(firstBreak + 1, text.length()));
+            }
+            visibleLogLines--;
+        }
+    }
+
     /** Rebuilds the visible log text from the raw buffer against the current [activeFilter]. */
     private void rerenderFilteredLog() {
         String[] lines = rawLogBuffer.toString().split("\n", -1);
         StringBuilder rebuilt = new StringBuilder();
+        int rebuiltLineCount = 0;
         for (String line : lines) {
             if (line.isEmpty()) continue;
             if (activeFilter == null || activeFilter.matcher(line).find()) {
                 rebuilt.append(line).append('\n');
+                rebuiltLineCount++;
             }
         }
         binding.logView.setText(rebuilt.toString());
+        visibleLogLines = rebuiltLineCount;
+        trimVisibleLogLines();
         if (binding.scroll.isKeepFocusing())
             binding.scroll.fullScroll(View.FOCUS_DOWN);
     }

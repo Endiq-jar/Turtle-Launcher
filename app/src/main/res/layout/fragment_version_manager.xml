@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    tools:ignore="ContentDescription">
+
+    <ScrollView
+        android:id="@+id/shortcuts_layout"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginVertical="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_6sdp"
+        android:layout_weight="1"
+        android:background="@drawable/background_card"
+        android:padding="@dimen/_2sdp"
+        android:fillViewport="true"
+        tools:ignore="MissingConstraints">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/_12sdp">
+
+            <TextView
+                android:id="@+id/title_textview"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/version_manager_shortcuts"
+
+                android:textColor="@color/turtle_primary_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/mods_icon"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginStart="@dimen/_16sdp"
+                app:layout_constraintBottom_toBottomOf="@+id/shortcuts_mods"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/shortcuts_mods"
+                app:srcCompat="@drawable/ic_profile_mods" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/shortcuts_mods"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/padding_heavy"
+                android:layout_marginTop="@dimen/_14sdp"
+                android:text="@string/version_manager_shortcuts_mods"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/mods_icon"
+                app:layout_constraintTop_toBottomOf="@+id/title_textview" />
+
+            <ImageView
+                android:id="@+id/game_icon"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="@+id/game_path"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/game_path"
+                app:srcCompat="@drawable/ic_profile_folder" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/game_path"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/padding_heavy"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/version_manager_shortcuts_version_path"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/game_icon"
+                app:layout_constraintTop_toBottomOf="@+id/shortcuts_mods" />
+
+            <ImageView
+                android:id="@+id/resource_icon"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="@+id/resource_path"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/resource_path"
+                app:srcCompat="@drawable/ic_profile_resource_pack" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/resource_path"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/padding_heavy"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/version_manager_shortcuts_resource_path"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/resource_icon"
+                app:layout_constraintTop_toBottomOf="@+id/game_path" />
+
+            <ImageView
+                android:id="@+id/world_icon"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="@+id/world_path"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/world_path"
+                app:srcCompat="@drawable/ic_profile_saves" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/world_path"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/padding_heavy"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/version_manager_shortcuts_world_path"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/world_icon"
+                app:layout_constraintTop_toBottomOf="@+id/resource_path" />
+
+            <ImageView
+                android:id="@+id/shader_icon"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:scaleType="fitCenter"
+                android:scaleX="0.95"
+                android:scaleY="0.95"
+                app:layout_constraintBottom_toBottomOf="@+id/shader_path"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/shader_path"
+                app:srcCompat="@drawable/ic_profile_shader_pack" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/shader_path"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/padding_heavy"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/version_manager_shortcuts_shader_path"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/shader_icon"
+                app:layout_constraintTop_toBottomOf="@+id/world_path" />
+
+            <ImageView
+                android:id="@+id/screenshot_icon"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:scaleType="fitCenter"
+                android:scaleX="0.95"
+                android:scaleY="0.95"
+                app:layout_constraintBottom_toBottomOf="@+id/screenshot_path"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/screenshot_path"
+                app:srcCompat="@drawable/ic_screenshot" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/screenshot_path"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/padding_heavy"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/version_manager_shortcuts_screenshot_path"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/screenshot_icon"
+                app:layout_constraintTop_toBottomOf="@+id/shader_path" />
+
+            <ImageView
+                android:id="@+id/logs_icon"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="@+id/logs_path"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/logs_path"
+                app:srcCompat="@drawable/ic_profile_logs" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/logs_path"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/padding_heavy"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/version_manager_shortcuts_logs_path"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/logs_icon"
+                app:layout_constraintTop_toBottomOf="@+id/screenshot_path" />
+
+            <ImageView
+                android:id="@+id/crash_report_icon"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginStart="@dimen/_16sdp"
+                app:layout_constraintBottom_toBottomOf="@+id/crash_report_path"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/crash_report_path"
+                app:srcCompat="@drawable/ic_profile_crash_report" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/crash_report_path"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/padding_heavy"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/version_manager_shortcuts_crash_report_path"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/crash_report_icon"
+                app:layout_constraintTop_toBottomOf="@+id/logs_path" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/edit_layout"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/_6sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:layout_marginVertical="@dimen/_12sdp"
+        android:layout_weight="1"
+        android:background="@drawable/background_card"
+        android:padding="@dimen/_2sdp"
+        android:fillViewport="true"
+        tools:ignore="MissingConstraints">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/_12sdp">
+
+            <TextView
+                android:id="@+id/title_manage_textview"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/version_manager_title"
+
+                android:textColor="@color/turtle_primary_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/version_settings_icon"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="@+id/version_settings"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/version_settings"
+                app:srcCompat="@drawable/ic_setting" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/version_settings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/padding_heavy"
+                android:layout_marginTop="@dimen/_14sdp"
+                android:text="@string/setting_category_version"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/version_settings_icon"
+                app:layout_constraintTop_toBottomOf="@+id/title_manage_textview" />
+
+            <ImageView
+                android:id="@+id/rename_version_icon"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="@+id/version_rename"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/version_rename"
+                app:srcCompat="@drawable/ic_edit" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/version_rename"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/padding_heavy"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/version_manager_rename"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/rename_version_icon"
+                app:layout_constraintTop_toBottomOf="@+id/version_settings" />
+
+            <ImageView
+                android:id="@+id/copy_version_icon"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:scaleType="centerInside"
+                android:scaleX="0.86"
+                android:scaleY="0.86"
+                app:layout_constraintBottom_toBottomOf="@+id/version_copy"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/version_copy"
+                app:srcCompat="@drawable/ic_copy" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/version_copy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/padding_heavy"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/version_manager_copy"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/copy_version_icon"
+                app:layout_constraintTop_toBottomOf="@+id/version_rename" />
+
+            <ImageView
+                android:id="@+id/delete_version_icon"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:scaleType="centerInside"
+                android:scaleX="0.9"
+                android:scaleY="0.9"
+                app:layout_constraintBottom_toBottomOf="@+id/version_delete"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/version_delete"
+                app:srcCompat="@drawable/ic_menu_delete_forever" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/version_delete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/padding_heavy"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/version_manager_delete"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/delete_version_icon"
+                app:layout_constraintTop_toBottomOf="@+id/version_copy" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -183,6 +183,9 @@ android {
     }
 
     packaging {
+        // The Mesa/Zink AAR supplies libcutils.so. Keep it byte-for-byte intact:
+        // its exported Android compatibility symbols are part of the renderer ABI.
+        doNotStrip += "**/libcutils.so"
         jniLibs {
             useLegacyPackaging = true
             pickFirsts += listOf("**/libbytehook.so")

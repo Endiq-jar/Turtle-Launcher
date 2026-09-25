@@ -99,6 +99,11 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         // the (upstream) case where an SDLSurface really is the view being drawn to.
         Surface external = mNativeSurface;
         if (external != null && external.isValid()) return external;
+        // A callback may have published the game Surface immediately before
+        // SDLActivity installed this SDLSurface. Use the shared pending value
+        // as a second chance, never the detached holder's invalid Surface.
+        Surface published = SDLActivity.getTurtleNativeSurface();
+        if (published != null && published.isValid()) return published;
         return getHolder().getSurface();
     }
 
@@ -292,7 +297,7 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
                 // BUTTON_STYLUS_PRIMARY is 2^5, so shift by 4, and apply SDL_PEN_INPUT_DOWN/SDL_PEN_INPUT_ERASER_TIP
                 int buttonState = (event.getButtonState() >> 4) | (1 << (toolType == MotionEvent.TOOL_TYPE_STYLUS ? 0 : 30));
 
-                SDLActivity.onNativePen(pointerId, buttonState, action, x, y, p);
+                SDLActivity.onNativePen(pointerId, SDLActivity.getPenDeviceType(event.getDevice()), buttonState, action, x, y, p);
             } else { // MotionEvent.TOOL_TYPE_FINGER or MotionEvent.TOOL_TYPE_UNKNOWN
                 pointerId = event.getPointerId(i);
                 x = getNormalizedX(event.getX(i));

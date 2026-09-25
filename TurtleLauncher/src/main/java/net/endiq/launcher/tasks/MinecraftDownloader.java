@@ -290,6 +290,11 @@ public class MinecraftDownloader {
         MinecraftClientInfo minecraftClientInfo = getClientInfo(verInfo);
         if(minecraftClientInfo != null) scheduleGameJarDownload(minecraftClientInfo, versionName);
 
+        // Mojang's 26.3 metadata omits GLFW although the game resolves
+        // GLFWErrorCallback. Add the pinned 3.4.3+4 game-side artifact before
+        // scheduling downloads; this also makes the same entry available to
+        // the launch classpath builder later.
+        Tools.ensureSdlGlfwDependency(verInfo);
         if(verInfo.libraries != null) scheduleLibraryDownloads(verInfo.libraries);
 
         if(Tools.isValidString(verInfo.inheritsFrom)) {
@@ -349,8 +354,22 @@ public class MinecraftDownloader {
     private void scheduleLibraryDownloads(DependentLibrary[] dependentLibraries) throws IOException {
         Tools.preProcessLibraries(dependentLibraries);
         growDownloadList(dependentLibraries.length);
+
+        // New SDL versions need the exact version's lwjgl-glfw Java callbacks
+        // after the Android GLFW bridge. Legacy versions keep using the complete
+        // bundled LWJGL payload and do not need this extra download.
+        boolean hasSdl = false;
+        for (DependentLibrary library : dependentLibraries) {
+            if (library != null && library.name != null &&
+                    library.name.startsWith("org.lwjgl:lwjgl-sdl:")) {
+                hasSdl = true;
+                break;
+            }
+        }
+
         for(DependentLibrary dependentLibrary : dependentLibraries) {
-            if(dependentLibrary.name.startsWith("org.lwjgl:lwjgl-glfw")) continue;
+            if (dependentLibrary == null || dependentLibrary.name == null) continue;
+            if (dependentLibrary.name.startsWith("org.lwjgl:lwjgl-glfw") && !hasSdl) continue;
             // Special handling for JNA Android natives
             if(dependentLibrary.name.startsWith("net.java.dev.jna:jna:")) {
                 scheduleNativeLibraryDownload(MAVEN_CENTRAL_REPO1, dependentLibrary);
@@ -361,7 +380,10 @@ public class MinecraftDownloader {
 
             String sha1 = null, url = null;
             long size = 0;
-            boolean skipIfFailed = true;
+            // The synthetic 26.3 GLFW artifact is mandatory: silently skipping
+            // it would produce a late bootstrap NoClassDefFoundError instead of
+            // reporting the real download failure to the installer.
+            boolean skipIfFailed = !dependentLibrary.name.equals("org.lwjgl:lwjgl-glfw:3.4.3+4");
             if(dependentLibrary.downloads != null) {
                 if(dependentLibrary.downloads.artifact != null) {
                     MinecraftLibraryArtifact artifact = dependentLibrary.downloads.artifact;

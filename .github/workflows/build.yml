@@ -1,4 +1,4 @@
-name: Build APK
+name: Build TurtleLauncher
 
 on:
   push:
@@ -7,73 +7,63 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
 
-      - name: Set up JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '17'
 
-      # Works whether gradlew lives at the repo root or one level down
-      # (e.g. TurtleLauncher/gradlew) - no need to hardcode the layout.
-      - name: Locate the Android project root
-        id: locate
-        run: |
-          GRADLEW_PATH=$(find . -maxdepth 3 -name gradlew | head -n1)
-          if [ -z "$GRADLEW_PATH" ]; then
-            echo "::error::No gradlew found anywhere in this repo (checked 3 levels deep)."
-            exit 1
-          fi
-          PROJECT_DIR=$(dirname "$GRADLEW_PATH")
-          echo "dir=$PROJECT_DIR" >> "$GITHUB_OUTPUT"
-          echo "Found Android project at: $PROJECT_DIR"
-
-          PROPS="$PROJECT_DIR/gradle/wrapper/gradle-wrapper.properties"
-          if [ -f "$PROPS" ]; then
-            VERSION=$(grep -oE 'gradle-[0-9.]+-(bin|all)' "$PROPS" | head -n1 | sed -E 's/gradle-([0-9.]+)-(bin|all)/\1/')
-          fi
-          VERSION=${VERSION:-8.9}
-          echo "gradle_version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Target Gradle version: $VERSION"
-
-      # Fixes: "Could not find or load main class org.gradle.wrapper.GradleWrapperMain"
-      # That error means gradle/wrapper/gradle-wrapper.jar is missing, empty, or corrupt
-      # in the repo - common with GitHub's web "Add files via upload" flow, which can
-      # silently drop or mangle binary files. Rather than debug how it got lost, this
-      # provisions a real Gradle install and has it write a fresh, correct wrapper jar
-      # before gradlew is ever invoked, so the build no longer depends on whatever
-      # actually made it into the repo.
-      - name: Provision Gradle
-        uses: gradle/actions/setup-gradle@v5
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
         with:
-          gradle-version: ${{ steps.locate.outputs.gradle_version }}
+          packages: >-
+            platforms;android-36
+            build-tools;36.0.0
+            ndk;27.0.12077973
+            cmake;3.22.1
 
-      - name: Regenerate the Gradle wrapper jar
-        working-directory: ${{ steps.locate.outputs.dir }}
-        run: gradle wrapper --gradle-version ${{ steps.locate.outputs.gradle_version }}
+      - name: Build default Turtle target
+        run: |
+          chmod +x ./gradlew
+          set +e
+          ./gradlew :app:assembleDebug --no-daemon --no-configuration-cache 2>&1 | tee build-output.log
+          build_status=${PIPESTATUS[0]}
+          set -e
+          if [ "$build_status" -ne 0 ]; then
+            {
+              echo "### Gradle build failure"
+              echo
+              echo '```text'
+              tail -n 160 build-output.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            failure_summary=$(tail -n 35 build-output.log | tr '\r\n' ' ' | sed 's/%/%25/g; s/::/%3A%3A/g')
+            echo "::error title=Gradle failure::$failure_summary"
+            exit "$build_status"
+          fi
 
-      # The Termux build pins aapt2 to a Termux-only ARM64 binary path that doesn't
-      # exist on a normal Linux runner. Strip it so AGP falls back to the standard
-      # aapt2 pulled from Google's Maven repo. Harmless no-op if the line isn't there.
-      - name: Remove Termux-only aapt2 override
-        run: sed -i '/android.aapt2FromMavenOverride/d' "${{ steps.locate.outputs.dir }}/gradle.properties" || true
+      - name: Upload Turtle build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: TurtleLauncher-build-diagnostics
+          path: |
+            build-output.log
+            app/.cxx/**/*.ninja_log
+            app/.cxx/**/*.ninja
+          if-no-files-found: ignore
 
-      - name: Grant execute permission to gradlew
-        run: chmod +x "${{ steps.locate.outputs.dir }}/gradlew"
-
-      - name: Build debug APK
-        working-directory: ${{ steps.locate.outputs.dir }}
-        env:
-          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-        run: ./gradlew :TurtleLauncher:assembleDebug --no-daemon
-
-      - name: Upload debug APK
+      - name: Upload Turtle debug APK
         uses: actions/upload-artifact@v6
         with:
           name: TurtleLauncher-debug-apk
-          path: "**/build/outputs/apk/debug/*.apk"
+          path: app/build/outputs/apk/debug/*.apk
