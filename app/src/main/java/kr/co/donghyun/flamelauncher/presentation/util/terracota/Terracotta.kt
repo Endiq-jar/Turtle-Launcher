@@ -1,5 +1,5 @@
 /*
- * Terracotta wrapper — ported & simplified for FlameLauncher.
+ * Terracotta wrapper — ported & simplified for TurtleLauncher.
  *
  * Original: ZalithLauncher2 (GPL-3.0), referencing FoldCraftLauncher / HMCL.
  *   https://github.com/FCL-Team/FoldCraftLauncher/blob/52f0542/FCL/src/main/java/com/tungsten/fcl/terracotta/Terracotta.java

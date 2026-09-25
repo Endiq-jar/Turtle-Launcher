@@ -1,6 +1,6 @@
 /*
  * Terracotta 통합 예시 — Activity(Compose) 에서 VPN 동의 런처를 컨트롤러에 연결하는 법.
- * 이 파일은 "어떻게 붙이는지" 보여주는 예시이며, 실제로는 FlameLauncher 의
+ * 이 파일은 "어떻게 붙이는지" 보여주는 예시이며, 실제로는 TurtleLauncher 의
  * 게임 화면(MinecraftActivity) 또는 별도 화면에 맞춰 넣으면 된다.
  */
 package kr.co.donghyun.flamelauncher.presentation.ui.components

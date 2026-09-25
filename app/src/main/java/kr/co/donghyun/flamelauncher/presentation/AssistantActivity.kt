@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.activity.compose.setContent
 import kr.co.donghyun.flamelauncher.presentation.base.BaseActivity
 import kr.co.donghyun.flamelauncher.presentation.ui.screen.AssistantScreen
-import kr.co.donghyun.flamelauncher.presentation.ui.theme.FlameLauncherTheme
+import kr.co.donghyun.flamelauncher.presentation.ui.theme.TurtleLauncherTheme
 
 class AssistantActivity : BaseActivity() {
     companion object {
@@ -13,6 +13,6 @@ class AssistantActivity : BaseActivity() {
     }
 
     override fun onCreated() {
-        setContent { FlameLauncherTheme { AssistantScreen(onBack = { finish() }) } }
+        setContent { TurtleLauncherTheme { AssistantScreen(onBack = { finish() }) } }
     }
 }

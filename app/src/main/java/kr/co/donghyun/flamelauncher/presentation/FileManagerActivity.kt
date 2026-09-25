@@ -9,7 +9,7 @@ import androidx.compose.runtime.setValue
 import kr.co.donghyun.flamelauncher.data.instance.InstanceManager
 import kr.co.donghyun.flamelauncher.presentation.base.BaseActivity
 import kr.co.donghyun.flamelauncher.presentation.ui.screen.FileBrowserScreen
-import kr.co.donghyun.flamelauncher.presentation.ui.theme.FlameLauncherTheme
+import kr.co.donghyun.flamelauncher.presentation.ui.theme.TurtleLauncherTheme
 import java.io.File
 
 class FileManagerActivity : BaseActivity() {
@@ -24,7 +24,7 @@ class FileManagerActivity : BaseActivity() {
         root = InstanceManager.instancesDir(this).also { it.mkdirs() }
         current = root
         setContent {
-            FlameLauncherTheme {
+            TurtleLauncherTheme {
                 current?.let { directory ->
                     FileBrowserScreen(
                         root = root,

@@ -28,7 +28,7 @@ import java.net.URL
  *    로 요청하면 **렌더링된 HTML** 을 주므로, 표·체크박스·코드블록까지 GitHub 과 같은
  *    모양으로 나온다. 앱에서 마크다운 파서를 들고 다닐 이유가 없다.
  */
-private const val README_API = "https://api.github.com/repos/FlameLaunchers/FlameLauncher/readme"
+private const val README_API = "https://api.github.com/repos/Endiq-jar/TurtleLauncher/readme"
 
 /** 앱이 살아있는 동안 한 번만 받는다. 화면을 오갈 때마다 다시 받을 이유가 없다. */
 private var cachedHtml: String? = null
@@ -59,7 +59,7 @@ fun ReleaseNotesPane(modifier: Modifier = Modifier) {
                 HtmlWebView(
                     html = html!!,
                     // 상대 경로 이미지(README 의 배지·스크린샷)를 풀어줄 기준.
-                    baseUrl = "https://raw.githubusercontent.com/FlameLaunchers/FlameLauncher/main/",
+                    baseUrl = "https://raw.githubusercontent.com/Endiq-jar/TurtleLauncher/main/",
                     modifier = Modifier.fillMaxWidth().padding(14.dp),
                 )
             }
@@ -104,7 +104,7 @@ private fun fetchReadmeHtml(): String? = try {
         // ⚠️ 이 헤더가 핵심이다. 없으면 JSON 메타데이터(base64 본문)가 오고,
         //    있으면 GitHub 이 렌더링한 HTML 을 그대로 준다.
         setRequestProperty("Accept", "application/vnd.github.html")
-        setRequestProperty("User-Agent", "FlameLauncher")
+        setRequestProperty("User-Agent", "TurtleLauncher")
         connectTimeout = 10_000
         readTimeout = 10_000
         if (responseCode == 200) inputStream.bufferedReader().use { it.readText() } else null

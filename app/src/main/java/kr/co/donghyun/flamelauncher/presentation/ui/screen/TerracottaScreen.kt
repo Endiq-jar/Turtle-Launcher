@@ -1,5 +1,5 @@
 /*
- * Minimal Terracotta LAN-over-internet UI for FlameLauncher.
+ * Minimal Terracotta LAN-over-internet UI for TurtleLauncher.
  *
  * This is original UI written for the minimal port; it drives TerracottaController.
  * Backend (Terracotta/EasyTier) is ported from ZalithLauncher2 (GPL-3.0) — see NOTICE.

@@ -250,7 +250,7 @@ class ContentPackDetailActivity : BaseActivity() {
         }
 
         setContent {
-            FlameLauncherTheme {
+            TurtleLauncherTheme {
                 val detail by viewModel.detail.collectAsState()
                 val isLoading by viewModel.isLoading.collectAsState()
                 val isInstalled by viewModel.isInstalled.collectAsState()

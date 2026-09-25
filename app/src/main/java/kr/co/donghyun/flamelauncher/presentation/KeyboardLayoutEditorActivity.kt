@@ -10,7 +10,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kr.co.donghyun.flamelauncher.presentation.base.BaseActivity
 import kr.co.donghyun.flamelauncher.presentation.keyboardeditor.KeyboardEditorViewModel
 import kr.co.donghyun.flamelauncher.presentation.ui.screen.KeyboardLayoutEditorScreen
-import kr.co.donghyun.flamelauncher.presentation.ui.theme.FlameLauncherTheme
+import kr.co.donghyun.flamelauncher.presentation.ui.theme.TurtleLauncherTheme
 
 @AndroidEntryPoint
 class KeyboardLayoutEditorActivity : BaseActivity() {
@@ -27,7 +27,7 @@ class KeyboardLayoutEditorActivity : BaseActivity() {
             statusBarStyle = SystemBarStyle.dark(scrim = android.graphics.Color.TRANSPARENT)
         )
         setContent {
-            FlameLauncherTheme {
+            TurtleLauncherTheme {
                 KeyboardLayoutEditorScreen(
                     onBack = { finish() },
                     initialButtons = viewModel.getInitialLayout(),

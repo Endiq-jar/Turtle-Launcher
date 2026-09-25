@@ -1,8 +1,8 @@
 /*
- * Terracotta node list — rewritten for FlameLauncher (minimal port).
+ * Terracotta node list — rewritten for TurtleLauncher (minimal port).
  *
  * 원본(ZalithLauncher2, GPL-3.0)은 glavo 노드 서버에서 목록을 받아오고
- * 중국 본토에서만 쓰도록 제한했다. FlameLauncher 는 그 인프라에 의존하지 않기로 했으므로
+ * 중국 본토에서만 쓰도록 제한했다. TurtleLauncher 는 그 인프라에 의존하지 않기로 했으므로
  * 네트워크 fetch 를 제거하고 "공개 퍼블릭 노드(또는 본인 노드)" 를 그대로 반환한다.
  *
  * 기존 호출부 호환을 위해 suspend fun fetchNodes(): List<URI> 시그니처는 유지한다.

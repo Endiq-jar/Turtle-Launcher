@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔥 FlameLauncher for Android
+# 🐢 TurtleLauncher for Android
 
 **Run Minecraft: Java Edition on Android.**
 
@@ -18,17 +18,16 @@
 This is **Java Edition**, not Bedrock. Join the servers your PC friends use, run the mods
 they run. A real OpenJDK boots inside the app process — this is not an emulator.
 
-### Versions and mods
+### Supported game version and mods
 
 | | |
 |---|---|
-| **Vanilla** | Alpha and Beta through the current release |
+| **Minecraft** | **26.3 only** — other versions are hidden and rejected by install/launch guards |
 | **Mod loaders** | Fabric · Forge · NeoForge · Quilt |
 | **Mods and modpacks** | Search and install straight from CurseForge and Modrinth |
 | **Dependencies** | Required mods are **installed alongside automatically** |
 
-The Java runtime is **chosen automatically** to match the version — 8 for 1.16 and below,
-16 for 1.17, 17 through 1.20.4, 21 from 1.20.5, 25 for 26.x. Nothing to pick.
+The Java runtime and SDL/LWJGL payload are **chosen automatically for Minecraft 26.3**. There is no version picker for older or newer releases in this build.
 
 ### Graphics
 
@@ -84,14 +83,14 @@ you download them from Mojang's own servers with your own account.
 
 ### 2-1. Install
 
-1. Grab the latest APK from [Releases](https://github.com/FlameLaunchers/FlameLauncher-Android/releases)
+1. Grab the latest APK from [Releases](https://github.com/Endiq-jar/TurtleLauncher/releases)
 2. Android asks you to allow installs from unknown sources — allow it
 3. Grant storage permission on first launch
 
 ### 2-2. First run
 
 1. **Sign in** — avatar at the top → Microsoft account
-2. **Pick a version** — left menu → the release tab
+2. **Select Minecraft 26.3** — it is the only available release
 3. **Pick a loader** — vanilla, Fabric, Forge or NeoForge
 4. **Download** — game files and a Java runtime; first time only, 5–15 minutes
 5. **Play** — select it under the installed tab and press play
@@ -124,14 +123,13 @@ mice and gamepads are picked up the moment they connect — nothing to configure
 
 ## Turtle Launcher feature migration
 
-This repository now builds the patched Flame target from the root `:app` module.
-The launcher shell uses Turtle's visual tokens, transitions, animation settings,
-background picker, offline assistant, account flow (offline, ely.by, Battly,
-custom authlib-injector/Yggdrasil, and Microsoft), file manager, crash-log
-styling, offline skins, content-pack browser, renderer controls, Terracotta, and
-low-end Minecraft launch safeguards. The original Turtle implementation remains
-under `TurtleLauncher/` as a rollback/reference module, while Gradle exposes only
-`:app` as the visible/default application.
+The root `:app` module now uses TurtleLauncher's original XML home layout and visual assets.
+The original launcher shell, panels, spacing, icons, animations, English string catalog,
+background picker, offline assistant, account flow (offline, ely.by, Battly, custom
+authlib-injector/Yggdrasil, and Microsoft), file manager, crash-log styling, offline
+skins, content-pack browser, renderer controls, Terracotta, and low-end safeguards are
+kept in the root APK. The old source tree under `TurtleLauncher/` remains as the reference
+implementation; Gradle exposes only `:app` as the visible/default application.
 
 The default build is:
 
@@ -139,7 +137,7 @@ The default build is:
 ./gradlew :app:assembleDebug
 ```
 
-The root target carries the runtime payloads needed by Flame: Minecraft 26.3-safe
+The root target carries the runtime payloads needed by TurtleLauncher: Minecraft 26.3-only
 SDL/LWJGL callbacks, LTW, MobileGlues, packaged renderer libraries, Terracotta,
 Java runtimes, and the low-end native launch path. `TurtleLauncher/` is retained
 only as the old source tree; it is not included by `settings.gradle.kts` and is
@@ -187,4 +185,4 @@ See [NOTICE](NOTICE) for the details.
 > Minecraft is a trademark of Mojang AB. This project is not affiliated with, endorsed by,
 > or connected to Mojang AB or Microsoft.
 
-<div align="right"><a href="#-flamelauncher-for-android">⬆ Back to top</a></div>
+<div align="right"><a href="#-turtlelauncher-for-android">⬆ Back to top</a></div>

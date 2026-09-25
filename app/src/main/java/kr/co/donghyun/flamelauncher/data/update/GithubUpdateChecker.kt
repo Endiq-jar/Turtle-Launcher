@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 /**
  * GitHub 릴리스 기반 자동 업데이트 감지.
  *
- * bucket-0224/FlameLauncher 저장소의 최신 릴리스를 조회해, 현재 앱 버전(BuildConfig.VERSION_NAME)
+ * Endiq-jar/TurtleLauncher 저장소의 최신 릴리스를 조회해, 현재 앱 버전(BuildConfig.VERSION_NAME)
  * 보다 새 버전이 올라오면 [GithubRelease] 를 돌려준다. (프리릴리스/베타도 포함해서 감지)
  */
 data class GithubRelease(
@@ -27,11 +27,11 @@ data class GithubRelease(
 object GithubUpdateChecker {
 
     private const val RELEASES_URL =
-        "https://api.github.com/repos/bucket-0224/FlameLauncher/releases?per_page=10"
+        "https://api.github.com/repos/Endiq-jar/TurtleLauncher/releases?per_page=10"
 
     // GitHub API 는 User-Agent 헤더가 없는 요청을 403 으로 거부한다(문서화된 요구사항).
     // ModrinthAPI 와 동일한 컨벤션의 식별 가능한 UA 를 붙인다.
-    private val userAgent = "donghyun/FlameLauncher/${BuildConfig.VERSION_NAME} (kr.co.donghyun.flamelauncher)"
+    private val userAgent = "Endiq-jar/TurtleLauncher/${BuildConfig.VERSION_NAME} (kr.co.donghyun.flamelauncher)"
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(8, TimeUnit.SECONDS)

@@ -14,7 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kr.co.donghyun.flamelauncher.presentation.base.BaseActivity
 import kr.co.donghyun.flamelauncher.presentation.settings.SettingsViewModel
 import kr.co.donghyun.flamelauncher.presentation.ui.screen.SettingsScreen
-import kr.co.donghyun.flamelauncher.presentation.ui.theme.FlameLauncherTheme
+import kr.co.donghyun.flamelauncher.presentation.ui.theme.TurtleLauncherTheme
 
 @AndroidEntryPoint
 class SettingsActivity : BaseActivity() {
@@ -58,7 +58,7 @@ class SettingsActivity : BaseActivity() {
         val maxHeapCeilingMb = (totalRamMb / 256) * 256
 
         setContent {
-            FlameLauncherTheme {
+            TurtleLauncherTheme {
                 val settings by viewModel.settings.collectAsState()
                 val saved by viewModel.saved.collectAsState()
                 val globalRenderer by viewModel.globalRenderer.collectAsState()

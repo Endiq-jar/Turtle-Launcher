@@ -27,7 +27,7 @@ import kr.co.donghyun.flamelauncher.presentation.contentbrowser.ContentBrowserVi
 import kr.co.donghyun.flamelauncher.presentation.ui.screen.ContentPackBrowserScreen
 import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgSurface
 import kr.co.donghyun.flamelauncher.presentation.ui.theme.Flame
-import kr.co.donghyun.flamelauncher.presentation.ui.theme.FlameLauncherTheme
+import kr.co.donghyun.flamelauncher.presentation.ui.theme.TurtleLauncherTheme
 import kr.co.donghyun.flamelauncher.presentation.ui.theme.TextMain
 import kr.co.donghyun.flamelauncher.presentation.ui.theme.TextSub
 
@@ -143,7 +143,7 @@ class ContentPackBrowserActivity : BaseActivity() {
         }
 
         setContent {
-            FlameLauncherTheme {
+            TurtleLauncherTheme {
                 val contentPacks by viewModel.contentPacks.collectAsState()
                 val progress by viewModel.progress.collectAsState()
                 val isLoading by viewModel.isLoading.collectAsState()

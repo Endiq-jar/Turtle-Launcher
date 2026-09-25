@@ -1,11 +1,10 @@
 package kr.co.donghyun.flamelauncher.presentation.util
 
-internal fun isVersionSupported(versionId: String): Boolean {
-    val parts = versionId.split(".")
-    parts.getOrNull(1)?.toIntOrNull() ?: 0
-    parts.getOrNull(2)?.toIntOrNull() ?: 0
-    return true
-}
+import kr.co.donghyun.flamelauncher.domain.model.MinecraftSupport
+
+/** The Turtle presentation exposes only the release supported by this build. */
+internal fun isVersionSupported(versionId: String): Boolean =
+    MinecraftSupport.isSupported(versionId)
 
 /**
  * 이 버전이 SDL3 로 창·입력을 만드는가 — 즉 26.3 이상인가.

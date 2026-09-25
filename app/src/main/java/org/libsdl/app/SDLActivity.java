@@ -293,14 +293,14 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
      * @return names of shared libraries to be loaded (e.g. "SDL3", "main").
      */
     /**
-     * FlameLauncher 추가분. 업스트림은 "C 앱의 main 은 SDL 이 띄운 스레드"를 전제하지만,
+     * TurtleLauncher 추가분. 업스트림은 "C 앱의 main 은 SDL 이 띄운 스레드"를 전제하지만,
      * 우리 쪽 main 은 마인크래프트를 돌리는 JVM 이다 — SDL_Init 도 그 스레드가 부른다.
      * false 를 주면 SDL 은 창·입력의 자바 쪽만 맡고 스레드는 띄우지 않는다.
      * (업스트림 파일에 손댄 곳은 여기와 mSDLThread 생성 조건, 두 군데뿐이다)
      */
 
     /**
-     * FlameLauncher 추가분 — 이 액티비티가 SDL 을 쓰는가.
+     * TurtleLauncher 추가분 — 이 액티비티가 SDL 을 쓰는가.
      *
      * 26.3 부터만 SDL 이다. 그 전 버전은 PojavLauncher 의 GLFW 스택으로 돌고 화면도 우리가
      * 만들므로, SDL 은 초기화조차 하지 않는다. 그러면 mSurface·mSingleton 이 null 인 채로
@@ -379,10 +379,10 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
         Log.v(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
-        // FlameLauncher: SDL 을 안 쓰는 버전이면 여기서 끝낸다. 화면은 액티비티가 직접 만든다.
+        // TurtleLauncher: SDL 을 안 쓰는 버전이면 여기서 끝낸다. 화면은 액티비티가 직접 만든다.
         mFlameSDLEnabled = usesSDL();
         if (!mFlameSDLEnabled) {
-            Log.v(TAG, "FlameLauncher: SDL 비활성 — 업스트림 onCreate 를 건너뛴다");
+            Log.v(TAG, "TurtleLauncher: SDL 비활성 — 업스트림 onCreate 를 건너뛴다");
             return;
         }
 
@@ -1180,7 +1180,7 @@ public class SDLActivity extends androidx.activity.ComponentActivity implements 
      */
     public void setOrientationBis(int w, int h, boolean resizable, String hint)
     {
-        // FlameLauncher: 화면 방향은 런처가 가로로 고정한다(iOS 와 같은 구조).
+        // TurtleLauncher: 화면 방향은 런처가 가로로 고정한다(iOS 와 같은 구조).
         // SDL 은 창을 만들 때 **게임 스레드에서** setRequestedOrientation 을 부르는데,
         // 그러면 UI 스레드가 화면을 다시 배치하면서 SDL 의 액티비티 락을 기다리고,
         // 창 생성 중인 게임 스레드는 그 배치를 기다리게 돼 둘 다 멈췄다(실측: 창 생성

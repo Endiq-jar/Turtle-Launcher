@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="download_source_names">
+        <item>@string/generic_default</item>
+        <item>BMCLAPI</item>
+    </string-array>
+    <string-array name="download_source_values">
+        <item>default</item>
+        <item>bmclapi</item>
+    </string-array>
+
+    <string-array name="lwjgl_compat_mode_names">
+        <item>@string/setting_lwjgl_compat_mode_auto</item>
+        <item>@string/setting_lwjgl_compat_mode_new</item>
+        <item>@string/setting_lwjgl_compat_mode_legacy</item>
+    </string-array>
+    <string-array name="lwjgl_compat_mode_values">
+        <item>auto</item>
+        <item>new</item>
+        <item>legacy</item>
+    </string-array>
+
+    <string-array name="dns_server_names">
+        <item>@string/generic_default</item>
+        <item>Quad9 (9.9.9.9)</item>
+        <item>Cloudflare (1.1.1.1)</item>
+        <item>Google Public DNS (8.8.8.8)</item>
+    </string-array>
+    <string-array name="dns_server_values">
+        <item>default</item>
+        <item>quad9</item>
+        <item>cloudflare</item>
+        <item>google</item>
+    </string-array>
+
+    <string-array name="select_java_runtime_names">
+        <item>@string/setting_java_select_runtime_ask_me</item>
+        <item>@string/setting_java_select_runtime_default</item>
+        <item>@string/install_auto_select</item>
+    </string-array>
+
+    <string-array name="select_java_runtime_values">
+        <item>ask_me</item>
+        <item>default</item>
+        <item>auto</item>
+    </string-array>
+
+    <string-array name="launcher_theme_names">
+        <item>@string/setting_launcher_theme_system</item>
+        <item>@string/setting_launcher_theme_light</item>
+        <item>@string/setting_launcher_theme_dark</item>
+    </string-array>
+
+    <string-array name="launcher_theme_values">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+
+    <string-array name="animation_enter_names">
+        <item>@string/anim_slide_up</item>
+        <item>@string/anim_slide_down</item>
+        <item>@string/anim_slide_left</item>
+        <item>@string/anim_slide_right</item>
+        <item>@string/anim_bounce</item>
+        <item>@string/anim_fade_in</item>
+        <item>@string/anim_zoom_in</item>
+        <item>@string/anim_zoom</item>
+        <item>@string/anim_sheet</item>
+    </string-array>
+
+    <string-array name="animation_enter_values">
+        <item>slide_up</item>
+        <item>slide_down</item>
+        <item>slide_left</item>
+        <item>slide_right</item>
+        <item>bounce</item>
+        <item>fade_in</item>
+        <item>zoom_in</item>
+        <item>zoom</item>
+        <item>sheet</item>
+    </string-array>
+
+    <string-array name="animation_exit_names">
+        <item>@string/anim_slide_up</item>
+        <item>@string/anim_slide_down</item>
+        <item>@string/anim_slide_left</item>
+        <item>@string/anim_slide_right</item>
+        <item>@string/anim_bounce</item>
+        <item>@string/anim_fade_out</item>
+        <item>@string/anim_zoom_out</item>
+        <item>@string/anim_zoom</item>
+        <item>@string/anim_sheet</item>
+    </string-array>
+
+    <string-array name="animation_exit_values">
+        <item>slide_up</item>
+        <item>slide_down</item>
+        <item>slide_left</item>
+        <item>slide_right</item>
+        <item>bounce</item>
+        <item>fade_out</item>
+        <item>zoom_out</item>
+        <item>zoom</item>
+        <item>sheet</item>
+    </string-array>
+
+    <string-array name="game_menu_location_names">
+        <item>@string/setting_game_menu_location_center</item>
+        <item>@string/setting_game_menu_location_left_or_top</item>
+        <item>@string/setting_game_menu_location_left_or_bottom</item>
+        <item>@string/setting_game_menu_location_right_or_top</item>
+        <item>@string/setting_game_menu_location_right_or_bottom</item>
+        <item>@string/setting_game_menu_location_top_or_center</item>
+        <item>@string/setting_game_menu_location_bottom_or_center</item>
+    </string-array>
+
+    <string-array name="game_menu_location_values">
+        <item>center</item>
+        <item>left_or_top</item>
+        <item>left_or_bottom</item>
+        <item>right_or_top</item>
+        <item>right_or_bottom</item>
+        <item>top_or_center</item>
+        <item>bottom_or_center</item>
+    </string-array>
+
+</resources>

@@ -2,6 +2,7 @@ package kr.co.donghyun.flamelauncher.data.repository
 
 import kr.co.donghyun.flamelauncher.data.mapper.toDomain
 import kr.co.donghyun.flamelauncher.domain.model.McVersion
+import kr.co.donghyun.flamelauncher.domain.model.MinecraftSupport
 import kr.co.donghyun.flamelauncher.domain.repository.McVersionRepository
 import kr.co.donghyun.flamelauncher.presentation.util.minecraft.VersionRepository as MojangVersionRepository
 import javax.inject.Inject
@@ -13,5 +14,7 @@ class McVersionRepositoryImpl @Inject constructor(
     private val mojangVersionRepository: MojangVersionRepository,
 ) : McVersionRepository {
     override suspend fun getVersions(): List<McVersion> =
-        mojangVersionRepository.fetchVersionList().map { it.toDomain() }
+        mojangVersionRepository.fetchVersionList()
+            .filter { MinecraftSupport.isSupported(it.id) }
+            .map { it.toDomain() }
 }

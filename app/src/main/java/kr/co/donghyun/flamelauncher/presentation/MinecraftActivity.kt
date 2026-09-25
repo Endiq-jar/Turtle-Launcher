@@ -54,6 +54,7 @@ import kr.co.donghyun.flamelauncher.data.jvm.JvmSettings
 import kr.co.donghyun.flamelauncher.data.jvm.JvmSettingsManager
 import kr.co.donghyun.flamelauncher.data.jvm.isLegacyVersion
 import kr.co.donghyun.flamelauncher.data.renderer.Renderer
+import kr.co.donghyun.flamelauncher.domain.model.MinecraftSupport
 import kr.co.donghyun.flamelauncher.data.renderer.RendererManager
 import kr.co.donghyun.flamelauncher.presentation.input.GamepadHandler
 import kr.co.donghyun.flamelauncher.presentation.input.GlfwKeys
@@ -66,7 +67,7 @@ import kr.co.donghyun.flamelauncher.presentation.ui.components.DisabledModsOverl
 import kr.co.donghyun.flamelauncher.presentation.ui.components.DisabledModInfo
 import kr.co.donghyun.flamelauncher.presentation.ui.components.MinecraftBootOverlay
 import kr.co.donghyun.flamelauncher.presentation.ui.components.MinecraftSurface
-import kr.co.donghyun.flamelauncher.presentation.ui.theme.FlameLauncherTheme
+import kr.co.donghyun.flamelauncher.presentation.ui.theme.TurtleLauncherTheme
 import kr.co.donghyun.flamelauncher.presentation.util.MinecraftActivityBridge
 import kr.co.donghyun.flamelauncher.presentation.util.dns.DnsHookNative
 import kr.co.donghyun.flamelauncher.presentation.util.forge.startBuilderAndWaitExitBlocking
@@ -398,8 +399,17 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
         currentInstance = this
         requestMicPermissionIfNeeded()
 
-        versionId = intent.getStringExtra(EXTRA_VERSION_ID) ?: "1.16.2"
-        assetIndex = intent.getStringExtra(EXTRA_ASSET_INDEX) ?: "1.16"
+        versionId = intent.getStringExtra(EXTRA_VERSION_ID) ?: MinecraftSupport.SUPPORTED_VERSION
+        if (!MinecraftSupport.isSupported(versionId)) {
+            Toast.makeText(
+                this,
+                "Minecraft $versionId is not supported. Only ${MinecraftSupport.SUPPORTED_VERSION} can be launched.",
+                Toast.LENGTH_LONG,
+            ).show()
+            finish()
+            return
+        }
+        assetIndex = intent.getStringExtra(EXTRA_ASSET_INDEX) ?: "26"
         extraJars = intent.getStringArrayListExtra(EXTRA_EXTRA_JARS) ?: emptyList()
         mainClass = intent.getStringExtra(EXTRA_MAIN_CLASS) ?: "net.minecraft.client.main.Main"
         instanceDir = intent.getStringExtra(EXTRA_INSTANCE_DIR)
@@ -446,7 +456,7 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
         //    꼬여서, 게임은 창을 만들었는데 한 프레임도 안 나왔다(실측). SDL 레이아웃은
         //    SDLActivity.onCreate 가 이미 setContentView 해 두었으니, 그 위에 오버레이만 얹는다.
         val gameContent: @androidx.compose.runtime.Composable () -> Unit = {
-            FlameLauncherTheme {
+            TurtleLauncherTheme {
                 Box(modifier = Modifier.fillMaxSize()) {
                     if (!sdlMode) MinecraftSurface(
                         onSurfaceCreated = { surface, _ ->
@@ -2555,7 +2565,7 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
             else   -> "libgl4es_114.so"
         }
 
-        Log.i("FlameLauncherJVM", "🎨 Selected glLibName=$glLibName (renderer=${renderer.id})")
+        Log.i("TurtleLauncherJVM", "🎨 Selected glLibName=$glLibName (renderer=${renderer.id})")
 
         // ── LWJGL 렌더러 라이브러리 지정 (ZL2 GameLauncher.progressFinalUserArgs 와 동일) ──
         //   ZL2 는 렌더러 종류와 무관하게 항상 -Dorg.lwjgl.opengl.libname 을 emit 한다
@@ -2570,7 +2580,7 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
             "-Dorg.lwjgl.opengl.libname=$glLibName",
             "-Dorg.lwjgl.opengles.libname=$glLibName"
         )
-        Log.i("FlameLauncherJVM", "🎨 lwjgl libname args=${rendererLibArgs.joinToString()}")
+        Log.i("TurtleLauncherJVM", "🎨 lwjgl libname args=${rendererLibArgs.joinToString()}")
 
         // ── classpath 중복 제거 ─────────────────────────────────────
         val seenAbs = HashSet<String>()
@@ -2860,7 +2870,7 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
                         "\${version_type}"      to if (isFabric) "Fabric" else "release",
                         "\${user_properties}"   to "{}",
                         "\${profile_name}"      to username,
-                        "\${launcher_name}"     to "FlameLauncher",
+                        "\${launcher_name}"     to "TurtleLauncher",
                         "\${launcher_version}"  to "1.0"
                     )
                     val resolved = legacyArgs.map { arg ->
@@ -3005,7 +3015,7 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
                 cause.printStackTrace(java.io.PrintWriter(sw))
             }.toString()
             file.writeText(
-                "---- FlameLauncher (런처 레벨) 오류 ----\n" +
+                "---- TurtleLauncher (런처 레벨) 오류 ----\n" +
                 "Time: ${java.util.Date()}\n" +
                 "Description: $title\n\n" +
                 "$stackTrace\n\n" +

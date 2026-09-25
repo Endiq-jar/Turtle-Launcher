@@ -11,6 +11,7 @@ import kr.co.donghyun.flamelauncher.domain.model.DownloadProgress
 import kr.co.donghyun.flamelauncher.domain.model.Instance
 import kr.co.donghyun.flamelauncher.domain.model.LaunchParams
 import kr.co.donghyun.flamelauncher.domain.model.McVersion
+import kr.co.donghyun.flamelauncher.domain.model.MinecraftSupport
 import kr.co.donghyun.flamelauncher.domain.repository.InstanceRepository
 import kr.co.donghyun.flamelauncher.presentation.util.fabric.FabricInstaller
 import kr.co.donghyun.flamelauncher.presentation.util.forge.ForgeInstaller
@@ -33,6 +34,7 @@ class InstanceRepositoryImpl @Inject constructor(
 
     override suspend fun getInstances(): List<Instance> =
         InstanceManager.listInstances(context)
+            .filter { MinecraftSupport.isSupported(it.mcVersion) }
             .sortedByDescending { InstanceManager.instanceDir(context, it.id).lastModified() }
             .map { it.toDomain() }
 
@@ -40,6 +42,9 @@ class InstanceRepositoryImpl @Inject constructor(
         version: McVersion,
         onProgress: (DownloadProgress) -> Unit,
     ): LaunchParams {
+        require(MinecraftSupport.isSupported(version.id)) {
+            "Minecraft ${version.id} is not supported; only ${MinecraftSupport.SUPPORTED_VERSION} can be installed"
+        }
         val dataVersion = version.toData()
         val instanceId = InstanceManager.vanillaId(dataVersion.id)
         val instanceDir = InstanceManager.instanceDir(context, instanceId)
@@ -90,6 +95,9 @@ class InstanceRepositoryImpl @Inject constructor(
         loaderVersion: String,
         onProgress: (DownloadProgress) -> Unit,
     ): LaunchParams {
+        require(MinecraftSupport.isSupported(version.id)) {
+            "Minecraft ${version.id} is not supported; only ${MinecraftSupport.SUPPORTED_VERSION} can be installed"
+        }
         val dataVersion = version.toData()
         val mcVersion = dataVersion.id
         val instanceId = InstanceManager.fabricId(mcVersion, loaderVersion)
@@ -153,6 +161,9 @@ class InstanceRepositoryImpl @Inject constructor(
         isNeoForge: Boolean,
         onProgress: (DownloadProgress) -> Unit,
     ): LaunchParams {
+        require(MinecraftSupport.isSupported(version.id)) {
+            "Minecraft ${version.id} is not supported; only ${MinecraftSupport.SUPPORTED_VERSION} can be installed"
+        }
         val dataVersion = version.toData()
         val mcVersion = dataVersion.id
         val loaderType = if (isNeoForge) "neoforge" else "forge"
@@ -212,6 +223,9 @@ class InstanceRepositoryImpl @Inject constructor(
     }
 
     override suspend fun prepareLaunch(instance: Instance): LaunchParams {
+        require(MinecraftSupport.isSupported(instance.mcVersion)) {
+            "Minecraft ${instance.mcVersion} is not supported; only ${MinecraftSupport.SUPPORTED_VERSION} can be launched"
+        }
         val instanceDir = InstanceManager.instanceDir(context, instance.id)
         val internalBase = context.filesDir
         val nativesDir = File(internalBase, "natives")

@@ -15,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kr.co.donghyun.flamelauncher.presentation.base.BaseActivity
 import kr.co.donghyun.flamelauncher.presentation.instancesettings.InstanceSettingsViewModel
 import kr.co.donghyun.flamelauncher.presentation.ui.screen.InstanceSettingsScreen
-import kr.co.donghyun.flamelauncher.presentation.ui.theme.FlameLauncherTheme
+import kr.co.donghyun.flamelauncher.presentation.ui.theme.TurtleLauncherTheme
 
 /**
  * 인스턴스별 설정 화면 — Clean Architecture 마이그레이션 완료.
@@ -68,7 +68,7 @@ class InstanceSettingsActivity : BaseActivity() {
         viewModel.initialize(instanceId, instanceName)
 
         setContent {
-            FlameLauncherTheme {
+            TurtleLauncherTheme {
                 val installedMods by viewModel.installedMods.collectAsState()
                 val rendererId by viewModel.rendererId.collectAsState()
                 val loaderLabel by viewModel.loaderLabel.collectAsState()

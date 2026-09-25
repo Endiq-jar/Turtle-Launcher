@@ -76,7 +76,7 @@ object LocalSkinServer {
     }
 
     private fun metadata(): JSONObject = JSONObject()
-        .put("meta", JSONObject().put("serverName", "Flame local skin server").put("implementationName", "FlameLauncher"))
+        .put("meta", JSONObject().put("serverName", "TurtleLauncher local skin server").put("implementationName", "TurtleLauncher"))
         .put("skinDomains", JSONArray().put("127.0.0.1"))
         .put("signaturePublickey", Base64.encodeToString(keyPair.public.encoded, Base64.NO_WRAP))
 

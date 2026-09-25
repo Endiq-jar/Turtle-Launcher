@@ -15,6 +15,7 @@ import kr.co.donghyun.flamelauncher.domain.model.DownloadProgress
 import kr.co.donghyun.flamelauncher.domain.model.Instance
 import kr.co.donghyun.flamelauncher.domain.model.LaunchParams
 import kr.co.donghyun.flamelauncher.domain.model.McVersion
+import kr.co.donghyun.flamelauncher.domain.model.MinecraftSupport
 import kr.co.donghyun.flamelauncher.domain.model.UserSession
 import kr.co.donghyun.flamelauncher.domain.usecase.GetAuthStateUseCase
 import kr.co.donghyun.flamelauncher.domain.usecase.GetInstancesUseCase
@@ -80,7 +81,10 @@ class MainViewModel @Inject constructor(
     private fun loadVersions() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                // Keep the policy at the boundary as well as in the repository. This prevents
+                // an API response, cache, or future UI path from exposing another release.
                 _versions.value = getMcVersionsUseCase()
+                    .filter { MinecraftSupport.isSupported(it.id) }
             } catch (e: Exception) {
                 _installError.value = "버전 목록 로드 실패: ${e.message}"
             } finally {
@@ -91,7 +95,10 @@ class MainViewModel @Inject constructor(
 
     fun refreshInstances() {
         viewModelScope.launch(Dispatchers.IO) {
+            // Unsupported instances are deliberately hidden, not merely marked disabled:
+            // they must not be selectable or launchable from the launcher.
             _instances.value = getInstancesUseCase()
+                .filter { MinecraftSupport.isSupported(it.mcVersion) }
         }
     }
 
@@ -103,20 +110,24 @@ class MainViewModel @Inject constructor(
         _selectedVersion.value = version
     }
 
-    fun downloadVanilla(version: McVersion) = launchInstall {
-        installVanillaUseCase(version) { _progress.value = it }
+    fun downloadVanilla(version: McVersion) {
+        if (!requireSupported(version.id)) return
+        launchInstall { installVanillaUseCase(version) { _progress.value = it } }
     }
 
-    fun downloadFabric(version: McVersion, loaderVersion: String) = launchInstall {
-        installFabricUseCase(version, loaderVersion) { _progress.value = it }
+    fun downloadFabric(version: McVersion, loaderVersion: String) {
+        if (!requireSupported(version.id)) return
+        launchInstall { installFabricUseCase(version, loaderVersion) { _progress.value = it } }
     }
 
-    fun downloadForge(version: McVersion, loaderVersion: String, isNeoForge: Boolean) = launchInstall {
-        installForgeUseCase(version, loaderVersion, isNeoForge) { _progress.value = it }
+    fun downloadForge(version: McVersion, loaderVersion: String, isNeoForge: Boolean) {
+        if (!requireSupported(version.id)) return
+        launchInstall { installForgeUseCase(version, loaderVersion, isNeoForge) { _progress.value = it } }
     }
 
     /** 이미 설치된 인스턴스 실행. */
     fun launchInstance(instance: Instance) {
+        if (!requireSupported(instance.mcVersion)) return
         _launchingInstance.value = instance
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -136,6 +147,12 @@ class MainViewModel @Inject constructor(
 
     fun clearInstallError() {
         _installError.value = null
+    }
+
+    private fun requireSupported(versionId: String): Boolean {
+        if (MinecraftSupport.isSupported(versionId)) return true
+        _installError.value = "Minecraft $versionId is not supported. Only ${MinecraftSupport.SUPPORTED_VERSION} is available."
+        return false
     }
 
     private fun launchInstall(block: suspend () -> LaunchParams) {

@@ -25,7 +25,7 @@ class ModrinthAPI {
     private val baseUrl = "https://api.modrinth.com/v2"
 
     // TODO: 연락처/리포 주소를 실제 값으로 바꾸면 차단 위험이 더 낮아진다.
-    private val userAgent = "donghyun/FlameLauncher/1.0 (kr.co.donghyun.flamelauncher)"
+    private val userAgent = "donghyun/TurtleLauncher/1.0 (kr.co.donghyun.flamelauncher)"
 
     private fun buildRequest(url: String): Request =
         Request.Builder()
@@ -35,7 +35,7 @@ class ModrinthAPI {
             .build()
 
     /**
-     * project_type facet 값. FlameLauncher 의 ContentType 과 매핑해서 넘긴다.
+     * project_type facet 값. TurtleLauncher 의 ContentType 과 매핑해서 넘긴다.
      *   modpack / mod / resourcepack / shader / datapack
      */
     fun search(

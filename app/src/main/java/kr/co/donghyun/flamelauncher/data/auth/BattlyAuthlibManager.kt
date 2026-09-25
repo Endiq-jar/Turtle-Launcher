@@ -90,7 +90,7 @@ object BattlyAuthlibManager {
         connection.connectTimeout = 15_000
         connection.readTimeout = 30_000
         connection.instanceFollowRedirects = true
-        connection.setRequestProperty("User-Agent", "FlameLauncher/2.2")
+        connection.setRequestProperty("User-Agent", "TurtleLauncher/2.2")
         val status = connection.responseCode
         if (status !in 200..299) {
             connection.disconnect()

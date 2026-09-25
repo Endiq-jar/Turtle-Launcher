@@ -45,7 +45,7 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     // Is SurfaceView ready for rendering
     protected boolean mIsSurfaceReady;
 
-    /** FlameLauncher: 표면 통지가 실제로 먹었는지 밖에서 확인하기 위한 것. */
+    /** TurtleLauncher: 표면 통지가 실제로 먹었는지 밖에서 확인하기 위한 것. */
     public boolean isSurfaceReady() { return mIsSurfaceReady; }
 
     // Is on-screen keyboard visible

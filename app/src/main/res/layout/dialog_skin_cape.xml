@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/_12sdp"
+    android:minWidth="@dimen/dialog_min_width">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/_15ssp"
+        android:textStyle="bold"
+        android:textColor="@color/accent_primary"
+        android:gravity="center"
+        android:layout_marginBottom="@dimen/_12sdp"/>
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/content_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- URL row -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/skin_cape_url_label"
+                android:textColor="@color/turtle_text_secondary"
+                android:textSize="@dimen/_12ssp"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp"/>
+
+            <com.endiq.turtlelauncher.ui.view.AnimEditText
+                android:id="@+id/url_edit"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_38sdp"
+                android:background="@drawable/background_edit_box"
+                android:hint="https://..."
+                android:inputType="textUri"
+                android:imeOptions="flagNoExtractUi"
+                android:paddingHorizontal="@dimen/_8sdp"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_8sdp"/>
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/button_apply_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:text="@string/skin_cape_apply_url"
+                android:layout_marginBottom="@dimen/_8sdp"/>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/turtle_highlight_subtle"
+                android:layout_marginVertical="@dimen/_8sdp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/skin_cape_gallery_label"
+                android:textColor="@color/turtle_text_secondary"
+                android:textSize="@dimen/_12ssp"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/gallery_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/_72sdp"
+                android:clipToPadding="false"
+                android:paddingHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp"
+                tools:listitem="@layout/item_skin_cape_gallery"
+                tools:orientation="horizontal"/>
+
+            <TextView
+                android:id="@+id/gallery_empty_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/skin_cape_gallery_empty"
+                android:textColor="@color/turtle_text_secondary"
+                android:textSize="@dimen/_10ssp"
+                android:gravity="center"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:visibility="gone"/>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/turtle_highlight_subtle"
+                android:layout_marginVertical="@dimen/_8sdp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/skin_cape_browse_label"
+                android:textColor="@color/turtle_text_secondary"
+                android:textSize="@dimen/_12ssp"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp"/>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_8sdp">
+
+                <com.endiq.turtlelauncher.ui.view.AnimEditText
+                    android:id="@+id/browse_username_edit"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_38sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_edit_box"
+                    android:hint="@string/skin_cape_browse_username_hint"
+                    android:inputType="text"
+                    android:imeOptions="actionSearch|flagNoExtractUi"
+                    android:paddingHorizontal="@dimen/_8sdp"
+                    android:layout_marginEnd="@dimen/_4sdp"/>
+
+                <com.endiq.turtlelauncher.ui.view.AnimButton
+                    android:id="@+id/button_browse_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_38sdp"
+                    android:text="@string/skin_cape_browse_search"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/browse_result_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/browse_preview_image"
+                    android:layout_width="@dimen/_32sdp"
+                    android:layout_height="@dimen/_32sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:contentDescription="@string/skin_cape_browse_label"
+                    android:scaleType="centerCrop"/>
+
+                <TextView
+                    android:id="@+id/browse_result_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/turtle_text_secondary"
+                    android:textSize="@dimen/_11ssp"
+                    android:layout_marginEnd="@dimen/_8sdp"/>
+
+                <com.endiq.turtlelauncher.ui.view.AnimButton
+                    android:id="@+id/button_browse_apply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/skin_cape_browse_apply"
+                    android:enabled="false"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/turtle_highlight_subtle"
+                android:layout_marginVertical="@dimen/_8sdp"/>
+
+            <TextView
+                android:id="@+id/laby_gallery_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/skin_cape_laby_gallery_label"
+                android:textColor="@color/turtle_text_secondary"
+                android:textSize="@dimen/_12ssp"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp"/>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/laby_gallery_search_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp">
+
+                <com.endiq.turtlelauncher.ui.view.AnimEditText
+                    android:id="@+id/laby_gallery_search_edit"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_38sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_edit_box"
+                    android:hint="@string/skin_cape_laby_gallery_search_hint"
+                    android:inputType="text"
+                    android:imeOptions="actionSearch|flagNoExtractUi"
+                    android:paddingHorizontal="@dimen/_8sdp"
+                    android:layout_marginEnd="@dimen/_4sdp"/>
+
+                <com.endiq.turtlelauncher.ui.view.AnimButton
+                    android:id="@+id/button_laby_gallery_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_38sdp"
+                    android:text="@string/skin_cape_browse_search"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/laby_gallery_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="@dimen/_240sdp"
+                android:clipToPadding="false"
+                android:paddingHorizontal="@dimen/_2sdp"
+                android:layout_marginBottom="@dimen/_4sdp"
+                tools:listitem="@layout/item_skin_cape_gallery"
+                tools:spanCount="4"/>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/laby_gallery_page_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp">
+
+                <com.endiq.turtlelauncher.ui.view.AnimButton
+                    android:id="@+id/button_laby_gallery_prev"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_32sdp"
+                    android:text="@string/skin_cape_gallery_page_prev"/>
+
+                <TextView
+                    android:id="@+id/laby_gallery_page_label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textColor="@color/turtle_text_secondary"
+                    android:textSize="@dimen/_10ssp"
+                    tools:text="1"/>
+
+                <com.endiq.turtlelauncher.ui.view.AnimButton
+                    android:id="@+id/button_laby_gallery_next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_32sdp"
+                    android:text="@string/skin_cape_gallery_page_next"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <TextView
+                android:id="@+id/laby_gallery_empty_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/skin_cape_laby_gallery_empty"
+                android:textColor="@color/turtle_text_secondary"
+                android:textSize="@dimen/_10ssp"
+                android:gravity="center"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:visibility="gone"/>
+
+            <ProgressBar
+                android:id="@+id/laby_gallery_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginBottom="@dimen/_8sdp"/>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/turtle_highlight_subtle"
+                android:layout_marginVertical="@dimen/_8sdp"/>
+
+            <TextView
+                android:id="@+id/littleskin_gallery_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/skin_cape_littleskin_gallery_label"
+                android:textColor="@color/turtle_text_secondary"
+                android:textSize="@dimen/_12ssp"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp"/>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/littleskin_gallery_search_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp">
+
+                <com.endiq.turtlelauncher.ui.view.AnimEditText
+                    android:id="@+id/littleskin_gallery_search_edit"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_38sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_edit_box"
+                    android:hint="@string/skin_cape_littleskin_gallery_search_hint"
+                    android:inputType="text"
+                    android:imeOptions="actionSearch|flagNoExtractUi"
+                    android:paddingHorizontal="@dimen/_8sdp"
+                    android:layout_marginEnd="@dimen/_4sdp"/>
+
+                <com.endiq.turtlelauncher.ui.view.AnimButton
+                    android:id="@+id/button_littleskin_gallery_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_38sdp"
+                    android:text="@string/skin_cape_browse_search"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/littleskin_gallery_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="@dimen/_240sdp"
+                android:clipToPadding="false"
+                android:paddingHorizontal="@dimen/_2sdp"
+                android:layout_marginBottom="@dimen/_4sdp"
+                tools:listitem="@layout/item_skin_cape_gallery"
+                tools:spanCount="4"/>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/littleskin_gallery_page_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp">
+
+                <com.endiq.turtlelauncher.ui.view.AnimButton
+                    android:id="@+id/button_littleskin_gallery_prev"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_32sdp"
+                    android:text="@string/skin_cape_gallery_page_prev"/>
+
+                <TextView
+                    android:id="@+id/littleskin_gallery_page_label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textColor="@color/turtle_text_secondary"
+                    android:textSize="@dimen/_10ssp"
+                    tools:text="1"/>
+
+                <com.endiq.turtlelauncher.ui.view.AnimButton
+                    android:id="@+id/button_littleskin_gallery_next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_32sdp"
+                    android:text="@string/skin_cape_gallery_page_next"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <TextView
+                android:id="@+id/littleskin_gallery_empty_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/skin_cape_littleskin_gallery_empty"
+                android:textColor="@color/turtle_text_secondary"
+                android:textSize="@dimen/_10ssp"
+                android:gravity="center"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:visibility="gone"/>
+
+            <ProgressBar
+                android:id="@+id/littleskin_gallery_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginBottom="@dimen/_8sdp"/>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/turtle_highlight_subtle"
+                android:layout_marginVertical="@dimen/_8sdp"/>
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/button_gallery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:text="@string/skin_cape_pick_gallery"
+                android:layout_marginBottom="@dimen/_12sdp"/>
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginBottom="@dimen/_8sdp"/>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/turtle_highlight_subtle"
+                android:layout_marginVertical="@dimen/_8sdp"/>
+
+            <Switch
+                android:id="@+id/switch_slim_model"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/skin_cape_slim_model"
+                android:textSize="@dimen/_12ssp"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp"
+                android:visibility="gone"
+                tools:ignore="UseSwitchCompatOrMaterialXml"/>
+
+            <Switch
+                android:id="@+id/switch_lan_visible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/skin_cape_lan_visible"
+                android:textSize="@dimen/_12ssp"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp"
+                tools:ignore="UseSwitchCompatOrMaterialXml"/>
+
+            <TextView
+                android:id="@+id/text_lan_instructions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/skin_cape_lan_instructions_hint"
+                android:textColor="@color/turtle_text_secondary"
+                android:textSize="@dimen/_10ssp"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:visibility="gone"/>
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/button_copy_lan_instructions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:text="@string/skin_cape_copy_instructions"
+                android:layout_marginBottom="@dimen/_12sdp"
+                android:visibility="gone"/>
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/button_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_4sdp"
+                android:text="@android:string/cancel"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </ScrollView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

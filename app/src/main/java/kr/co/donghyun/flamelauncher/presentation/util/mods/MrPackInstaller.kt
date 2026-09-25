@@ -204,7 +204,7 @@ class MrpackInstaller(
     /**
      * .mrpack dependencies 맵 → (loaderType, loaderVersion)
      *   키: minecraft / forge / neoforge / fabric-loader / quilt-loader
-     *   FlameLauncher 의 loaderType 표기(fabric/forge/neoforge/quilt)에 맞춘다.
+     *   TurtleLauncher 의 loaderType 표기(fabric/forge/neoforge/quilt)에 맞춘다.
      */
     private fun resolveLoader(deps: Map<String, String>): Pair<String?, String?> {
         deps["fabric-loader"]?.let { return "fabric" to it }
@@ -259,7 +259,7 @@ class MrpackInstaller(
         destFile.parentFile?.mkdirs()
         val request = Request.Builder()
             .url(url)
-            .header("User-Agent", "donghyun/FlameLauncher/1.0 (kr.co.donghyun.flamelauncher)")
+            .header("User-Agent", "donghyun/TurtleLauncher/1.0 (kr.co.donghyun.flamelauncher)")
             .build()
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw Exception("다운로드 실패: $url (${response.code})")

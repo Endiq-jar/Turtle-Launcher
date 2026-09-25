@@ -159,9 +159,12 @@ fun MainScreen(
         mutableStateOf(if (instances.isNotEmpty()) MainTab.INSTALLED else MainTab.RELEASE)
     }
 
+    // Defense in depth: only the Turtle-supported release may reach a version card,
+    // even if a caller supplies a stale manifest or cached list.
+    val supportedVersions = versions.filter { isVersionSupported(it.id) }
     val filteredVersions = when (selectedTab) {
-        MainTab.RELEASE -> versions.filter { it.type == "release" }
-        MainTab.ALL     -> versions
+        MainTab.RELEASE -> supportedVersions.filter { it.type == "release" }
+        MainTab.ALL     -> supportedVersions
         MainTab.INSTALLED -> emptyList()
     }
 
@@ -256,8 +259,8 @@ fun MainScreen(
                                 MainTabBar(
                                     selected = selectedTab,
                                     installedCount = instances.size,
-                                    releaseCount = versions.count { it.type == "release" },
-                                    allCount = versions.size,
+                                    releaseCount = supportedVersions.count { it.type == "release" },
+                                    allCount = supportedVersions.size,
                                     onSelect = { selectedTab = it },
                                 )
                                 when {
@@ -890,7 +893,7 @@ private fun MobileTopBar(
         )
         Spacer(Modifier.width(8.dp))
         Text(
-            "FlameLauncher", color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Bold,
+            "TurtleLauncher", color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Bold,
             maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f)
         )
 
@@ -1111,7 +1114,7 @@ fun ProfileHeader(
                         Text(
                             // ⚠️ Fold 커버화면(sw ~280~320dp)에서는 로고+유저명+로그인 버튼이 한 줄에
                             //   다 들어가기 빠듯해서, 이름을 짧게 줄인다.
-                            text = if (compact) "Flame" else "FlameLauncher",
+                            text = if (compact) "Flame" else "TurtleLauncher",
                             color = FlameLight, fontSize = if (tablet) 18.sp else if (compact) 12.sp else 13.sp,
                             fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp,
                             maxLines = 1, overflow = TextOverflow.Ellipsis)

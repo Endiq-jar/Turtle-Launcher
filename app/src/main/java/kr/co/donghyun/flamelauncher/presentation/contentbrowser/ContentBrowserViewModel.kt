@@ -17,6 +17,7 @@ import kr.co.donghyun.flamelauncher.data.mods.ContentItem
 import kr.co.donghyun.flamelauncher.data.mods.ContentSource
 import kr.co.donghyun.flamelauncher.data.repository.ContentInstallRepositoryImpl
 import kr.co.donghyun.flamelauncher.domain.model.LaunchParams
+import kr.co.donghyun.flamelauncher.domain.model.MinecraftSupport
 import kr.co.donghyun.flamelauncher.domain.repository.ContentRepository
 import kr.co.donghyun.flamelauncher.presentation.ModLoader
 import kr.co.donghyun.flamelauncher.presentation.ui.screen.ContentType
@@ -92,6 +93,7 @@ class ContentBrowserViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _availableMcVersions.value = repository.getAvailableMcVersions()
+                    .filter { MinecraftSupport.isSupported(it) }
             } catch (_: Exception) {
                 // 필터 비활성으로 조용히 무시(기존 동작 그대로)
             }
@@ -122,6 +124,8 @@ class ContentBrowserViewModel @Inject constructor(
     }
 
     fun changeMcVersionFilter(version: String) {
+        // Do not let a content-provider version filter reintroduce unsupported releases.
+        if (version.isNotBlank() && !MinecraftSupport.isSupported(version)) return
         if (_selectedMcVersion.value == version) return
         _selectedMcVersion.value = version
         debouncedSearch(currentQuery, _selectedContentType.value)

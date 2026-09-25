@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Background chip -->
+    <path
+        android:pathData="M5,1 H19 A4,4 0 0,1 23,5 V19 A4,4 0 0,1 19,23 H5 A4,4 0 0,1 1,19 V5 A4,4 0 0,1 5,1 Z"
+        android:fillColor="#7A1F1F" />
+    <!-- Blocky "O" -->
+    <path
+        android:fillColor="#F5A623"
+        android:fillType="evenOdd"
+        android:pathData="
+            M5.5,5.5 L9.5,5.5 L11.5,7.5 L11.5,16.5 L9.5,18.5 L5.5,18.5 L3.5,16.5 L3.5,7.5 Z
+            M6.5,8 L8.5,8 L9.5,9 L9.5,15 L8.5,16 L6.5,16 L5.5,15 L5.5,9 Z" />
+    <!-- Blocky "F" -->
+    <path
+        android:fillColor="#F5A623"
+        android:pathData="M13,5.5 H20.5 V8 H15.5 V11 H19 V13.5 H15.5 V18.5 H13 Z" />
+</vector>

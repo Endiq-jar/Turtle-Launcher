@@ -14,6 +14,7 @@ import kr.co.donghyun.flamelauncher.data.mods.ContentSource
 import kr.co.donghyun.flamelauncher.data.mods.CurseForgeFile
 import kr.co.donghyun.flamelauncher.data.mods.ModrinthVersion
 import kr.co.donghyun.flamelauncher.data.repository.ContentDetailRepositoryImpl
+import kr.co.donghyun.flamelauncher.domain.model.MinecraftSupport
 import kr.co.donghyun.flamelauncher.presentation.ContentDetail
 import kr.co.donghyun.flamelauncher.presentation.InstanceSummary
 import kr.co.donghyun.flamelauncher.presentation.ModLoader
@@ -224,7 +225,10 @@ class ContentDetailViewModel @Inject constructor(
                         }
                     }.distinct()
                     loaderSet.addAll(vLoaders)
-                    val mcs = v.gameVersions.filter { repository.MC_VERSION_REGEX.matches(it.trim()) }
+                    val mcs = v.gameVersions.filter {
+                        repository.MC_VERSION_REGEX.matches(it.trim()) &&
+                            MinecraftSupport.isSupported(it.trim())
+                    }
                     mcVersionSet.addAll(mcs)
                     when {
                         vLoaders.isNotEmpty() -> mcs.forEach { mc -> vLoaders.forEach { l -> combos += mc to l } }
@@ -238,7 +242,9 @@ class ContentDetailViewModel @Inject constructor(
 
                 _supportedLoaders.value = loaderSet
                 _supportedMcVersions.value = supportedMc
-                _supportedCombos.value = combos.map { (v, l) -> VersionLoaderCombo(v, l, repository.mcVersionSortKey(v)) }
+                _supportedCombos.value = combos
+                    .filter { MinecraftSupport.isSupported(it.first) }
+                    .map { (v, l) -> VersionLoaderCombo(v, l, repository.mcVersionSortKey(v)) }
                     .sortedByDescending { it.sortKey }
                 _loaderInstances.value = repository.scanInstances(includeVanilla, loaderSet, mcVersionFilter)
                 _showInstallTargetDialog.value = true
@@ -251,13 +257,20 @@ class ContentDetailViewModel @Inject constructor(
 
             val includeVanilla = !contentType.requiresModLoader && supported.isEmpty()
             val supportedMc = if (contentType == ContentType.DATAPACK)
-                repository.extractSupportedMcVersions(files) else emptySet()
+                repository.extractSupportedMcVersions(files)
+                    .filter { MinecraftSupport.isSupported(it) }
+                    .toSet()
+            else emptySet()
             _supportedMcVersions.value = supportedMc
 
             val mcVersionFilter = if (contentType == ContentType.MOD || contentType == ContentType.DATAPACK)
-                repository.extractSupportedMcVersions(files) else emptySet()
+                repository.extractSupportedMcVersions(files)
+                    .filter { MinecraftSupport.isSupported(it) }
+                    .toSet()
+            else emptySet()
 
             _supportedCombos.value = repository.extractVersionLoaderCombos(files, includeVanilla)
+                .filter { MinecraftSupport.isSupported(it.mcVersion) }
             _loaderInstances.value = repository.scanInstances(includeVanilla, supported, mcVersionFilter)
             _showInstallTargetDialog.value = true
         }

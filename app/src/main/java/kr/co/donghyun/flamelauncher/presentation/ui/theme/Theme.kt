@@ -43,7 +43,7 @@ private val FlameDarkScheme = darkColorScheme(
 )
 
 @Composable
-fun FlameLauncherTheme(content: @Composable () -> Unit) {
+fun TurtleLauncherTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = FlameDarkScheme,
         typography = Typography,

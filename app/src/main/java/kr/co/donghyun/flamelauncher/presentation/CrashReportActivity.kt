@@ -41,7 +41,7 @@ class CrashReportActivity : BaseActivity() {
         viewModel.initialize(File(instanceDir))
 
         setContent {
-            FlameLauncherTheme {
+            TurtleLauncherTheme {
                 val logPath by viewModel.logPath.collectAsState()
                 val logContent by viewModel.logContent.collectAsState()
                 val isLoading by viewModel.isLoading.collectAsState()

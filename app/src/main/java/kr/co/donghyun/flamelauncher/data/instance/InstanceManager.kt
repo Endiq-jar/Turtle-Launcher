@@ -2,6 +2,7 @@ package kr.co.donghyun.flamelauncher.data.instance
 
 import android.content.Context
 import com.google.gson.Gson
+import kr.co.donghyun.flamelauncher.domain.model.MinecraftSupport
 import java.io.File
 
 enum class InstanceType { VANILLA, MODPACK, FABRIC }
@@ -58,10 +59,14 @@ object InstanceManager {
             val f = File(instanceDir, META_FILE)
             if (!f.exists()) return null
             gson.fromJson(f.readText(), InstanceMeta::class.java)
+                ?.takeIf { MinecraftSupport.isSupported(it.mcVersion) }
         } catch (_: Exception) { null }
     }
 
     fun saveMeta(context: Context, meta: InstanceMeta) {
+        require(MinecraftSupport.isSupported(meta.mcVersion)) {
+            "Minecraft ${meta.mcVersion} is not supported; only ${MinecraftSupport.SUPPORTED_VERSION} can be installed"
+        }
         val dir = instanceDir(context, meta.id).also { it.mkdirs() }
         File(dir, META_FILE).writeText(gson.toJson(meta))
     }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Density-independent replacement for the old five-copy PNG thumb. -->
+    <path
+        android:fillColor="#4055F5"
+        android:pathData="M0,6 L6,6 L6,0 L18,0 L18,6 L24,6 L24,18 L18,18 L18,24 L6,24 L6,18 L0,18 Z" />
+    <path
+        android:fillColor="#5B6CFF"
+        android:pathData="M6,0 L18,0 L18,3 L6,3 Z" />
+    <path
+        android:fillColor="#3243C7"
+        android:pathData="M6,21 L18,21 L18,24 L6,24 Z" />
+</vector>

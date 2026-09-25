@@ -31,7 +31,7 @@ import kr.co.donghyun.flamelauncher.presentation.login.LoginViewModel
 import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgBorder
 import kr.co.donghyun.flamelauncher.presentation.ui.theme.BgSurface
 import kr.co.donghyun.flamelauncher.presentation.ui.theme.Flame
-import kr.co.donghyun.flamelauncher.presentation.ui.theme.FlameLauncherTheme
+import kr.co.donghyun.flamelauncher.presentation.ui.theme.TurtleLauncherTheme
 import kr.co.donghyun.flamelauncher.presentation.ui.theme.TextMain
 import kr.co.donghyun.flamelauncher.presentation.ui.theme.TextSub
 
@@ -51,7 +51,7 @@ class LoginActivity : BaseActivity() {
 
     override fun onCreated() {
         setContent {
-            FlameLauncherTheme {
+            TurtleLauncherTheme {
                 val isLoading by viewModel.isLoading.collectAsState()
                 val statusMessage by viewModel.statusMessage.collectAsState()
                 var offlineDialog by remember { mutableStateOf(false) }

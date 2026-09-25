@@ -74,7 +74,7 @@ class ShareImportActivity : BaseActivity() {
         val instances = loadInstances(this)
 
         setContent {
-            FlameLauncherTheme {
+            TurtleLauncherTheme {
                 ShareImportContent(
                     files = files,
                     instances = instances,

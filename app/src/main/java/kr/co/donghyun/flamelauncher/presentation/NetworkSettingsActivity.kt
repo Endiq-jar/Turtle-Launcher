@@ -55,7 +55,7 @@ class NetworkSettingsActivity : BaseActivity() {
             statusBarStyle = SystemBarStyle.dark(scrim = android.graphics.Color.TRANSPARENT)
         )
         setContent {
-            FlameLauncherTheme {
+            TurtleLauncherTheme {
                 val hostEntries by viewModel.hostEntries.collectAsState()
                 val instances by viewModel.instances.collectAsState()
                 val serverRows by viewModel.serverRows.collectAsState()
