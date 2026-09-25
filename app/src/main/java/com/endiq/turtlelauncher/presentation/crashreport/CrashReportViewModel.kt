@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.endiq.turtlelauncher.presentation.util.crash.CrashLogParser
 import java.io.File
+import java.util.zip.GZIPInputStream
 import javax.inject.Inject
 
 /**
@@ -53,8 +54,14 @@ class CrashReportViewModel @Inject constructor(
         val latestCrash = crashDir.listFiles()
             ?.filter { it.extension == "txt" }
             ?.maxByOrNull { it.lastModified() }
+        val latestGameLog = listOf(File(instanceDir, "logs"), File(instanceDir, ".minecraft/logs"))
+            .asSequence()
+            .flatMap { it.listFiles()?.asSequence().orEmpty() }
+            .filter { it.isFile && (it.extension == "log" || it.extension == "gz") }
+            .maxByOrNull { it.lastModified() }
+        val selectedLog = latestCrash ?: latestGameLog
 
-        if (latestCrash == null) {
+        if (selectedLog == null) {
             _logPath.value = ""
             _logContent.value = ""
             _suspects.value = emptyList()
@@ -62,9 +69,13 @@ class CrashReportViewModel @Inject constructor(
             return
         }
 
-        _logPath.value = latestCrash.absolutePath
+        _logPath.value = selectedLog.absolutePath
         val content = try {
-            latestCrash.readText()
+            if (selectedLog.extension == "gz") {
+                GZIPInputStream(selectedLog.inputStream()).bufferedReader().use { it.readText() }
+            } else {
+                selectedLog.readText()
+            }
         } catch (e: Exception) {
             "로그 파일을 읽는 중 오류가 발생했습니다: ${e.message}"
         }
