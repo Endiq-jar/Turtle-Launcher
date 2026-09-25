@@ -51,6 +51,17 @@ jobs:
             exit "$build_status"
           fi
 
+      - name: Upload Turtle build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: TurtleLauncher-build-diagnostics
+          path: |
+            build-output.log
+            app/.cxx/**/*.ninja_log
+            app/.cxx/**/*.ninja
+          if-no-files-found: ignore
+
       - name: Upload Turtle debug APK
         uses: actions/upload-artifact@v6
         with:
