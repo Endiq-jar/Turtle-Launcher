@@ -228,7 +228,26 @@ folder navigation and deletion confirmation, and refuses paths outside the
 instances root. Empty folders and deleted files have explicit UI states rather
 than crashing or silently doing nothing.
 
-The complete patch chain (0001 through 0010) applies cleanly to a fresh pinned
+## Step 11: port offline skin support
+
+`patches/0011-port-offline-skin-support.patch` connects Turtle's local skin
+behavior to the offline account path:
+
+- the settings screen accepts and validates a 64x32 or 64x64 PNG through the
+  persistable document picker and provides a clear action;
+- the selected skin is served only on loopback by a signed, minimal Yggdrasil
+  endpoint;
+- the bundled `authlib-injector` agent is extracted only for an offline launch
+  with a validated skin, so Microsoft sessions keep their normal Mojang path;
+- the server and agent are bounded to the game's local launch and do not open a
+  LAN-facing socket or upload the image.
+
+The agent is the existing authlib-injector 1.2.8 payload already present in the
+Turtle target. Its upstream project is AGPL with the Java-agent exception; this
+is compatible with Flame's AGPL target and must remain in the final notices.
+The patch does not claim online Microsoft skin upload parity yet.
+
+The complete patch chain (0001 through 0011) applies cleanly to a fresh pinned
 Flame checkout. Resource XML was parsed again after the chain was applied, and
 `git diff --check` passed. The patched target has also assembled successfully in
 GitHub Actions. Gradle compilation is not available in this workspace because it

@@ -67,7 +67,8 @@ for patch in \
     "$PATCH_DIR/0007-port-assistant-log-coloring-and-animation-settings.patch" \
     "$PATCH_DIR/0008-port-turtle-background-picker-and-persistence.patch" \
     "$PATCH_DIR/0009-port-offline-account-login.patch" \
-    "$PATCH_DIR/0010-port-instance-file-manager.patch"; do
+    "$PATCH_DIR/0010-port-instance-file-manager.patch" \
+    "$PATCH_DIR/0011-port-offline-skin-support.patch"; do
     [[ -f "$patch" ]] || { echo "Missing patch: $patch" >&2; exit 1; }
     echo "Applying $(basename "$patch")"
     git -C "$WORKTREE" apply --check "$patch"
