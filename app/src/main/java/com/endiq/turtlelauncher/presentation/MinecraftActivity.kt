@@ -683,7 +683,18 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
     private fun prepareLwjgl34Natives(): File {
         val outDir = File(filesDir, "lwjgl341")
         outDir.mkdirs()
-        val assetDir = "lwjgl341/arm64-v8a"
+        val abi = Build.SUPPORTED_ABIS.firstOrNull { supported ->
+            supported == "arm64-v8a" || supported == "armeabi-v7a" ||
+                supported == "x86" || supported == "x86_64"
+        } ?: "arm64-v8a"
+        val assetDir = "lwjgl341/$abi"
+        // The current 3.4.3 payload is arm64-only. For the legacy ABIs, use the matching
+        // ABI's packaged LWJGL/native set instead of returning an empty directory and then
+        // passing nonexistent absolute paths to the game JVM.
+        if (assets.list(assetDir).isNullOrEmpty() && abi != "arm64-v8a") {
+            Log.w("TURTLE_LAUNCHER", "No 3.4.3 native asset for $abi; falling back to $applicationInfo.nativeLibraryDir")
+            return File(applicationInfo.nativeLibraryDir)
+        }
         // ⚠️ 기준은 **설치 시각**이다. 버전코드로 했더니 개발 중 재설치에서 그대로 스킵돼,
         //    새로 넣은 liblwjgl_opengl.so 가 안 풀리고 옛 3.3.3 판이 먼저 잡혔다(실측).
         //    (assets 는 압축돼 있을 수 있어 크기 비교는 못 믿는다)

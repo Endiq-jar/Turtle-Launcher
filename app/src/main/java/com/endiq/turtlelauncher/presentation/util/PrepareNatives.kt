@@ -2,6 +2,7 @@ package com.endiq.turtlelauncher.presentation.util
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.os.Build
 import android.util.Log
 import java.io.File
 import java.util.zip.ZipFile
@@ -24,9 +25,10 @@ class PrepareNatives {
                 File(nativesDir, soFile.name).setExecutable(true, false)
             }
             val apkPath = applicationInfo.sourceDir
+            val abi = Build.SUPPORTED_ABIS.firstOrNull() ?: "arm64-v8a"
             ZipFile(apkPath).use { zip ->
                 zip.entries().asSequence()
-                    .filter { it.name.startsWith("lib/arm64-v8a/") && it.name.endsWith(".so") }
+                    .filter { it.name.startsWith("lib/$abi/") && it.name.endsWith(".so") }
                     .forEach { entry ->
                         val fileName = entry.name.substringAfterLast("/")
                         val dest = File(nativesDir, fileName)

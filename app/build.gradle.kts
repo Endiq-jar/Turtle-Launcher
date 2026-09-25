@@ -1,4 +1,5 @@
 import java.util.Properties
+import org.gradle.api.tasks.Sync
 
 plugins {
     alias(libs.plugins.android.application)
@@ -6,6 +7,40 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+}
+
+// The active launcher owns the current arm64 native stack. The legacy Turtle module still
+// contains the complete ABI matrix; merge only files the active stack does not provide so the
+// APK gains armeabi-v7a/x86/x86_64 support without silently replacing current arm64 binaries.
+val legacyNativeOutput = layout.buildDirectory.dir("generated/legacyJniLibs")
+val prepareLegacyNativeMatrix = tasks.register<Sync>("prepareLegacyNativeMatrix") {
+    val legacyRoot = rootProject.file("TurtleLauncher/src/main/jniLibs")
+    val activeRoot = rootProject.file("app/src/main/jniLibs")
+    from(legacyRoot)
+    into(legacyNativeOutput)
+    eachFile { details ->
+        if (rootProject.file("app/src/main/jniLibs/${details.path}").isFile) {
+            details.exclude()
+        }
+    }
+    doLast {
+        val output = legacyNativeOutput.get().asFile
+        listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64").forEach { abi ->
+            val active = File(activeRoot, "$abi/liblwjgl_nanovg.so")
+            val legacy = File(legacyRoot, "$abi/liblwjgl_nanovg.so")
+            val source = active.takeIf { it.isFile } ?: legacy.takeIf { it.isFile }
+            if (source != null) {
+                File(output, "$abi/libnanovg.so").apply {
+                    parentFile.mkdirs()
+                    source.copyTo(this, overwrite = true)
+                }
+                File(output, "$abi/nanovg.so").apply {
+                    parentFile.mkdirs()
+                    source.copyTo(this, overwrite = true)
+                }
+            }
+        }
+    }
 }
 
 android {
@@ -41,9 +76,11 @@ android {
 
         buildConfigField("String", "CURSEFORGE_API_KEY", "\"$curseforgeApiKey\"")
 
-        // ── ABI는 MinecraftActivity가 arm64-v8a만 추출하므로 단일 ABI ──
+        // Keep every ABI shipped by the original TurtleLauncher. Oppo/ColorOS devices can
+        // expose a 32-bit process even when the SoC is arm64, so arm64-only packaging causes
+        // an immediate native-library exit before the launcher UI is visible.
         ndk {
-            abiFilters += listOf("arm64-v8a")
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
         }
 
         externalNativeBuild {
@@ -170,8 +207,18 @@ android {
     sourceSets {
         getByName("main") {
             assets.srcDirs("src/main/assets")
+            // Add the legacy ABI matrix after excluding files already supplied by the active
+            // source set. The generated aliases include both libnanovg.so and nanovg.so.
+            jniLibs.srcDir(legacyNativeOutput)
         }
     }
+}
+
+tasks.named("preBuild").configure {
+    dependsOn(prepareLegacyNativeMatrix)
+}
+tasks.matching { it.name.matches(Regex("merge.*JniLibFolders")) }.configureEach {
+    dependsOn(prepareLegacyNativeMatrix)
 }
 
 // ========================================================================
