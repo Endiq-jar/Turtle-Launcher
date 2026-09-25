@@ -18,10 +18,9 @@ val prepareLegacyNativeMatrix = tasks.register<Sync>("prepareLegacyNativeMatrix"
     val activeRoot = rootProject.file("app/src/main/jniLibs")
     from(legacyRoot)
     into(legacyNativeOutput)
-    eachFile { details ->
-        if (rootProject.file("app/src/main/jniLibs/${details.path}").isFile) {
-            details.exclude()
-        }
+    fileTree(activeRoot).files.forEach { activeFile ->
+        // Do not let the legacy module shadow an active native with the same filename.
+        exclude(activeFile.relativeTo(activeRoot).invariantSeparatorsPath)
     }
     doLast {
         val output = legacyNativeOutput.get().asFile
