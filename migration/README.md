@@ -127,6 +127,22 @@ The XML files were parsed and validated after applying the patch to a clean Flam
 checkout. Feature slices will consume the namespaced strings as their screens
 are ported; no existing Flame string IDs are replaced in this stage.
 
+`patches/0006-port-turtle-resources-and-assets.patch` completes the remaining
+resource foundation without colliding with Flame names:
+
+- 168 Turtle drawable/image resources, five Android animation resources, and
+  the Turtle font are copied with `turtle_` names;
+- dimensions, styles, arrays, language tables, keycodes, and mod categories are
+  copied into namespaced values files;
+- Turtle's `_Nsdp`/`_Nssp` references are converted to ordinary `dp`/`sp`
+  compatibility resources, so Flame does not acquire a new sdp dependency;
+- resource references inside copied XML are rewritten to the namespaced colors,
+  strings, drawables, styles, animations, fonts, and dimensions.
+
+The patch preserves Flame's existing resource IDs and does not replace its
+working layouts. This lets the Compose screens adopt Turtle assets incrementally
+while keeping the current launcher build intact.
+
 ## Step 6: port Turtle Compose motion
 
 `patches/0005-port-turtle-compose-motion.patch` adds a reusable Compose motion
@@ -157,10 +173,11 @@ git -C /tmp/turtle-flame-baseline apply \
   "$OLDPWD/migration/patches/0005-port-turtle-compose-motion.patch"
 ```
 
-The complete patch chain (0001 through 0005) applies cleanly to a fresh pinned
+The complete patch chain (0001 through 0006) applies cleanly to a fresh pinned
 Flame checkout. Resource XML was parsed again after the chain was applied, and
-`git diff --check` passed. Gradle compilation remains pending in this workspace
-because it does not currently provide `java` or `javac`.
+`git diff --check` passed. The patched target has also assembled successfully in
+GitHub Actions. Gradle compilation is not available in this workspace because it
+does not currently provide `java` or `javac`.
 
 ## Build and download a test APK
 
