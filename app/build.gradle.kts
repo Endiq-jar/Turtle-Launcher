@@ -266,6 +266,7 @@ dependencies {
     implementation("com.github.Mathias-Boulay:ExtendedView:1.0.0")
     implementation("com.google.android.flexbox:flexbox:3.0.0")
     implementation("com.github.skydoves:powerspinner:1.2.7")
+    implementation("com.github.angcyo.DslTablayout:TabLayout:3.6.5")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
