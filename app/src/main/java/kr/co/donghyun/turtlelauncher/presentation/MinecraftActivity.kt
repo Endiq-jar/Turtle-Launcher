@@ -74,6 +74,8 @@ import kr.co.donghyun.turtlelauncher.presentation.util.forge.startBuilderAndWait
 import kr.co.donghyun.turtlelauncher.presentation.util.jni.JavaNativeLauncher
 import kr.co.donghyun.turtlelauncher.presentation.util.minecraft.MinecraftJREPreparer
 import kr.co.donghyun.turtlelauncher.presentation.util.resources.ResourcePackImporter
+import kr.co.donghyun.turtlelauncher.feature.turtle.DailyPlaytimeStats
+import kr.co.donghyun.turtlelauncher.launch.AutoSettingsOptimizer
 import org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER
 import org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE
 import org.lwjgl.glfw.GLFW.GLFW_KEY_SLASH
@@ -198,6 +200,7 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
     // Intent로 전달받은 버전 정보
     private lateinit var versionId: String
     private lateinit var assetIndex: String
+    private val sessionStartedAtMs = System.currentTimeMillis()
     private lateinit var extraJars: List<String>
     private lateinit var mainClass: String
     internal var instanceDir: String? = null
@@ -410,6 +413,8 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
             return
         }
         assetIndex = intent.getStringExtra(EXTRA_ASSET_INDEX) ?: "26"
+        // Content-pack launches can bypass MainActivity; tune the game path as well.
+        AutoSettingsOptimizer.apply(this, versionId)
         extraJars = intent.getStringArrayListExtra(EXTRA_EXTRA_JARS) ?: emptyList()
         mainClass = intent.getStringExtra(EXTRA_MAIN_CLASS) ?: "net.minecraft.client.main.Main"
         instanceDir = intent.getStringExtra(EXTRA_INSTANCE_DIR)
@@ -3921,6 +3926,7 @@ class MinecraftActivity : org.libsdl.app.SDLActivity() {
     }
 
     override fun onDestroy() {
+        DailyPlaytimeStats.recordSession(this, System.currentTimeMillis() - sessionStartedAtMs)
         currentInstance = null
         // ★ 첫 프레임 리스너 해제 (Activity 누수 방지)
         MinecraftActivityBridge.setFirstFrameListener(null)

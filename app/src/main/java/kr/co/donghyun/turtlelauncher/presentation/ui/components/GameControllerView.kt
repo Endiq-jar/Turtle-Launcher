@@ -133,7 +133,7 @@ class GameControllerView(context: Context) : View(context) {
 
     /** Reloads the selected original Turtle preset without recreating the game Activity. */
     fun cycleControlPreset(): String {
-        val (name, layout) = kr.co.donghyun.turtlelauncher.data.key.ControlPresetManager.cycle(context)
+        val (name, layout) = kr.co.donghyun.turtlelauncher.feature.turtle.ControlSwitcher.cycleToNext(context)
         if (layout.isNotEmpty()) {
             releaseAllPressed()
             buttons = layout
