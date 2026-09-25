@@ -46,9 +46,8 @@ jobs:
               tail -n 160 build-output.log
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
-            grep -Ei 'ERROR|error:|FAILURE|FAILED|Duplicate|AAPT|What went wrong|Execution failed|AAR metadata|metadata|requires|minCompileSdk|compileSdk|minimum|version' build-output.log | tail -n 40 | while IFS= read -r line; do
-              echo "::error title=Gradle build output::$line"
-            done
+            failure_summary=$(tail -n 120 build-output.log | tr '\r\n' ' ' | sed 's/%/%25/g; s/::/%3A%3A/g')
+            echo "::error title=Gradle failure::$failure_summary"
             exit "$build_status"
           fi
 
