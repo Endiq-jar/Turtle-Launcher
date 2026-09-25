@@ -46,7 +46,7 @@ jobs:
               tail -n 160 build-output.log
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
-            failure_summary=$(tail -n 120 build-output.log | tr '\r\n' ' ' | sed 's/%/%25/g; s/::/%3A%3A/g')
+            failure_summary=$(tail -n 35 build-output.log | tr '\r\n' ' ' | sed 's/%/%25/g; s/::/%3A%3A/g')
             echo "::error title=Gradle failure::$failure_summary"
             exit "$build_status"
           fi
