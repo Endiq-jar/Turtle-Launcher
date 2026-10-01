@@ -12,6 +12,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -30,6 +31,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -52,6 +54,7 @@ import com.endiq.turtlelauncher.feature.background.BackgroundManager;
 import com.endiq.turtlelauncher.feature.background.BackgroundType;
 import com.endiq.turtlelauncher.feature.log.Logging;
 import com.endiq.turtlelauncher.feature.version.Version;
+import com.endiq.turtlelauncher.game.sdl.SdlBridge;
 import com.endiq.turtlelauncher.feature.version.VersionInfo;
 import com.endiq.turtlelauncher.launch.LaunchGame;
 import com.endiq.turtlelauncher.listener.SimpleTextWatcher;
@@ -1168,10 +1171,5 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             binding.startRecording.setVisibility(recording ? View.GONE : View.VISIBLE);
             binding.stopRecording.setVisibility(recording ? View.VISIBLE : View.GONE);
         }
-    }
-}
- }
-}
-  }
     }
 }
