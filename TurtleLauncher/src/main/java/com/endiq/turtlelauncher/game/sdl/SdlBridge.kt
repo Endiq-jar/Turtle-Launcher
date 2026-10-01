@@ -73,7 +73,7 @@ object SdlBridge {
      * Whether the launcher responds when SDL asks to show the input method.
      */
     @JvmStatic
-    fun getSdlImeAutoShowEnabled(): Boolean = AllSettings.getSdlAutoShowIme().getValue()
+    fun getSdlImeAutoShowEnabled(): Boolean = AllSettings.sdlAutoShowIme.getValue()
 
     /**
      * Registers the game Surface (and host layout) with SDL. The first call also
