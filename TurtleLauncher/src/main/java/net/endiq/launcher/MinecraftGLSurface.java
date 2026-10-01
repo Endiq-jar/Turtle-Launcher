@@ -87,6 +87,10 @@ public class MinecraftGLSurface extends View implements GrabListener {
 
     private volatile boolean mSurfaceValid = false;
 
+    /* Source token (SurfaceHolder or SurfaceTexture) of the Surface currently
+     * registered with SDL, for matching destroy callbacks to their Surface. */
+    private Object mSdlSurfaceSource = null;
+
     public MinecraftGLSurface(Context context) {
         this(context, null);
     }
@@ -210,14 +214,14 @@ public class MinecraftGLSurface extends View implements GrabListener {
                     Surface tSurface = new Surface(surface);
                     if(isCalled) {
                         JREUtils.setupBridgeWindow(tSurface);
-                        publishSurfaceToSdl(tSurface);
+                        publishSurfaceToSdl(tSurface, surface);
                         markSurfaceValid();
                         return;
                     }
                     isCalled = true;
 
                     realStart(tSurface);
-                    publishSurfaceToSdl(tSurface);
+                    publishSurfaceToSdl(tSurface, surface);
                     markSurfaceValid();
                 }
 
