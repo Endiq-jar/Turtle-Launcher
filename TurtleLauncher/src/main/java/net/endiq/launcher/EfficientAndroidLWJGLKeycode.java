@@ -218,6 +218,39 @@ public class EfficientAndroidLWJGLKeycode {
         return 0;
     }
 
+    /**
+     * Takes a GLFW keycode and returns equivalent android keycode.
+     * (Port of ZalithLauncher2's reverse lookup; index 0 is the KEYCODE_UNKNOWN
+     * entry, so unknown keys map to KEYCODE_UNKNOWN.)
+     */
+    public static int getAndroidKeycode(int lwjglGlfwKeycode){
+        if (lwjglGlfwKeycode == LwjglGlfwKeycode.GLFW_KEY_2) return KeyEvent.KEYCODE_2;
+        if (lwjglGlfwKeycode == LwjglGlfwKeycode.GLFW_KEY_3) return KeyEvent.KEYCODE_3;
+        return sAndroidKeycodes[getIndexByValue(lwjglGlfwKeycode)];
+    }
+
+    /**
+     * Takes a GLFW keycode and returns the Android keycode SDL expects for it.
+     * A few keys differ from the plain reverse mapping because SDL interprets
+     * the Android keycode itself (Port of ZalithLauncher2).
+     */
+    public static int getSdlAndroidKeycode(int lwjglGlfwKeycode) {
+        switch (lwjglGlfwKeycode) {
+            case LwjglGlfwKeycode.GLFW_KEY_ESCAPE: return KeyEvent.KEYCODE_ESCAPE;
+            case LwjglGlfwKeycode.GLFW_KEY_HOME: return KeyEvent.KEYCODE_MOVE_HOME;
+            case LwjglGlfwKeycode.GLFW_KEY_END: return KeyEvent.KEYCODE_MOVE_END;
+            case LwjglGlfwKeycode.GLFW_KEY_KP_ADD: return KeyEvent.KEYCODE_NUMPAD_ADD;
+            case LwjglGlfwKeycode.GLFW_KEY_KP_DECIMAL: return KeyEvent.KEYCODE_NUMPAD_DOT;
+            case LwjglGlfwKeycode.GLFW_KEY_KP_ENTER: return KeyEvent.KEYCODE_NUMPAD_ENTER;
+            case LwjglGlfwKeycode.GLFW_KEY_DELETE: return KeyEvent.KEYCODE_FORWARD_DEL;
+            case LwjglGlfwKeycode.GLFW_KEY_KP_EQUAL: return KeyEvent.KEYCODE_NUMPAD_EQUALS;
+            case LwjglGlfwKeycode.GLFW_KEY_LEFT_SUPER: return KeyEvent.KEYCODE_META_LEFT;
+            case LwjglGlfwKeycode.GLFW_KEY_RIGHT_SUPER: return KeyEvent.KEYCODE_META_RIGHT;
+            case LwjglGlfwKeycode.GLFW_KEY_MENU: return KeyEvent.KEYCODE_MENU;
+            default: return getAndroidKeycode(lwjglGlfwKeycode);
+        }
+    }
+
     private static void add(int androidKeycode, short LWJGLKeycode, String name){
         sAndroidKeycodes[mTmpCount] = androidKeycode;
         sLwjglKeycodes[mTmpCount] = LWJGLKeycode;

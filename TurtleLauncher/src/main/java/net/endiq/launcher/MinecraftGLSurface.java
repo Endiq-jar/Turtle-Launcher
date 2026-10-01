@@ -5,6 +5,7 @@ import static org.lwjgl.glfw.CallbackBridge.sendMouseButton;
 import static org.lwjgl.glfw.CallbackBridge.windowHeight;
 import static org.lwjgl.glfw.CallbackBridge.windowWidth;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.util.AttributeSet;
@@ -33,7 +34,7 @@ import net.endiq.launcher.customcontrols.mouse.InGUIEventProcessor;
 import net.endiq.launcher.customcontrols.mouse.InGameEventProcessor;
 import net.endiq.launcher.customcontrols.mouse.TouchEventProcessor;
 import net.endiq.launcher.utils.JREUtils;
-import com.endiq.turtlelauncher.launch.SdlAndroidJniPrep;
+import com.endiq.turtlelauncher.game.sdl.SdlBridge;
 import org.libsdl.app.SDLActivity;
 import org.libsdl.app.SDLSurface;
 import org.greenrobot.eventbus.EventBus;
@@ -104,31 +105,49 @@ public class MinecraftGLSurface extends View implements GrabListener {
         mSurfaceValid = true;
     }
 
-    private void publishSurfaceToSdl(Surface surface) {
-        if (!SdlAndroidJniPrep.isActive()) return;
+    private void publishSurfaceToSdl(Surface surface, Object source) {
+        // Unconditional registration, like Zalith's VMActivity surface callbacks:
+        // with SDL off this only fills in Java-side state (SDLSurface creation +
+        // layout), the native-touching calls self-gate on SdlBridge.sdlEnabled.
+        // Registering early also covers the normal order, where the game Surface
+        // exists before SdlAndroidJniPrep.setup() runs.
         try {
-            SDLActivity.setTurtleNativeSurface(surface);
-            SDLSurface.setNativeSurface(surface);
-
-            SDLSurface sdlSurface = SDLActivity.getSDLSurface();
-            if (sdlSurface == null) return;
-
-            if (surface != null) {
-                int width = Tools.currentDisplayMetrics.widthPixels;
-                int height = Tools.currentDisplayMetrics.heightPixels;
-                sdlSurface.surfaceChanged(null, 0, width, height);
-            } else {
-                sdlSurface.surfaceDestroyed(null);
+            mSdlSurfaceSource = source;
+            SdlBridge.prepareSurface((Activity) getContext(), surface, (ViewGroup) getParent(), source);
+            if (SdlBridge.getSdlEnabled() && surface != null) {
+                SDLSurface sdlSurface = SDLActivity.getSDLSurface();
+                if (sdlSurface != null) {
+                    sdlSurface.surfaceChanged(null, 0,
+                            Tools.currentDisplayMetrics.widthPixels,
+                            Tools.currentDisplayMetrics.heightPixels);
+                }
             }
         } catch (Throwable t) {
             Logging.e("MGLSurface", "publishSurfaceToSdl() failed", t);
         }
     }
 
+    private void unpublishSurfaceFromSdl() {
+        try {
+            Object source = mSdlSurfaceSource;
+            mSdlSurfaceSource = null;
+            Surface nativeSurface = SDLSurface.getNativeSurface();
+            if (SdlBridge.beginSurfaceDestroy(source, nativeSurface)) {
+                if (SdlBridge.getSdlEnabled()) {
+                    SDLSurface sdlSurface = SDLActivity.getSDLSurface();
+                    if (sdlSurface != null) sdlSurface.surfaceDestroyed();
+                }
+                SdlBridge.unregisterSurface(nativeSurface);
+            }
+        } catch (Throwable t) {
+            Logging.e("MGLSurface", "unpublishSurfaceFromSdl() failed", t);
+        }
+    }
+
     private void markSurfaceDestroyed() {
         if (!mSurfaceValid) return;
         mSurfaceValid = false;
-        publishSurfaceToSdl(null);
+        unpublishSurfaceFromSdl();
         try {
             JREUtils.releaseBridgeWindow();
         } catch (Throwable t) {
@@ -155,14 +174,14 @@ public class MinecraftGLSurface extends View implements GrabListener {
                 public void surfaceCreated(@NonNull SurfaceHolder holder) {
                     if(isCalled) {
                         JREUtils.setupBridgeWindow(surfaceView.getHolder().getSurface());
-                        publishSurfaceToSdl(surfaceView.getHolder().getSurface());
+                        publishSurfaceToSdl(surfaceView.getHolder().getSurface(), holder);
                         markSurfaceValid();
                         return;
                     }
                     isCalled = true;
 
                     realStart(surfaceView.getHolder().getSurface());
-                    publishSurfaceToSdl(surfaceView.getHolder().getSurface());
+                    publishSurfaceToSdl(surfaceView.getHolder().getSurface(), holder);
                     markSurfaceValid();
                 }
 
@@ -436,8 +455,8 @@ public class MinecraftGLSurface extends View implements GrabListener {
     }
 
     private void notifySdlOfSurfaceSize() {
-        // isActive is false for every non-SDL (GLFW) launch, so this is a no-op there.
-        if (!SdlAndroidJniPrep.isActive()) return;
+        // sdlEnabled is false for every non-SDL (GLFW) launch, so this is a no-op there.
+        if (!SdlBridge.getSdlEnabled()) return;
         try {
             SDLSurface sdlSurface = SDLActivity.getSDLSurface();
             if (sdlSurface != null) {

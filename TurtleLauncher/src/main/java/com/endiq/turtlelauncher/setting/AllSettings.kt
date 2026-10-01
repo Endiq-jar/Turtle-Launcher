@@ -81,6 +81,11 @@ class AllSettings {
          *  that toggles the on-screen keyboard in game; -1 = unbound. Wired in
          *  MinecraftGLSurface.processKeyEvent. */
         @JvmStatic val physicalKeyImeCode       = IntSettingUnit("physicalKeyImeCode", -1)
+        /** Zalith2 sdlAutoShowIme: on the SDL render path (MC 26.3+), whether the
+         *  game showing a text field may auto-pop the soft keyboard. When OFF, the
+         *  keyboard only opens on explicit launcher request (keyboard button).
+         *  Read by SdlBridge.getSdlImeAutoShowEnabled. */
+        @JvmStatic val sdlAutoShowIme            = BooleanSettingUnit("sdlAutoShowIme", true)
         /** TurtleLauncher Emotes: master toggle for the in-game menu's Emotes actions
          *  ("Play emote" wheel button + emote-website shortcut). Wired in MainActivity's
          *  MenuSettingsInitListener. */

@@ -533,6 +533,10 @@ public final class JREUtils {
         com.endiq.turtlelauncher.feature.log.GameOutputCapture.install();
 
         final int exitCode = VMLauncher.launchJVM(userArgs.toArray(new String[0]));
+        // SDL launches: tear down the ART-side SDL state (posted to the UI thread,
+        // fire-and-forget) so a later launch in the same process starts clean.
+        // No-op for GLFW launches.
+        com.endiq.turtlelauncher.launch.SdlAndroidJniPrep.resetAfterJvmExit(activity);
         // Reached only on a graceful JVM exit - on a signal the process is already gone and
         // the drain dies with it, which is exactly the case the captured file exists for.
         com.endiq.turtlelauncher.feature.log.GameOutputCapture.uninstall();

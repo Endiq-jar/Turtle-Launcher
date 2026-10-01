@@ -14,6 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.endiq.turtlelauncher.R;
+import com.endiq.turtlelauncher.game.sdl.SdlBridge;
+
+import net.endiq.launcher.MainActivity;
+
+import org.libsdl.app.SDLActivity;
 
 /**
  * This class is intended for sending characters used in chat via the virtual keyboard
@@ -59,9 +64,36 @@ public class TouchCharInput extends androidx.appcompat.widget.AppCompatEditText 
 
 
     /**
+     * Closes the launcher-side chat editor. Called by SDL's IME controller when
+     * the game opens its own SDL text input, so the two editors never fight.
+     * (Port of ZalithLauncher2's TouchCharInput.disableActiveInput; Turtle keeps
+     * no per-view active flag, so this goes through MainActivity's editor,
+     * whose disable() is a no-op when already hidden.)
+     */
+    public static void disableActiveInput() {
+        TouchCharInput active = MainActivity.touchCharInput;
+        if (active != null) {
+            active.disable();
+        }
+    }
+
+    /**
      * Toggle on and off the soft keyboard, depending of the state
      */
     public void switchKeyboardState(){
+        // Only when the game is running on the SDL render path (MC 26.3+) is the
+        // keyboard owned by SDL's text-input channel; with SDL initialized for
+        // the controller subsystems only (e.g. MC 26.2 with Controlify) game
+        // input still goes through the GLFW bridge and must keep the
+        // launcher-side editor. (Port of ZalithLauncher2's TouchCharInput gate.)
+        if (SdlBridge.getSdlEnabled() && SdlBridge.isSdlRenderActive()) {
+            if (SDLActivity.isUsingSDLTextEdit()) {
+                SDLActivity.disableSDLEditKeyboard();
+            } else {
+                SDLActivity.enableSDLEditKeyboard();
+            }
+            return;
+        }
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
         // Allow, regardless of whether or not a hardware keyboard is declared
         if(hasFocus()){

@@ -102,6 +102,40 @@ class AboutInfoPageFragment() : Fragment(R.layout.fragment_about_info_page) {
                 )
             )
         )
+        // SDL3 backend (Minecraft 26.3+) credits. License texts ship in res/raw
+        // (sdl3_license.txt, sdl2_compat_license.txt, bhook_license.txt).
+        mAboutData.add(
+            AboutItemBean(
+                resources.getDrawable(R.drawable.ic_launch_link, requireContext().theme),
+                "SDL (Simple DirectMedia Layer)",
+                "SDL2/SDL3 native libraries (zlib license)",
+                AboutItemButtonBean(requireActivity(), "libsdl.org", "https://www.libsdl.org")
+            )
+        )
+        mAboutData.add(
+            AboutItemBean(
+                resources.getDrawable(R.drawable.ic_launch_link, requireContext().theme),
+                "Zalith Launcher 2",
+                "SDL3 integration this port is based on (GPL-3.0)",
+                AboutItemButtonBean(
+                    requireActivity(),
+                    "Github",
+                    "https://github.com/ZalithLauncher/ZalithLauncher2"
+                )
+            )
+        )
+        mAboutData.add(
+            AboutItemBean(
+                resources.getDrawable(R.drawable.ic_launch_link, requireContext().theme),
+                "ByteHook",
+                "Native hook framework used by libsdlhook (MIT license)",
+                AboutItemButtonBean(
+                    requireActivity(),
+                    "Github",
+                    "https://github.com/bytedance/bhook"
+                )
+            )
+        )
     }
 }
 
