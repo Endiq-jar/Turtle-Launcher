@@ -2,10 +2,11 @@ package com.endiq.turtlelauncher.launch
 
 import android.app.Activity
 import android.util.Log
+import android.view.ViewGroup
+import com.endiq.turtlelauncher.game.sdl.SdlBridge
 import com.endiq.turtlelauncher.utils.path.PathManager
-import org.libsdl.app.SDL
 import org.libsdl.app.SDLActivity
-import org.libsdl.app.SDLSurface
+import org.lwjgl.glfw.CallbackBridge
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -13,13 +14,8 @@ import java.util.concurrent.TimeUnit
 object SdlAndroidJniPrep {
     private const val TAG = "SdlAndroidJniPrep"
 
-    /** How long to wait for the UI thread to build the SDLSurface (see createSurfaceOnUiThread). */
-    private const val SURFACE_WAIT_MS = 3000L
-
-    @JvmStatic
-    @Volatile
-    var isActive: Boolean = false
-        private set
+    /** How long to wait for the UI thread to run the SDL enable step (see setup). */
+    private const val SETUP_WAIT_MS = 3000L
 
     @JvmStatic
     fun ensureMobileGluesShaderErrorIgnore() {
@@ -82,6 +78,15 @@ object SdlAndroidJniPrep {
     }
 
     /**
+     * Eagerly prepares the ART-side SDL host state, before the JVM starts.
+     *
+     * This is Turtle's equivalent of ZalithLauncher2's lazy SDL bring-up
+     * (sdl_hook's SDL_Init hook -> CallbackBridge.notifyLauncher): install the
+     * native hooks, load SDL3+SDL2, set up JNI, register the content layout,
+     * and flip SdlBridge.sdlEnabled on. The game Surface itself usually already
+     * exists by now (registered via SdlBridge.prepareSurface from
+     * MinecraftGLSurface's callbacks) or arrives later; both orders work.
+     *
      * @param activity the Activity used as the SDL host. Must not be null.
      */
     @JvmStatic
@@ -90,62 +95,77 @@ object SdlAndroidJniPrep {
             Log.e(TAG, "Cannot prepare SDL host state without an Activity")
             return
         }
+        if (!SdlBridge.markSdlInitialized()) {
+            Log.i(TAG, "SDL host state already prepared")
+            return
+        }
         try {
+            // First: the native hooks must be in place before anything resolves
+            // SDL symbols (including this thread's System.loadLibrary below and
+            // the game's later dlopen). Without them MC 26.3+ dies at the
+            // Mojang logo (second SDL_CreateWindow refused, desktop GL profile
+            // rejected); see TurtleLauncher/src/main/jni/sdlhook/README.md.
+            if (!SdlHook.install()) {
+                Log.e(TAG, "TurtleSDL3: SDL hooks did not install - continuing anyway, " +
+                    "but the game will likely crash during SDL init")
+            }
             System.loadLibrary("SDL3")
-            // Must run first: SDL.initialize() nulls SDLActivity's static state (context,
-            // clipboard handler, input managers, surface), so anything assigned before it would
-            // be wiped out.
-            SDL.initialize()
-            SDL.setContext(activity)
+            System.loadLibrary("SDL2")
+            SdlBridge.setupJNI()
 
-            // SDLSurface is a View; build it on the UI thread rather than on whatever thread the
-            // launch pipeline happens to be running on.
-            val sdlSurface = createSurfaceOnUiThread(activity)
+            // SDLSurface/externalInitialize touch Views: run on the UI thread,
+            // and wait for it so sdlEnabled is only set once SDL can actually
+            // find everything (mirrors Zalith's notifyLauncher tail).
+            val latch = CountDownLatch(1)
+            activity.runOnUiThread {
+                try {
+                    val content = activity.findViewById<ViewGroup>(android.R.id.content)
+                    SdlBridge.prepareSurface(activity, null, content, null)
+                    SdlBridge.sdlEnabled = true
+                    SDLActivity.getSDLSurface()?.let { surface ->
+                        surface.surfaceChanged()
+                        val w = CallbackBridge.windowWidth
+                        val h = CallbackBridge.windowHeight
+                        if (w > 0 && h > 0) surface.nativeResize(w, h)
+                    }
+                } catch (e: Throwable) {
+                    Log.e(TAG, "SDL enable step failed", e)
+                } finally {
+                    latch.countDown()
+                }
+            }
+            if (!latch.await(SETUP_WAIT_MS, TimeUnit.MILLISECONDS)) {
+                Log.e(TAG, "UI thread did not run the SDL enable step in ${SETUP_WAIT_MS}ms")
+            }
 
-            // externalInitialize assigns the Activity, the SDLSurface and the layout, installs
-            // the clipboard handler and cursor list, and registers the (still null) native
-            // surface so SDL can find everything when it starts.
-            SDLActivity.externalInitialize(sdlSurface, null, null)
-            SDL.setupJNI()
-
-            // From here on MinecraftGLSurface forwards its own Surface callbacks to SDL's
-            // SDLSurface, which is the only way SDL learns the real window size (see
-            // notifySdlOfSurfaceSize()). isActive is the flag that switches that path on -
-            // MinecraftGLSurface reads it from Java as SdlAndroidJniPrep.isActive().
-            isActive = true
-            Log.i(TAG, "SDL host state prepared")
+            // From here on MinecraftGLSurface forwards its own Surface callbacks
+            // to SDL (see publishSurfaceToSdl/notifySdlOfSurfaceSize), which is
+            // how SDL learns the real window size. SdlBridge.sdlEnabled is the
+            // flag that switches that path on.
+            Log.i(TAG, "TurtleSDL3: SDL host state prepared (sdlEnabled=${SdlBridge.sdlEnabled})")
         } catch (e: Throwable) {
+            SdlBridge.clearSdlInitialized()
             // Best effort. Failing here must not take down the launch - without SDL set up some
             // 26.3+ features will be degraded, but the game can still start. NOTE: this is the
             // ART side only. If this fails while the game still launches, LWJGL's own dlopen of
-            // SDL3 will get an instance whose mJavaVM/mActivityClass never got set, and SDL's
-            // Android backend will crash inside Android_JNI_InitTouch (see class doc) - that is
-            // exactly what CrashAnalyzer rule 22 decodes for the user afterwards.
+            // SDL3 will get an instance whose JNI was never set up, and SDL's Android backend
+            // will crash during init - that is what CrashAnalyzer rule 22 decodes afterwards.
             Log.e(TAG, "SDL prepare failed - the game-side SDL3 instance will be uninitialized, " +
-                "expect the sdl3_android_init_sigsegv crash if the game reaches SDL_Init", e)
+                "expect an SDL-init crash if the game reaches SDL_Init", e)
         }
     }
 
-    private fun createSurfaceOnUiThread(activity: Activity): SDLSurface? {
-        if (activity.isFinishing || activity.isDestroyed) return null
-        if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
-            return SDLSurface(activity)
-        }
-        var result: SDLSurface? = null
-        val latch = CountDownLatch(1)
+    /**
+     * Tears down the ART-side SDL state after the JVM exits, so a later launch
+     * in the same process starts clean. Posted to the UI thread (SDL state
+     * touches Views) and fire-and-forget.
+     */
+    @JvmStatic
+    fun resetAfterJvmExit(activity: Activity?) {
+        if (activity == null || !SdlBridge.sdlEnabled) return
         activity.runOnUiThread {
-            try {
-                result = SDLSurface(activity)
-            } catch (e: Throwable) {
-                Log.e(TAG, "Could not create SDLSurface", e)
-            } finally {
-                latch.countDown()
-            }
+            runCatching { SdlBridge.reset() }
+                .onFailure { Log.w(TAG, "SDL reset failed", it) }
         }
-        if (!latch.await(SURFACE_WAIT_MS, TimeUnit.MILLISECONDS)) {
-            Log.e(TAG, "UI thread did not build the SDLSurface in ${SURFACE_WAIT_MS}ms")
-            return null
-        }
-        return result
     }
 }

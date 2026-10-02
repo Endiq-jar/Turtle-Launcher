@@ -12,6 +12,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -30,6 +31,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -52,6 +54,7 @@ import com.endiq.turtlelauncher.feature.background.BackgroundManager;
 import com.endiq.turtlelauncher.feature.background.BackgroundType;
 import com.endiq.turtlelauncher.feature.log.Logging;
 import com.endiq.turtlelauncher.feature.version.Version;
+import com.endiq.turtlelauncher.game.sdl.SdlBridge;
 import com.endiq.turtlelauncher.feature.version.VersionInfo;
 import com.endiq.turtlelauncher.launch.LaunchGame;
 import com.endiq.turtlelauncher.listener.SimpleTextWatcher;
@@ -88,6 +91,7 @@ import net.endiq.launcher.customcontrols.mouse.GyroControl;
 import net.endiq.launcher.prefs.LauncherPreferences;
 import net.endiq.launcher.services.GameService;
 import org.greenrobot.eventbus.EventBus;
+import org.libsdl.app.SDLActivity;
 import org.lwjgl.glfw.CallbackBridge;
 import java.io.File;
 import java.io.IOException;
@@ -196,10 +200,47 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         setupKeyboardInsetsListener();
     }
 
+    @Override
+    public void setRequestedOrientation(int requestedOrientation) {
+        // SDL (MC 26.3+) drives Activity orientation itself via setOrientationBis;
+        // the game surface is landscape-only, so pin it there while SDL is active
+        // instead of letting SDL flip the Activity mid-frame (a portrait flip
+        // would tear down the game Surface). GLFW launches keep stock behavior.
+        // (Port of ZalithLauncher2's VMActivity override.)
+        if (SdlBridge.getSdlEnabled()) {
+            super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        } else {
+            super.setRequestedOrientation(requestedOrientation);
+        }
+    }
+
+    /**
+     * SDL message-box bridge. SDL's native code resolves an instance method of
+     * this exact shape on the host Activity (getContext()); MainActivity is not
+     * an SDLActivity, so it forwards to SDL's dialog implementation.
+     * (Port of ZalithLauncher2's VMActivity bridge.)
+     */
+    @Keep
+    public int messageboxShowMessageBox(
+            int flags,
+            String title,
+            String message,
+            int[] buttonFlags,
+            int[] buttonIds,
+            String[] buttonTexts,
+            int[] colors
+    ) {
+        return SDLActivity.messageboxShowMessageBox(
+                this, flags, title, message, buttonFlags, buttonIds, buttonTexts, colors);
+    }
+
     private void setupKeyboardInsetsListener() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (view, insets) -> {
             boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
             Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+            if (SdlBridge.getSdlEnabled()) {
+                SDLActivity.notifyImeVisibilityChanged(imeVisible);
+            }
             onKeyboardVisibilityChanged(imeVisible, imeVisible ? imeInsets.bottom : 0);
             return insets;
         });

@@ -54,3 +54,22 @@
 -keepclassmembers,allowobfuscation class * {
     @com.google.gson.annotations.SerializedName <fields>;
 }
+
+# ===================== SDL3 (Minecraft 26.3+) =====================
+# Ported from Zalith Launcher 2 (ZalithLauncher2/ZalithLauncher/proguard-rules.pro).
+# SDL's native code resolves these Java entry points by exact name/signature via
+# JNI reflection (nativeSetupJNI registration, message-box bridge, IME callbacks);
+# R8 must not rename or strip them.
+-keep class org.libsdl.app.** { *; }
+
+# Turtle's SDL bridge: libsdlhook.so resolves its JNI entry points by exact name,
+# and SDLActivity/SdlImeController call the wrappers from Java.
+-keep class com.endiq.turtlelauncher.game.sdl.** { *; }
+-keep class com.endiq.turtlelauncher.launch.SdlHook { *; }
+-keep class com.endiq.turtlelauncher.launch.SdlAndroidJniPrep { *; }
+
+# SDL native resolves this instance method on the host Activity by exact
+# signature (see MainActivity.messageboxShowMessageBox).
+-keepclassmembers class net.endiq.launcher.MainActivity {
+    public int messageboxShowMessageBox(...);
+}

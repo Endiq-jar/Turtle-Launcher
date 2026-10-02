@@ -1,0 +1,75 @@
+name: Build libsdlhook.so
+
+# Cross-compiles TurtleLauncher/src/main/jni/sdlhook/ for all 4 Android ABIs
+# and commits the resulting libsdlhook.so files back to jniLibs/.
+#
+# The module is deliberately NOT part of the app's Gradle build (which stays
+# NDK-free so it can be built in Termux); this workflow is the only producer
+# of the prebuilt .so files. Runs automatically when the C sources change, or
+# manually via workflow_dispatch. The auto-commit carries [skip ci] so it does
+# not retrigger this workflow or the APK build.
+
+on:
+  push:
+    paths:
+      - 'TurtleLauncher/src/main/jni/sdlhook/**'
+      - '.github/workflows/build-sdlhook.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Full history is not needed; the push-back just needs the ref.
+          fetch-depth: 1
+
+      - name: Set up Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r27
+
+      - name: Compile libsdlhook.so (4 ABIs)
+        run: |
+          set -e
+          LLVM="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          SRC="TurtleLauncher/src/main/jni/sdlhook"
+          OUT="TurtleLauncher/src/main/jniLibs"
+          API=26  # must match the app's minSdk
+          CFLAGS="-std=gnu11 -O2 -fPIC -Wall -Wextra -Werror -I$SRC -I$SRC/include"
+          # abi:clang-triple-prefix
+          for spec in "arm64-v8a:aarch64-linux-android" \
+                      "armeabi-v7a:armv7a-linux-androideabi" \
+                      "x86:i686-linux-android" \
+                      "x86_64:x86_64-linux-android"; do
+            abi="${spec%%:*}"
+            triple="${spec##*:}"
+            cc="$LLVM/${triple}${API}-clang"
+            echo "=== $abi ($cc) ==="
+            mkdir -p "$OUT/$abi"
+            "$cc" $CFLAGS -c "$SRC/sdl_hook.c" -o /tmp/sdl_hook.o
+            "$cc" $CFLAGS -c "$SRC/sdl_dlsym_hook.c" -o /tmp/sdl_dlsym_hook.o
+            "$cc" $CFLAGS -c "$SRC/sdlhook_jni.c" -o /tmp/sdlhook_jni.o
+            "$cc" -shared -o "$OUT/$abi/libsdlhook.so" \
+              /tmp/sdl_hook.o /tmp/sdl_dlsym_hook.o /tmp/sdlhook_jni.o \
+              -llog -ldl
+            "$LLVM/llvm-readelf" --dynamic "$OUT/$abi/libsdlhook.so" | grep -E "NEEDED|SONAME"
+          done
+
+      - name: Commit prebuilt libsdlhook.so files
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f TurtleLauncher/src/main/jniLibs/*/libsdlhook.so
+          if git diff --cached --quiet; then
+            echo "No changes to libsdlhook.so, nothing to commit."
+          else
+            git commit -m "Prebuilt libsdlhook.so for all ABIs [skip ci]"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi

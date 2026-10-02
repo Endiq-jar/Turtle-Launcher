@@ -5,18 +5,21 @@
 
 package org.libsdl.app;
 
-import android.os.Build;
+import androidx.annotation.Keep;
+
 import android.text.Editable;
-import android.view.*;
+import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.BaseInputConnection;
 import android.widget.EditText;
 
-public class SDLInputConnection extends BaseInputConnection
+@Keep
+class SDLInputConnection extends BaseInputConnection
 {
     protected EditText mEditText;
     protected String mCommittedText = "";
 
-    public SDLInputConnection(View targetView, boolean fullEditor) {
+    SDLInputConnection(View targetView, boolean fullEditor) {
         super(targetView, fullEditor);
         mEditText = new EditText(SDL.getContext());
     }
@@ -35,13 +38,22 @@ public class SDLInputConnection extends BaseInputConnection
          * that still do, we empty this out.
          */
 
-        if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-            if (SDLActivity.onNativeSoftReturnKey()) {
-                return true;
-            }
-        }
+        /*
+         * Return DOES still generate a key event, however.  So rather than using it as the 'click a button' key
+         * as we do with physical keyboards, let's just use it to hide the keyboard.
+         */
 
-        return super.sendKeyEvent(event);
+//        if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+//            if (SDLActivity.onNativeSoftReturnKey()) {
+//                return true;
+//            }
+//        }
+//
+//        return super.sendKeyEvent(event);
+        if(KeyEvent.ACTION_DOWN == event.getAction()){
+            SDLActivity.onNativeKeyDown(event.getKeyCode());
+        } else SDLActivity.onNativeKeyUp(event.getKeyCode());
+        return true;
     }
 
     @Override
@@ -64,17 +76,15 @@ public class SDLInputConnection extends BaseInputConnection
 
     @Override
     public boolean deleteSurroundingText(int beforeLength, int afterLength) {
-        if (Build.VERSION.SDK_INT <= 29 /* Android 10.0 (Q) */) {
-            // Workaround to capture backspace key. Ref: http://stackoverflow.com/questions>/14560344/android-backspace-in-webview-baseinputconnection
-            // and https://bugzilla.libsdl.org/show_bug.cgi?id=2265
-            if (beforeLength > 0 && afterLength == 0) {
-                // backspace(s)
-                while (beforeLength-- > 0) {
-                    nativeGenerateScancodeForUnichar('\b');
-                }
-                return true;
-           }
-        }
+        // Workaround to capture backspace key. Ref: http://stackoverflow.com/questions>/14560344/android-backspace-in-webview-baseinputconnection
+        // and https://bugzilla.libsdl.org/show_bug.cgi?id=2265
+        if (beforeLength > 0 && afterLength == 0) {
+            // backspace(s)
+            while (beforeLength-- > 0) {
+                nativeGenerateScancodeForUnichar('\b');
+            }
+            return true;
+       }
 
         if (!super.deleteSurroundingText(beforeLength, afterLength)) {
             return false;
