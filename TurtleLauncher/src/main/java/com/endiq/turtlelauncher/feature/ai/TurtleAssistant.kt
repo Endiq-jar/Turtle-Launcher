@@ -10,6 +10,7 @@ import com.endiq.turtlelauncher.feature.log.Logging
 import com.endiq.turtlelauncher.feature.version.VersionsManager
 import com.endiq.turtlelauncher.renderer.RendererCatalog
 import com.endiq.turtlelauncher.renderer.Renderers
+import com.endiq.turtlelauncher.renderer.renderers.HolyGL4ESRenderer
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.utils.ZHTools
 import com.endiq.turtlelauncher.utils.path.PathManager
@@ -142,7 +143,9 @@ object TurtleAssistant {
             "• Renderers - which one to use, how to change it, shader support\n" +
             "• Crashes - read and explain your last game log\n" +
             "• Memory / RAM - how much to allocate on this device\n" +
+            "• Memory before launch - what the launcher releases for the game\n" +
             "• Performance - FPS, resolution scale, FPS boost flags\n" +
+            "• Renderer overhead / GL state - what can and can't be tuned per frame\n" +
             "• Mods, modpacks, resource packs, shaders, worlds\n" +
             "• Controls, custom buttons, gamepads\n" +
             "• Skins and capes\n" +
@@ -238,6 +241,21 @@ object TurtleAssistant {
             else -> "none available on this device"
         }
     }.getOrDefault("unknown")
+
+    /**
+     * Renderer id the launcher would actually launch with right now - the same resolution
+     * [currentRendererName] does, without needing [Renderers.getCurrentRenderer] (which
+     * throws until setCurrentRenderer has run).
+     */
+    private fun currentRendererId(context: Context): String? = runCatching {
+        val wanted = AllSettings.renderer.getValue()
+        Renderers.init(false)
+        val compatible = Renderers.getCompatibleRenderers(context).second
+        (compatible.firstOrNull { it.getUniqueIdentifier() == wanted } ?: compatible.firstOrNull())
+            ?.getRendererId()
+    }.getOrNull()
+
+    private fun onOff(value: Boolean): String = if (value) "on" else "off"
 
     private fun freeStorageGb(): String? = runCatching {
         val path = PathManager.DIR_GAME_HOME
@@ -393,6 +411,59 @@ object TurtleAssistant {
             },
             followUps = listOf("FPS is low", "Status")
         ),
+        // The launcher-side half of memory: what the launcher itself releases before the game
+        // starts (feature/turtle/BackgroundServiceManager.kt), and the policy to recommend when
+        // launcher and game compete for RAM. The full spec lives in
+        // TurtleAiPrompt.LAUNCHER_SIDE_MEMORY_MANAGEMENT.
+        Topic(
+            id = "memory_prelaunch",
+            label = "Memory before launch",
+            keywords = listOf(
+                // Multi-word keys on purpose: the plain words ("memory", "ram", "cache")
+                // belong to the RAM / storage topics, and a tie is resolved alphabetically -
+                // which would hand these questions to those topics instead of this one.
+                "before launch", "before launching", "launcher memory", "launcher cache",
+                "free ram", "free up ram", "background apps", "background work",
+                "close apps", "flush caches", "memory before"
+            ),
+            answer = { context ->
+                val deviceTotalMb = runCatching { Tools.getTotalDeviceMemory(context) }.getOrDefault(0)
+                val ramMb = runCatching { AllSettings.ramAllocation.value.getValue() }.getOrDefault(0)
+                val cleanupOn = runCatching { AllSettings.backgroundServiceOptimization.getValue() }
+                    .getOrDefault(false)
+                val monitorOn = runCatching { AllSettings.memoryPressureMonitor.getValue() }
+                    .getOrDefault(false)
+                val prefetchOn = runCatching { AllSettings.backgroundAssetPrefetch.getValue() }
+                    .getOrDefault(false)
+                buildString {
+                    append("Before Minecraft starts, the launcher releases its own memory and gets " +
+                        "out of the way - every MB it holds is one Android can't give the game JVM.\n\n")
+                    append("What happens at launch:\n")
+                    append("• Image/bitmap caches are dropped (cover art, screenshots, launcher " +
+                        "backgrounds) - they re-decode on demand, nothing on disk is touched.\n")
+                    append("• The in-memory download/search caches are dropped - they refill the " +
+                        "next time you open the Download screen.\n")
+                    append("• Background work is held back for the whole session: asset prefetching " +
+                        "and the plugin-update check skip themselves, and the launcher's task " +
+                        "threads drop to background priority.\n")
+                    append("• Launcher animations pause during the session and resume when you " +
+                        "come back.\n")
+                    append("• No world, save, mod, log or shader-cache file is deleted to make room.\n\n")
+                    append("On this device: ${deviceTotalMb}MB total RAM, ${ramMb}MB allocated to " +
+                        "Minecraft.\n")
+                    append("• Pre-launch cleanup (Settings → Experimental → Background Service " +
+                        "Optimization): " + onOff(cleanupOn) + "\n")
+                    append("• Memory pressure monitor (Settings → Phone Settings): " + onOff(monitorOn) + "\n")
+                    append("• Background asset prefetch: " + onOff(prefetchOn) + "\n\n")
+                    append("The rule that matters: keep the heap at roughly half the device total " +
+                        "or less, and leave 2GB+ for Android itself. If the launcher and the game " +
+                        "are fighting over RAM, a smaller heap helps and a bigger one makes it " +
+                        "worse - an oversized heap pushes the system into killing processes, " +
+                        "which looks exactly like a random crash. More RAM never adds FPS.")
+                }
+            },
+            followUps = listOf("Not enough RAM?", "FPS is low", "Status")
+        ),
         Topic(
             id = "performance",
             label = "FPS is low",
@@ -414,6 +485,69 @@ object TurtleAssistant {
                 }
             },
             followUps = listOf("Best renderer?", "Not enough RAM?")
+        ),
+        // The per-frame half of performance: what the renderer/EGL layer can actually be told
+        // to do about GL state overhead, and what is renderer-internal. Rules come from
+        // TurtleAiPrompt.glStateRules() so this answer can't drift from the AI spec.
+        Topic(
+            id = "renderer_state",
+            label = "Renderer overhead / GL state",
+            keywords = listOf(
+                "gl state", "opengl state", "state change", "state changes", "redundant",
+                "draw call", "draw calls", "bottleneck", "overhead", "frame time", "frame times",
+                "jni batching", "object pooling", "buffer uploads", "readback", "glfinish"
+            ),
+            answer = { context ->
+                val rendererId = currentRendererId(context)
+                val isGl4es = rendererId == HolyGL4ESRenderer.ID
+                val shaderCache = runCatching { AllSettings.rendererShaderCacheEnabled.getValue() }
+                    .getOrDefault(false)
+                val forceVsync = runCatching { AllSettings.forceVsync.getValue() }.getOrDefault(false)
+                val adaptiveVsync = runCatching { AllSettings.adaptiveVsync.getValue() }.getOrDefault(false)
+                val vsyncInZink = runCatching { AllSettings.vsyncInZink.getValue() }.getOrDefault(false)
+                val lowLatency = runCatching { AllSettings.lowLatencyFrontBuffer.getValue() }
+                    .getOrDefault(false)
+                buildString {
+                    append("Current renderer: ${currentRendererName(context)}\n\n")
+                    append("Per-frame GL overhead is where a translated renderer loses time. " +
+                        "Here's what this launcher can actually tell it to do:\n")
+                    if (isGl4es) {
+                        append("• JNI batching (LIBGL_BATCH): " + onOff(
+                            runCatching { AllSettings.jniBatching.getValue() }.getOrDefault(false)
+                        ) + " - batches GL calls instead of one JNI crossing each\n")
+                        append("• Cached buffer references (LIBGL_USEVBO): " + onOff(
+                            runCatching { AllSettings.jniCachedReferences.getValue() }.getOrDefault(false)
+                        ) + " - keeps vertex data in VBOs instead of re-uploading client arrays\n")
+                        append("• Native object pooling (LIBGL_RECYCLEFBO): " + onOff(
+                            runCatching { AllSettings.nativeObjectPooling.getValue() }.getOrDefault(false)
+                        ) + " - reuses framebuffer objects instead of reallocating them\n")
+                        append("• Skip redundant texture copies (LIBGL_SKIPTEXCOPIES): " + onOff(
+                            runCatching { AllSettings.reducedJniCalls.getValue() }.getOrDefault(false)
+                        ) + " - drops a redundant copy on the texture upload path\n")
+                    } else {
+                        append("• The GL4ES state flags (JNI batching, cached buffer references, " +
+                            "native object pooling, skip redundant texture copies) do not apply " +
+                            "to this renderer - they only exist on the GL4ES path (Holy GL4ES). " +
+                            "The equivalent caching is internal to whatever renderer you're on.\n")
+                    }
+                    append("• Renderer shader cache: " + onOff(shaderCache) + " - persists compiled " +
+                        "program caches for Zink and the gallium-based renderers\n")
+                    append("• Swap/pacing: VSync " + onOff(forceVsync) + ", adaptive VSync " +
+                        onOff(adaptiveVsync) + ", Zink VSync " + onOff(vsyncInZink) + ", " +
+                        "low-latency front buffer " + onOff(lowLatency) + "\n\n")
+                    append("What is NOT a switch here - and I won't pretend otherwise: skipping " +
+                        "redundant state changes and texture binds, avoiding redundant clears, " +
+                        "and avoiding GPU readbacks are internal to the renderer and the game. " +
+                        "If one of those is the bottleneck, the lever is a different renderer, " +
+                        "not a setting.\n\n")
+                    append("If you're chasing stutter: check frame-time consistency first " +
+                        "(thermal throttling, GC pauses, other apps) - a 60 FPS average with " +
+                        "35ms spikes is not fixed by any of the above. Then change one flag at a " +
+                        "time and relaunch; the GL4ES flags trade speed for stability on some " +
+                        "devices.")
+                }
+            },
+            followUps = listOf("FPS is low", "Best renderer?", "Why did my game crash?")
         ),
         Topic(
             id = "mods",

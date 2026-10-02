@@ -3,6 +3,7 @@ package com.endiq.turtlelauncher.feature.log
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.endiq.turtlelauncher.feature.ai.TurtleAiPrompt
 import com.endiq.turtlelauncher.setting.AllSettings
 import com.endiq.turtlelauncher.utils.path.UrlManager
 import okhttp3.MediaType.Companion.toMediaType
@@ -13,13 +14,13 @@ object AiCrashAdvisor {
     private const val ENDPOINT = "https://api.openai.com/v1/chat/completions"
     private const val MAX_LOG_CHARS = 6000
 
-    private const val SYSTEM_PROMPT =
-        "You are a crash-diagnosis assistant built into an Android Minecraft launcher called " +
-        "TurtleLauncher (a TurtleLauncher fork). You are given the tail of a " +
-        "crash log. Reply with a short, concrete, numbered list of the most likely fix steps a " +
-        "non-developer player can try themselves, most-likely-to-help first. Be specific about what " +
-        "in the log points to the cause. If you genuinely can't tell, say that plainly instead of " +
-        "guessing. Keep the whole reply under 200 words and do not repeat the raw log back."
+    /**
+     * The diagnosis persona comes from [TurtleAiPrompt] so the crash advisor, the on-device
+     * assistant and any future Turtle AI backend all reason from one spec (including the
+     * launcher-side memory-management and OpenGL state-optimization sections, which are
+     * exactly the two subsystems a mobile Minecraft crash usually implicates).
+     */
+    private val SYSTEM_PROMPT: String = TurtleAiPrompt.crashAdvisorSystemPrompt()
 
     /**
      * Returns a short AI-generated fix suggestion for [logText], or null if AI crash help is
