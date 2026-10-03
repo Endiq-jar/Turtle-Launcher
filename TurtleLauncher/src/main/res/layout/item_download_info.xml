@@ -74,7 +74,7 @@
         app:flexWrap="wrap"
         app:alignItems="flex_start"
         app:justifyContent="flex_start"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/install_button"
         app:layout_constraintStart_toStartOf="@+id/title_textview"
         app:layout_constraintTop_toBottomOf="@+id/title_textview"/>
 
@@ -87,7 +87,7 @@
         android:singleLine="true"
         android:textSize="@dimen/_10ssp"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/install_button"
         app:layout_constraintStart_toStartOf="@+id/title_textview"
         app:layout_constraintTop_toBottomOf="@+id/categories_Layout"
         tools:ignore="SmallSp"
@@ -105,5 +105,23 @@
         app:layout_constraintStart_toStartOf="@+id/description_textview"
         app:layout_constraintEnd_toEndOf="@+id/description_textview"
         app:layout_constraintTop_toBottomOf="@+id/description_textview"/>
+
+    <!-- One-tap shortcut to the same version/detail screen the row itself opens (see
+         InfoAdapter.ViewHolder.setStateLimited) - purely additive, doesn't change navigation. -->
+    <com.endiq.turtlelauncher.ui.view.AnimButton
+        android:id="@+id/install_button"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_26sdp"
+        android:background="@drawable/background_pill_install"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingHorizontal="@dimen/_12sdp"
+        android:paddingVertical="0dp"
+        android:text="@string/download_info_install"
+        android:textColor="@color/background_app"
+        android:textSize="@dimen/_10ssp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </com.endiq.turtlelauncher.ui.layout.AnimConstraintLayout>

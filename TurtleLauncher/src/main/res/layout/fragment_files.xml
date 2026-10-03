@@ -62,21 +62,89 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
+                <!-- Storage location, moved up from the right-hand side panel into a top
+                     segmented pill row (External Storage / App Private). Same ids as
+                     before - FilesFragment.kt's externalStorage/softwarePrivate click
+                     wiring is unchanged. -->
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/external_storage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_m"
+                    android:layout_marginTop="@dimen/space_m"
+                    android:layout_marginEnd="@dimen/space_xs"
+                    android:background="@drawable/background_pill_storage"
+                    android:minHeight="@dimen/_32sdp"
+                    android:paddingHorizontal="@dimen/_12sdp"
+                    app:layout_constraintEnd_toStartOf="@+id/software_private"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="@dimen/_16sdp"
+                        android:layout_height="@dimen/_16sdp"
+                        android:layout_centerVertical="true"
+                        android:contentDescription="@string/file_external_storage"
+                        android:src="@drawable/ic_folder" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="@dimen/_8sdp"
+                        android:layout_toEndOf="@+id/imageView"
+                        android:textColor="@color/turtle_primary_text"
+                        android:textSize="@dimen/_11ssp"
+                        android:text="@string/file_external_storage" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
+                    android:id="@+id/software_private"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_m"
+                    android:layout_marginEnd="@dimen/space_m"
+                    android:background="@drawable/background_pill_storage"
+                    android:minHeight="@dimen/_32sdp"
+                    android:paddingHorizontal="@dimen/_12sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/external_storage"
+                    app:layout_constraintTop_toTopOf="parent">
+                    <ImageView
+                        android:id="@+id/imageView1"
+                        android:layout_width="@dimen/_16sdp"
+                        android:layout_height="@dimen/_16sdp"
+                        android:layout_centerVertical="true"
+                        android:contentDescription="@string/file_software_private"
+                        android:src="@drawable/ic_folder" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="@dimen/_8sdp"
+                        android:layout_toEndOf="@+id/imageView1"
+                        android:textColor="@color/turtle_primary_text"
+                        android:textSize="@dimen/_11ssp"
+                        android:text="@string/file_software_private" />
+                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+
+                <!-- Breadcrumb-style path bar (was a bare bold title) -->
                 <com.endiq.turtlelauncher.ui.view.AnimTextView
                     android:id="@+id/current_path"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/space_m"
-                    android:layout_marginTop="@dimen/space_m"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
                     android:text="."
                     android:textColor="@color/turtle_text_primary"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="13sp"
+                    android:background="@drawable/background_edit_box"
                     android:padding="@dimen/space_xs"
+                    android:singleLine="true"
+                    android:ellipsize="start"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/select_all"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/external_storage"
                     tools:ignore="HardcodedText" />
 
                 <com.endiq.turtlelauncher.ui.view.AnimCheckBox
@@ -85,8 +153,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_16sdp"
                     android:visibility="gone"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/current_path"
+                    app:layout_constraintBottom_toBottomOf="@+id/current_path"
                     app:layout_constraintEnd_toEndOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -129,72 +197,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
-                    android:id="@+id/external_storage"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/_16sdp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:minHeight="@dimen/_40sdp"
-                    app:layout_constraintBottom_toTopOf="@+id/operate_view"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
-                    <ImageView
-                        android:id="@+id/imageView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_20sdp"
-                        android:layout_centerVertical="true"
-                        android:contentDescription="@string/file_external_storage"
-                        android:src="@drawable/ic_folder" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="@dimen/_12sdp"
-                        android:layout_toEndOf="@+id/imageView"
-                        android:textColor="@color/turtle_primary_text"
-                        android:text="@string/file_external_storage" />
-                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
-
-                <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
-                    android:id="@+id/software_private"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:minHeight="@dimen/_40sdp"
-                    app:layout_constraintBottom_toTopOf="@+id/external_storage"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
-                    <ImageView
-                        android:id="@+id/imageView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_20sdp"
-                        android:layout_centerVertical="true"
-                        android:contentDescription="@string/file_software_private"
-                        android:src="@drawable/ic_folder" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="@dimen/_12sdp"
-                        android:layout_toEndOf="@+id/imageView1"
-                        android:textColor="@color/turtle_primary_text"
-                        android:text="@string/file_software_private" />
-                </com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout>
+                <!-- External Storage / App Private now live as a pill row in title_layout
+                     above the file list (see fragment-top edit) instead of here. -->
 
                 <com.endiq.turtlelauncher.ui.view.AnimCheckBox
                     android:id="@+id/multi_select_files"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_16sdp"
-                    android:layout_marginBottom="@dimen/_4sdp"
+                    android:layout_marginBottom="@dimen/_16sdp"
                     android:paddingStart="@dimen/_8sdp"
                     android:text="@string/file_multi_select_mode"
-                    app:layout_constraintBottom_toTopOf="@+id/software_private"
+                    app:layout_constraintBottom_toTopOf="@+id/operate_view"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     tools:ignore="RtlSymmetry" />

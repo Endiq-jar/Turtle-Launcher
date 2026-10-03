@@ -105,7 +105,7 @@ class InfoAdapter(
 
             binding.apply {
                 parentFragment?.let { fragment ->
-                    root.setOnClickListener {
+                    val openDetail = {
                         EventBus.getDefault().post(DownloadPageEvent.RecyclerEnableEvent(false))
 
                         val infoViewModel = ViewModelProvider(fragment.requireActivity())[InfoViewModel::class.java]
@@ -114,6 +114,9 @@ class InfoAdapter(
 
                         ZHTools.swapFragmentWithAnim(fragment, DownloadModFragment::class.java, DownloadModFragment.TAG, null)
                     }
+                    root.setOnClickListener { openDetail() }
+                    // Same destination as tapping the row - just a more visible shortcut.
+                    installButton.setOnClickListener { openDetail() }
                 }
 
                 titleTextview.text =
