@@ -25,6 +25,7 @@ import com.endiq.anim.animations.Animations
 import com.endiq.turtlelauncher.R
 import com.endiq.turtlelauncher.databinding.FragmentAccountBinding
 import com.endiq.turtlelauncher.databinding.ItemOtherServerBinding
+import com.endiq.turtlelauncher.databinding.ViewAddAccountPopupBinding
 import com.endiq.turtlelauncher.databinding.ViewAddOtherServerBinding
 import com.endiq.turtlelauncher.databinding.ViewSingleActionPopupBinding
 import com.endiq.turtlelauncher.event.single.AccountUpdateEvent
@@ -156,19 +157,10 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                     }.showDialog()
             }
 
-            override fun onSkinChange(account: MinecraftAccount) {
-                com.endiq.turtlelauncher.ui.dialog.SkinCapeDialog(
+            override fun onWardrobeOpen(account: MinecraftAccount) {
+                com.endiq.turtlelauncher.ui.dialog.WardrobeDialog(
                     requireActivity() as androidx.appcompat.app.AppCompatActivity,
-                    account,
-                    "skin"
-                ).show()
-            }
-
-            override fun onCapeChange(account: MinecraftAccount) {
-                com.endiq.turtlelauncher.ui.dialog.SkinCapeDialog(
-                    requireActivity() as androidx.appcompat.app.AppCompatActivity,
-                    account,
-                    "cape"
+                    account
                 ).show()
             }
         })
@@ -194,12 +186,11 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                     }
                 }
             }
-            viewAccountDetail.detailEdit.setOnClickListener {
+            viewAccountDetail.detailWardrobe.setOnClickListener {
                 AccountsManager.currentAccount?.let { account ->
-                    com.endiq.turtlelauncher.ui.dialog.SkinCapeDialog(
+                    com.endiq.turtlelauncher.ui.dialog.WardrobeDialog(
                         requireActivity() as androidx.appcompat.app.AppCompatActivity,
-                        account,
-                        "skin"
+                        account
                     ).show()
                 }
             }
@@ -281,6 +272,7 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
 
             addServer.setOnClickListener(this@AccountFragment)
             returnButton.setOnClickListener(this@AccountFragment)
+            addAccountButton.setOnClickListener { showAddAccountPopup() }
         }
 
         reloadAccounts()
@@ -628,6 +620,55 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                 )
                 refreshOtherServer()
             }.showDialog()
+    }
+
+    /**
+     * Single "Add Account" entry point - builds a popup (view_add_account_popup.xml)
+     * that lists Microsoft/Offline/each configured server/"Add Auth Server", with each
+     * row just calling performClick() on the real (now hidden, visibility="gone"
+     * in fragment_account.xml) account_type_tab child or add_server, so every existing
+     * login/add-server code path (accountTypeTab.observeIndexChange's index routing,
+     * the whole onClick(addServer) sub-menu) is reused exactly as-is rather than
+     * duplicated here. NOTE: relies on DslTabLayout dispatching a real click to its
+     * child views on selection, the standard pattern for this kind of tab widget -
+     * worth confirming on-device since it isn't something I could verify in this
+     * sandbox.
+     */
+    private fun showAddAccountPopup() {
+        val activity = requireActivity()
+        val popupBinding = ViewAddAccountPopupBinding.inflate(LayoutInflater.from(activity))
+        popupBinding.apply {
+            popupAddMicrosoftAccount.setOnClickListener {
+                binding.addMicrosoftAccount.performClick()
+                mServerActionPopupWindow.dismiss()
+            }
+            popupAddLocalAccount.setOnClickListener {
+                binding.addLocalAccount.performClick()
+                mServerActionPopupWindow.dismiss()
+            }
+
+            popupOtherServersContainer.removeAllViews()
+            mOtherServerViewList.forEachIndexed { index, tabView ->
+                val rowBinding = ViewSingleActionPopupBinding.inflate(LayoutInflater.from(activity))
+                rowBinding.icon.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_add))
+                rowBinding.text.text = mOtherServerList.getOrNull(index)?.serverName
+                rowBinding.root.layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+                rowBinding.text.setOnClickListener {
+                    tabView.performClick()
+                    mServerActionPopupWindow.dismiss()
+                }
+                popupOtherServersContainer.addView(rowBinding.root)
+            }
+
+            popupAddServer.setOnClickListener {
+                binding.addServer.performClick()
+                mServerActionPopupWindow.dismiss()
+            }
+        }
+        refreshActionPopupWindow(binding.addAccountButton, popupBinding)
     }
 
     private fun refreshActionPopupWindow(anchorView: View, binding: ViewBinding) {

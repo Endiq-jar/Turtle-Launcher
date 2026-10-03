@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Single "Add Account" entry point's popup - combines what used to be shown directly
+     in fragment_account.xml's top bar (Microsoft/Offline tabs, per-server login tabs,
+     the add_server "..." menu) into one menu. Rows here just proxy clicks to those
+     original (now-hidden) views so all existing login/add-server logic in
+     AccountFragment.kt is reused unchanged. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/_240sdp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_card"
+    android:padding="@dimen/_8sdp"
+    android:orientation="vertical"
+    android:elevation="@dimen/_8sdp"
+    android:translationZ="4dp"
+    tools:ignore="ContentDescription">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_add" />
+
+        <com.endiq.turtlelauncher.ui.view.AnimTextView
+            android:id="@+id/popup_add_microsoft_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/background_item"
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="@dimen/_20sdp"
+            android:paddingVertical="@dimen/_12sdp"
+            android:text="@string/account_microsoft_account"
+            app:ripple_for_text="true" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_add" />
+
+        <com.endiq.turtlelauncher.ui.view.AnimTextView
+            android:id="@+id/popup_add_local_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/background_item"
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="@dimen/_20sdp"
+            android:paddingVertical="@dimen/_12sdp"
+            android:text="@string/account_local_account"
+            app:ripple_for_text="true" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <!-- One row per already-configured auth server is inserted here at runtime,
+         mirroring AccountFragment.refreshOtherServer()'s dynamic tabs. -->
+    <LinearLayout
+        android:id="@+id/popup_other_servers_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_more" />
+
+        <com.endiq.turtlelauncher.ui.view.AnimTextView
+            android:id="@+id/popup_add_server"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/background_item"
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="@dimen/_20sdp"
+            android:paddingVertical="@dimen/_12sdp"
+            android:text="@string/other_login_server"
+            app:ripple_for_text="true" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</LinearLayout>

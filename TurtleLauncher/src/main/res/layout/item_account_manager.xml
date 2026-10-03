@@ -66,9 +66,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_type">
 
-        <!-- Skin button -->
+        <!-- Wardrobe button: opens WardrobeDialog (live preview + Change Skin / Change
+             Cape), replacing the separate skin_button/cape_button that used to be here. -->
         <ImageButton
-            android:id="@+id/skin_button"
+            android:id="@+id/wardrobe_button"
             android:layout_width="@dimen/_28sdp"
             android:layout_height="@dimen/_28sdp"
             android:layout_marginEnd="@dimen/_8sdp"
@@ -76,19 +77,7 @@
             android:scaleType="centerInside"
             android:src="@drawable/ic_skin_changer"
             android:tint="@color/turtle_success"
-            android:contentDescription="@string/account_skin_button" />
-
-        <!-- Cape button: dedicated cape icon (no longer shares ic_hair with the skin button) -->
-        <ImageButton
-            android:id="@+id/cape_button"
-            android:layout_width="@dimen/_28sdp"
-            android:layout_height="@dimen/_28sdp"
-            android:layout_marginEnd="@dimen/_8sdp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_cape"
-            android:tint="@color/turtle_warning"
-            android:contentDescription="@string/account_cape_button" />
+            android:contentDescription="@string/account_wardrobe" />
 
         <ImageButton
             android:id="@+id/refresh"

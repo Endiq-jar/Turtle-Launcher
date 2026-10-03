@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compact Wardrobe entry point: live 3D skin preview + Change Skin / Change Cape,
+     which route to the existing SkinCapeDialog (gallery/URL pickers, uploads, history -
+     all untouched). This dialog itself only hosts the preview and the mode choice,
+     replacing the two separate skin/cape icon buttons that used to live on each
+     account row. -->
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="@dimen/_280sdp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_card"
+    android:orientation="vertical"
+    android:padding="@dimen/space_l">
+
+    <com.endiq.turtlelauncher.ui.view.AnimTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/account_wardrobe"
+        android:textSize="@dimen/_16ssp"
+        android:textStyle="bold"
+        android:textColor="@color/turtle_text_primary" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_m"
+        android:fillViewport="true">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/content_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_180sdp"
+                android:background="@drawable/background_grid_card">
+
+                <View
+                    android:id="@+id/wardrobe_skin_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <ProgressBar
+                    android:id="@+id/wardrobe_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+
+            </FrameLayout>
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/wardrobe_change_skin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_m"
+                android:background="@drawable/bg_launch_button"
+                android:drawableStart="@drawable/ic_skin_changer"
+                android:drawablePadding="@dimen/space_xs"
+                android:drawableTint="@color/turtle_text_primary"
+                android:gravity="center"
+                android:paddingVertical="@dimen/space_m"
+                android:text="@string/skin_cape_change_skin"
+                android:textColor="@color/turtle_text_primary" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/wardrobe_change_cape"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:background="@drawable/background_grid_card"
+                android:drawableStart="@drawable/ic_cape"
+                android:drawablePadding="@dimen/space_xs"
+                android:gravity="center"
+                android:paddingVertical="@dimen/space_m"
+                android:text="@string/skin_cape_change_cape" />
+
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/wardrobe_close"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_m"
+                android:background="@android:color/transparent"
+                android:text="@string/generic_close" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

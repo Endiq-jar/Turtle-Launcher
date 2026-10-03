@@ -54,8 +54,8 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Holder> 
         void onViewClick(MinecraftAccount account);
         void onRefresh(MinecraftAccount account);
         void onDelete(MinecraftAccount account);
-        void onSkinChange(MinecraftAccount account);
-        void onCapeChange(MinecraftAccount account);
+        /** Opens the Wardrobe (live preview + Change Skin / Change Cape) for account. */
+        void onWardrobeOpen(MinecraftAccount account);
     }
 
     public class Holder extends RecyclerView.ViewHolder {
@@ -73,8 +73,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Holder> 
                 itemView.setOnClickListener(v -> accountUpdateListener.onViewClick(account));
                 binding.refresh.setOnClickListener(v -> accountUpdateListener.onRefresh(account));
                 binding.delete.setOnClickListener(v -> accountUpdateListener.onDelete(account));
-                binding.skinButton.setOnClickListener(v -> accountUpdateListener.onSkinChange(account));
-                binding.capeButton.setOnClickListener(v -> accountUpdateListener.onCapeChange(account));
+                binding.wardrobeButton.setOnClickListener(v -> accountUpdateListener.onWardrobeOpen(account));
             }
 
             binding.name.setText(account.username);

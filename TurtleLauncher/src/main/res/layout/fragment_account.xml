@@ -32,16 +32,37 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
+            <!-- Single visible entry point now - see add_account_button below, which
+                 opens a popup proxying to this tab layout's (hidden) children and to
+                 add_server, rather than showing every account option directly here. -->
+            <com.endiq.turtlelauncher.ui.view.AnimButton
+                android:id="@+id/add_account_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/_32sdp"
+                android:background="@android:color/transparent"
+                android:drawableStart="@drawable/ic_add"
+                android:drawablePadding="@dimen/_8sdp"
+                android:gravity="center_vertical|start"
+                android:paddingHorizontal="@dimen/_12sdp"
+                android:text="@string/account_add"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.angcyo.tablayout.DslTabLayout
                 android:id="@+id/account_type_tab"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_32sdp"
                 android:paddingVertical="@dimen/_4sdp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/add_server"
                 app:tab_deselect_color="@color/black_or_white"
-                app:tab_select_color="@color/black_or_white">
+                app:tab_select_color="@color/black_or_white"
+                tools:visibility="visible">
 
                 <com.endiq.turtlelauncher.ui.layout.AnimRelativeLayout
                     android:id="@+id/add_microsoft_account"
@@ -97,16 +118,19 @@
                 android:id="@+id/add_server"
                 android:layout_width="@dimen/_24sdp"
                 android:layout_height="@dimen/_24sdp"
+                android:layout_marginTop="@dimen/_32sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:scaleType="centerCrop"
                 android:scaleX="0.92"
                 android:scaleY="0.92"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_more"
+                android:visibility="gone"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription"
+                tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

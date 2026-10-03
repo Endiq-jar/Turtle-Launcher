@@ -1204,6 +1204,7 @@
     <string name="skin_cape_instructions_copied">Copied to clipboard</string>
     <string name="account_skin_button">Skin</string>
     <string name="account_cape_button">Cape</string>
+    <string name="account_wardrobe">Wardrobe</string>
 
     <string name="whats_new_title">🐢 What\'s New in TurtleLauncher</string>
     <string name="whats_new_version">v3.1</string>

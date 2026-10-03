@@ -136,13 +136,16 @@
             android:text="@string/generic_refresh" />
 
         <com.endiq.turtlelauncher.ui.view.AnimButton
-            android:id="@+id/detail_edit"
+            android:id="@+id/detail_wardrobe"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginHorizontal="@dimen/space_xs"
             android:background="@drawable/background_grid_card"
-            android:text="@string/generic_edit" />
+            android:drawableStart="@drawable/ic_skin_changer"
+            android:drawablePadding="@dimen/space_xs"
+            android:drawableTint="@color/turtle_success"
+            android:text="@string/account_wardrobe" />
 
         <com.endiq.turtlelauncher.ui.view.AnimButton
             android:id="@+id/detail_remove"
